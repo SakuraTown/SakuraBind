@@ -133,6 +133,7 @@ object SakuraBindAPI {
     /**
      * 获取绑定物品的显示lore，如果是绑定物品返回null
      */
+    @JvmStatic
     fun getBindLore(item: ItemStack): String? {
         val owner = getOwner(item) ?: return null
         val player = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
