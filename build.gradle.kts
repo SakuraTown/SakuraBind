@@ -72,7 +72,7 @@ dependencies {
     compileOnly("com.zaxxer:HikariCP:4.0.3")
 
     implementation("org.bstats:bstats-bukkit:3.0.0")
-    compileOnly("org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.14.4-R0.1-SNAPSHOT")
 
 }
 
@@ -145,10 +145,6 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     keepclassmembers("class * implements $groupS.libs.core.ui.container.BaseUI {*;}")
     keepclassmembers(allowObf, "class * implements org.bukkit.event.Listener {*;}")
     keepclassmembers(allowObf, "class * implements org.jetbrains.exposed.dao.id.IdTable {*;}")
-    keepclassmembers(
-        allowObf,
-        "class * implements org.bukkit.configuration.serialization.ConfigurationSerializable {*;}"
-    )
     keepattributes("Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*,EnclosingMethod")
     keepkotlinmetadata()
     repackageclasses()

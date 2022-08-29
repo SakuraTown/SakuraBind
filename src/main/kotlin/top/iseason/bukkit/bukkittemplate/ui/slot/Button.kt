@@ -10,7 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta
  */
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 open class Button(
-    override val rawItemStack: ItemStack,
+    override var rawItemStack: ItemStack?,
     index: Int = 0,
 ) : ClickSlot(rawItemStack, index) {
     var itemMeta: ItemMeta
