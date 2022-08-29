@@ -21,6 +21,7 @@ object SakuraBindAPI {
      * 将物品绑定玩家
      * @param item 需要绑定的物品
      * @param player 绑定的玩家
+     * @param showLore 是否显示lore
      */
     @JvmStatic
     @JvmOverloads
@@ -30,6 +31,7 @@ object SakuraBindAPI {
      * 将物品绑定UUID
      * @param item 绑定的物品
      * @param uuid 绑定的uuid
+     * @param showLore 是否显示lore
      */
     @JvmStatic
     @JvmOverloads
