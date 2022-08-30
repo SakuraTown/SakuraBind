@@ -40,6 +40,14 @@ object Config : SimpleYAMLConfig() {
     var denyCraft = true
 
     @Key
+    @Comment("", "禁止发射器射出")
+    var denyDispense = true
+
+    @Key
+    @Comment("", "禁止放入展示框")
+    var denyItemFrame = true
+
+    @Key
     @Comment("", "禁止消耗")
     var denyConsume = true
 

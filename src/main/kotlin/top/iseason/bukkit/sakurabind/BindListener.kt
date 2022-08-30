@@ -1,11 +1,16 @@
 package top.iseason.bukkit.sakurabind
 
+import org.bukkit.entity.Item
+import org.bukkit.entity.ItemFrame
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.event.block.BlockDispenseEvent
 import org.bukkit.event.block.BlockDropItemEvent
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityPickupItemEvent
+import org.bukkit.event.entity.ItemDespawnEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.PrepareAnvilEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
@@ -37,20 +42,27 @@ object BindListener : Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onPlayerInteractEntityEvent(event: PlayerInteractEntityEvent) {
-        if (!Config.denyInteractEntity) return
-        event.player.inventory.itemInMainHand.apply {
-            if (type.isAir) return
-            if (SakuraBindAPI.hasBind(this) && !SakuraBindAPI.isOwner(this, event.player)) {
-                event.isCancelled = true
-                return
+        val isItemFrame = event.rightClicked is ItemFrame
+        val mainHand = event.player.inventory.itemInMainHand
+        val offHand = event.player.inventory.itemInOffHand
+        fun check(item: ItemStack): Boolean {
+            if (item.type.isAir) return false
+            val hasBind = SakuraBindAPI.hasBind(item)
+            if (isItemFrame && Config.denyItemFrame && hasBind) {
+                return true
             }
+            if (Config.denyInteractEntity && hasBind && !SakuraBindAPI.isOwner(item, event.player)) {
+                return true
+            }
+            return false
         }
-        event.player.inventory.itemInOffHand.apply {
-            if (type.isAir) return
-            if (SakuraBindAPI.hasBind(this) && !SakuraBindAPI.isOwner(this, event.player)) {
-                event.isCancelled = true
-                return
-            }
+        if (check(mainHand)) {
+            event.isCancelled = true
+            return
+        }
+        if (check(offHand)) {
+            event.isCancelled = true
+            return
         }
     }
 
@@ -89,6 +101,11 @@ object BindListener : Listener {
         if (SakuraBindAPI.hasBind(item) && !SakuraBindAPI.isOwner(item, player)) {
             event.isCancelled = true
             event.item.pickupDelay = 10
+            if (SakuraMailHook.hasHook) {
+                val owner = SakuraBindAPI.getOwner(item)
+                SakuraMailHook.sendMail(owner!!, listOf(item))
+                event.item.remove()
+            }
         }
     }
 
@@ -187,4 +204,38 @@ object BindListener : Listener {
             }
         }
     }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    fun onEntityDamageEvent(event: EntityDamageEvent) {
+        if (!Config.sendLost) return
+        if (!SakuraMailHook.hasHook) return
+        val item = event.entity as? Item ?: return
+        val owner = SakuraBindAPI.getOwner(item.itemStack) ?: return
+        submit(async = true) {
+            SakuraMailHook.sendMail(owner, listOf(item.itemStack))
+        }
+        item.remove()
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    fun onItemDespawnEvent(event: ItemDespawnEvent) {
+        if (!Config.sendLost) return
+        if (!SakuraMailHook.hasHook) return
+        val item = event.entity
+        val owner = SakuraBindAPI.getOwner(item.itemStack) ?: return
+        submit(async = true) {
+            SakuraMailHook.sendMail(owner, listOf(item.itemStack))
+        }
+        item.remove()
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    fun onBlockDispenseEvent(event: BlockDispenseEvent) {
+        if (!Config.denyDispense) return
+        if (!SakuraMailHook.hasHook) return
+        if (SakuraBindAPI.hasBind(event.item)) {
+            event.isCancelled = true
+        }
+    }
+
 }
