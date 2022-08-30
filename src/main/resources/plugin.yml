@@ -3,6 +3,8 @@ main: ${main}
 version: ${version}
 authors: [ ${ author } ]
 api-version: 1.13
+softdepend:
+  - SakuraMail
 runtime-libraries:
   # If not defined, it will be 'libraries'
   # when start with @Plugin: will start with plugin data folder

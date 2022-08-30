@@ -4,6 +4,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.PrepareAnvilEvent
@@ -12,6 +13,9 @@ import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
+import org.bukkit.inventory.ItemStack
+import top.iseason.bukkit.bukkittemplate.utils.submit
+import java.util.*
 
 object BindListener : Listener {
 
@@ -157,6 +161,30 @@ object BindListener : Listener {
             !SakuraBindAPI.isOwner(item, event.player)
         ) {
             event.isCancelled = true
+        }
+    }
+
+    /**
+     *
+     */
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    fun onBlockDropItemEvent(event: BlockDropItemEvent) {
+        if (!Config.sendLost) return
+        if (!SakuraMailHook.hasHook) return
+        val map = mutableMapOf<UUID, MutableList<ItemStack>>()
+        val iterator = event.items.iterator()
+        while (iterator.hasNext()) {
+            val next = iterator.next()
+            val owner = SakuraBindAPI.getOwner(next.itemStack) ?: continue
+            val stacks = map.computeIfAbsent(owner) { mutableListOf() }
+            stacks.add(next.itemStack)
+            iterator.remove()
+        }
+        if (map.isEmpty()) return
+        submit(async = true) {
+            map.forEach { (uid, items) ->
+                SakuraMailHook.sendMail(uid, items)
+            }
         }
     }
 }
