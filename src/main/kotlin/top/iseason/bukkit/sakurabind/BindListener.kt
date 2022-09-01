@@ -159,7 +159,7 @@ object BindListener : Listener {
         val inventory = event.inventory
         if (inventory.result == null) return
         for (matrix in inventory.matrix) {
-            if (matrix.type.isAir) continue
+            if (matrix == null || matrix.type.isAir) continue
             if (SakuraBindAPI.hasBind(matrix))
                 inventory.result = null
             break
