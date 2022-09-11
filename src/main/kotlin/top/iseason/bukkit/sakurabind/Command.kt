@@ -19,13 +19,17 @@ fun command() {
             "bind",
             description = "绑定某玩家手上的物品",
             default = PermissionDefault.OP,
-            params = arrayOf(Param("<player>", suggestRuntime = ParamSuggestCache.playerParam))
+            params = arrayOf(
+                Param("<player>", suggestRuntime = ParamSuggestCache.playerParam),
+                Param("[-noLore]", suggest = listOf("-noLore"))
+            )
         ) {
             onExecute {
                 val player = getParam<Player>(0)
+                val showLore = !"-noLore".equals(getOptionalParam<String>(1), true)
                 val itemInMainHand = player.inventory.itemInMainHand
                 if (itemInMainHand.type.isAir) return@onExecute true
-                SakuraBindAPI.bind(itemInMainHand, player)
+                SakuraBindAPI.bind(itemInMainHand, player, showLore)
                 it.sendColorMessages("&a绑定成功!")
                 true
             }
@@ -34,7 +38,9 @@ fun command() {
             "unBind",
             description = "解绑定某玩家手上的物品",
             default = PermissionDefault.OP,
-            params = arrayOf(Param("<player>", suggestRuntime = ParamSuggestCache.playerParam))
+            params = arrayOf(
+                Param("<player>", suggestRuntime = ParamSuggestCache.playerParam)
+            )
         ) {
             onExecute {
                 val player = getParam<Player>(0)
@@ -49,14 +55,18 @@ fun command() {
             "bindAll",
             description = "绑定某玩家背包的物品",
             default = PermissionDefault.OP,
-            params = arrayOf(Param("<player>", suggestRuntime = ParamSuggestCache.playerParam))
+            params = arrayOf(
+                Param("<player>", suggestRuntime = ParamSuggestCache.playerParam),
+                Param("[-noLore]", suggest = listOf("-noLore"))
+            )
         ) {
             onExecute {
                 val player = getParam<Player>(0)
+                val showLore = !"-noLore".equals(getOptionalParam<String>(1), true)
                 for (itemStack in player.inventory) {
                     if (itemStack == null) continue
                     if (itemStack.type.isAir) continue
-                    SakuraBindAPI.bind(itemStack, player)
+                    SakuraBindAPI.bind(itemStack, player, showLore)
                 }
                 player.updateInventory()
                 it.sendColorMessages("&a绑定成功!")
