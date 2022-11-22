@@ -1,6 +1,5 @@
 package top.iseason.bukkit.sakurabind.listener
 
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Item
 import org.bukkit.entity.ItemFrame
@@ -118,18 +117,10 @@ object BindListener : Listener {
             event.isCancelled = true
             event.item.pickupDelay = 10
             val owner = SakuraBindAPI.getOwner(item)!!
-            val p = Bukkit.getPlayer(owner)
-            if (p != null) {
-                val addItem = p.inventory.addItem(item)
-                if (addItem.isEmpty()) {
-                    event.item.remove()
-                    return
-                }
-            }
-            if (SakuraMailHook.hasHook) {
-                SakuraMailHook.sendMail(owner, listOf(item))
+            val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
+            if (sendBackItem.isEmpty())
                 event.item.remove()
-            }
+            else event.item.setItemStack(sendBackItem.first())
         }
     }
 
@@ -220,17 +211,10 @@ object BindListener : Listener {
         val item = event.entity as? Item ?: return
         val itemStack = item.itemStack
         val owner = SakuraBindAPI.getOwner(itemStack) ?: return
-        val player = Bukkit.getPlayer(owner)
-        if (player != null) {
-            val addItem = player.inventory.addItem(itemStack)
-            if (addItem.isEmpty()) {
-                item.remove()
-                return
-            }
-        }
-        submit(async = true) {
-            SakuraMailHook.sendMail(owner, listOf(itemStack))
-        }
+        val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(itemStack))
+        if (sendBackItem.isEmpty())
+            item.remove()
+        else item.setItemStack(sendBackItem.first())
         item.remove()
     }
 
@@ -242,17 +226,10 @@ object BindListener : Listener {
         val item = event.entity
         val itemStack = item.itemStack
         val owner = SakuraBindAPI.getOwner(item.itemStack) ?: return
-        val player = Bukkit.getPlayer(owner)
-        if (player != null) {
-            val addItem = player.inventory.addItem(itemStack)
-            if (addItem.isEmpty()) {
-                item.remove()
-                return
-            }
-        }
-        submit(async = true) {
-            SakuraMailHook.sendMail(owner, listOf(itemStack))
-        }
+        val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(itemStack))
+        if (sendBackItem.isEmpty())
+            item.remove()
+        else item.setItemStack(sendBackItem.first())
         item.remove()
     }
 
@@ -357,19 +334,9 @@ object BindListener : Listener {
         BlockCacheManager.removeTemp(entityToString)
         if (!Config.sendLostImmediately) return
         val uuid = UUID.fromString(owner)
-        val player = Bukkit.getPlayer(uuid)
-        if (player != null) {
-            val addItem = player.inventory.addItem(itemStack)
-            if (addItem.isEmpty()) {
-                event.isCancelled = true
-                return
-            }
-        }
-        if (SakuraMailHook.hasHook) {
-            submit(async = true) {
-                SakuraMailHook.sendMail(uuid, listOf(itemStack))
-            }
+        val sendBackItem = SakuraBindAPI.sendBackItem(uuid, listOf(itemStack))
+        if (sendBackItem.isEmpty())
             event.isCancelled = true
-        }
+        else event.entity.setItemStack(sendBackItem.first())
     }
 }

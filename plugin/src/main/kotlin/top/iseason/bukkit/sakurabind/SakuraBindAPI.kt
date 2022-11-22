@@ -6,6 +6,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.applyMeta
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
+import top.iseason.bukkittemplate.utils.other.submit
 import java.util.*
 
 /**
@@ -148,5 +149,33 @@ object SakuraBindAPI {
         val player = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
         if (!player.hasPlayedBefore()) return null
         return Config.lore.replace("%player%", player.name!!).toColor()
+    }
+
+    /**
+     * 将物品送回物主，玩家在线优先进背包
+     */
+    fun sendBackItem(uuid: UUID, items: List<ItemStack>): List<ItemStack> {
+        val player = Bukkit.getPlayer(uuid)
+        //物主在线
+        var release = mutableListOf<ItemStack>()
+        if (player != null) {
+            for (itemStack in items) {
+                val addItem = player.inventory.addItem(itemStack)
+                if (addItem.isNotEmpty()) {
+                    release.addAll(addItem.values)
+                }
+            }
+            //全部返还
+            if (release.isEmpty()) {
+                return release
+            }
+        } else release = items.toMutableList()
+
+        if (SakuraMailHook.hasHook) {
+            submit(async = true) {
+                SakuraMailHook.sendMail(uuid, release)
+            }
+        }
+        return release
     }
 }

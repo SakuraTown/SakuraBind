@@ -3,6 +3,7 @@ package top.iseason.bukkit.sakurabind
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitTask
 import top.iseason.bukkit.sakuramail.config.SystemMailsYml
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
@@ -12,6 +13,7 @@ import top.iseason.bukkittemplate.config.annotations.Key
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.other.submit
+import java.util.*
 
 @FilePath("config.yml")
 object Config : SimpleYAMLConfig() {
@@ -88,7 +90,7 @@ object Config : SimpleYAMLConfig() {
 
     @Key
     @Comment("", "当物品作为掉落物时立刻归还物主(在线则发背包，否则发邮件)")
-    var sendLostImmediately = true
+    var sendLostImmediately = false
 
     @Key
     @Comment(
@@ -120,8 +122,13 @@ object Config : SimpleYAMLConfig() {
     var auto_bind__onDrop = false
 
     @Key
-    @Comment("", "定时扫描所有玩家背包, 此为扫描周期,单位tick，0表示关闭")
+    @Comment("", "定时扫描所有玩家背包(materials不为空才会开启), 此为扫描周期,单位tick，0表示关闭")
     var auto_bind__scanner = 0L
+
+    @Key
+    @Comment("", "扫描玩家时如果发现不属于这个玩家的物品则送回去")
+    var auto_bind__scanner_sendBack = false
+
     var task: BukkitTask? = null
 
     @Key
@@ -143,18 +150,30 @@ object Config : SimpleYAMLConfig() {
         task?.cancel()
         if (auto_bind__scanner > 0L && abMaterial.isNotEmpty()) {
             task = submit(period = auto_bind__scanner, async = true) {
+                val mutableMapOf = mutableMapOf<UUID, MutableList<ItemStack>>()
                 Bukkit.getOnlinePlayers().forEach {
                     val view = it.openInventory
                     for (i in 0 until view.countSlots()) {
                         val item = view.getItem(i) ?: continue
                         if (item.checkAir()) continue
-                        if (abMaterial.contains(item.type) && !SakuraBindAPI.hasBind(item)) {
+                        val owner = SakuraBindAPI.getOwner(item)
+                        if (SakuraMailHook.hasHook && auto_bind__scanner_sendBack && owner != null && owner != it.uniqueId) {
+                            mutableMapOf.computeIfAbsent(owner) { mutableListOf() }.add(item)
+                            view.setItem(i, null)
+                            continue
+                        }
+                        if (abMaterial.contains(item.type) && owner == it.uniqueId) {
                             SakuraBindAPI.bind(item, it)
                         }
                     }
                 }
+                if (SakuraMailHook.hasHook && auto_bind__scanner_sendBack && mutableMapOf.isNotEmpty()) {
+                    mutableMapOf.forEach { (uid, list) ->
+                        SakuraBindAPI.sendBackItem(uid, list)
+                    }
+                }
             }
-        }
+        } else task = null
     }
 
 }
