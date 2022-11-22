@@ -137,7 +137,7 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 poolName = BukkitTemplate.getPlugin().name
             }
             ds = HikariDataSource(config)
-            connection = Database.connect(ds!!, databaseConfig = DatabaseConfig.invoke {
+            connection = Database.connect(ds!!, databaseConfig = org.jetbrains.exposed.sql.DatabaseConfig.invoke {
                 sqlLogger = MySqlLogger
             })
             isConnected = true

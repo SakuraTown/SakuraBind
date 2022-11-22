@@ -27,7 +27,7 @@ object Config : SimpleYAMLConfig() {
     var nbtPathLore = arrayOf<String>()
 
     @Key
-    @Comment("", "禁止交互")
+    @Comment("", "禁止交互(包括方块物品放置)")
     var denyInteract = true
 
     @Key
@@ -66,6 +66,13 @@ object Config : SimpleYAMLConfig() {
     @Comment("", "禁止消耗")
     var denyConsume = true
 
+    @Key
+    @Comment("", "禁止方块物品被其他玩家破坏")
+    var block__denyBreak = true
+
+    @Key
+    @Comment("", "禁止方块物品被其他玩家互动")
+    var block__denyInteract = true
 
     @Key
     @Comment("", "显示的lore,玩家名称占位符为 %player%")
@@ -76,8 +83,12 @@ object Config : SimpleYAMLConfig() {
     var loreIndex = 0
 
     @Key
-    @Comment("", "当物品丢失时发送邮件给物主")
+    @Comment("", "当物品丢失时(被损坏、消失等)发送邮件给物主")
     var sendLost = true
+
+    @Key
+    @Comment("", "当物品作为掉落物时立刻归还物主(在线则发背包，否则发邮件)")
+    var sendLostImmediately = true
 
     @Key
     @Comment(
@@ -116,6 +127,7 @@ object Config : SimpleYAMLConfig() {
     @Key
     @Comment("", "自动绑定的物品材质 https://bukkit.windit.net/javadoc/org/bukkit/Material.html")
     var auto_bind__materials = listOf<String>()
+
 
     var abMaterial = hashSetOf<Material>()
 

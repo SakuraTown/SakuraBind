@@ -110,6 +110,18 @@ object SakuraBindAPI {
         return kotlin.runCatching { UUID.fromString(uuidString) }.getOrNull()
     }
 
+//    fun isTileEntity(block: Block): Boolean {
+//        return block.chunk.tileEntities.any { it.block == block }
+//    }
+//
+//    fun getTileOwner(block: Block): String? {
+//        return NBTEditor.getString(block, *Config.nbtPathUuid)
+//    }
+//
+//    fun setTileOwner(block: Block, uuid: UUID) {
+//        NBTEditor.set(block, uuid.toString(),"Tags", *Config.nbtPathUuid)
+//    }
+
     /**
      * 判断物品是否属于某个uuid的
      * @param item 目标物品

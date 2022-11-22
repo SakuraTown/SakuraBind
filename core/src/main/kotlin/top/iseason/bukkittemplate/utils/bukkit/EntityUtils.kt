@@ -47,7 +47,7 @@ object EntityUtils {
         for (addItem in addItems) {
             if (addItem == null) continue
             val item = world.spawnEntity(location, EntityType.DROPPED_ITEM) as Item
-            item.itemStack = addItem
+            item.setItemStack(addItem)
         }
     }
 

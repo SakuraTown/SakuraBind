@@ -13,6 +13,7 @@ runtime-libraries:
 
   libraries:
     - org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}
+    - org.ehcache:ehcache:3.10.6
 #    - org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}
 #    - org.jetbrains.exposed:exposed-core:${exposedVersion}
 #    - org.jetbrains.exposed:exposed-dao:${exposedVersion}

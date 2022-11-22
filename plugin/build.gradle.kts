@@ -19,6 +19,8 @@ dependencies {
     compileOnly(fileTree("libs") { include("*.jar") })
     implementation("io.github.bananapuncher714:nbteditor:7.18.3")
     implementation("org.bstats:bstats-bukkit:3.0.0")
+//    implementation("com.duprasville.guava:guava-probably:1.0")
+    compileOnly("org.ehcache:ehcache:3.10.6")
     compileOnly("org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT")
 }
 
