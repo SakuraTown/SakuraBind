@@ -24,17 +24,18 @@ import java.io.File
 
 @FilePath("database.yml")
 object DatabaseConfig : SimpleYAMLConfig() {
+
     @Key
     @Comment("", "是否自动重连数据库")
     var autoReload = true
 
     @Comment("", "数据库类型: 支持 MySQL、MariaDB、SQLite、H2、Oracle、PostgreSQL、SQLServer")
     @Key
-    var database = "H2"
+    var database = "SQLite"
 
     @Comment("", "数据库地址")
     @Key
-    var url = File(BukkitTemplate.getPlugin().dataFolder, "database").absoluteFile.toString()
+    var url = File(BukkitTemplate.getPlugin().dataFolder, "database.db").absoluteFile.toString()
 
     @Comment("", "数据库名")
     @Key
@@ -170,7 +171,8 @@ object DatabaseConfig : SimpleYAMLConfig() {
         this.tables = tables
         runCatching {
             transaction {
-                SchemaUtils.create(*tables)
+                SchemaUtils.createMissingTablesAndColumns(*tables)
+//                SchemaUtils.create(*tables)
             }
         }.getOrElse { it.printStackTrace() }
     }
@@ -203,4 +205,4 @@ object MySqlLogger : SqlLogger {
  * 使用本插件数据库的事务
  */
 fun <T> dbTransaction(statement: Transaction.() -> T) =
-    transaction(top.iseason.bukkittemplate.config.DatabaseConfig.connection, statement)
+    transaction(DatabaseConfig.connection, statement)

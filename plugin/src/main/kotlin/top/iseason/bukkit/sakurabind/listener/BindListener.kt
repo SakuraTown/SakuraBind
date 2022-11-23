@@ -17,12 +17,16 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.*
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
+import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.dto.PlayerItem
 import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
+import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
+import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toByteArray
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.other.EasyCoolDown
 import top.iseason.bukkittemplate.utils.other.submit
@@ -212,7 +216,6 @@ object BindListener : Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockBreakEvent(event: BlockBreakEvent) {
         if (!Config.send_when_lost) return
-        if (!SakuraMailHook.hasHook) return
         val inventory = (event.block.state as? InventoryHolder)?.inventory ?: return
         val map = mutableMapOf<UUID, MutableList<ItemStack>>()
         val removed = mutableMapOf<Int, ItemStack>()
@@ -232,7 +235,18 @@ object BindListener : Listener {
                 return@submit
             }
             map.forEach { (uid, items) ->
-                SakuraMailHook.sendMail(uid, items)
+                if (SakuraMailHook.hasHooked) {
+                    SakuraMailHook.sendMail(uid, items)
+                } else {
+                    dbTransaction {
+                        for (itemStack in items) {
+                            PlayerItem.new {
+                                this.uuid = uuid
+                                this.item = ExposedBlob(itemStack.toByteArray())
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -240,7 +254,7 @@ object BindListener : Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     fun onEntityDamageEvent(event: EntityDamageEvent) {
         if (!Config.send_when_lost) return
-        if (!SakuraMailHook.hasHook) return
+        if (!SakuraMailHook.hasHooked) return
         val item = event.entity as? Item ?: return
         if (item.isDead) return
         val itemStack = item.itemStack
@@ -254,7 +268,7 @@ object BindListener : Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onItemDespawnEvent(event: ItemDespawnEvent) {
         if (!Config.send_when_lost) return
-        if (!SakuraMailHook.hasHook) return
+        if (!SakuraMailHook.hasHooked) return
         val item = event.entity
         val itemStack = item.itemStack
         val owner = SakuraBindAPI.getOwner(item.itemStack) ?: return
@@ -268,7 +282,7 @@ object BindListener : Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onBlockDispenseEvent(event: BlockDispenseEvent) {
         if (!Config.item_deny__dispense) return
-        if (!SakuraMailHook.hasHook) return
+        if (!SakuraMailHook.hasHooked) return
         if (SakuraBindAPI.hasBind(event.item)) {
             event.isCancelled = true
         }

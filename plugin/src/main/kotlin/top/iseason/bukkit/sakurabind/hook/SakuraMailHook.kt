@@ -1,22 +1,20 @@
 package top.iseason.bukkit.sakurabind.hook
 
-import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakuramail.SakuraMail
 import top.iseason.bukkit.sakuramail.config.SystemMailsYml
+import top.iseason.bukkittemplate.hook.BaseHook
 import java.time.Duration
 import java.util.*
 
-object SakuraMailHook {
-    private val plugin = Bukkit.getPluginManager().getPlugin("SakuraMail")
-    var hasHook = plugin != null
+object SakuraMailHook : BaseHook("SakuraMail") {
 
     /**
      * 将遗失的物品发送给玩家
      */
     fun sendMail(uuid: UUID, list: List<ItemStack>) {
-        if (!hasHook) return
+        if (!hasHooked) return
         val mailYml = SystemMailsYml.getMailYml(Config.mailId) ?: return
         val icon = mailYml.icon.clone()
         val iterator = mailYml.items.keys.iterator()

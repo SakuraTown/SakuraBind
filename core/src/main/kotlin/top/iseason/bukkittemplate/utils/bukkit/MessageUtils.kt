@@ -14,10 +14,12 @@ import java.util.regex.Pattern
  */
 object MessageUtils {
     private val HEX_PATTERN = Pattern.compile("#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})")
-    private val hexColorSupport = runCatching {
+    private val hexColorSupport = try {
         net.md_5.bungee.api.ChatColor.of("#66ccff")
         true
-    }.getOrElse { false }
+    } catch (e: Throwable) {
+        false
+    }
 
 
     /**

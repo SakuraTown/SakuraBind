@@ -48,6 +48,10 @@ object Config : SimpleYAMLConfig() {
     var send_immediately = false
 
     @Key
+    @Comment("", "遗失物品使用 SakuraMail 发送而不是暂存箱")
+    var sakuraMail_hook = false
+
+    @Key
     @Comment(
         "",
         "如果要发送丢失物品邮件",
@@ -55,6 +59,7 @@ object Config : SimpleYAMLConfig() {
         "按顺序替换，不够的将会删除, 多余的将会在另外的邮件里"
     )
     var mailId = "bind_mail"
+
 
     @Key
     @Comment("", "", "物品禁用设置")
@@ -207,7 +212,7 @@ object Config : SimpleYAMLConfig() {
             Material.matchMaterial(it)
         }.toHashSet()
 
-        if (SakuraMailHook.hasHook) {
+        if (SakuraMailHook.hasHooked) {
             SystemMailsYml.getMailYml(mailId) ?: info("&c邮件&7 $mailId &c不存在!")
         }
         task?.cancel()
@@ -222,7 +227,7 @@ object Config : SimpleYAMLConfig() {
                             val item = inventory.getItem(i) ?: continue
                             if (item.checkAir()) continue
                             val owner = SakuraBindAPI.getOwner(item)
-                            if (SakuraMailHook.hasHook && auto_bind__scanner_sendBack && owner != null && owner != it.uniqueId) {
+                            if (SakuraMailHook.hasHooked && auto_bind__scanner_sendBack && owner != null && owner != it.uniqueId) {
                                 mutableMapOf.computeIfAbsent(owner) { mutableListOf() }.add(item)
                                 inventory.setItem(i, null)
                                 continue
@@ -234,7 +239,7 @@ object Config : SimpleYAMLConfig() {
                     } catch (_: Exception) {
                     }
                 }
-                if (SakuraMailHook.hasHook && auto_bind__scanner_sendBack && mutableMapOf.isNotEmpty()) {
+                if (SakuraMailHook.hasHooked && auto_bind__scanner_sendBack && mutableMapOf.isNotEmpty()) {
                     mutableMapOf.forEach { (uid, list) ->
                         SakuraBindAPI.sendBackItem(uid, list)
                     }

@@ -32,27 +32,29 @@ public class BukkitTemplate extends JavaPlugin {
     public BukkitTemplate() {
         plugin = this;
         //防止卡主线程
-        CompletableFuture.supplyAsync(() -> {
-            DependencyManager.parsePluginYml();
-            classes = loadClass();
-            return findInstance();
-        }).exceptionally(throwable -> {
-            throwable.printStackTrace();
-            onDisable();
-            this.getLogger().warning("插件依赖异常，已注销插件!");
-            return null;
-        }).thenAcceptAsync(instance -> {
-            if (instance == null) return;
-            ktPlugin = instance;
-            instance.onAsyncLoad();
-            setEnabled(true);
-            Bukkit.getScheduler().runTask(this, instance::onEnable);
-            Bukkit.getScheduler().runTaskAsynchronously(this, instance::onAsyncEnable);
-        }).exceptionally(throwable -> {
-            throwable.printStackTrace();
-            this.getLogger().warning("插件加载异常!");
-            return null;
-        });
+        DependencyManager.parsePluginYml();
+        classes = loadClass();
+        ktPlugin = findInstance();
+//        CompletableFuture.supplyAsync(() -> {
+//            classes = loadClass();
+//            return findInstance();
+//        }).exceptionally(throwable -> {
+//            throwable.printStackTrace();
+//            onDisable();
+//            this.getLogger().warning("插件依赖异常，已注销插件!");
+//            return null;
+//        }).thenAcceptAsync(instance -> {
+//            if (instance == null) return;
+//            ktPlugin = instance;
+//            instance.onAsyncLoad();
+//            setEnabled(true);
+//            Bukkit.getScheduler().runTask(this, instance::onEnable);
+//            Bukkit.getScheduler().runTaskAsynchronously(this, instance::onAsyncEnable);
+//        }).exceptionally(throwable -> {
+//            throwable.printStackTrace();
+//            this.getLogger().warning("插件加载异常!");
+//            return null;
+//        });
     }
 
 
@@ -146,11 +148,18 @@ public class BukkitTemplate extends JavaPlugin {
 
     // 比 onEnabled 先调用
     public void onAsyncLoad() {
-        ktPlugin.onAsyncLoad();
+        ktPlugin.onLoad();
     }
 
-    public void onEnabled() {
+    @Override
+    public void onLoad() {
+        ktPlugin.onLoad();
+    }
+
+    @Override
+    public void onEnable() {
         ktPlugin.onEnable();
+        CompletableFuture.runAsync(this::onAsyncEnabled);
     }
 
     public void onAsyncEnabled() {

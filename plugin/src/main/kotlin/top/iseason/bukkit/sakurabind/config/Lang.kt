@@ -18,6 +18,11 @@ object Lang : SimpleYAMLConfig() {
     var block___deny_break = "&6你不能破坏这个方块,这个方块属于 &b{0}"
     var block___deny_interact = "&6你没有这个方块的使用权限,这个方块属于 &b{0}"
 
+    var get_item = "&a你领取了 &b{0} &a个遗失物品,请腾出空间领取剩余物品!"
+    var get_empty = "&6没有遗失物品或背包空间不足!"
+    var get_all = "&a你领取了所有的遗失物品!"
+
+    var command_coolDown = "&6你输入得太快了!"
     override fun onLoaded(section: ConfigurationSection) {
         MessageUtils.defaultPrefix = prefix
     }

@@ -15,7 +15,7 @@ abstract class KotlinPlugin {
     /**
      * 在其他线程加载，比onEnable先调用,结束了才调用onEnable
      */
-    open fun onAsyncLoad() {}
+    open fun onLoad() {}
 
     /**
      * 在插件启用后运行
