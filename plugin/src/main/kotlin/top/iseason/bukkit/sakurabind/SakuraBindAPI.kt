@@ -4,8 +4,13 @@ import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import top.iseason.bukkit.sakurabind.config.Config
+import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.applyMeta
+import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
+import top.iseason.bukkittemplate.utils.other.EasyCoolDown
 import top.iseason.bukkittemplate.utils.other.submit
 import java.util.*
 
@@ -76,15 +81,15 @@ object SakuraBindAPI {
             temp.applyMeta {
                 lore = if (hasLore()) {
                     lore!!.apply {
-                        if (Config.loreIndex >= size - 1)
+                        if (Config.lore_index >= size - 1)
                             add(loreStr)
-                        else add(Config.loreIndex, loreStr)
+                        else add(Config.lore_index, loreStr)
                     }
                 } else listOf(loreStr)
             }
             //记录历史
             if (player.hasPlayedBefore()) {
-                NBTEditor.set(temp, loreStr, *Config.nbtPathLore)
+                temp = NBTEditor.set(temp, loreStr, *Config.nbtPathLore)
             }
         }
         item.itemMeta = temp.itemMeta
@@ -167,8 +172,12 @@ object SakuraBindAPI {
             }
             //全部返还
             if (release.isEmpty()) {
+                if (!EasyCoolDown.check(uuid, 1000))
+                    player.sendColorMessage(Lang.send_back_all)
                 return release
             }
+            if (!EasyCoolDown.check(uuid, 1000))
+                player.sendColorMessage(Lang.send_back)
         } else release = items.toMutableList()
 
         if (SakuraMailHook.hasHook) {

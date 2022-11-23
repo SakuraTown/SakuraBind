@@ -1,6 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
-package top.iseason.bukkit.sakurabind
+package top.iseason.bukkit.sakurabind.cache
 
 import com.google.common.hash.Funnels
 import org.bukkit.Location
@@ -121,8 +121,9 @@ object BlockCacheManager {
      */
     fun getOwner(str: String): String? {
         //使用布谷鸟过滤防止缓存穿透
+//        val nanoTime = System.nanoTime()
         if (!filter.contains(str)) return null
-//        println("mightContain")
+//        println("mightContain cost ${System.nanoTime() - nanoTime}")
         return cache.get(str)
     }
 

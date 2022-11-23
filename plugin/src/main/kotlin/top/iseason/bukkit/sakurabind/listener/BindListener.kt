@@ -1,15 +1,15 @@
 package top.iseason.bukkit.sakurabind.listener
 
-import org.bukkit.Material
+import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.entity.Item
 import org.bukkit.entity.ItemFrame
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.bukkit.event.block.*
+import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockDispenseEvent
 import org.bukkit.event.entity.EntityDamageEvent
-import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.ItemDespawnEvent
 import org.bukkit.event.entity.ItemSpawnEvent
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -17,12 +17,14 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.*
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import top.iseason.bukkit.sakurabind.BlockCacheManager
-import top.iseason.bukkit.sakurabind.Config
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
-import top.iseason.bukkit.sakurabind.SakuraMailHook
+import top.iseason.bukkit.sakurabind.config.Config
+import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
+import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
+import top.iseason.bukkittemplate.utils.other.EasyCoolDown
 import top.iseason.bukkittemplate.utils.other.submit
 import java.util.*
 
@@ -31,24 +33,18 @@ object BindListener : Listener {
     /**
      * 不能互动
      */
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     fun onPlayerInteractEvent(event: PlayerInteractEvent) {
-        if (Config.denyInteract) {
-            val item = event.item
-            if (item != null &&
-                !item.checkAir() &&
-                SakuraBindAPI.hasBind(item) &&
-                !SakuraBindAPI.isOwner(item, event.player)
-            ) {
-                event.isCancelled = true
+        if (!Config.item_deny__interact) return
+        val item = event.item ?: return
+        if (!item.checkAir() &&
+            SakuraBindAPI.hasBind(item)
+        ) {
+            //允许物主使用
+            if (Config.item_deny__interact_allow_owner && SakuraBindAPI.isOwner(item, event.player)) {
                 return
             }
-        }
-        if (Config.block__denyInteract && event.clickedBlock != null) {
-            if (!BlockCacheManager.canBreak(event.clickedBlock!!, event.player)) {
-                event.isCancelled = true
-                return
-            }
+            event.isCancelled = true
         }
     }
 
@@ -59,14 +55,17 @@ object BindListener : Listener {
     fun onPlayerInteractEntityEvent(event: PlayerInteractEntityEvent) {
         val isItemFrame = event.rightClicked is ItemFrame
         val mainHand = event.player.inventory.itemInMainHand
-        val offHand = event.player.inventory.itemInOffHand
-        fun check(item: ItemStack): Boolean {
+        val offHand = if (NBTEditor.getMinecraftVersion()
+                .greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_9)
+        ) event.player.inventory.itemInOffHand else null
+
+        fun check(item: ItemStack?): Boolean {
             if (item.checkAir()) return false
-            val hasBind = SakuraBindAPI.hasBind(item)
-            if (isItemFrame && Config.denyItemFrame && hasBind) {
+            val hasBind = SakuraBindAPI.hasBind(item!!)
+            if (isItemFrame && Config.item_deny__itemFrame && hasBind) {
                 return true
             }
-            if (Config.denyInteractEntity && hasBind && !SakuraBindAPI.isOwner(item, event.player)) {
+            if (Config.item_deny__interact_entity && hasBind && !SakuraBindAPI.isOwner(item, event.player)) {
                 return true
             }
             return false
@@ -86,7 +85,7 @@ object BindListener : Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     fun onPlayerDropItemEvent(event: PlayerDropItemEvent) {
-        if (!Config.denyDrop) return
+        if (!Config.item_deny__drop) return
         val item = event.itemDrop.itemStack
         if (item.checkAir()) return
         if (SakuraBindAPI.hasBind(item)) {
@@ -99,7 +98,7 @@ object BindListener : Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onPlayerPickupItemEvent(event: PlayerPickupItemEvent) {
-        if (!Config.denyPickup) return
+        if (!Config.item_deny__pickup) return
         val player = event.player
         val item = event.item.itemStack
         val cursor = player.openInventory.cursor
@@ -129,25 +128,59 @@ object BindListener : Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onInventoryClickEvent(event: InventoryClickEvent) {
-        if (!Config.denyClick) return
+        if (!Config.item_deny__click && !Config.item_deny__inventory) return
         val player = event.whoClicked as? Player ?: return
         val item = event.currentItem ?: return
         if (item.checkAir()) return
-        if (event.clickedInventory == event.view.topInventory &&
-            SakuraBindAPI.hasBind(item) &&
-            !SakuraBindAPI.isOwner(item, player)
-        ) {
+        val owner = SakuraBindAPI.getOwner(item) ?: return
+        val uniqueId = player.uniqueId
+        if (Config.item_deny__click && event.clickedInventory == event.view.topInventory && owner != uniqueId) {
+            event.isCancelled = true
+            return
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    fun onInventoryClickEvent2(event: InventoryClickEvent) {
+        if (!Config.item_deny__inventory) return
+        val title = event.view.title
+        val any = Config.itemDenyInventories.any { it.matcher(title).find() }
+        if (!any) return
+        val currentItem = event.currentItem
+        val cursor = event.cursor
+        if (!currentItem.checkAir() && SakuraBindAPI.hasBind(currentItem!!)) {
+            event.isCancelled = true
+            return
+        }
+        if (!cursor.checkAir() && SakuraBindAPI.hasBind(cursor!!)) {
             event.isCancelled = true
         }
     }
 
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    fun onPlayerCommandPreprocessEvent(event: PlayerCommandPreprocessEvent) {
+        if (!Config.item_deny__command) return
+        val heldItem = event.player.getHeldItem() ?: return
+        val owner = SakuraBindAPI.getOwner(heldItem) ?: return
+        if (Config.item_deny__command_allow_owner && owner == event.player.uniqueId) return
+        val message = event.message
+        for (pattern in Config.itemDenyCommands) {
+            if (pattern.matcher(message).find()) {
+                event.isCancelled = true
+                if (!EasyCoolDown.check(event.player.uniqueId, 1000)) {
+                    event.player.sendColorMessage(Lang.item__deny_command)
+                }
+                return
+            }
+        }
+    }
 
     /**
      * 禁止用于合成
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onPrepareItemCraftEvent(event: PrepareItemCraftEvent) {
-        if (!Config.denyCraft) return
+        if (!Config.item_deny__craft) return
         val inventory = event.inventory
         if (inventory.result == null) return
         for (matrix in inventory.matrix) {
@@ -163,7 +196,7 @@ object BindListener : Listener {
      */
     @EventHandler(priority = EventPriority.LOW)
     fun onPlayerItemConsumeEvent(event: PlayerItemConsumeEvent) {
-        if (!Config.denyConsume) return
+        if (!Config.item_deny__consume) return
         val item = event.item
         if (item.checkAir()) return
         if (SakuraBindAPI.hasBind(item) &&
@@ -178,7 +211,7 @@ object BindListener : Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockBreakEvent(event: BlockBreakEvent) {
-        if (!Config.sendLost) return
+        if (!Config.send_when_lost) return
         if (!SakuraMailHook.hasHook) return
         val inventory = (event.block.state as? InventoryHolder)?.inventory ?: return
         val map = mutableMapOf<UUID, MutableList<ItemStack>>()
@@ -204,24 +237,23 @@ object BindListener : Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     fun onEntityDamageEvent(event: EntityDamageEvent) {
-        if (!Config.sendLost) return
+        if (!Config.send_when_lost) return
         if (!SakuraMailHook.hasHook) return
         val item = event.entity as? Item ?: return
+        if (item.isDead) return
         val itemStack = item.itemStack
         val owner = SakuraBindAPI.getOwner(itemStack) ?: return
         val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(itemStack))
         if (sendBackItem.isEmpty())
             item.remove()
         else item.setItemStack(sendBackItem.first())
-        item.remove()
     }
-
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onItemDespawnEvent(event: ItemDespawnEvent) {
-        if (!Config.sendLost) return
+        if (!Config.send_when_lost) return
         if (!SakuraMailHook.hasHook) return
         val item = event.entity
         val itemStack = item.itemStack
@@ -235,7 +267,7 @@ object BindListener : Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onBlockDispenseEvent(event: BlockDispenseEvent) {
-        if (!Config.denyDispense) return
+        if (!Config.item_deny__dispense) return
         if (!SakuraMailHook.hasHook) return
         if (SakuraBindAPI.hasBind(event.item)) {
             event.isCancelled = true
@@ -274,69 +306,14 @@ object BindListener : Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun onBlockPlaceEvent(event: BlockPlaceEvent) {
-        val heldItem = event.player.getHeldItem() ?: return
-        if (heldItem.checkAir()) return
-        val owner = SakuraBindAPI.getOwner(heldItem) ?: return
-        val uniqueId = event.player.uniqueId
-        if (owner != uniqueId) return
-        BlockCacheManager.addBlock(event.block, event.player)
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun onBlockBreakEvent2(event: BlockBreakEvent) {
-        val block = event.block
-        val player = event.player
-        val owner = BlockCacheManager.getOwner(block) ?: return
-        // 有主人但可以破坏
-        if (!(Config.block__denyBreak && player.uniqueId.toString() != owner)) {
-            BlockCacheManager.removeBlock(block)
-            val itemStack = player.getHeldItem() ?: ItemStack(Material.AIR)
-            val uuid = UUID.fromString(owner)
-            block.getDrops(itemStack).forEach {
-                SakuraBindAPI.bind(it, uuid)
-                block.world.dropItemNaturally(block.location, it)
-            }
-            block.type = Material.AIR
-        }
-        event.isCancelled = true
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun onBlockExplodeEvent(event: BlockExplodeEvent) {
-        val iterator = event.blockList().iterator()
-        while (iterator.hasNext()) {
-            if (!BlockCacheManager.canBreak(iterator.next(), null)) iterator.remove()
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun onEntityExplodeEvent(event: EntityExplodeEvent) {
-        val iterator = event.blockList().iterator()
-        while (iterator.hasNext()) {
-            if (!BlockCacheManager.canBreak(iterator.next(), null)) iterator.remove()
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun onBlockPhysicsEvent(event: BlockPhysicsEvent) {
-        val owner = BlockCacheManager.getOwner(event.block) ?: return
-        BlockCacheManager.addTemp(BlockCacheManager.blockToString(event.block), owner)
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onItemSpawnEvent(event: ItemSpawnEvent) {
-        val entityToString = BlockCacheManager.entityToString(event.entity)
-        val owner = BlockCacheManager.getTemp(entityToString) ?: BlockCacheManager.getOwner(entityToString) ?: return
+        if (!Config.send_immediately) return
         val itemStack = event.entity.itemStack
-        SakuraBindAPI.bind(event.entity.itemStack, UUID.fromString(owner))
-        BlockCacheManager.removeCache(entityToString)
-        BlockCacheManager.removeTemp(entityToString)
-        if (!Config.sendLostImmediately) return
-        val uuid = UUID.fromString(owner)
+        val uuid = SakuraBindAPI.getOwner(itemStack) ?: return
         val sendBackItem = SakuraBindAPI.sendBackItem(uuid, listOf(itemStack))
         if (sendBackItem.isEmpty())
             event.isCancelled = true
         else event.entity.setItemStack(sendBackItem.first())
     }
+
 }

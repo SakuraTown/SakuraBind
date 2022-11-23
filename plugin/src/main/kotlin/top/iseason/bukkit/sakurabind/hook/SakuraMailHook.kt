@@ -1,7 +1,8 @@
-package top.iseason.bukkit.sakurabind
+package top.iseason.bukkit.sakurabind.hook
 
 import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
+import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakuramail.SakuraMail
 import top.iseason.bukkit.sakuramail.config.SystemMailsYml
 import java.time.Duration

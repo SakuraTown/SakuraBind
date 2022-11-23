@@ -57,7 +57,7 @@ object EntityUtils {
      */
     fun PlayerInventory.getHeldItem(): ItemStack? {
         val item = getItem(heldItemSlot)
-        if (item == null || item.type.checkAir()) return null
+        if (item.checkAir()) return null
         return item
     }
 

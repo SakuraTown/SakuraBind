@@ -4,8 +4,8 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.PrepareAnvilEvent
-import top.iseason.bukkit.sakurabind.Config
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
+import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 
 object BindListener194 : Listener {
@@ -14,7 +14,7 @@ object BindListener194 : Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     fun onPrepareAnvilEvent(event: PrepareAnvilEvent) {
-        if (!Config.denyAnvil) return
+        if (!Config.item_deny__anvil) return
         val item1 = event.inventory.getItem(0)
         val item2 = event.inventory.getItem(1)
         item1?.apply {
