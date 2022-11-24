@@ -6,6 +6,7 @@ import top.iseason.bukkit.sakurabind.command.mainCommand
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
+import top.iseason.bukkit.sakurabind.hook.PlaceHolderHook
 import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
 import top.iseason.bukkit.sakurabind.listener.BindListener
 import top.iseason.bukkit.sakurabind.listener.BindListener194
@@ -26,6 +27,7 @@ object SakuraBind : KotlinPlugin() {
         SimpleLogger.prefix = "&a[&6${javaPlugin.description.name}&a]&r ".toColor()
         SimpleYAMLConfig.notifyMessage = "配置 %s 已重载!"
         SakuraMailHook.checkHooked()
+        PlaceHolderHook.checkHooked()
         Lang.load(false)
         DatabaseConfig.load(false)
         DatabaseConfig.initTables(PlayerItems)

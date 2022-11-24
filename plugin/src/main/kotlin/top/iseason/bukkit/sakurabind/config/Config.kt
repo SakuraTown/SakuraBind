@@ -1,5 +1,6 @@
 package top.iseason.bukkit.sakurabind.config
 
+import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
@@ -34,7 +35,7 @@ object Config : SimpleYAMLConfig() {
 
     @Key
     @Comment("", "显示的lore,玩家名称占位符为 %player%")
-    var lore = "&a灵魂绑定: &6%player%"
+    var lore = listOf("&a灵魂绑定: &6%player%")
 
     @Key
     @Comment("", "显示的lore位置")
@@ -196,6 +197,10 @@ object Config : SimpleYAMLConfig() {
     @Comment("", "自动绑定的物品材质 https://bukkit.windit.net/javadoc/org/bukkit/Material.html")
     var auto_bind__materials = listOf<String>()
 
+    @Key
+    @Comment("", "识别到此NBT就自动绑定物主")
+    var auto_bind__nbt = "sakura_auto_bind"
+
     var abMaterial = hashSetOf<Material>()
         private set
 
@@ -237,7 +242,11 @@ object Config : SimpleYAMLConfig() {
                                 inventory.setItem(i, null)
                                 continue
                             }
-                            if (abMaterial.contains(item.type) && owner == null) {
+                            if (owner == null &&
+                                (abMaterial.contains(item.type) || NBTEditor.contains(
+                                    item, auto_bind__nbt
+                                ))
+                            ) {
 //                                info("已绑定物品 ${item.type}")
                                 SakuraBindAPI.bind(item, it)
                             }

@@ -1,6 +1,7 @@
 package top.iseason.bukkit.sakurabind.listener
 
 import io.github.bananapuncher714.nbteditor.NBTEditor
+import org.bukkit.Bukkit
 import org.bukkit.entity.Item
 import org.bukkit.entity.ItemFrame
 import org.bukkit.entity.Player
@@ -30,6 +31,7 @@ import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toByteArray
+import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.other.EasyCoolDown
 import top.iseason.bukkittemplate.utils.other.submit
@@ -70,9 +72,11 @@ object BindListener : Listener {
             if (item.checkAir()) return false
             val hasBind = SakuraBindAPI.hasBind(item!!)
             if (isItemFrame && Config.item_deny__itemFrame && hasBind) {
+                event.player.sendColorMessage(Lang.item__deny_itemFrame)
                 return true
             }
             if (Config.item_deny__interact_entity && hasBind && !SakuraBindAPI.isOwner(item, event.player)) {
+                event.player.sendColorMessage(Lang.item__deny_entity_interact)
                 return true
             }
             return false
@@ -129,6 +133,8 @@ object BindListener : Listener {
             if (sendBackItem.isEmpty())
                 event.item.remove()
             else event.item.setItemStack(sendBackItem.first())
+            val player1 = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
+            event.player.sendColorMessage(Lang.item__deny_pickup.formatBy(player1.name))
         }
     }
 
@@ -144,6 +150,7 @@ object BindListener : Listener {
         val owner = SakuraBindAPI.getOwner(item) ?: return
         val uniqueId = player.uniqueId
         if (Config.item_deny__click && event.clickedInventory == event.view.topInventory && owner != uniqueId) {
+            player.sendColorMessage(Lang.item__deny_click)
             event.isCancelled = true
             return
         }
@@ -259,7 +266,6 @@ object BindListener : Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     fun onEntityDamageEvent(event: EntityDamageEvent) {
         if (!Config.send_when_lost) return
-        if (!SakuraMailHook.hasHooked) return
         val item = event.entity as? Item ?: return
         if (item.isDead) return
         val itemStack = item.itemStack
@@ -273,7 +279,6 @@ object BindListener : Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onItemDespawnEvent(event: ItemDespawnEvent) {
         if (!Config.send_when_lost) return
-        if (!SakuraMailHook.hasHooked) return
         val item = event.entity
         val itemStack = item.itemStack
         val owner = SakuraBindAPI.getOwner(item.itemStack) ?: return
@@ -287,7 +292,6 @@ object BindListener : Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onBlockDispenseEvent(event: BlockDispenseEvent) {
         if (!Config.item_deny__dispense) return
-        if (!SakuraMailHook.hasHooked) return
         if (SakuraBindAPI.hasBind(event.item)) {
             event.isCancelled = true
         }
@@ -299,7 +303,8 @@ object BindListener : Listener {
         val player = event.whoClicked as? Player ?: return
         val item = event.currentItem ?: return
         if (item.checkAir()) return
-        if (Config.abMaterial.contains(item.type) && !SakuraBindAPI.hasBind(item)) {
+        if (SakuraBindAPI.hasBind(item)) return
+        if (Config.abMaterial.contains(item.type) || NBTEditor.contains(item, Config.auto_bind__nbt)) {
             SakuraBindAPI.bind(item, player)
         }
     }
@@ -310,7 +315,8 @@ object BindListener : Listener {
         val player = event.player
         val item = event.item.itemStack
         if (item.checkAir()) return
-        if (Config.abMaterial.contains(item.type) && !SakuraBindAPI.hasBind(item)) {
+        if (SakuraBindAPI.hasBind(item)) return
+        if (Config.abMaterial.contains(item.type) || NBTEditor.contains(item, Config.auto_bind__nbt)) {
             SakuraBindAPI.bind(item, player)
         }
     }
@@ -318,9 +324,10 @@ object BindListener : Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun autoBindPlayerDropItemEvent(event: PlayerDropItemEvent) {
         if (!Config.auto_bind__enable || !Config.auto_bind__onDrop) return
-        val itemStack = event.itemDrop.itemStack
-        if (Config.abMaterial.contains(itemStack.type) && !SakuraBindAPI.hasBind(itemStack)) {
-            SakuraBindAPI.bind(itemStack, event.player)
+        val item = event.itemDrop.itemStack
+        if (SakuraBindAPI.hasBind(item)) return
+        if (Config.abMaterial.contains(item.type) || NBTEditor.contains(item, Config.auto_bind__nbt)) {
+            SakuraBindAPI.bind(item, event.player)
         }
     }
 

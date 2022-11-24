@@ -5,6 +5,7 @@ authors: [ ${ author } ]
 api-version: 1.13
 softdepend:
   - SakuraMail
+  - PlaceholderAPI
 
 runtime-libraries:
   # If not defined, it will be 'libraries'

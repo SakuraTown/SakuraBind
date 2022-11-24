@@ -8,6 +8,7 @@ import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.dto.PlayerItem
+import top.iseason.bukkit.sakurabind.hook.PlaceHolderHook
 import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
 import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.dbTransaction
@@ -70,32 +71,44 @@ object SakuraBindAPI {
     fun updateLore(item: ItemStack) {
 
         val itemMeta = item.itemMeta ?: return
-        val oldLore = NBTEditor.getString(item, *Config.nbtPathLore)
+        var oldLore = NBTEditor.getKeys(item, *Config.nbtPathLore)
+//        println(NBTEditor.getNBTCompound(item).toString())
+//        println(oldLore)
         val owner = getOwner(item)
         var temp = item
         //有旧的lore,先删除
         if (oldLore != null && itemMeta.hasLore()) {
-            val newLore = itemMeta.lore!!.apply { remove(oldLore) }
+            oldLore = oldLore.map { it.substring(0, it.length - 1) }
+            val newLore = itemMeta.lore!!.apply { removeAll(oldLore) }
             temp.applyMeta { this.lore = newLore }
             temp = NBTEditor.set(temp, null, *Config.nbtPathLore)
         }
         // 有主人
         if (owner != null) {
             val player = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
-            val loreStr = Config.lore.replace("%player%", player.name!!).toColor()
+            val loreStr = Config.lore.map { str ->
+                var t = str
+                t = t.replace("%player%", player.name!!).toColor()
+                t = PlaceHolderHook.setPlaceHolder(t, player)
+                t
+            }
             //添加lore
             temp.applyMeta {
                 lore = if (hasLore()) {
                     lore!!.apply {
                         if (Config.lore_index >= size - 1)
-                            add(loreStr)
-                        else add(Config.lore_index, loreStr)
+                            addAll(loreStr)
+                        else addAll(Config.lore_index, loreStr)
                     }
-                } else listOf(loreStr)
+                } else loreStr
             }
             //记录历史
             if (player.hasPlayedBefore()) {
-                temp = NBTEditor.set(temp, loreStr, *Config.nbtPathLore)
+                val compound = NBTEditor.getEmptyNBTCompound()
+                for ((i, s) in loreStr.withIndex()) {
+                    compound.set("", "$s$i")
+                }
+                temp = NBTEditor.set(temp, compound, *Config.nbtPathLore)
             }
         }
         item.itemMeta = temp.itemMeta
@@ -155,11 +168,11 @@ object SakuraBindAPI {
      * 获取绑定物品的显示lore，如果是绑定物品返回null
      */
     @JvmStatic
-    fun getBindLore(item: ItemStack): String? {
+    fun getBindLore(item: ItemStack): List<String>? {
         val owner = getOwner(item) ?: return null
         val player = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
         if (!player.hasPlayedBefore()) return null
-        return Config.lore.replace("%player%", player.name!!).toColor()
+        return Config.lore.map { it.replace("%player%", player.name!!).toColor() }
     }
 
     /**

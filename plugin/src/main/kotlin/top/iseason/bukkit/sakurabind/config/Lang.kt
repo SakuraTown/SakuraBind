@@ -16,6 +16,10 @@ object Lang : SimpleYAMLConfig() {
 
     var item__deny_command = "&6你不能拿着此物品输入该命令!"
     var item__deny_drop = "&6该物品不能丢出!"
+    var item__deny_pickup = "&6该物品属于 &a{0},&6已归还"
+    var item__deny_itemFrame = "&6该物品禁止放入展示框!"
+    var item__deny_entity_interact = "&6该物品禁止与实体交互!"
+    var item__deny_click = "&6你不能拿走这个物品!"
     var block__deny_break = "&6你不能破坏这个方块,这个方块属于 &b{0}"
     var block__deny_interact = "&6你没有这个方块的使用权限,这个方块属于 &b{0}"
 
