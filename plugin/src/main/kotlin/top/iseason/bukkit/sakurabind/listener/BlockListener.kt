@@ -35,7 +35,7 @@ object BlockListener : Listener {
                     val owner = BlockCacheManager.getOwner(event.clickedBlock!!)
                     val uuid = UUID.fromString(owner)
                     val ownerPlayer = Bukkit.getPlayer(uuid) ?: Bukkit.getOfflinePlayer(uuid)
-                    event.player.sendColorMessage(Lang.block___deny_interact.formatBy(ownerPlayer.name))
+                    event.player.sendColorMessage(Lang.block__deny_interact.formatBy(ownerPlayer.name))
                 }
                 return
             }
@@ -71,7 +71,7 @@ object BlockListener : Listener {
         }
         if (player.uniqueId.toString() != owner && !EasyCoolDown.check(uuid, 1000)) {
             val ownerPlayer = Bukkit.getPlayer(uuid) ?: Bukkit.getOfflinePlayer(uuid)
-            player.sendColorMessage(Lang.block___deny_break.formatBy(ownerPlayer.name))
+            player.sendColorMessage(Lang.block__deny_break.formatBy(ownerPlayer.name))
         }
         event.isCancelled = true
     }

@@ -5,7 +5,8 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
-import top.iseason.bukkit.sakuramail.libs.core.utils.bukkit.ItemUtils
+import top.iseason.bukkittemplate.utils.bukkit.ItemUtils
+
 
 object PlayerItems : IntIdTable() {
     var uuid = uuid("uuid").index()

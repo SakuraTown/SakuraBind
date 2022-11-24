@@ -123,7 +123,9 @@ fun mainCommand() {
                             //放不下了
                             if (addItem.isNotEmpty()) {
                                 val first = addItem.values.first()
-                                if (itemStack.amount != first.amount) count++
+                                if (itemStack.amount != first.amount) count++ else if (count == 0) {
+                                    return@dbTransaction -1
+                                }
                                 item.item = ExposedBlob(first.toByteArray())
                                 isEmpty = false
                                 break
@@ -136,7 +138,9 @@ fun mainCommand() {
                     }
                     count
                 }
-                if (count == 0) {
+                if (count == -1) {
+                    it.sendColorMessage(Lang.get_full)
+                } else if (count == 0) {
                     it.sendColorMessage(Lang.get_empty)
                 } else if (isEmpty) {
                     it.sendColorMessage(Lang.get_all)
