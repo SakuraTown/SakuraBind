@@ -27,9 +27,9 @@ object SakuraBind : KotlinPlugin() {
         SimpleYAMLConfig.notifyMessage = "配置 %s 已重载!"
         SakuraMailHook.checkHooked()
         Lang.load(false)
-        Config.load(false)
         DatabaseConfig.load(false)
         DatabaseConfig.initTables(PlayerItems)
+        Config.load(false)
         BindListener.register()
         BindListener194.register()
         if (Config.block__enable) {

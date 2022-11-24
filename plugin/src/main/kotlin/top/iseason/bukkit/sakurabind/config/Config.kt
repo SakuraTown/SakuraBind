@@ -8,6 +8,7 @@ import org.bukkit.scheduler.BukkitTask
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
 import top.iseason.bukkit.sakuramail.config.SystemMailsYml
+import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
@@ -216,7 +217,7 @@ object Config : SimpleYAMLConfig() {
             SystemMailsYml.getMailYml(mailId) ?: info("&c邮件&7 $mailId &c不存在!")
         }
         task?.cancel()
-        if (auto_bind__scanner > 0L && abMaterial.isNotEmpty()) {
+        if (auto_bind__scanner > 0L && abMaterial.isNotEmpty() && (DatabaseConfig.isConnected || SakuraMailHook.hasHooked)) {
             task = submit(period = auto_bind__scanner, async = true) {
                 val mutableMapOf = mutableMapOf<UUID, MutableList<ItemStack>>()
                 Bukkit.getOnlinePlayers().forEach {
@@ -227,7 +228,7 @@ object Config : SimpleYAMLConfig() {
                             val item = inventory.getItem(i) ?: continue
                             if (item.checkAir()) continue
                             val owner = SakuraBindAPI.getOwner(item)
-                            if (SakuraMailHook.hasHooked && auto_bind__scanner_sendBack && owner != null && owner != it.uniqueId) {
+                            if (auto_bind__scanner_sendBack && owner != null && owner != it.uniqueId) {
                                 mutableMapOf.computeIfAbsent(owner) { mutableListOf() }.add(item)
                                 inventory.setItem(i, null)
                                 continue
@@ -239,7 +240,7 @@ object Config : SimpleYAMLConfig() {
                     } catch (_: Exception) {
                     }
                 }
-                if (SakuraMailHook.hasHooked && auto_bind__scanner_sendBack && mutableMapOf.isNotEmpty()) {
+                if (auto_bind__scanner_sendBack && mutableMapOf.isNotEmpty()) {
                     mutableMapOf.forEach { (uid, list) ->
                         SakuraBindAPI.sendBackItem(uid, list)
                     }

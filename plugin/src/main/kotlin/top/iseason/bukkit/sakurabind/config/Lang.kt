@@ -15,6 +15,7 @@ object Lang : SimpleYAMLConfig() {
     var send_back = "&7你的部分遗失物品已放入你的背包, 剩下的已发往邮箱"
 
     var item__deny_command = "&6你不能拿着此物品输入该命令!"
+    var item__deny_drop = "&6该物品不能丢出!"
     var block___deny_break = "&6你不能破坏这个方块,这个方块属于 &b{0}"
     var block___deny_interact = "&6你没有这个方块的使用权限,这个方块属于 &b{0}"
 
@@ -23,6 +24,7 @@ object Lang : SimpleYAMLConfig() {
     var get_all = "&a你领取了所有的遗失物品!"
 
     var command_coolDown = "&6你输入得太快了!"
+    var has_lost_item = "&a你有遗失的物品,请输入 &6'/sakurabind get' &a领取"
     override fun onLoaded(section: ConfigurationSection) {
         MessageUtils.defaultPrefix = prefix
     }

@@ -17,12 +17,15 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.*
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.dto.PlayerItem
+import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
+import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
@@ -94,6 +97,8 @@ object BindListener : Listener {
         if (item.checkAir()) return
         if (SakuraBindAPI.hasBind(item)) {
             event.isCancelled = true
+            if (!EasyCoolDown.check(event.player.uniqueId, 1000))
+                event.player.sendColorMessage(Lang.item__deny_drop)
         }
     }
 
@@ -328,6 +333,19 @@ object BindListener : Listener {
         if (sendBackItem.isEmpty())
             event.isCancelled = true
         else event.entity.setItemStack(sendBackItem.first())
+    }
+
+    @EventHandler
+    fun onPlayerLogin(event: PlayerLoginEvent) {
+        if (!DatabaseConfig.isConnected) return
+        submit(async = true) {
+            val player = event.player
+            val limit = dbTransaction {
+                PlayerItems.slice(PlayerItems.id).select { PlayerItems.uuid eq player.uniqueId }.limit(1).count()
+            }
+            if (limit == 0L) return@submit
+            player.sendColorMessage(Lang.has_lost_item)
+        }
     }
 
 }

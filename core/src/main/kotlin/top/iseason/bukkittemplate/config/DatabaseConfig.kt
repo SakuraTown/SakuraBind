@@ -85,19 +85,19 @@ object DatabaseConfig : SimpleYAMLConfig() {
 
             val config = when (database) {
                 "MySQL" -> HikariConfig().apply {
-                    dd.downloadDependency("mysql:mysql-connector-java:8.0.30")
+                    dd.downloadDependency("mysql:mysql-connector-java:8.0.31")
                     jdbcUrl = "jdbc:mysql://$url/$dbName?createDatabaseIfNotExist=true"
                     driverClassName = "com.mysql.cj.jdbc.Driver"
                 }
 
                 "MariaDB" -> HikariConfig().apply {
-                    dd.downloadDependency("org.mariadb.jdbc:mariadb-java-client:3.0.7")
+                    dd.downloadDependency("org.mariadb.jdbc:mariadb-java-client:3.1.0")
                     jdbcUrl = "jdbc:mariadb://$url/$dbName?createDatabaseIfNotExist=true"
                     driverClassName = "org.mariadb.jdbc.Driver"
                 }
 
                 "SQLite" -> HikariConfig().apply {
-                    dd.downloadDependency("org.xerial:sqlite-jdbc:3.36.0.3")
+                    dd.downloadDependency("org.xerial:sqlite-jdbc:3.40.0.0")
                     jdbcUrl = "jdbc:sqlite:$url"
                     driverClassName = "org.sqlite.JDBC"
                 }
@@ -115,13 +115,13 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 }
 
                 "Oracle" -> HikariConfig().apply {
-                    dd.downloadDependency("com.oracle.database.jdbc:ojdbc8:21.6.0.0.1")
+                    dd.downloadDependency("com.oracle.database.jdbc:ojdbc8:21.7.0.0")
                     jdbcUrl = "dbc:oracle:thin:@//$url/$dbName"
                     driverClassName = "oracle.jdbc.OracleDriver"
                 }
 
                 "SQLServer" -> HikariConfig().apply {
-                    dd.downloadDependency("com.microsoft.sqlserver:mssql-jdbc:10.2.1.jre8")
+                    dd.downloadDependency("com.microsoft.sqlserver:mssql-jdbc:11.2.1.jre8")
                     jdbcUrl = "jdbc:sqlserver://$url/$dbName"
                     driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
                 }

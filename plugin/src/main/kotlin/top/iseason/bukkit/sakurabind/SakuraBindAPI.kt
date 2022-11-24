@@ -9,7 +9,9 @@ import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.dto.PlayerItem
 import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
+import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.dbTransaction
+import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.applyMeta
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toByteArray
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
@@ -188,7 +190,7 @@ object SakuraBindAPI {
             submit(async = true) {
                 SakuraMailHook.sendMail(uuid, release)
             }
-        } else {
+        } else if (DatabaseConfig.isConnected) {
             submit(async = true) {
                 dbTransaction {
                     for (itemStack in release) {
@@ -200,6 +202,10 @@ object SakuraBindAPI {
 
                 }
             }
+        } else {
+            if (!EasyCoolDown.check("system", 1000))
+                warn("数据库未启用,无法发送暂存箱子!")
+            return release
         }
         return emptyList()
     }
