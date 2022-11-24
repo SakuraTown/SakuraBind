@@ -85,7 +85,7 @@ object DatabaseConfig : SimpleYAMLConfig() {
 
             val config = when (database) {
                 "MySQL" -> HikariConfig().apply {
-                    dd.downloadDependency("mysql:mysql-connector-java:8.0.31")
+                    dd.downloadDependency("mysql:mysql-connector-java:8.0.30")
                     jdbcUrl = "jdbc:mysql://$url/$dbName?createDatabaseIfNotExist=true"
                     driverClassName = "com.mysql.cj.jdbc.Driver"
                 }

@@ -188,14 +188,13 @@ object Config : SimpleYAMLConfig() {
 
     @Key
     @Comment("", "扫描玩家时如果发现不属于这个玩家的物品则送回去")
-    var auto_bind__scanner_sendBack = false
+    var auto_bind__scanner_send_back = false
 
     var task: BukkitTask? = null
 
     @Key
     @Comment("", "自动绑定的物品材质 https://bukkit.windit.net/javadoc/org/bukkit/Material.html")
     var auto_bind__materials = listOf<String>()
-
 
     var abMaterial = hashSetOf<Material>()
         private set
@@ -218,9 +217,13 @@ object Config : SimpleYAMLConfig() {
         }
         task?.cancel()
         if (auto_bind__scanner > 0L && abMaterial.isNotEmpty() && (DatabaseConfig.isConnected || SakuraMailHook.hasHooked)) {
+            info("&a定时扫描任务已启动,周期: ${auto_bind__scanner} tick")
             task = submit(period = auto_bind__scanner, async = true) {
                 val mutableMapOf = mutableMapOf<UUID, MutableList<ItemStack>>()
                 Bukkit.getOnlinePlayers().forEach {
+//                    info("正在检查 ${it.name} ${it.uniqueId} 的背包")
+//                    info("送回物品功能: $auto_bind__scanner_send_back")
+
                     val inventory = it.openInventory.bottomInventory
                     try {
                         //为了兼容mod，获取到的格子数不一致
@@ -228,19 +231,22 @@ object Config : SimpleYAMLConfig() {
                             val item = inventory.getItem(i) ?: continue
                             if (item.checkAir()) continue
                             val owner = SakuraBindAPI.getOwner(item)
-                            if (auto_bind__scanner_sendBack && owner != null && owner != it.uniqueId) {
+                            if (auto_bind__scanner_send_back && owner != null && owner != it.uniqueId) {
+//                                info("找到一个违规物品${item.type} 属于 ${owner}")
                                 mutableMapOf.computeIfAbsent(owner) { mutableListOf() }.add(item)
                                 inventory.setItem(i, null)
                                 continue
                             }
                             if (abMaterial.contains(item.type) && owner == null) {
+//                                info("已绑定物品 ${item.type}")
                                 SakuraBindAPI.bind(item, it)
                             }
                         }
                     } catch (_: Exception) {
                     }
                 }
-                if (auto_bind__scanner_sendBack && mutableMapOf.isNotEmpty()) {
+                if (auto_bind__scanner_send_back && mutableMapOf.isNotEmpty()) {
+//                    info("正在送回物品")
                     mutableMapOf.forEach { (uid, list) ->
                         SakuraBindAPI.sendBackItem(uid, list)
                     }

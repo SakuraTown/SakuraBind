@@ -135,7 +135,6 @@ object BlockCacheManager {
         return player != null && player.uniqueId.toString() == owner
     }
 
-
     fun save() {
         val file = File(BukkitTemplate.getPlugin().dataFolder, "data${File.separator}filter")
         if (!file.exists()) {

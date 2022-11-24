@@ -60,6 +60,7 @@ object BlockListener : Listener {
         val uuid = UUID.fromString(owner)
         // 有主人但可以破坏
         if (!(Config.block__deny_break && player.uniqueId.toString() != owner)) {
+            //return
             BlockCacheManager.removeBlock(block)
             val itemStack = player.getHeldItem() ?: ItemStack(Material.AIR)
             block.getDrops(itemStack).forEach {
