@@ -242,6 +242,7 @@ object Config : SimpleYAMLConfig() {
             task = submit(period = auto_bind__scanner, async = true) {
                 val mutableMapOf = mutableMapOf<UUID, MutableList<ItemStack>>()
                 Bukkit.getOnlinePlayers().forEach {
+                    if (it.isOp) return@forEach
 //                    info("正在检查 ${it.name} ${it.uniqueId} 的背包")
 //                    info("送回物品功能: $auto_bind__scanner_send_back")
 

@@ -28,6 +28,7 @@ object BlockListener : Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun onPlayerInteractEvent(event: PlayerInteractEvent) {
+        if (event.player.isOp) return
         if (Config.block__deny_interact && event.clickedBlock != null) {
             if (!BlockCacheManager.canBreak(event.clickedBlock!!, event.player)) {
                 event.isCancelled = true
@@ -44,6 +45,7 @@ object BlockListener : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onBlockPlaceEvent(event: BlockPlaceEvent) {
+        if (event.player.isOp) return
         val heldItem = event.player.getHeldItem() ?: return
         if (heldItem.checkAir()) return
         val owner = SakuraBindAPI.getOwner(heldItem) ?: return
@@ -54,6 +56,7 @@ object BlockListener : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockBreakEvent2(event: BlockBreakEvent) {
+        if (event.player.isOp) return
         val block = event.block
         val player = event.player
         val owner = BlockCacheManager.getOwner(block) ?: return

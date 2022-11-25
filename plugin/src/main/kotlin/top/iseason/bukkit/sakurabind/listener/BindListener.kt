@@ -43,6 +43,7 @@ object BindListener : Listener {
     fun onPlayerInteractEvent(event: PlayerInteractEvent) {
         if (!Config.item_deny__interact) return
         val item = event.item ?: return
+        if (event.player.isOp) return
         if (!item.checkAir() &&
             SakuraBindAPI.hasBind(item)
         ) {
@@ -59,6 +60,7 @@ object BindListener : Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onPlayerInteractEntityEvent(event: PlayerInteractEntityEvent) {
+        if (event.player.isOp) return
         val isItemFrame = event.rightClicked is ItemFrame
         val mainHand = event.player.inventory.itemInMainHand
         val offHand = if (NBTEditor.getMinecraftVersion()
@@ -93,6 +95,7 @@ object BindListener : Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     fun onPlayerDropItemEvent(event: PlayerDropItemEvent) {
+        if (event.player.isOp) return
         if (!Config.item_deny__drop) return
         val item = event.itemDrop.itemStack
         if (item.checkAir()) return
@@ -108,6 +111,7 @@ object BindListener : Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onPlayerPickupItemEvent(event: PlayerPickupItemEvent) {
+        if (event.player.isOp) return
         if (!Config.item_deny__pickup) return
         val player = event.player
         val item = event.item.itemStack
@@ -142,6 +146,7 @@ object BindListener : Listener {
     fun onInventoryClickEvent(event: InventoryClickEvent) {
         if (!Config.item_deny__click && !Config.item_deny__inventory) return
         val player = event.whoClicked as? Player ?: return
+        if (player.isOp) return
         val item = event.currentItem ?: return
         if (item.checkAir()) return
         val owner = SakuraBindAPI.getOwner(item) ?: return
@@ -156,6 +161,7 @@ object BindListener : Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     fun onInventoryClickEvent2(event: InventoryClickEvent) {
         if (!Config.item_deny__inventory) return
+        if (event.whoClicked.isOp) return
         val title = event.view.title
         val any = Config.itemDenyInventories.any { it.matcher(title).find() }
         if (!any) return
@@ -173,6 +179,7 @@ object BindListener : Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun onPlayerCommandPreprocessEvent(event: PlayerCommandPreprocessEvent) {
         if (!Config.item_deny__command) return
+        if (event.player.isOp) return
         val heldItem = event.player.getHeldItem() ?: return
         val owner = SakuraBindAPI.getOwner(heldItem) ?: return
         if (Config.item_deny__command_allow_owner && owner == event.player.uniqueId) return
@@ -210,6 +217,7 @@ object BindListener : Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onPlayerItemConsumeEvent(event: PlayerItemConsumeEvent) {
         if (!Config.item_deny__consume) return
+        if (event.player.isOp) return
         val item = event.item
         if (item.checkAir()) return
         val owner = SakuraBindAPI.getOwner(item) ?: return
@@ -224,6 +232,7 @@ object BindListener : Listener {
         if (!Config.item_deny__throw) return
         val entity = event.entity
         val player = entity.shooter as? Player ?: return
+        if (player.isOp) return
         val heldItem = player.getHeldItem() ?: return
         if (!SakuraBindAPI.hasBind(heldItem)) return
         if (!EasyCoolDown.check(player.uniqueId, 1000))
@@ -234,6 +243,7 @@ object BindListener : Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockBreakEvent(event: BlockBreakEvent) {
         if (!Config.send_when_container_break) return
+        if (event.player.isOp) return
         val inventory = (event.block.state as? InventoryHolder)?.inventory ?: return
         val map = mutableMapOf<UUID, MutableList<ItemStack>>()
         val removed = mutableMapOf<Int, ItemStack>()
@@ -300,6 +310,7 @@ object BindListener : Listener {
     fun autoBindInventoryClickEvent(event: InventoryClickEvent) {
         if (!Config.auto_bind__enable || !Config.auto_bind__onClick) return
         val player = event.whoClicked as? Player ?: return
+        if (player.isOp) return
         val item = event.currentItem ?: return
         if (item.checkAir()) return
         if (SakuraBindAPI.hasBind(item)) return
@@ -312,6 +323,7 @@ object BindListener : Listener {
     fun autoBindPlayerPickupItemEvent(event: PlayerPickupItemEvent) {
         if (!Config.auto_bind__enable || !Config.auto_bind__onPickup) return
         val player = event.player
+        if (player.isOp) return
         val item = event.item.itemStack
         if (item.checkAir()) return
         if (SakuraBindAPI.hasBind(item)) return
@@ -323,6 +335,7 @@ object BindListener : Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun autoBindPlayerDropItemEvent(event: PlayerDropItemEvent) {
         if (!Config.auto_bind__enable || !Config.auto_bind__onDrop) return
+        if (event.player.isOp) return
         val item = event.itemDrop.itemStack
         if (SakuraBindAPI.hasBind(item)) return
         if (Config.abMaterial.contains(item.type) || NBTEditor.contains(item, Config.auto_bind__nbt)) {
