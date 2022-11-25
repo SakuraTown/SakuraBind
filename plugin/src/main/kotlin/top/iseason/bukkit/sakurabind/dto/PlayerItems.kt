@@ -19,7 +19,7 @@ class PlayerItem(id: EntityID<Int>) : IntEntity(id) {
     var uuid by PlayerItems.uuid
     var item by PlayerItems.item
 
-    fun getItemStack(): ItemStack {
-        return ItemUtils.fromByteArray(item.bytes)
+    fun getItemStacks(): List<ItemStack> {
+        return ItemUtils.fromByteArrays(item.bytes)
     }
 }

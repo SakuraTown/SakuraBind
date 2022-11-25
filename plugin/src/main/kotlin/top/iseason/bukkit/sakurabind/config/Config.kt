@@ -46,6 +46,10 @@ object Config : SimpleYAMLConfig() {
     var send_when_lost = true
 
     @Key
+    @Comment("", "当容器被破坏时将绑定物品归还物主(在线则发背包，否则发邮件)")
+    var send_when_container_break = true
+
+    @Key
     @Comment("", "当物品作为掉落物时立刻归还物主(在线则发背包，否则发邮件)")
     var send_immediately = false
 
@@ -84,6 +88,10 @@ object Config : SimpleYAMLConfig() {
     var item_deny__drop = true
 
     @Key
+    @Comment("", "禁止含有绑定物品的容器被玩家破坏")
+    var item_deny__container_break = false
+
+    @Key
     @Comment("", "禁止捡起")
     var item_deny__pickup = true
 
@@ -105,11 +113,19 @@ object Config : SimpleYAMLConfig() {
 
     @Key
     @Comment("", "禁止放入展示框")
-    var item_deny__itemFrame = true
+    var item_deny__item_frame = true
+
+    @Key
+    @Comment("", "禁止右键丢出(药水、雪球等投掷物)")
+    var item_deny__throw = true
 
     @Key
     @Comment("", "禁止消耗(吃)")
     var item_deny__consume = true
+
+    @Key
+    @Comment("", "禁止消耗(吃),但是允许主人消耗")
+    var item_deny__consume_allow_owner = false
 
     @Key
     @Comment("", "手上拿着绑定物品时禁止输入命令")

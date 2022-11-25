@@ -2,6 +2,7 @@ package top.iseason.bukkit.sakurabind.command
 
 import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.PermissionDefault
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
@@ -11,6 +12,7 @@ import top.iseason.bukkit.sakurabind.dto.PlayerItem
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkittemplate.command.*
 import top.iseason.bukkittemplate.config.dbTransaction
+import top.iseason.bukkittemplate.debug.SimpleLogger
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toByteArray
@@ -124,6 +126,7 @@ fun mainCommand() {
         ) {
             description = "获取暂存箱物品"
             default = PermissionDefault.TRUE
+            async = true
             isPlayerOnly = true
             executor {
                 val player = it as Player
@@ -133,42 +136,51 @@ fun mainCommand() {
                     it.sendColorMessage(Lang.command_coolDown)
                     return@executor
                 }
-                val count = dbTransaction {
-                    var count = 0
+                var totalCount = 0
+                dbTransaction {
                     while (true) {
                         val items =
                             PlayerItem.find { PlayerItems.uuid eq player.uniqueId }.limit(10, (page * 10).toLong())
                                 .toList()
                         if (items.isEmpty()) break
                         for (item in items) {
-                            val itemStack = item.getItemStack()
-                            val addItem = player.inventory.addItem(itemStack)
-                            //放不下了
-                            if (addItem.isNotEmpty()) {
-                                val first = addItem.values.first()
-                                if (itemStack.amount != first.amount) count++ else if (count == 0) {
-                                    return@dbTransaction -1
+                            val itemStacks = item.getItemStacks()
+                            val release = mutableListOf<ItemStack>()
+                            for (itemStack in itemStacks) {
+                                val amount = itemStack.amount
+                                val addItem = player.inventory.addItem(itemStack)
+//                                println("size = ${addItem.size}")
+                                //放不下了
+                                if (addItem.isNotEmpty()) {
+                                    val first = addItem.values.first()
+                                    release.add(first)
+                                    isEmpty = false
+//                                    println("not empty ${amount} - ${first.amount}")
+                                    totalCount += (amount - first.amount)
+                                } else {
+//                                    println("empty ${amount}")
+                                    totalCount += amount
                                 }
-                                item.item = ExposedBlob(first.toByteArray())
-                                isEmpty = false
-                                break
-                            } else {
+                            }
+                            if (release.isEmpty()) {
                                 item.delete()
-                                count++
+                            } else {
+                                item.item = ExposedBlob(release.toByteArray())
+                                break
                             }
                         }
                         page++
                     }
-                    count
                 }
-                if (count == -1) {
+//                println(totalCount)
+                if (totalCount == -1) {
                     it.sendColorMessage(Lang.get_full)
-                } else if (count == 0) {
+                } else if (totalCount == 0) {
                     it.sendColorMessage(Lang.get_empty)
                 } else if (isEmpty) {
-                    it.sendColorMessage(Lang.get_all)
+                    it.sendColorMessage(Lang.get_all.formatBy(totalCount))
                 } else {
-                    it.sendColorMessage(Lang.get_item.formatBy(count))
+                    it.sendColorMessage(Lang.get_item.formatBy(totalCount))
                 }
             }
         }
@@ -187,6 +199,17 @@ fun mainCommand() {
                 heldItem!!.itemMeta = NBTEditor.set(heldItem, "", *autoBindNbt)!!.itemMeta
                 player.updateInventory()
                 it.sendColorMessages("&a已添加 ${Config.auto_bind__nbt}")
+            }
+        }
+        node(
+            "debug"
+        ) {
+            description = "切换debug模式"
+            default = PermissionDefault.OP
+            async = true
+            executor {
+                SimpleLogger.isDebug = !SimpleLogger.isDebug
+                it.sendColorMessages("&aDebug模式: ${SimpleLogger.isDebug}")
             }
         }
     }

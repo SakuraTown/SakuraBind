@@ -6,6 +6,7 @@ api-version: 1.13
 softdepend:
   - SakuraMail
   - PlaceholderAPI
+  - AuthMe
 
 runtime-libraries:
   # If not defined, it will be 'libraries'

@@ -5,6 +5,7 @@ plugins {
 repositories {
     mavenCentral()
     maven { url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/") }
+    maven { url = uri("https://repo.codemc.org/repository/maven-public/") }
 }
 
 dependencies {
@@ -22,6 +23,7 @@ dependencies {
     implementation("org.bstats:bstats-bukkit:3.0.0")
     compileOnly("org.ehcache:ehcache:3.10.6")
     compileOnly("me.clip:placeholderapi:2.11.2")
+    compileOnly("fr.xephi:authme:5.6.0-SNAPSHOT")
     compileOnly("org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT")
 }
 

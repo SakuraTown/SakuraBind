@@ -4,21 +4,14 @@ import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.jetbrains.exposed.sql.statements.api.ExposedBlob
+import top.iseason.bukkit.sakurabind.cache.DelaySender
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.Lang
-import top.iseason.bukkit.sakurabind.dto.PlayerItem
 import top.iseason.bukkit.sakurabind.hook.PlaceHolderHook
-import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
-import top.iseason.bukkittemplate.config.DatabaseConfig
-import top.iseason.bukkittemplate.config.dbTransaction
-import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.applyMeta
-import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toByteArray
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 import top.iseason.bukkittemplate.utils.other.EasyCoolDown
-import top.iseason.bukkittemplate.utils.other.submit
 import java.util.*
 
 /**
@@ -88,7 +81,7 @@ object SakuraBindAPI {
             val player = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
             val loreStr = Config.lore.map { str ->
                 var t = str
-                t = t.replace("%player%", player.name!!).toColor()
+                t = t.replace("%player%", player.name!!)
                 t = PlaceHolderHook.setPlaceHolder(t, player)
                 t
             }
@@ -199,27 +192,7 @@ object SakuraBindAPI {
                 player.sendColorMessage(Lang.send_back)
         } else release = items.toMutableList()
         // 使用邮件发送
-        if (Config.sakuraMail_hook && SakuraMailHook.hasHooked) {
-            submit(async = true) {
-                SakuraMailHook.sendMail(uuid, release)
-            }
-        } else if (DatabaseConfig.isConnected) {
-            submit(async = true) {
-                dbTransaction {
-                    for (itemStack in release) {
-                        PlayerItem.new {
-                            this.uuid = uuid
-                            this.item = ExposedBlob(itemStack.toByteArray())
-                        }
-                    }
-
-                }
-            }
-        } else {
-            if (!EasyCoolDown.check("system", 1000))
-                warn("数据库未启用,无法发送暂存箱子!")
-            return release
-        }
+        DelaySender.sendItem(uuid, release)
         return emptyList()
     }
 }

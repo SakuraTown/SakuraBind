@@ -13,24 +13,21 @@ import org.bukkit.event.block.BlockDispenseEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.ItemDespawnEvent
 import org.bukkit.event.entity.ItemSpawnEvent
+import org.bukkit.event.entity.ProjectileLaunchEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.*
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.Lang
-import top.iseason.bukkit.sakurabind.dto.PlayerItem
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
-import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
 import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
-import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toByteArray
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.other.EasyCoolDown
@@ -71,7 +68,7 @@ object BindListener : Listener {
         fun check(item: ItemStack?): Boolean {
             if (item.checkAir()) return false
             val hasBind = SakuraBindAPI.hasBind(item!!)
-            if (isItemFrame && Config.item_deny__itemFrame && hasBind) {
+            if (isItemFrame && Config.item_deny__item_frame && hasBind) {
                 event.player.sendColorMessage(Lang.item__deny_itemFrame)
                 return true
             }
@@ -210,30 +207,43 @@ object BindListener : Listener {
     /**
      * 禁止用于消耗
      */
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onPlayerItemConsumeEvent(event: PlayerItemConsumeEvent) {
         if (!Config.item_deny__consume) return
         val item = event.item
         if (item.checkAir()) return
-        if (SakuraBindAPI.hasBind(item) &&
-            !SakuraBindAPI.isOwner(item, event.player)
-        ) {
-            event.isCancelled = true
-        }
+        val owner = SakuraBindAPI.getOwner(item) ?: return
+        if (Config.item_deny__consume_allow_owner && event.player.uniqueId == owner) return
+        if (!EasyCoolDown.check(event.player.uniqueId, 1000))
+            event.player.sendColorMessage(Lang.item__deny__consume)
+        event.isCancelled = true
     }
 
-    /**
-     *
-     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    fun onProjectileLaunchEvent(event: ProjectileLaunchEvent) {
+        if (!Config.item_deny__throw) return
+        val entity = event.entity
+        val player = entity.shooter as? Player ?: return
+        val heldItem = player.getHeldItem() ?: return
+        if (!SakuraBindAPI.hasBind(heldItem)) return
+        if (!EasyCoolDown.check(player.uniqueId, 1000))
+            player.sendColorMessage(Lang.item__deny_throw)
+        event.isCancelled = true
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockBreakEvent(event: BlockBreakEvent) {
-        if (!Config.send_when_lost) return
+        if (!Config.send_when_container_break) return
         val inventory = (event.block.state as? InventoryHolder)?.inventory ?: return
         val map = mutableMapOf<UUID, MutableList<ItemStack>>()
         val removed = mutableMapOf<Int, ItemStack>()
         inventory.forEachIndexed { index, itemStack ->
             if (itemStack == null || itemStack.checkAir()) return@forEachIndexed
             val owner = SakuraBindAPI.getOwner(itemStack) ?: return@forEachIndexed
+            if (Config.item_deny__container_break) {
+                event.isCancelled = true
+                return
+            }
             val stacks = map.computeIfAbsent(owner) { mutableListOf() }
             inventory.setItem(index, null)
             removed[index] = itemStack
@@ -247,18 +257,7 @@ object BindListener : Listener {
                 return@submit
             }
             map.forEach { (uid, items) ->
-                if (SakuraMailHook.hasHooked) {
-                    SakuraMailHook.sendMail(uid, items)
-                } else {
-                    dbTransaction {
-                        for (itemStack in items) {
-                            PlayerItem.new {
-                                this.uuid = uuid
-                                this.item = ExposedBlob(itemStack.toByteArray())
-                            }
-                        }
-                    }
-                }
+                SakuraBindAPI.sendBackItem(uid, items)
             }
         }
     }
@@ -342,15 +341,15 @@ object BindListener : Listener {
         else event.entity.setItemStack(sendBackItem.first())
     }
 
-    @EventHandler
-    fun onPlayerLogin(event: PlayerLoginEvent) {
+    fun onLogin(player: Player) {
         if (!DatabaseConfig.isConnected) return
-        submit(async = true) {
-            val player = event.player
-            val limit = dbTransaction {
-                PlayerItems.slice(PlayerItems.id).select { PlayerItems.uuid eq player.uniqueId }.limit(1).count()
+        submit(async = true, delay = 20) {
+            val hasItem = dbTransaction {
+                val iterator =
+                    PlayerItems.slice(PlayerItems.id).select { PlayerItems.uuid eq player.uniqueId }.limit(1).iterator()
+                iterator.hasNext()
             }
-            if (limit == 0L) return@submit
+            if (!hasItem) return@submit
             player.sendColorMessage(Lang.has_lost_item)
         }
     }

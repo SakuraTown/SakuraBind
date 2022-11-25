@@ -20,13 +20,15 @@ object Lang : SimpleYAMLConfig() {
     var item__deny_itemFrame = "&6该物品禁止放入展示框!"
     var item__deny_entity_interact = "&6该物品禁止与实体交互!"
     var item__deny_click = "&6你不能拿走这个物品!"
+    var item__deny_throw = "&6该物品禁止投掷!"
+    var item__deny__consume = "&6该物品禁止消耗!"
     var block__deny_break = "&6你不能破坏这个方块,这个方块属于 &b{0}"
     var block__deny_interact = "&6你没有这个方块的使用权限,这个方块属于 &b{0}"
 
     var get_item = "&a你领取了 &b{0} &a个遗失物品,请腾出空间领取剩余物品!"
     var get_empty = "&6没有遗失物品!"
-    var get_full = "&背包空间不足!"
-    var get_all = "&a你领取了所有的遗失物品!"
+    var get_full = "&6背包空间不足!"
+    var get_all = "&a你领取了所有的遗失物品! 共 &b{0} &a个物品"
 
     var command_coolDown = "&6你输入得太快了!"
     var has_lost_item = "&a你有遗失的物品,请输入 &6'/sakurabind get' &a领取"

@@ -1,11 +1,14 @@
 package top.iseason.bukkit.sakurabind
 
+import fr.xephi.authme.events.LoginEvent
 import org.bukkit.event.block.BlockPhysicsEvent
+import org.bukkit.event.player.PlayerLoginEvent
 import top.iseason.bukkit.sakurabind.cache.BlockCacheManager
 import top.iseason.bukkit.sakurabind.command.mainCommand
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
+import top.iseason.bukkit.sakurabind.hook.AuthMeHook
 import top.iseason.bukkit.sakurabind.hook.PlaceHolderHook
 import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
 import top.iseason.bukkit.sakurabind.listener.BindListener
@@ -18,6 +21,7 @@ import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.debug.SimpleLogger
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.debug.warn
+import top.iseason.bukkittemplate.utils.bukkit.EventUtils.listen
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.register
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 
@@ -34,6 +38,16 @@ object SakuraBind : KotlinPlugin() {
         Config.load(false)
         BindListener.register()
         BindListener194.register()
+        AuthMeHook.checkHooked()
+        if (AuthMeHook.hasHooked) {
+            listen<LoginEvent> {
+                BindListener.onLogin(this.player)
+            }
+        } else {
+            listen<PlayerLoginEvent> {
+                BindListener.onLogin(this.player)
+            }
+        }
         if (Config.block__enable) {
             BlockCacheManager
             BlockListener.register()
