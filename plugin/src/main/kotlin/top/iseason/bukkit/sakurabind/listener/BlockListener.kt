@@ -56,13 +56,12 @@ object BlockListener : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockBreakEvent2(event: BlockBreakEvent) {
-        if (event.player.isOp) return
         val block = event.block
         val player = event.player
         val owner = BlockCacheManager.getOwner(block) ?: return
         val uuid = UUID.fromString(owner)
         // 有主人但可以破坏
-        if (!(Config.block__deny_break && player.uniqueId.toString() != owner)) {
+        if (player.isOp || !(Config.block__deny_break && player.uniqueId.toString() != owner)) {
             //return
             BlockCacheManager.removeBlock(block)
             val itemStack = player.getHeldItem() ?: ItemStack(Material.AIR)
