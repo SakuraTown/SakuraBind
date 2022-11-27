@@ -195,19 +195,23 @@ open class SimpleYAMLConfig(
         var incomplete = false
         keys.forEach { key ->
             //获取并设置注释
+            val keyName = key.key
+            val anotherName = if (keyName.endsWith('@')) keyName.substring(0, keyName.length - 1) else "$keyName@"
+            val finalKey = if (loadConfiguration.contains(keyName)) keyName else anotherName
             if (isReadOnly) {
-                var value = loadConfiguration.get(key.key)
+                var value = loadConfiguration.get(finalKey)
+
                 if (Map::class.java.isAssignableFrom(key.field.type) && value != null) {
                     value = (value as MemorySection).getValues(false)
                 } else if (Set::class.java.isAssignableFrom(key.field.type) && value != null) {
-                    value = loadConfiguration.getList(key.key)?.toSet()
+                    value = loadConfiguration.getList(finalKey)?.toSet()
                 }
                 if (value != null) {
                     //获取修改的键值
                     try {
                         key.setValue(this, value)
                     } catch (e: Exception) {
-                        debug("Loading config $configPath error! key:${key.key} value: $value")
+                        debug("Loading config $configPath error! key:${finalKey} value: $value")
                     }
                 } else {
                     incomplete = true
@@ -216,14 +220,13 @@ open class SimpleYAMLConfig(
             val comments = key.comments
             if (comments != null) {
                 for (str in comments) {
-                    val keyS = key.key
-                    val noPathKey = keyS.substring(keyS.lastIndexOf('.') + 1)
+                    val noPathKey = finalKey.substring(finalKey.lastIndexOf('.') + 1)
                     //注释识别标识
                     val random = "comment-${UUID.randomUUID()}"
                     //传入注释内容，待转换
                     commentMap["$noPathKey-$random"] = "# $str"
                     //将注释当作键值写入配置文件
-                    temp.set("${key.key}-$random", "")
+                    temp.set("${finalKey}-$random", "")
                 }
             }
             //将数据写入临时配置

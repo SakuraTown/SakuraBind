@@ -5,8 +5,7 @@ import org.bukkit.event.block.BlockPhysicsEvent
 import org.bukkit.event.player.PlayerLoginEvent
 import top.iseason.bukkit.sakurabind.cache.BlockCacheManager
 import top.iseason.bukkit.sakurabind.command.mainCommand
-import top.iseason.bukkit.sakurabind.config.Config
-import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.config.*
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkit.sakurabind.hook.AuthMeHook
 import top.iseason.bukkit.sakurabind.hook.PlaceHolderHook
@@ -36,6 +35,9 @@ object SakuraBind : KotlinPlugin() {
         DatabaseConfig.load(false)
         DatabaseConfig.initTables(PlayerItems)
         Config.load(false)
+        GlobalSettings.load(false)
+        ItemSettings.load(false)
+        DefaultSetting
         BindListener.register()
         BindListener194.register()
         AuthMeHook.checkHooked()
@@ -48,9 +50,10 @@ object SakuraBind : KotlinPlugin() {
                 BindListener.onLogin(this.player)
             }
         }
-        if (Config.block__enable) {
+        if (Config.block__listener) {
             BlockCacheManager
             BlockListener.register()
+            info("&a已启用方块监听")
             try {
                 BlockPhysicsEvent::class.java.getMethod("getSourceBlock")
                 BlockListener1132.register()
@@ -68,7 +71,7 @@ object SakuraBind : KotlinPlugin() {
     }
 
     override fun onDisable() {
-        if (Config.block__enable)
+        if (Config.block__listener)
             BlockCacheManager.save()
         info("&6插件已卸载")
     }

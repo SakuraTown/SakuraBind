@@ -6,6 +6,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.cache.DelaySender
 import top.iseason.bukkit.sakurabind.config.Config
+import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.applyMeta
@@ -76,10 +77,11 @@ object SakuraBindAPI {
             temp.applyMeta { this.lore = newLore }
             temp = NBTEditor.set(temp, null, *Config.nbtPathLore)
         }
+        val setting = ItemSettings.getSetting(item, true)
         // 有主人
         if (owner != null) {
             val player = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
-            val loreStr = Config.lore.map { str ->
+            val loreStr = setting.getStringList("lore").map { str ->
                 var t = str
                 t = t.replace("%player%", player.name!!)
                 t = PlaceHolderHook.setPlaceHolder(t, player)
@@ -89,9 +91,10 @@ object SakuraBindAPI {
             temp.applyMeta {
                 lore = if (hasLore()) {
                     lore!!.apply {
-                        if (Config.lore_index >= size - 1)
+                        val index = setting.getInt("lore-index")
+                        if (index >= size - 1)
                             addAll(loreStr)
-                        else addAll(Config.lore_index, loreStr)
+                        else addAll(index, loreStr)
                     }
                 } else loreStr
             }
@@ -165,7 +168,8 @@ object SakuraBindAPI {
         val owner = getOwner(item) ?: return null
         val player = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
         if (!player.hasPlayedBefore()) return null
-        return Config.lore.map { it.replace("%player%", player.name!!).toColor() }
+        return ItemSettings.getSetting(item).getStringList("lore")
+            .map { it.replace("%player%", player.name!!).toColor() }
     }
 
     /**

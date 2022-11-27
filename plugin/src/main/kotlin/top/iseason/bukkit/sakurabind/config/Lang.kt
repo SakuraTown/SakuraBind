@@ -18,12 +18,18 @@ object Lang : SimpleYAMLConfig() {
     var item__deny_drop = "&6该物品不能丢出!"
     var item__deny_pickup = "&6该物品属于 &a{0},&6已归还"
     var item__deny_itemFrame = "&6该物品禁止放入展示框!"
+    var item__deny_interact = "&6该物品禁止交互!"
     var item__deny_entity_interact = "&6该物品禁止与实体交互!"
     var item__deny_click = "&6你不能拿走这个物品!"
+    var item__deny_inventory = "&6此物品禁止放入这个容器!"
     var item__deny_throw = "&6该物品禁止投掷!"
     var item__deny__consume = "&6该物品禁止消耗!"
+    var item__deny_container_break = "&6该容器含有绑定物品，禁止破坏!"
+
     var block__deny_break = "&6你不能破坏这个方块,这个方块属于 &b{0}"
     var block__deny_interact = "&6你没有这个方块的使用权限,这个方块属于 &b{0}"
+
+    var scanner_item_send_back = "检测到你的背包存在别人的物品，已归还物主!"
 
     var get_item = "&a你领取了 &b{0} &a个遗失物品,请腾出空间领取剩余物品!"
     var get_empty = "&6没有遗失物品!"
@@ -32,6 +38,7 @@ object Lang : SimpleYAMLConfig() {
 
     var command_coolDown = "&6你输入得太快了!"
     var has_lost_item = "&a你有遗失的物品,请输入 &6'/sakurabind get' &a领取"
+
     override fun onLoaded(section: ConfigurationSection) {
         MessageUtils.defaultPrefix = prefix
     }

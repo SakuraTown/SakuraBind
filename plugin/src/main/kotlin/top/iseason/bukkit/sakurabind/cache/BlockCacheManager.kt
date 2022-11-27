@@ -15,12 +15,15 @@ import org.ehcache.config.builders.ExpiryPolicyBuilder
 import org.ehcache.config.builders.ResourcePoolsBuilder
 import org.ehcache.config.units.EntryUnit
 import org.ehcache.config.units.MemoryUnit
+import top.iseason.bukkit.sakurabind.config.ItemSettings
+import top.iseason.bukkit.sakurabind.config.Setting
 import top.iseason.bukkit.sakurabind.cuckoofilter.CuckooFilter
 import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.DisableHook
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.time.Duration
+import java.util.*
 
 
 object BlockCacheManager {
@@ -75,9 +78,11 @@ object BlockCacheManager {
 
     }
 
-    fun addBlock(block: Block, owner: Player) {
+    fun addBlock(block: Block, owner: UUID, setting: String?) {
         val blockToString = blockToString(block)
-        cache.put(blockToString, owner.uniqueId.toString())
+        if (setting != null && setting != "global-setting")
+            cache.put(blockToString, "$owner,$setting")
+        else cache.put(blockToString, "$owner")
         filter.add(blockToString)
     }
 
@@ -108,7 +113,7 @@ object BlockCacheManager {
     /**
      * 获取方块绑定的玩家
      */
-    fun getOwner(block: Block): String? {
+    fun getOwner(block: Block): Pair<String, Setting>? {
 //        if (SakuraBindAPI.isTileEntity(block)) {
 //            return SakuraBindAPI.getTileOwner(block)
 //        }
@@ -119,20 +124,23 @@ object BlockCacheManager {
     /**
      * 获取方块绑定的玩家
      */
-    fun getOwner(str: String): String? {
+    fun getOwner(str: String): Pair<String, Setting>? {
         //使用布谷鸟过滤防止缓存穿透
 //        val nanoTime = System.nanoTime()
         if (!filter.contains(str)) return null
 //        println("mightContain cost ${System.nanoTime() - nanoTime}")
-        return cache.get(str)
+        val get = cache.get(str) ?: return null
+        val split = get.split(',')
+        return split[0] to ItemSettings.getSetting(split.getOrNull(1))
+//        return cache.get(str)
     }
 
     /**
      * 判断方块是否能破坏
      */
     fun canBreak(block: Block, player: Player?): Boolean {
-        val owner = getOwner(block) ?: return true
-        return player != null && player.uniqueId.toString() == owner
+        val (owner, setting) = getOwner(block) ?: return true
+        return !setting.getBoolean("block-deny.break", owner == player?.uniqueId?.toString())
     }
 
     fun save() {

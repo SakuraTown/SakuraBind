@@ -1,0 +1,101 @@
+package top.iseason.bukkit.sakurabind.config
+
+import io.github.bananapuncher714.nbteditor.NBTEditor
+import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.inventory.ItemStack
+import top.iseason.bukkittemplate.config.SimpleYAMLConfig
+import top.iseason.bukkittemplate.config.annotations.Comment
+import top.iseason.bukkittemplate.config.annotations.FilePath
+import top.iseason.bukkittemplate.config.annotations.Key
+import top.iseason.bukkittemplate.debug.warn
+
+@FilePath("settings.yml")
+object ItemSettings : SimpleYAMLConfig() {
+
+    @Key
+    @Comment(
+        "",
+        "matcher可以匹配某类特殊的物品以应用不同的设置",
+        "match 项为需要匹配的物品特征，采用正则表达式 https://www.bejson.com/othertools/regex/",
+        "所有 match 项都不是必须的，你可以自由组合, 但至少需要有一个子项, 只有匹配所有子项才算最终匹配到",
+        "match 项下的 name 为 物品名字, 必须为非原版翻译名(也就是从创造物品栏拿出来的'圆石'的name为空)",
+        "match 项下的 name-without-color 为 除去颜色代码的物品名字, 必须为非原版翻译名(也就是从创造物品栏拿出来的'圆石'的name为空)",
+        "match 项下的 material 为 物品材质,使用正则匹配",
+        "match 项下的 materials 为 物品材质,使用全名匹配 https://bukkit.windit.net/javadoc/org/bukkit/Material.html",
+        "match 项下的 lore 为 物品lore 如有多行则需全匹配",
+        "match 项下的 nbt 为 物品NBT ",
+        "",
+        "settings 项为此matcher独立的设置，完全兼容global-setting中的选项",
+        "settings 项中以 '@' 结尾的布尔类型的项，其物主将使用与他人相反的设置",
+        "         如 block-deny 下的 break: false 表示所有人都不能破坏此方块物品",
+        "         但如果是 break@: false 表示所有人都不能破坏,但物主可以破坏此方块物品",
+        "settings 中不存在的项将继承 global-setting.yml 中的同名项",
+    )
+    var readme = ""
+
+    @Key
+    @Comment(
+        "为提高性能，匹配过一次的物品在绑定之后将会把匹配到的设置键存入物品NBT，此为NBT的路径 '.' 为路径分隔符",
+    )
+    var nbt_cache_path: String = "sakura_bind_setting_cache"
+    var nbtPath: Array<String> = arrayOf("sakura_bind_setting_cache")
+
+    @Key
+    private var matchers: ConfigurationSection = YamlConfiguration().apply {
+        val example = createSection("example")
+        example.createSection("match").apply {
+            set("name", "^这是.*的物品$")
+            set("material", "BOW|BOOKSHELF")
+            set("materials", listOf("DIAMOND_SWORD"))
+            set("lore", listOf("绑定物品", "属于"))
+            createSection("nbt").apply { set("testnbt", ".*") }
+        }
+        example.createSection("settings").apply {
+            set("lore", listOf("&a灵魂绑定2: &6%player%"))
+            set("item-deny.interact", false)
+            set("block-deny.interact@", false)
+        }
+    }
+
+    private var settings = LinkedHashMap<String, Setting>()
+
+    override fun onLoaded(section: ConfigurationSection) {
+        nbtPath = if (nbt_cache_path.isBlank()) arrayOf("sakura_bind_setting_cache")
+        else nbt_cache_path.split('.').toTypedArray()
+        settings.clear()
+        matchers.getKeys(false).forEach {
+            val s = matchers.getConfigurationSection(it)!!
+            try {
+                settings[it] = Setting(s)
+            } catch (e: Exception) {
+                warn("配置 ${it} 格式错误，请检查!")
+            }
+        }
+        settings["global-setting"] = DefaultSetting
+    }
+
+    /**
+     * 获取物品对应的设置
+     */
+    fun getSetting(item: ItemStack, setInCache: Boolean = true): Setting {
+        var setting: Setting? = null
+        //检查缓存
+        val key = NBTEditor.getString(item, *nbtPath)
+        if (key != null)
+            setting = settings[key]
+        if (setting != null) return setting
+        for ((k, s) in settings) {
+            if (s.match(item)) {
+                setting = s
+                if (setInCache) item.itemMeta = NBTEditor.set(item, k, *nbtPath).itemMeta
+                break
+            }
+        }
+        if (setting == null && setInCache) item.itemMeta = NBTEditor.set(item, null, *nbtPath).itemMeta
+        return setting ?: DefaultSetting
+    }
+
+    fun getSetting(key: String?) = settings[key ?: "global-setting"] ?: DefaultSetting
+
+}
