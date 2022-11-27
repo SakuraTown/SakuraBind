@@ -6,7 +6,10 @@ import org.bukkit.event.Listener
 import org.bukkit.event.inventory.PrepareAnvilEvent
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.ItemSettings
+import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
+import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
+import top.iseason.bukkittemplate.utils.other.EasyCoolDown
 
 object BindListener194 : Listener {
     /**
@@ -23,6 +26,8 @@ object BindListener194 : Listener {
             val owner = SakuraBindAPI.getOwner(this) ?: return@apply
             if (ItemSettings.getSetting(this).getBoolean("item-deny.anvil", uniqueId == owner)) {
                 event.result = null
+                if (!EasyCoolDown.check(uniqueId, 1000))
+                    event.view.player.sendColorMessage(Lang.item__deny__anvil)
                 return
             }
         }
@@ -31,6 +36,8 @@ object BindListener194 : Listener {
             val owner = SakuraBindAPI.getOwner(this) ?: return@apply
             if (ItemSettings.getSetting(this).getBoolean("item-deny.anvil", uniqueId == owner)) {
                 event.result = null
+                if (!EasyCoolDown.check(uniqueId, 1000))
+                    event.view.player.sendColorMessage(Lang.item__deny__anvil)
                 return
             }
         }

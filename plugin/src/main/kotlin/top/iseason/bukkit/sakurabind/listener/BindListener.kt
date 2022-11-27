@@ -231,6 +231,8 @@ object BindListener : Listener {
             val owner = SakuraBindAPI.getOwner(matrix) ?: continue
             if (!ItemSettings.getSetting(matrix).getBoolean("item-deny-craft", uuid == owner)) continue
             inventory.result = null
+            if (!EasyCoolDown.check(uuid, 1000))
+                event.view.player.sendColorMessage(Lang.item__deny__craft)
             break
         }
     }

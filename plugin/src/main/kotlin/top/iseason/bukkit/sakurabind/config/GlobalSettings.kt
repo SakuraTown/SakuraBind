@@ -11,7 +11,12 @@ import java.util.regex.Pattern
 object GlobalSettings : SimpleYAMLConfig() {
 
     @Key
-    @Comment("", "本配置为绑定的全局权限设置，优先级最低")
+    @Comment(
+        "", "本配置为绑定的全局权限设置，优先级最低",
+        "在布尔类型的选项之后加上@则表示对于物主采取相反的结果",
+        "如 item-deny.click@: true 表示仅允许物主拿走容器类的物品",
+        "如 item-deny.drop: true 表示禁止所有人丢弃绑定物品"
+    )
     var global_setting = ""
 
     @Key

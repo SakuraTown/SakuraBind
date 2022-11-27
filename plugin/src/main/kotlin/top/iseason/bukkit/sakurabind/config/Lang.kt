@@ -24,6 +24,8 @@ object Lang : SimpleYAMLConfig() {
     var item__deny_inventory = "&6此物品禁止放入这个容器!"
     var item__deny_throw = "&6该物品禁止投掷!"
     var item__deny__consume = "&6该物品禁止消耗!"
+    var item__deny__craft = "&6该物品禁止用于合成!"
+    var item__deny__anvil = "&6该物品禁止用于铁砧!"
     var item__deny_container_break = "&6该容器含有绑定物品，禁止破坏!"
 
     var block__deny_break = "&6你不能破坏这个方块,这个方块属于 &b{0}"
