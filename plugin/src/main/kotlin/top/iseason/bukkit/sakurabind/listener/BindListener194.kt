@@ -12,6 +12,7 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.other.EasyCoolDown
 
 object BindListener194 : Listener {
+
     /**
      * 禁止用于铁砧
      */
@@ -24,7 +25,7 @@ object BindListener194 : Listener {
         item1?.apply {
             if (checkAir()) return
             val owner = SakuraBindAPI.getOwner(this) ?: return@apply
-            if (ItemSettings.getSetting(this).getBoolean("item-deny.anvil", uniqueId == owner)) {
+            if (ItemSettings.getSetting(this).getBoolean("item-deny.anvil", uniqueId == owner, event.view.player)) {
                 event.result = null
                 if (!EasyCoolDown.check(uniqueId, 1000))
                     event.view.player.sendColorMessage(Lang.item__deny__anvil)
@@ -34,7 +35,7 @@ object BindListener194 : Listener {
         item2?.apply {
             if (checkAir()) return
             val owner = SakuraBindAPI.getOwner(this) ?: return@apply
-            if (ItemSettings.getSetting(this).getBoolean("item-deny.anvil", uniqueId == owner)) {
+            if (ItemSettings.getSetting(this).getBoolean("item-deny.anvil", uniqueId == owner, event.view.player)) {
                 event.result = null
                 if (!EasyCoolDown.check(uniqueId, 1000))
                     event.view.player.sendColorMessage(Lang.item__deny__anvil)

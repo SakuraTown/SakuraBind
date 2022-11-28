@@ -32,7 +32,7 @@ object BlockListener : Listener {
         val player = event.player
         if (event.clickedBlock != null) {
             val (owner, setting) = BlockCacheManager.getOwner(event.clickedBlock!!) ?: return
-            if (setting.getBoolean("block-deny.interact", player.uniqueId.toString() == owner)) {
+            if (setting.getBoolean("block-deny.interact", player.uniqueId.toString() == owner, player)) {
                 event.isCancelled = true
                 if (!EasyCoolDown.check(event.player.uniqueId, 1000)) {
                     val uuid = UUID.fromString(owner)
@@ -50,7 +50,10 @@ object BlockListener : Listener {
         if (heldItem.checkAir()) return
         val owner = SakuraBindAPI.getOwner(heldItem) ?: return
         val setting = ItemSettings.getSetting(heldItem)
-        if (setting.getBoolean("block-deny.place", event.player.uniqueId == owner)) {
+        if (setting.getBoolean("block-deny.place", event.player.uniqueId == owner, event.player)) {
+            if (!EasyCoolDown.check(event.player.uniqueId, 1000)) {
+                event.player.sendColorMessage(Lang.block__deny_place)
+            }
             event.isCancelled = true
             return
         }
@@ -65,7 +68,7 @@ object BlockListener : Listener {
         val (owner, setting) = BlockCacheManager.getOwner(block) ?: return
         val uuid = UUID.fromString(owner)
         // 有主人但可以破坏
-        val deny = setting.getBoolean("block-deny.break", player.uniqueId.toString() == owner)
+        val deny = setting.getBoolean("block-deny.break", player.uniqueId.toString() == owner, event.player)
         if (player.isOp || !deny) {
             if (!event.isDropItems)
                 BlockCacheManager.removeBlock(block)

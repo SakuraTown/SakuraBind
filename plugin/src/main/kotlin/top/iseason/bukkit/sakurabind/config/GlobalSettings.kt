@@ -14,8 +14,9 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Comment(
         "", "本配置为绑定的全局权限设置，优先级最低",
         "在布尔类型的选项之后加上@则表示对于物主采取相反的结果",
-        "如 item-deny.click@: true 表示仅允许物主拿走容器类的物品",
-        "如 item-deny.drop: true 表示禁止所有人丢弃绑定物品"
+        "如 item-deny.click@: true 表示仅允许物主拿走容器内的物品",
+        "如 item-deny.drop: true 表示禁止所有人丢弃绑定物品",
+        "如 block-deny.place@: true 表示禁止所有人放置方块，但允许物主放置"
     )
     var global_setting = ""
 
@@ -156,7 +157,7 @@ object GlobalSettings : SimpleYAMLConfig() {
     var auto_bind = ""
 
     @Key
-    @Comment("", "是否开启")
+    @Comment("", "是否开启自动绑定,如果全局开启将会绑定所有物品，请在setting.yml中配置开启以绑定特殊物品")
     var auto_bind__enable = false
 
     @Key

@@ -15,6 +15,7 @@ import org.ehcache.config.builders.ExpiryPolicyBuilder
 import org.ehcache.config.builders.ResourcePoolsBuilder
 import org.ehcache.config.units.EntryUnit
 import org.ehcache.config.units.MemoryUnit
+import org.ehcache.impl.copy.IdentityCopier
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Setting
 import top.iseason.bukkit.sakurabind.cuckoofilter.CuckooFilter
@@ -37,15 +38,17 @@ object BlockCacheManager {
         if (!blockDataFile.exists()) {
             blockDataFile.mkdirs()
         }
+//        println(1)
         var builder = CacheManagerBuilder
             .persistence(blockDataFile)
             .builder(CacheManagerBuilder.newCacheManagerBuilder())
+
         builder = builder.withCache(
             "block-owner",
             CacheConfigurationBuilder.newCacheConfigurationBuilder(
                 String::class.java, String::class.java,
                 ResourcePoolsBuilder.newResourcePoolsBuilder()
-                    .heap(10, EntryUnit.ENTRIES)
+                    .heap(50, EntryUnit.ENTRIES)
                     .offheap(50, MemoryUnit.MB)
                     .disk(500, MemoryUnit.MB, true)
             ).withExpiry(ExpiryPolicyBuilder.noExpiration())
@@ -56,10 +59,12 @@ object BlockCacheManager {
             CacheConfigurationBuilder.newCacheConfigurationBuilder(
                 String::class.java, String::class.java,
                 ResourcePoolsBuilder.newResourcePoolsBuilder()
-                    .heap(5, EntryUnit.ENTRIES)
+                    .heap(10, EntryUnit.ENTRIES)
                     .offheap(1, MemoryUnit.MB)
                     .disk(2, MemoryUnit.MB, false)
             ).withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofMillis(300)))
+                .withKeyCopier(IdentityCopier())
+                .withValueCopier(IdentityCopier())
                 .build()
         )
         cacheManager = builder.build(true)
@@ -73,7 +78,7 @@ object BlockCacheManager {
         else file.inputStream().use { CuckooFilter.readFrom(it, Funnels.stringFunnel(StandardCharsets.UTF_8)) }
 
         DisableHook.addTask {
-            filter.writeTo(File(BukkitTemplate.getPlugin().dataFolder, "data${File.separator}filter").outputStream())
+            save()
         }
 
     }
@@ -143,6 +148,7 @@ object BlockCacheManager {
         return !setting.getBoolean("block-deny.break", owner == player?.uniqueId?.toString())
     }
 
+    @Throws(Exception::class)
     fun save() {
         val file = File(BukkitTemplate.getPlugin().dataFolder, "data${File.separator}filter")
         if (!file.exists()) {
@@ -153,5 +159,6 @@ object BlockCacheManager {
         }
         cacheManager.close()
     }
+
 
 }

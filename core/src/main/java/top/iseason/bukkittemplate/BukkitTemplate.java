@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import top.iseason.bukkittemplate.dependency.DependencyManager;
+import top.iseason.bukkittemplate.hook.PlaceHolderHook;
 
 import java.io.File;
 import java.io.IOException;
@@ -158,6 +159,7 @@ public class BukkitTemplate extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        PlaceHolderHook.INSTANCE.checkHooked();
         ktPlugin.onEnable();
         CompletableFuture.runAsync(this::onAsyncEnabled);
     }

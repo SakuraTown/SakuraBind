@@ -29,6 +29,7 @@ object Lang : SimpleYAMLConfig() {
     var item__deny_container_break = "&6该容器含有绑定物品，禁止破坏!"
 
     var block__deny_break = "&6你不能破坏这个方块,这个方块属于 &b{0}"
+    var block__deny_place = "&6你不能放置这个方块，此物物品已绑定"
     var block__deny_interact = "&6你没有这个方块的使用权限,这个方块属于 &b{0}"
 
     var scanner_item_send_back = "检测到你的背包存在别人的物品，已归还物主!"

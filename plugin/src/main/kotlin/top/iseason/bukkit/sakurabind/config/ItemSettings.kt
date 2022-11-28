@@ -4,11 +4,16 @@ import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
+import org.ehcache.UserManagedCache
+import org.ehcache.config.builders.ExpiryPolicyBuilder
+import org.ehcache.config.builders.UserManagedCacheBuilder
+import org.ehcache.impl.copy.IdentityCopier
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
 import top.iseason.bukkittemplate.debug.warn
+import java.time.Duration
 
 @FilePath("settings.yml")
 object ItemSettings : SimpleYAMLConfig() {
@@ -17,6 +22,7 @@ object ItemSettings : SimpleYAMLConfig() {
     @Comment(
         "",
         "matcher可以匹配某类特殊的物品以应用不同的设置",
+        "请勿声明名为 'global-setting '的matcher,否则会与公共设置冲突",
         "match 项为需要匹配的物品特征，采用正则表达式 https://www.bejson.com/othertools/regex/",
         "所有 match 项都不是必须的，你可以自由组合, 但至少需要有一个子项, 只有匹配所有子项才算最终匹配到",
         "match 项下的 name 为 物品名字, 必须为非原版翻译名(也就是从创造物品栏拿出来的'圆石'的name为空)",
@@ -58,9 +64,16 @@ object ItemSettings : SimpleYAMLConfig() {
         }
     }
 
+    val settingCache: UserManagedCache<Integer, Setting> = UserManagedCacheBuilder
+        .newUserManagedCacheBuilder(Integer::class.java, Setting::class.java)
+        .withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofSeconds(3)))
+        .withKeyCopier(IdentityCopier())
+        .withValueCopier(IdentityCopier())
+        .build(true)
     private var settings = LinkedHashMap<String, Setting>()
 
     override fun onLoaded(section: ConfigurationSection) {
+        settingCache.clear()
         nbtPath = if (nbt_cache_path.isBlank()) arrayOf("sakura_bind_setting_cache")
         else nbt_cache_path.split('.').toTypedArray()
         settings.clear()
@@ -79,12 +92,22 @@ object ItemSettings : SimpleYAMLConfig() {
      * 获取物品对应的设置
      */
     fun getSetting(item: ItemStack, setInCache: Boolean = true): Setting {
-        var setting: Setting? = null
-        //检查缓存
+        //一级缓存
+//        println("物品地址: ${item.hashCode()} ${settingCache.containsKey(item.hashCode())}")
+        val hash = Integer(item.hashCode())
+        var setting: Setting? = settingCache.get(hash)
+        if (setting != null) {
+            return setting
+        }
+        // 二级缓存
         val key = NBTEditor.getString(item, *nbtPath)
         if (key != null)
             setting = settings[key]
-        if (setting != null) return setting
+        if (setting != null) {
+            settingCache.put(hash, setting)
+            return setting
+        }
+        //匹配
         for ((k, s) in settings) {
             if (s.match(item)) {
                 setting = s
@@ -93,7 +116,9 @@ object ItemSettings : SimpleYAMLConfig() {
             }
         }
         if (setting == null && setInCache) item.itemMeta = NBTEditor.set(item, null, *nbtPath).itemMeta
-        return setting ?: DefaultSetting
+        setting = setting ?: DefaultSetting
+        settingCache.put(hash, setting)
+        return setting
     }
 
     fun getSetting(key: String?) = settings[key ?: "global-setting"] ?: DefaultSetting

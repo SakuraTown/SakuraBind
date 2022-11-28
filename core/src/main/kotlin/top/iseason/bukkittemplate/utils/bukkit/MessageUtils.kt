@@ -4,8 +4,10 @@ package top.iseason.bukkittemplate.utils.bukkit
 
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import top.iseason.bukkittemplate.BukkitTemplate
+import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -74,7 +76,11 @@ object MessageUtils {
      */
     fun CommandSender.sendColorMessage(message: Any?, prefix: String = defaultPrefix) {
         if (message == null || message.toString().isEmpty()) return
-        sendMessage("$prefix$message".toColor())
+        if (PlaceHolderHook.hasHooked) {
+            sendMessage(PlaceHolderHook.setPlaceHolder("$prefix$message", this as? OfflinePlayer))
+        } else {
+            sendMessage("$prefix$message".toColor())
+        }
     }
 
     /**

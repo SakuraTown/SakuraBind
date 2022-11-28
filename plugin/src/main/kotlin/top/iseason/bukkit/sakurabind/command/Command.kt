@@ -24,7 +24,7 @@ import top.iseason.bukkittemplate.utils.other.EasyCoolDown
 fun mainCommand() {
     command("sakuraBind") {
         description = "樱花绑定根节点"
-        alias = arrayOf("sBind", "sb")
+        alias = arrayOf("sBind", "sb", "sab", "bind")
         default = PermissionDefault.OP
         node(
             "bind"
@@ -83,7 +83,7 @@ fun mainCommand() {
         node(
             "bindAll"
         ) {
-            description = "绑定某玩家背包的物品"
+            description = "绑定某玩家背包里的所有物品"
             default = PermissionDefault.OP
             params = listOf(
                 Param("<player>", suggestRuntime = ParamSuggestCache.playerParam),
@@ -195,10 +195,10 @@ fun mainCommand() {
                 val player = it as Player
                 val heldItem = player.getHeldItem()
                 if (heldItem.checkAir()) return@executor
-                val autoBindNbt = Config.auto_bind__nbt.split('.').toTypedArray()
+                val autoBindNbt = Config.auto_bind_nbt.split('.').toTypedArray()
                 heldItem!!.itemMeta = NBTEditor.set(heldItem, "", *autoBindNbt)!!.itemMeta
                 player.updateInventory()
-                it.sendColorMessages("&a已添加 ${Config.auto_bind__nbt}")
+                it.sendColorMessages("&a已添加 ${Config.auto_bind_nbt}")
             }
         }
         node(

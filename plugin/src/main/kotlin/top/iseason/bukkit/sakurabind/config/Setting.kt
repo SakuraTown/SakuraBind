@@ -3,6 +3,7 @@ package top.iseason.bukkit.sakurabind.config
 import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.HumanEntity
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.noColor
 import java.security.InvalidParameterException
@@ -15,6 +16,7 @@ open class Setting(private val section: ConfigurationSection) {
     private var materials: HashSet<Material>? = null
     private var lorePatterns: List<Pattern>? = null
     private var nbt: ConfigurationSection? = null
+    private var setting: ConfigurationSection
 
     init {
         val matcher =
@@ -22,6 +24,8 @@ open class Setting(private val section: ConfigurationSection) {
         if (matcher.getKeys(false).isEmpty()) {
             throw InvalidParameterException("'match'选项不能为空!")
         }
+        setting =
+            section.getConfigurationSection("settings") ?: throw InvalidParameterException("需要声明 'settings' 选项")
         namePattern = matcher.getString("name")?.toPattern()
         nameWithoutColorPattern = matcher.getString("name-without-color")?.toPattern()
         materialPattern = matcher.getString("material")?.toPattern()
@@ -35,35 +39,33 @@ open class Setting(private val section: ConfigurationSection) {
     }
 
     open fun match(item: ItemStack): Boolean {
-        var matchName = true
-        var matchNameNoColor = true
-        var matchMaterial = true
-        var matchMaterials = true
-        var matchLore = true
-        var matchNbt = true
         val meta = item.itemMeta
         if (namePattern != null) {
-            matchName = with(namePattern!!) {
+            val matchName = with(namePattern!!) {
                 meta ?: return@with false
                 if (meta.hasDisplayName() || meta.displayName == null) return@with false
                 this.matcher(meta.displayName).find()
             }
+            if (!matchName) return false
         }
         if (nameWithoutColorPattern != null) {
-            matchNameNoColor = with(nameWithoutColorPattern!!) {
+            val matchNameNoColor = with(nameWithoutColorPattern!!) {
                 meta ?: return@with false
                 if (meta.hasDisplayName()) return@with false
                 this.matcher(meta.displayName.noColor()!!).find()
             }
+            if (!matchNameNoColor) return false
         }
         if (materialPattern != null) {
-            matchMaterial = materialPattern!!.matcher(item.type.toString()).find()
+            val matchMaterial = materialPattern!!.matcher(item.type.toString()).find()
+            if (!matchMaterial) return false
         }
         if (materials != null) {
-            matchMaterials = materials!!.contains(item.type)
+            val matchMaterials = materials!!.contains(item.type)
+            if (!matchMaterials) return false
         }
         if (lorePatterns != null) {
-            matchLore = with(lorePatterns!!) {
+            val matchLore = with(lorePatterns!!) {
                 meta ?: return@with false
                 if (meta.hasLore()) return@with false
                 val lore = meta.lore ?: return@with false
@@ -90,9 +92,10 @@ open class Setting(private val section: ConfigurationSection) {
                 }
                 mLore
             }
+            if (!matchLore) return false
         }
         if (nbt != null) {
-            matchNbt = nbt!!.getKeys(true)
+            val matchNbt = nbt!!.getKeys(true)
                 .filter {
                     val value = nbt!!.get(it)
                     value != null && value !is ConfigurationSection
@@ -100,33 +103,41 @@ open class Setting(private val section: ConfigurationSection) {
                     val string = NBTEditor.getString(item, *it.split('.').toTypedArray()) ?: return@all false
                     nbt!!.get(it).toString().matches(Regex(string))
                 }
+            if (!matchNbt) return false
         }
-
-        return matchName && matchNameNoColor && matchMaterial && matchMaterials && matchLore && matchNbt
+        return true
     }
 
     fun getString(key: String): String {
-        return section.getString(key, GlobalSettings.config.getString(key)) ?: ""
+        return setting.getString(key, GlobalSettings.config.getString(key)) ?: ""
     }
 
     fun getStringList(key: String): List<String> {
-        return if (section.contains(key))
-            section.getStringList(key)
+        return if (setting.contains(key))
+            setting.getStringList(key)
         else GlobalSettings.config.getStringList(key)
     }
 
-    fun getInt(key: String): Int = section.getInt(key, GlobalSettings.config.getInt(key))
+    fun getInt(key: String): Int = setting.getInt(key, GlobalSettings.config.getInt(key))
 
-    fun getLong(key: String): Long = section.getLong(key, GlobalSettings.config.getLong(key))
+    fun getLong(key: String): Long = setting.getLong(key, GlobalSettings.config.getLong(key))
 
     /**
      * 返回是否禁止操作
      */
-    fun getBoolean(key: String, isOwner: Boolean = false): Boolean {
-        if (isOwner && section.contains("$key@")) {
-            return !section.getBoolean("$key@")
+    fun getBoolean(key: String, isOwner: Boolean = false, player: HumanEntity? = null): Boolean {
+        //权限检查
+        if (player != null) {
+            if (player.hasPermission("sakurabind.settings.$key.true")) {
+                return true
+            } else if (player.hasPermission("sakurabind.settings.$key.false")) {
+                return false
+            }
         }
-        if (section.contains(key)) return section.getBoolean(key)
+        if (isOwner && setting.contains("$key@")) {
+            return !setting.getBoolean("$key@")
+        }
+        if (setting.contains(key)) return setting.getBoolean(key)
         if (isOwner && GlobalSettings.config.contains("$key@")) {
             return !GlobalSettings.config.getBoolean("$key@")
         }

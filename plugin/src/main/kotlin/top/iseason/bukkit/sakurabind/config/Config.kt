@@ -37,7 +37,7 @@ object Config : SimpleYAMLConfig() {
     var sakuraMail_hook = false
 
     @Key
-    @Comment("", "登入如果暂存箱有物品则提醒，此为延迟，单位tick")
+    @Comment("", "登入时如果暂存箱有物品则提醒，此为延迟，单位tick, 设置小于0以关闭提示")
     var login_message_delay = 100L
 
     @Key
@@ -50,8 +50,8 @@ object Config : SimpleYAMLConfig() {
     var mailId = "bind_mail"
 
     @Key
-    @Comment("", "方块物品检测开关，需要重启生效")
-    var block__listener = true
+    @Comment("", "方块物品检测开关，需要重启生效。打开才能支持方块物品，同时性能损耗也会增加")
+    var block_listener = true
 
     @Key
     @Comment(
@@ -59,14 +59,13 @@ object Config : SimpleYAMLConfig() {
         "定时扫描所有玩家背包(materials不为空才会开启), 此为扫描周期,单位tick，0表示关闭",
         "此项关闭将影响 scanner开头的设置"
     )
-    var scanner_period = 0L
+    var scanner_period = 60L
 
     var task: BukkitTask? = null
 
     @Key
     @Comment("", "识别到此NBT就自动绑定物主")
-    var auto_bind__nbt = "sakura_auto_bind"
-
+    var auto_bind_nbt = "sakura_auto_bind"
 
     override fun onLoaded(section: ConfigurationSection) {
         nbtPathUuid = nbt_path_uuid.split('.').toTypedArray()
@@ -107,7 +106,7 @@ object Config : SimpleYAMLConfig() {
                             }
                             if (owner == null &&
                                 (setting.getBoolean("auto-bind.enable") || NBTEditor.contains(
-                                    item, auto_bind__nbt
+                                    item, auto_bind_nbt
                                 ))
                             ) {
 //                                info("已绑定物品 ${item.type}")

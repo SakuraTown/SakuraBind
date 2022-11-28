@@ -8,7 +8,7 @@ import top.iseason.bukkit.sakurabind.command.mainCommand
 import top.iseason.bukkit.sakurabind.config.*
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkit.sakurabind.hook.AuthMeHook
-import top.iseason.bukkit.sakurabind.hook.PlaceHolderHook
+import top.iseason.bukkit.sakurabind.hook.PlaceHolderExpansion
 import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
 import top.iseason.bukkit.sakurabind.listener.BindListener
 import top.iseason.bukkit.sakurabind.listener.BindListener194
@@ -20,6 +20,7 @@ import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.debug.SimpleLogger
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.debug.warn
+import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.listen
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.register
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
@@ -30,7 +31,9 @@ object SakuraBind : KotlinPlugin() {
         SimpleLogger.prefix = "&a[&6${javaPlugin.description.name}&a]&r ".toColor()
         SimpleYAMLConfig.notifyMessage = "配置 %s 已重载!"
         SakuraMailHook.checkHooked()
-        PlaceHolderHook.checkHooked()
+        if (PlaceHolderHook.hasHooked) {
+            PlaceHolderExpansion.register()
+        }
         Lang.load(false)
         DatabaseConfig.load(false)
         DatabaseConfig.initTables(PlayerItems)
@@ -50,7 +53,7 @@ object SakuraBind : KotlinPlugin() {
                 BindListener.onLogin(this.player)
             }
         }
-        if (Config.block__listener) {
+        if (Config.block_listener) {
             BlockCacheManager
             BlockListener.register()
             info("&a已启用方块监听")
@@ -71,8 +74,14 @@ object SakuraBind : KotlinPlugin() {
     }
 
     override fun onDisable() {
-        if (Config.block__listener)
+        try {
+            ItemSettings.settingCache.close()
+        } catch (_: Exception) {
+        }
+        try {
             BlockCacheManager.save()
+        } catch (_: Exception) {
+        }
         info("&6插件已卸载")
     }
 }
