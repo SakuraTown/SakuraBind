@@ -1,6 +1,7 @@
 package top.iseason.bukkit.sakurabind
 
 import fr.xephi.authme.events.LoginEvent
+import org.bstats.bukkit.Metrics
 import org.bukkit.event.block.BlockPhysicsEvent
 import org.bukkit.event.player.PlayerLoginEvent
 import top.iseason.bukkit.sakurabind.cache.BlockCacheManager
@@ -28,6 +29,7 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 object SakuraBind : KotlinPlugin() {
 
     override fun onEnable() {
+        Metrics(javaPlugin, 16968)
         SimpleLogger.prefix = "&a[&6${javaPlugin.description.name}&a]&r ".toColor()
         SimpleYAMLConfig.notifyMessage = "配置 %s 已重载!"
         SakuraMailHook.checkHooked()

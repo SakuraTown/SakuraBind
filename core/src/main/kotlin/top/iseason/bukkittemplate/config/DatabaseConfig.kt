@@ -29,7 +29,7 @@ object DatabaseConfig : SimpleYAMLConfig() {
     @Comment("", "是否自动重连数据库")
     var autoReload = true
 
-    @Comment("", "数据库类型: 支持 MySQL、MariaDB、SQLite、H2、Oracle、PostgreSQL、SQLServer")
+    @Comment("", "数据库类型: 支持 MySQL、MariaDB、SQLite、Oracle、PostgreSQL、SQLServer")
     @Key
     var database = "SQLite"
 
@@ -159,11 +159,11 @@ object DatabaseConfig : SimpleYAMLConfig() {
                     driverClassName = "org.sqlite.JDBC"
                 }
 
-                "H2" -> HikariConfig().apply {
-                    dd.downloadDependency("com.h2database:h2:2.1.214")
-                    jdbcUrl = "jdbc:h2:$url/$dbName$params"
-                    driverClassName = "org.h2.Driver"
-                }
+//                "H2" -> HikariConfig().apply {
+//                    dd.downloadDependency("com.h2database:h2:2.1.214")
+//                    jdbcUrl = "jdbc:h2:$url/$dbName$params"
+//                    driverClassName = "org.h2.Driver"
+//                }
 
                 "PostgreSQL" -> HikariConfig().apply {
                     dd.downloadDependency("com.impossibl.pgjdbc-ng:pgjdbc-ng:0.8.9")
