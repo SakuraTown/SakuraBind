@@ -60,18 +60,8 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
             } else SakuraMailHook.sendMail(uuid, itemStacks)
         } else if (DatabaseConfig.isConnected) {
             if (async) runAsync {
-                dbTransaction {
-                    PlayerItem.new {
-                        this.uuid = this@DelaySender.uuid
-                        this.item = ExposedBlob(itemStacks.toByteArray())
-                    }
-                }
-            } else dbTransaction {
-                PlayerItem.new {
-                    this.uuid = this@DelaySender.uuid
-                    this.item = ExposedBlob(itemStacks.toByteArray())
-                }
-            }
+                sendToDataBase(uuid, itemStacks)
+            } else sendToDataBase(uuid, itemStacks)
         } else {
             warn("数据库未启用,无法发送暂存箱子!")
         }
@@ -93,6 +83,15 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
             map.values.forEach {
                 it.onShutDown = true
                 it.cancel()
+            }
+        }
+
+        fun sendToDataBase(uuid: UUID, items: List<ItemStack>) {
+            dbTransaction {
+                PlayerItem.new {
+                    this.uuid = uuid
+                    this.item = ExposedBlob(items.toByteArray())
+                }
             }
         }
     }
