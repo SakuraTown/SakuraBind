@@ -64,7 +64,11 @@ object SakuraBind : KotlinPlugin() {
             }
         }
         if (Config.block_listener) {
-            BlockCacheManager
+            try {
+                BlockCacheManager
+            } catch (e: Exception) {
+                warn("&a缓存初始化异常!")
+            }
             BlockListener.register()
             info("&a已启用方块监听")
             try {
@@ -79,14 +83,18 @@ object SakuraBind : KotlinPlugin() {
     }
 
     override fun onDisable() {
-        DelaySender.shutdown()
         try {
-            ItemSettings.settingCache.close()
+            BlockCacheManager.save()
         } catch (e: Exception) {
             e.printStackTrace()
         }
         try {
-            BlockCacheManager.save()
+            DelaySender.shutdown()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        try {
+            ItemSettings.settingCache.close()
         } catch (e: Exception) {
             e.printStackTrace()
         }

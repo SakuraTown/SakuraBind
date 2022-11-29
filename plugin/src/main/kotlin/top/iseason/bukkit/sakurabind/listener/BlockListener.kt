@@ -10,6 +10,8 @@ import org.bukkit.event.block.*
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.ItemSpawnEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.InventoryHolder
+import org.bukkit.inventory.meta.BlockStateMeta
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.cache.BlockCacheManager
 import top.iseason.bukkit.sakurabind.config.Config
@@ -69,8 +71,19 @@ object BlockListener : Listener {
         val heldItem = event.player.getHeldItem() ?: return
         if (heldItem.checkAir()) return
         val owner = SakuraBindAPI.getOwner(heldItem) ?: return
+        val setting = ItemSettings.getSetting(heldItem)
+        if (!Config.checkByPass(event.player)
+            && setting.getBoolean("block-deny.place", owner.toString(), event.player)
+        ) {
+            if (!EasyCoolDown.check(event.player.uniqueId, 1000)) {
+                event.player.sendColorMessage(Lang.block__deny_place)
+            }
+            event.isCancelled = true
+            return
+        }
         val key = NBTEditor.getString(heldItem, *ItemSettings.nbtPath)
         for (state in event.replacedBlockStates) {
+//            println(state.location)
             BlockCacheManager.addBlock(state, owner, key)
         }
     }
@@ -128,11 +141,12 @@ object BlockListener : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockPhysicsEvent(event: BlockPhysicsEvent) {
-        if (event.changedType != Material.AIR) return
+        if (event.block.type != Material.AIR) return
         val pair = BlockCacheManager.getOwner(event.block) ?: return
 //        println(event.block.state.type)
+//        println(event.block.location)
         BlockCacheManager.removeBlock(event.block)
-//        println("${event.block.state.type} -> ${event.changedType} ${event.block.location}")
+//        println("${event.block.type} -> ${event.changedType} ${event.block.location}")
 //        if(event.changedType==Material.AIR)
         BlockCacheManager.addTemp(BlockCacheManager.blockToString(event.block), pair.first)
     }
@@ -182,6 +196,8 @@ object BlockListener : Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onItemSpawnEvent(event: ItemSpawnEvent) {
         val itemStack = event.entity.itemStack
+        val itemMeta = itemStack.itemMeta
+        if (itemMeta is BlockStateMeta && itemMeta.blockState is InventoryHolder && itemStack.amount != 1) return
         val entityToString = BlockCacheManager.entityToString(event.entity)
         val owner =
             BlockCacheManager.getTemp(entityToString) ?: BlockCacheManager.getOwner(entityToString)?.first ?: return

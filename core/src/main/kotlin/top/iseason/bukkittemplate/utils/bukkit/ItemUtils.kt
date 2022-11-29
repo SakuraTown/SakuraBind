@@ -242,7 +242,7 @@ object ItemUtils {
                     val blockState = blockState
                     if (blockState is CreatureSpawner) {
                         yaml["spawner"] = blockState.spawnedType.name
-                    } else if (blockState is BlockInventoryHolder) {
+                    } else if (blockState is InventoryHolder) {
                         if (allowNested) {
                             val createSection = yaml.createSection("inventory")
                             blockState.inventory.forEachIndexed { index, item ->
