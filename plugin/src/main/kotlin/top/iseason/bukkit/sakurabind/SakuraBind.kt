@@ -37,16 +37,23 @@ object SakuraBind : KotlinPlugin() {
         if (PlaceHolderHook.hasHooked) {
             PlaceHolderExpansion.register()
         }
+        try {
+            mainCommand()
+        } catch (e: Exception) {
+            warn("命令注册异常!")
+            e.printStackTrace()
+        }
+        GlobalSettings.load(false)
         Lang.load(false)
         DatabaseConfig.load(false)
         DatabaseConfig.initTables(PlayerItems)
         Config.load(false)
-        GlobalSettings.load(false)
         ItemSettings.load(false)
         DefaultSetting
         BindListener.register()
         BindListener194.register()
         AuthMeHook.checkHooked()
+        SakuraBindAPI
         if (AuthMeHook.hasHooked) {
             listen<LoginEvent> {
                 BindListener.onLogin(this.player)
@@ -66,12 +73,7 @@ object SakuraBind : KotlinPlugin() {
             } catch (_: Exception) {
             }
         }
-        try {
-            mainCommand()
-        } catch (e: Exception) {
-            warn("命令注册异常!")
-            e.printStackTrace()
-        }
+
         info("&a插件已启用")
 
     }

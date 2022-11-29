@@ -33,7 +33,7 @@ object Lang : SimpleYAMLConfig() {
     var block__deny_interact = "&6你没有这个方块的使用权限,这个方块属于 &b{0}"
 
     var scanner_item_send_back = "&6检测到你的背包存在别人的物品，已归还物主!"
-    var command__bind = "&a已绑定你手上的物品"
+    var command__bind = "&a已绑定 &b{0} &a手上的物品"
     var command__bindTo = "&a已将手上的物品绑定至 &b{0}"
     var command__unbind = "&a已将手上的物品解绑"
     var command__bindAll = "&a已绑定整个背包的物品"

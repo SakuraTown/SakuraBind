@@ -188,7 +188,7 @@ open class SimpleYAMLConfig(
         if (currentTimeMillis - updateTime < 2000L) return false
         updateTime = currentTimeMillis
 //        sleep(300L)
-        val loadConfiguration = YamlConfiguration.loadConfiguration(configPath)
+        val loadConfiguration = config
         val temp = YamlConfiguration()
         val commentMap = mutableMapOf<String, String>()
         //缺了键补上
@@ -246,7 +246,7 @@ open class SimpleYAMLConfig(
         }
         //转换注释
         commentFile(configPath, commentMap)
-        config = loadConfiguration
+        config = YamlConfiguration.loadConfiguration(configPath)
         return true
     }
 

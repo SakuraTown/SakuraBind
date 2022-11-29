@@ -40,11 +40,11 @@ fun mainCommand() {
             executor {
                 val player = getParam<Player>(0)
                 val showLore = !hasParma("-noLore")
-                val itemInMainHand = player.inventory.itemInMainHand
+                val itemInMainHand = player.getHeldItem()
                 if (itemInMainHand.checkAir()) return@executor
-                SakuraBindAPI.bind(itemInMainHand, player, showLore)
+                SakuraBindAPI.bind(itemInMainHand!!, player, showLore)
                 if (!hasParma("-silent"))
-                    it.sendColorMessages(Lang.command__bind)
+                    it.sendColorMessages(Lang.command__bind.formatBy(player.name))
             }
         }
         node(
