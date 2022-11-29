@@ -40,6 +40,11 @@ class Params(val params: Array<String>, val node: CommandNode) {
      * 获取下一个可选参数
      */
     inline fun <reified T> nextOrNull() = getOptionalParam<T>(readIndex)?.also { readIndex++ }
+
+    /**
+     * 判断是否存在某个参数
+     */
+    fun hasParma(str: String, ignoreCase: Boolean = true) = params.any { it.equals(str, ignoreCase) }
 }
 
 /**

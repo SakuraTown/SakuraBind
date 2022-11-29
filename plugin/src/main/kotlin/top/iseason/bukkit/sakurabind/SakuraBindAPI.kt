@@ -87,6 +87,7 @@ object SakuraBindAPI {
                 t = PlaceHolderHook.setPlaceHolder(t, player)
                 t
             }
+//            println(loreStr)
             //添加lore
             temp.applyMeta {
                 lore = if (hasLore()) {
@@ -97,6 +98,7 @@ object SakuraBindAPI {
                         else addAll(index, loreStr)
                     }
                 } else loreStr
+//                println(lore)
             }
             //记录历史
             if (player.hasPlayedBefore()) {
@@ -179,7 +181,7 @@ object SakuraBindAPI {
         val player = Bukkit.getPlayer(uuid)
         //物主在线
         var release = mutableListOf<ItemStack>()
-        if (player != null) {
+        if (player != null && player.isOnline) {
             for (itemStack in items) {
                 val addItem = player.inventory.addItem(itemStack)
                 if (addItem.isNotEmpty()) {

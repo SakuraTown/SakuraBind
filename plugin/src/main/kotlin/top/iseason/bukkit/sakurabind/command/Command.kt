@@ -22,6 +22,7 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessages
 import top.iseason.bukkittemplate.utils.other.EasyCoolDown
 
 fun mainCommand() {
+    CommandNode.usageFooter = "&7所有命令加上 '-silent' 参数可以不显示提示消息\n "
     command("sakuraBind") {
         description = "樱花绑定根节点"
         alias = arrayOf("sBind", "sb", "sab", "bind")
@@ -38,11 +39,12 @@ fun mainCommand() {
             async = true
             executor {
                 val player = getParam<Player>(0)
-                val showLore = !"-noLore".equals(getOptionalParam<String>(1), true)
+                val showLore = !hasParma("-noLore")
                 val itemInMainHand = player.inventory.itemInMainHand
                 if (itemInMainHand.checkAir()) return@executor
                 SakuraBindAPI.bind(itemInMainHand, player, showLore)
-                it.sendColorMessages("&a绑定成功!")
+                if (!hasParma("-silent"))
+                    it.sendColorMessages(Lang.command__bind)
             }
         }
         node(
@@ -58,11 +60,12 @@ fun mainCommand() {
             async = true
             executor {
                 val player = getParam<Player>(0)
-                val showLore = !"-noLore".equals(getOptionalParam<String>(1), true)
+                val showLore = !hasParma("-noLore")
                 val itemInMainHand = (it as Player).getHeldItem()
                 if (itemInMainHand.checkAir()) return@executor
                 SakuraBindAPI.bind(itemInMainHand!!, player, showLore)
-                it.sendColorMessages("&a绑定成功!")
+                if (!hasParma("-silent"))
+                    it.sendColorMessages(Lang.command__bindTo.formatBy(player.name))
             }
         }
         node(
@@ -70,14 +73,17 @@ fun mainCommand() {
         ) {
             description = "解绑定某玩家手上的物品"
             default = PermissionDefault.OP
-            params = listOf(Param("<player>", suggestRuntime = ParamSuggestCache.playerParam))
+            params = listOf(
+                Param("<player>", suggestRuntime = ParamSuggestCache.playerParam)
+            )
             async = true
             executor {
                 val player = getParam<Player>(0)
                 val itemInMainHand = player.inventory.itemInMainHand
                 if (itemInMainHand.checkAir()) return@executor
                 SakuraBindAPI.unBind(itemInMainHand)
-                it.sendColorMessages("&a解绑成功!")
+                if (!hasParma("-silent"))
+                    it.sendColorMessages(Lang.command__unbind)
             }
         }
         node(
@@ -92,14 +98,15 @@ fun mainCommand() {
             async = true
             executor {
                 val player = getParam<Player>(0)
-                val showLore = !"-noLore".equals(getOptionalParam<String>(1), true)
+                val showLore = !hasParma("-noLore")
                 for (itemStack in player.inventory) {
                     if (itemStack == null) continue
                     if (itemStack.checkAir()) continue
                     SakuraBindAPI.bind(itemStack, player, showLore)
                 }
                 player.updateInventory()
-                it.sendColorMessages("&a绑定成功!")
+                if (!hasParma("-silent"))
+                    it.sendColorMessages(Lang.command__bindAll)
             }
         }
         node(
@@ -117,14 +124,15 @@ fun mainCommand() {
                     SakuraBindAPI.unBind(itemStack)
                 }
                 player.updateInventory()
-                it.sendColorMessages("&a解绑成功!")
+                if (!hasParma("-silent"))
+                    it.sendColorMessages(Lang.command__unbindAll)
             }
         }
 
         node(
-            "get"
+            "getLost"
         ) {
-            description = "获取暂存箱物品"
+            description = "获取遗失物品"
             default = PermissionDefault.TRUE
             async = true
             isPlayerOnly = true
@@ -133,7 +141,7 @@ fun mainCommand() {
                 var page = 0
                 var isEmpty = true
                 if (EasyCoolDown.check(player, 1000)) {
-                    it.sendColorMessage(Lang.command_coolDown)
+                    it.sendColorMessage(Lang.command__getLost_coolDown)
                     return@executor
                 }
                 var totalCount = 0
@@ -172,15 +180,16 @@ fun mainCommand() {
                         page++
                     }
                 }
+                if (hasParma("-silent")) return@executor
 //                println(totalCount)
                 if (totalCount == -1) {
-                    it.sendColorMessage(Lang.get_full)
+                    it.sendColorMessage(Lang.command__getLost_full)
                 } else if (totalCount == 0) {
-                    it.sendColorMessage(Lang.get_empty)
+                    it.sendColorMessage(Lang.command__getLost_empty)
                 } else if (isEmpty) {
-                    it.sendColorMessage(Lang.get_all.formatBy(totalCount))
+                    it.sendColorMessage(Lang.command__getLost_all.formatBy(totalCount))
                 } else {
-                    it.sendColorMessage(Lang.get_item.formatBy(totalCount))
+                    it.sendColorMessage(Lang.command__getLost_item.formatBy(totalCount))
                 }
             }
         }
@@ -198,7 +207,8 @@ fun mainCommand() {
                 val autoBindNbt = Config.auto_bind_nbt.split('.').toTypedArray()
                 heldItem!!.itemMeta = NBTEditor.set(heldItem, "", *autoBindNbt)!!.itemMeta
                 player.updateInventory()
-                it.sendColorMessages("&a已添加 ${Config.auto_bind_nbt}")
+                if (!hasParma("-silent"))
+                    it.sendColorMessage(Lang.command__autoBind.formatBy(Config.auto_bind_nbt))
             }
         }
         node(
@@ -209,7 +219,8 @@ fun mainCommand() {
             async = true
             executor {
                 SimpleLogger.isDebug = !SimpleLogger.isDebug
-                it.sendColorMessages("&aDebug模式: ${SimpleLogger.isDebug}")
+                if (!hasParma("-silent"))
+                    it.sendColorMessage(Lang.command__debug.formatBy(SimpleLogger.isDebug))
             }
         }
     }

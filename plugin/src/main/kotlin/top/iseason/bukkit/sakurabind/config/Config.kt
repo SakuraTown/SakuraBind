@@ -3,6 +3,7 @@ package top.iseason.bukkit.sakurabind.config
 import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.HumanEntity
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitTask
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
@@ -61,7 +62,7 @@ object Config : SimpleYAMLConfig() {
     )
     var scanner_period = 60L
 
-    var task: BukkitTask? = null
+    private var task: BukkitTask? = null
 
     @Key
     @Comment("", "识别到此NBT就自动绑定物主")
@@ -76,11 +77,11 @@ object Config : SimpleYAMLConfig() {
         }
         task?.cancel()
         if (scanner_period > 0L && (DatabaseConfig.isConnected || (SakuraMailHook.hasHooked && sakuraMail_hook))) {
-            info("&a定时扫描任务已启动,周期: ${scanner_period} tick")
+            info("&a定时扫描任务已启动,周期: $scanner_period tick")
             task = submit(period = scanner_period, async = true) {
                 val mutableMapOf = mutableMapOf<UUID, MutableList<ItemStack>>()
                 Bukkit.getOnlinePlayers().forEach {
-                    if (it.isOp) return@forEach
+                    if (checkByPass(it)) return@forEach
 //                    info("正在检查 ${it.name} ${it.uniqueId} 的背包")
 //                    info("送回物品功能: $auto_bind__scanner_send_back")
                     var hasFound = false
@@ -91,11 +92,11 @@ object Config : SimpleYAMLConfig() {
                             val item = inventory.getItem(i) ?: continue
                             if (item.checkAir()) continue
                             val owner = SakuraBindAPI.getOwner(item)
-                            val isOwner = owner == it.uniqueId
                             val setting = ItemSettings.getSetting(item, owner != null)
                             if (setting.getBoolean(
                                     "scanner-send-back",
-                                    isOwner
+                                    owner.toString(),
+                                    it
                                 ) && owner != null && owner != it.uniqueId
                             ) {
 //                                info("找到一个违规物品${item.type} 属于 ${owner}")
@@ -127,4 +128,11 @@ object Config : SimpleYAMLConfig() {
         } else task = null
     }
 
+    /**
+     * 检查是否不检查
+     */
+    fun checkByPass(player: HumanEntity): Boolean {
+        if (player.isOp || player.hasPermission("sakurabind.bypass.all")) return true
+        return false
+    }
 }

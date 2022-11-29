@@ -5,14 +5,13 @@ package top.iseason.bukkit.sakurabind.cache
 import com.google.common.hash.Funnels
 import org.bukkit.Location
 import org.bukkit.block.Block
+import org.bukkit.block.BlockState
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.ehcache.Cache
 import org.ehcache.CacheManager
-import org.ehcache.config.builders.CacheConfigurationBuilder
-import org.ehcache.config.builders.CacheManagerBuilder
-import org.ehcache.config.builders.ExpiryPolicyBuilder
-import org.ehcache.config.builders.ResourcePoolsBuilder
+import org.ehcache.UserManagedCache
+import org.ehcache.config.builders.*
 import org.ehcache.config.units.EntryUnit
 import org.ehcache.config.units.MemoryUnit
 import org.ehcache.impl.copy.IdentityCopier
@@ -31,7 +30,14 @@ object BlockCacheManager {
     private val cacheManager: CacheManager
     private val filter: CuckooFilter<CharSequence>
     private val cache: Cache<String, String>
-    private val tempCache: Cache<String, String>
+
+    //    private val tempCache: Cache<String, String>
+    val tempCache: UserManagedCache<String, String> = UserManagedCacheBuilder
+        .newUserManagedCacheBuilder(String::class.java, String::class.java)
+        .withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofSeconds(3)))
+        .withKeyCopier(IdentityCopier())
+        .withValueCopier(IdentityCopier())
+        .build(true)
 
     init {
         val blockDataFile = File(BukkitTemplate.getPlugin().dataFolder, "data${File.separator}block-owner")
@@ -54,23 +60,21 @@ object BlockCacheManager {
             ).withExpiry(ExpiryPolicyBuilder.noExpiration())
                 .build()
         )
-        builder = builder.withCache(
-            "block-owner-temp",
-            CacheConfigurationBuilder.newCacheConfigurationBuilder(
-                String::class.java, String::class.java,
-                ResourcePoolsBuilder.newResourcePoolsBuilder()
-                    .heap(10, EntryUnit.ENTRIES)
-                    .offheap(1, MemoryUnit.MB)
-                    .disk(2, MemoryUnit.MB, false)
-            ).withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofMillis(300)))
-                .withKeyCopier(IdentityCopier())
-                .withValueCopier(IdentityCopier())
-                .build()
-        )
+//        builder = builder.withCache(
+//            "block-owner-temp",
+//            CacheConfigurationBuilder.newCacheConfigurationBuilder(
+//                String::class.java, String::class.java,
+//                ResourcePoolsBuilder.newResourcePoolsBuilder()
+//                    .heap(10, EntryUnit.ENTRIES)
+//                    .offheap(1, MemoryUnit.MB)
+//                    .disk(2, MemoryUnit.MB, false)
+//            ).withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofMillis(300)))
+//                .withKeyCopier(IdentityCopier())
+//                .withValueCopier(IdentityCopier())
+//                .build()
+//        )
         cacheManager = builder.build(true)
         cache = cacheManager.getCache("block-owner", String::class.java, String::class.java)!!
-        tempCache = cacheManager.getCache("block-owner-temp", String::class.java, String::class.java)!!
-
         val file = File(BukkitTemplate.getPlugin().dataFolder, "data${File.separator}filter")
         filter = if (!file.exists()) CuckooFilter.create(
             Funnels.stringFunnel(StandardCharsets.UTF_8), 20480, 0.03
@@ -85,10 +89,23 @@ object BlockCacheManager {
 
     fun addBlock(block: Block, owner: UUID, setting: String?) {
         val blockToString = blockToString(block)
-        if (setting != null && setting != "global-setting")
-            cache.put(blockToString, "$owner,$setting")
-        else cache.put(blockToString, "$owner")
-        filter.add(blockToString)
+        val value = if (setting != null && setting != "global-setting")
+            "$owner,$setting"
+        else owner.toString()
+        addBlock(blockToString, value)
+    }
+
+    fun addBlock(state: BlockState, owner: UUID, setting: String?) {
+        val blockToString = locationToString(state.location, state.type.toString())
+        val value = if (setting != null && setting != "global-setting")
+            "$owner,$setting"
+        else owner.toString()
+        addBlock(blockToString, value)
+    }
+
+    fun addBlock(key: String, value: String) {
+        cache.put(key, value)
+        filter.add(key)
     }
 
     fun removeBlock(block: Block) {
@@ -105,7 +122,7 @@ object BlockCacheManager {
     }
 
     private fun locationToString(location: Location, type: String): String =
-        "${location.world?.name},${location.blockX},${location.blockY},${location.blockZ}=${type}"
+        "${location.world?.name},${location.blockX},${location.blockY},${location.blockZ}"
 
     fun entityToString(entity: Item): String {
         return locationToString(entity.location, entity.itemStack.type.toString())
@@ -145,7 +162,7 @@ object BlockCacheManager {
      */
     fun canBreak(block: Block, player: Player?): Boolean {
         val (owner, setting) = getOwner(block) ?: return true
-        return !setting.getBoolean("block-deny.break", owner == player?.uniqueId?.toString())
+        return !setting.getBoolean("block-deny.break", owner, player)
     }
 
     @Throws(Exception::class)

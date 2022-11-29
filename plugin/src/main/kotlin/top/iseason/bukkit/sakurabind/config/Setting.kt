@@ -125,7 +125,7 @@ open class Setting(private val section: ConfigurationSection) {
     /**
      * 返回是否禁止操作
      */
-    fun getBoolean(key: String, isOwner: Boolean = false, player: HumanEntity? = null): Boolean {
+    fun getBoolean(key: String, owner: String? = null, player: HumanEntity? = null): Boolean {
         //权限检查
         if (player != null) {
             if (player.hasPermission("sakurabind.settings.$key.true")) {
@@ -134,8 +134,14 @@ open class Setting(private val section: ConfigurationSection) {
                 return false
             }
         }
-        if (isOwner && setting.contains("$key@")) {
-            return !setting.getBoolean("$key@")
+        //是物主或者拥有物主的权限
+        var isOwner = false
+        if (owner != null) {
+            isOwner =
+                (owner == player?.uniqueId.toString()) || player?.hasPermission("sakurabind.bypass.$owner") == true
+            if (isOwner && setting.contains("$key@")) {
+                return !setting.getBoolean("$key@")
+            }
         }
         if (setting.contains(key)) return setting.getBoolean(key)
         if (isOwner && GlobalSettings.config.contains("$key@")) {

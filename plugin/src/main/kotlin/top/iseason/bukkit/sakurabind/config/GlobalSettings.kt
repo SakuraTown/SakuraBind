@@ -13,7 +13,7 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Key
     @Comment(
         "", "本配置为绑定的全局权限设置，优先级最低",
-        "在布尔类型的选项之后加上@则表示对于物主采取相反的结果",
+        "在布尔类型的选项之后加上@则表示对于物主采取相反的结果,部分没有提示消息的无效",
         "如 item-deny.click@: true 表示仅允许物主拿走容器内的物品",
         "如 item-deny.drop: true 表示禁止所有人丢弃绑定物品",
         "如 block-deny.place@: true 表示禁止所有人放置方块，但允许物主放置"
@@ -105,8 +105,8 @@ object GlobalSettings : SimpleYAMLConfig() {
     var item_deny__consume = true
 
     @Key
-    @Comment("", "手上拿着绑定物品时禁止输入命令")
-    var item_deny__command = true
+    @Comment("", "手上拿着绑定物品时禁止输入一下匹配命令")
+    var item_deny__command = false
 
     @Key
     @Comment("", "匹配的命令正则表达式: '.*' 表示全部。测试: https://www.bejson.com/othertools/regex/")

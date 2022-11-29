@@ -12,6 +12,7 @@ import org.bukkit.event.entity.ItemSpawnEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.cache.BlockCacheManager
+import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
@@ -28,11 +29,11 @@ object BlockListener : Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun onPlayerInteractEvent(event: PlayerInteractEvent) {
-        if (event.player.isOp) return
+        if (Config.checkByPass(event.player)) return
         val player = event.player
         if (event.clickedBlock != null) {
             val (owner, setting) = BlockCacheManager.getOwner(event.clickedBlock!!) ?: return
-            if (setting.getBoolean("block-deny.interact", player.uniqueId.toString() == owner, player)) {
+            if (setting.getBoolean("block-deny.interact", owner, player)) {
                 event.isCancelled = true
                 if (!EasyCoolDown.check(event.player.uniqueId, 1000)) {
                     val uuid = UUID.fromString(owner)
@@ -50,7 +51,9 @@ object BlockListener : Listener {
         if (heldItem.checkAir()) return
         val owner = SakuraBindAPI.getOwner(heldItem) ?: return
         val setting = ItemSettings.getSetting(heldItem)
-        if (setting.getBoolean("block-deny.place", event.player.uniqueId == owner, event.player)) {
+        if (!Config.checkByPass(event.player)
+            && setting.getBoolean("block-deny.place", owner.toString(), event.player)
+        ) {
             if (!EasyCoolDown.check(event.player.uniqueId, 1000)) {
                 event.player.sendColorMessage(Lang.block__deny_place)
             }
@@ -61,6 +64,17 @@ object BlockListener : Listener {
         BlockCacheManager.addBlock(event.block, owner, key)
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun onBlockMultiPlaceEvent(event: BlockMultiPlaceEvent) {
+        val heldItem = event.player.getHeldItem() ?: return
+        if (heldItem.checkAir()) return
+        val owner = SakuraBindAPI.getOwner(heldItem) ?: return
+        val key = NBTEditor.getString(heldItem, *ItemSettings.nbtPath)
+        for (state in event.replacedBlockStates) {
+            BlockCacheManager.addBlock(state, owner, key)
+        }
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockBreakEvent2(event: BlockBreakEvent) {
         val block = event.block
@@ -68,8 +82,8 @@ object BlockListener : Listener {
         val (owner, setting) = BlockCacheManager.getOwner(block) ?: return
         val uuid = UUID.fromString(owner)
         // 有主人但可以破坏
-        val deny = setting.getBoolean("block-deny.break", player.uniqueId.toString() == owner, event.player)
-        if (player.isOp || !deny) {
+        val deny = setting.getBoolean("block-deny.break", owner, event.player)
+        if (Config.checkByPass(event.player) || !deny) {
             if (!event.isDropItems)
                 BlockCacheManager.removeBlock(block)
             return
@@ -114,7 +128,12 @@ object BlockListener : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockPhysicsEvent(event: BlockPhysicsEvent) {
+        if (event.changedType != Material.AIR) return
         val pair = BlockCacheManager.getOwner(event.block) ?: return
+//        println(event.block.state.type)
+        BlockCacheManager.removeBlock(event.block)
+//        println("${event.block.state.type} -> ${event.changedType} ${event.block.location}")
+//        if(event.changedType==Material.AIR)
         BlockCacheManager.addTemp(BlockCacheManager.blockToString(event.block), pair.first)
     }
 
@@ -164,7 +183,6 @@ object BlockListener : Listener {
     fun onItemSpawnEvent(event: ItemSpawnEvent) {
         val itemStack = event.entity.itemStack
         val entityToString = BlockCacheManager.entityToString(event.entity)
-//        println(entityToString)
         val owner =
             BlockCacheManager.getTemp(entityToString) ?: BlockCacheManager.getOwner(entityToString)?.first ?: return
         SakuraBindAPI.bind(itemStack, UUID.fromString(owner))

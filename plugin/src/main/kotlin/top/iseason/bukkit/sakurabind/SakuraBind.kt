@@ -5,6 +5,7 @@ import org.bstats.bukkit.Metrics
 import org.bukkit.event.block.BlockPhysicsEvent
 import org.bukkit.event.player.PlayerLoginEvent
 import top.iseason.bukkit.sakurabind.cache.BlockCacheManager
+import top.iseason.bukkit.sakurabind.cache.DelaySender
 import top.iseason.bukkit.sakurabind.command.mainCommand
 import top.iseason.bukkit.sakurabind.config.*
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
@@ -76,13 +77,16 @@ object SakuraBind : KotlinPlugin() {
     }
 
     override fun onDisable() {
+        DelaySender.shutdown()
         try {
             ItemSettings.settingCache.close()
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
         try {
             BlockCacheManager.save()
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
         info("&6插件已卸载")
     }

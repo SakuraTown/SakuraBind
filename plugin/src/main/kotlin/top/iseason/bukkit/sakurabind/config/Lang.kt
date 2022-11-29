@@ -32,14 +32,20 @@ object Lang : SimpleYAMLConfig() {
     var block__deny_place = "&6你不能放置这个方块，此物物品已绑定"
     var block__deny_interact = "&6你没有这个方块的使用权限,这个方块属于 &b{0}"
 
-    var scanner_item_send_back = "检测到你的背包存在别人的物品，已归还物主!"
+    var scanner_item_send_back = "&6检测到你的背包存在别人的物品，已归还物主!"
+    var command__bind = "&a已绑定你手上的物品"
+    var command__bindTo = "&a已将手上的物品绑定至 &b{0}"
+    var command__unbind = "&a已将手上的物品解绑"
+    var command__bindAll = "&a已绑定整个背包的物品"
+    var command__unbindAll = "&a已解绑整个背包的物品"
+    var command__getLost_item = "&a你领取了 &b{0} &a个遗失物品,请腾出空间领取剩余物品!"
+    var command__getLost_empty = "&6没有遗失物品!"
+    var command__getLost_full = "&6背包空间不足!"
+    var command__getLost_all = "&a你领取了所有的遗失物品! 共 &b{0} &a个物品"
+    var command__getLost_coolDown = "&6你输入得太快了!"
+    var command__autoBind = "&a已添加 &b{0}"
+    var command__debug = "&aDebug模式: &b{0}"
 
-    var get_item = "&a你领取了 &b{0} &a个遗失物品,请腾出空间领取剩余物品!"
-    var get_empty = "&6没有遗失物品!"
-    var get_full = "&6背包空间不足!"
-    var get_all = "&a你领取了所有的遗失物品! 共 &b{0} &a个物品"
-
-    var command_coolDown = "&6你输入得太快了!"
     var has_lost_item = "&a你有遗失的物品,请输入 &6'/sakurabind get' &a领取"
 
     override fun onLoaded(section: ConfigurationSection) {

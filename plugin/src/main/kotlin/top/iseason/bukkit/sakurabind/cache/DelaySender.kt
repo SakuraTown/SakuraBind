@@ -12,7 +12,7 @@ import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toByteArray
-import top.iseason.bukkittemplate.utils.other.submit
+import top.iseason.bukkittemplate.utils.other.runAsync
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -23,7 +23,7 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
     //缓冲5秒
     @Volatile
     private var coolDown = 3
-
+    private var onShutDown = false
     override fun run() {
         if (coolDown < 0) {
             cancel()
@@ -48,23 +48,28 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
 
     override fun cancel() {
         super.cancel()
-        sendItem()
+        sendItem(!onShutDown)
         remove(uuid)
     }
 
-    private fun sendItem() {
+    private fun sendItem(async: Boolean = true) {
         val itemStacks = inv.filterNotNull()
         if (Config.sakuraMail_hook && SakuraMailHook.hasHooked) {
-            submit(async = true) {
+            if (async) runAsync {
                 SakuraMailHook.sendMail(uuid, itemStacks)
-            }
+            } else SakuraMailHook.sendMail(uuid, itemStacks)
         } else if (DatabaseConfig.isConnected) {
-            submit(async = true) {
+            if (async) runAsync {
                 dbTransaction {
                     PlayerItem.new {
                         this.uuid = this@DelaySender.uuid
                         this.item = ExposedBlob(itemStacks.toByteArray())
                     }
+                }
+            } else dbTransaction {
+                PlayerItem.new {
+                    this.uuid = this@DelaySender.uuid
+                    this.item = ExposedBlob(itemStacks.toByteArray())
                 }
             }
         } else {
@@ -84,5 +89,11 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
         }
 
         fun remove(uuid: UUID) = map.remove(uuid)
+        fun shutdown() {
+            map.values.forEach {
+                it.onShutDown = true
+                it.cancel()
+            }
+        }
     }
 }
