@@ -3,6 +3,7 @@ package top.iseason.bukkit.sakurabind.config
 import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.HumanEntity
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.noColor
@@ -25,7 +26,7 @@ open class Setting(private val section: ConfigurationSection) {
             throw InvalidParameterException("'match'选项不能为空!")
         }
         setting =
-            section.getConfigurationSection("settings") ?: throw InvalidParameterException("需要声明 'settings' 选项")
+            section.getConfigurationSection("settings") ?: YamlConfiguration()
         namePattern = matcher.getString("name")?.toPattern()
         nameWithoutColorPattern = matcher.getString("name-without-color")?.toPattern()
         materialPattern = matcher.getString("material")?.toPattern()

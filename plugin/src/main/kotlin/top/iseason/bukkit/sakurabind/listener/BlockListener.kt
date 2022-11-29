@@ -143,8 +143,6 @@ object BlockListener : Listener {
     fun onBlockPhysicsEvent(event: BlockPhysicsEvent) {
         if (event.block.type != Material.AIR) return
         val pair = BlockCacheManager.getOwner(event.block) ?: return
-//        println(event.block.state.type)
-//        println(event.block.location)
         BlockCacheManager.removeBlock(event.block)
 //        println("${event.block.type} -> ${event.changedType} ${event.block.location}")
 //        if(event.changedType==Material.AIR)
@@ -206,6 +204,5 @@ object BlockListener : Listener {
         BlockCacheManager.removeTemp(entityToString)
 
     }
-
 
 }

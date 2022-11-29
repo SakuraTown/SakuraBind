@@ -34,8 +34,8 @@ object ItemSettings : SimpleYAMLConfig() {
         "",
         "settings 项为此matcher独立的设置，完全兼容global-setting中的选项",
         "settings 项中以 '@' 结尾的布尔类型的项，其物主将使用与他人相反的设置",
-        "         如 block-deny 下的 break: false 表示所有人都不能破坏此方块物品",
-        "         但如果是 break@: false 表示所有人都不能破坏,但物主可以破坏此方块物品",
+        "         如 block-deny 下的 break: true 表示所有人都不能破坏此方块物品",
+        "         但如果是 break@: true 表示所有人都不能破坏,但物主可以破坏此方块物品",
         "settings 中不存在的项将继承 global-setting.yml 中的同名项",
     )
     var readme = ""

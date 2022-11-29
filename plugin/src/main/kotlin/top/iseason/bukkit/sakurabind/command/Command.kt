@@ -200,11 +200,13 @@ fun mainCommand() {
             default = PermissionDefault.OP
             isPlayerOnly = true
             async = true
+            param("[nbt]", suggestRuntime = { listOf(Config.auto_bind_nbt) })
             executor {
                 val player = it as Player
+                val nbt = nextOrNull<String>() ?: Config.auto_bind_nbt
                 val heldItem = player.getHeldItem()
                 if (heldItem.checkAir()) return@executor
-                val autoBindNbt = Config.auto_bind_nbt.split('.').toTypedArray()
+                val autoBindNbt = nbt.split('.').toTypedArray()
                 heldItem!!.itemMeta = NBTEditor.set(heldItem, "", *autoBindNbt)!!.itemMeta
                 player.updateInventory()
                 if (!hasParma("-silent"))

@@ -11,6 +11,7 @@ object BlockListener1132 : Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockPhysicsEvent(event: BlockPhysicsEvent) {
         val owner = BlockCacheManager.getOwner(event.sourceBlock)?.first ?: return
+        BlockCacheManager.removeBlock(event.sourceBlock)
         BlockCacheManager.addTemp(BlockCacheManager.blockToString(event.sourceBlock), owner)
     }
 }
