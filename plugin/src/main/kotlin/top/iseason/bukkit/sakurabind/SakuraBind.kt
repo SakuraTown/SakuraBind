@@ -34,7 +34,7 @@ object SakuraBind : KotlinPlugin() {
 
     override fun onEnable() {
         SimpleLogger.prefix = "&a[&6${javaPlugin.description.name}&a]&r ".toColor()
-        SimpleYAMLConfig.notifyMessage = "&7配置 &f%s &7已重载!"
+        SimpleYAMLConfig.notifyMessage = "&6配置 &f%s &a已重载!"
         SakuraMailHook.checkHooked()
         if (PlaceHolderHook.hasHooked) {
             PlaceHolderExpansion.register()
@@ -42,7 +42,7 @@ object SakuraBind : KotlinPlugin() {
         try {
             mainCommand()
         } catch (e: Exception) {
-            warn("命令注册异常, 请重启!")
+            warn("命令注册异常,请重新启动......")
             e.printStackTrace()
         }
         GlobalSettings.load(false)
@@ -69,7 +69,7 @@ object SakuraBind : KotlinPlugin() {
             try {
                 BlockCacheManager
             } catch (e: Exception) {
-                warn("&6缓存初始化异常!")
+                warn("缓存初始化异常!")
             }
             BlockListener.register()
             info("&a已启用方块监听器!")

@@ -96,9 +96,9 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     if (shrink != "true") {
         dontshrink()
     }
-    optimizationpasses(8)
+    optimizationpasses(5)
     dontwarn()
-    dontpreverify()
+//    dontpreverify()
     //添加运行环境
     val javaHome = System.getProperty("java.home")
     if (JavaVersion.current() < JavaVersion.toVersion(9)) {
