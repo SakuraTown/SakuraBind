@@ -105,8 +105,9 @@ object Config : SimpleYAMLConfig() {
                                 hasFound = true
                                 continue
                             }
+//                            println("${item.type} ${setting.getBoolean("auto-bind.enable", null, it)}")
                             if (owner == null &&
-                                (setting.getBoolean("auto-bind.enable") || NBTEditor.contains(
+                                (setting.getBoolean("auto-bind.enable", null, it) || NBTEditor.contains(
                                     item, auto_bind_nbt
                                 ))
                             ) {
