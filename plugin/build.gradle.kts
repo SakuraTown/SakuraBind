@@ -96,8 +96,9 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     if (shrink != "true") {
         dontshrink()
     }
-    optimizationpasses(5)
+    optimizationpasses(8)
     dontwarn()
+    dontpreverify()
     //添加运行环境
     val javaHome = System.getProperty("java.home")
     if (JavaVersion.current() < JavaVersion.toVersion(9)) {
@@ -117,14 +118,16 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     //class规则
     if (isObfuscated) keep(allowObf, "class a {}")
     else keep("class $groupS.libs.core.BukkitTemplate {}")
+//    keep("class kotlin.Metadata {}")
     keep(allowObf, "class * implements $groupS.libs.core.KotlinPlugin {*;}")
     keepclassmembers("class * extends $groupS.libs.core.config.SimpleYAMLConfig {*;}")
     keepclassmembers("class * implements $groupS.libs.core.ui.container.BaseUI {*;}")
     keepclassmembers(allowObf, "class * implements org.bukkit.event.Listener {*;}")
+    keepclassmembers(allowObf, "class $groupS.libs.bstats {}")
     keepclassmembers(allowObf, "class * implements org.jetbrains.exposed.dao.id.IdTable {*;}")
     keepclassmembers(allowObf, "class * implements org.jetbrains.exposed.dao.Entity {*;}")
-    keepattributes("Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*,EnclosingMethod")
-    keepkotlinmetadata()
+    keepattributes("Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*")
+//    keepkotlinmetadata()
     repackageclasses()
     if (isObfuscated)
         outjars(File(jarOutputFile, "${rootProject.name}-${rootProject.version}-obfuscated.jar"))

@@ -28,11 +28,13 @@ import top.iseason.bukkittemplate.utils.bukkit.EventUtils.register
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 
 object SakuraBind : KotlinPlugin() {
+    override fun onAsyncEnable() {
+        Metrics(javaPlugin, 16968)
+    }
 
     override fun onEnable() {
-        Metrics(javaPlugin, 16968)
         SimpleLogger.prefix = "&a[&6${javaPlugin.description.name}&a]&r ".toColor()
-        SimpleYAMLConfig.notifyMessage = "配置 %s 已重载!"
+        SimpleYAMLConfig.notifyMessage = "&7配置 &f%s &7已重载!"
         SakuraMailHook.checkHooked()
         if (PlaceHolderHook.hasHooked) {
             PlaceHolderExpansion.register()
@@ -40,7 +42,7 @@ object SakuraBind : KotlinPlugin() {
         try {
             mainCommand()
         } catch (e: Exception) {
-            warn("命令注册异常!")
+            warn("命令注册异常, 请重启!")
             e.printStackTrace()
         }
         GlobalSettings.load(false)
@@ -67,19 +69,17 @@ object SakuraBind : KotlinPlugin() {
             try {
                 BlockCacheManager
             } catch (e: Exception) {
-                warn("&a缓存初始化异常!")
+                warn("&6缓存初始化异常!")
             }
             BlockListener.register()
-            info("&a已启用方块监听")
+            info("&a已启用方块监听器!")
             try {
                 BlockPhysicsEvent::class.java.getMethod("getSourceBlock")
                 BlockListener1132.register()
             } catch (_: Exception) {
             }
         }
-
-        info("&a插件已启用")
-
+        info("&a插件已启用!")
     }
 
     override fun onDisable() {

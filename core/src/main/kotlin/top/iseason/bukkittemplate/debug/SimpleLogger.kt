@@ -23,7 +23,7 @@ fun debug(message: Any?) {
  * 输出警告日志
  */
 fun warn(message: Any?) {
-    BukkitTemplate.getPlugin().logger.warning(SimpleLogger.prefix + message.toString())
+    BukkitTemplate.getPlugin().logger.warning(message.toString())
 }
 
 /**
