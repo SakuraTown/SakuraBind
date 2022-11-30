@@ -178,14 +178,16 @@ object ItemUtils {
         val toJson = NBTEditor.getNBTCompound(this, "tag").toJson()
 //        println(toJson)
         val json = Gson().fromJson(toJson, Map::class.java).toMutableMap()
+        this.durability
         with(itemMeta!!) {
             // 名字
             if (hasDisplayName()) yaml["name"] = displayName
             // lore
             if (hasLore()) yaml["lore"] = lore
             // 耐久
-            if (this is Damageable) if (damage != 0) {
-                yaml["damage"] = damage
+            val durability = this@toSection.durability
+            if (durability != 0.toShort()) {
+                yaml["damage"] = durability
                 json.remove("Damage")
             }
             // 附魔
@@ -324,23 +326,7 @@ object ItemUtils {
                 }
                 json.remove("EntityTag")
             }
-            // 1.9以上的属性
-            if (NBTEditor.getMinecraftVersion()
-                    .greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_9) && hasAttributeModifiers()
-            ) {
-                val mutableMapOf = mutableMapOf<String, Any>()
-                attributeModifiers!!.forEach { t, u ->
-                    val serialize = mutableMapOf<String, String>()
-                    serialize["attribute"] = t.name
-                    serialize["uuid"] = u.uniqueId.toString()
-                    serialize["operation"] = u.operation.name
-                    serialize["amount"] = u.amount.toString()
-                    if (u.slot != null) serialize["slot"] = u.slot!!.name
-                    mutableMapOf[u.name] = serialize
-                }
-                yaml.createSection("attributes", mutableMapOf)
-                json.remove("AttributeModifiers")
-            }
+
             // 1.11以上
             if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_11)) {
                 // 无法破坏
@@ -360,6 +346,20 @@ object ItemUtils {
             }
             // 1.14 以上
             if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_14)) {
+                if (hasAttributeModifiers()) {
+                    val mutableMapOf = mutableMapOf<String, Any>()
+                    attributeModifiers!!.forEach { t, u ->
+                        val serialize = mutableMapOf<String, String>()
+                        serialize["attribute"] = t.name
+                        serialize["uuid"] = u.uniqueId.toString()
+                        serialize["operation"] = u.operation.name
+                        serialize["amount"] = u.amount.toString()
+                        if (u.slot != null) serialize["slot"] = u.slot!!.name
+                        mutableMapOf[u.name] = serialize
+                    }
+                    yaml.createSection("attributes", mutableMapOf)
+                    json.remove("AttributeModifiers")
+                }
                 // 模型
                 if (hasCustomModelData()) {
                     yaml["custom-model-data"] = customModelData
@@ -451,10 +451,10 @@ object ItemUtils {
         val url = section.getString("skull")
         if (url != null) item = NBTEditor.getHead(url)
         item.amount = section.getInt("amount", 1)
+        item.durability = section.getInt("damage", 0).toShort()
         item.applyMeta {
             section.getString("name")?.also { setDisplayName(it.toColor()) }
             section.getStringList("lore").also { if (it.isNotEmpty()) lore = it.toColor() }
-            if (this is Damageable) damage = section.getInt("damage", 0)
             section.getConfigurationSection("enchants")?.getValues(false)?.forEach { (t, u) ->
                 val enchant = matchEnchant(t) ?: return@forEach
                 val level = u as? Int ?: return@forEach
@@ -509,7 +509,7 @@ object ItemUtils {
                         val type =
                             section.getString("spawner")?.let { runCatching { EntityType.valueOf(it) }.getOrNull() }
                         if (type != null) blockState.spawnedType = type
-                    } else if (blockState is BlockInventoryHolder) {
+                    } else if (blockState is InventoryHolder) {
                         if (allowNested) {
                             val configurationSection = section.getConfigurationSection("inventory")
                             configurationSection?.getKeys(false)?.forEach {
@@ -616,7 +616,7 @@ object ItemUtils {
                     }
                 }
             }
-            if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_9)
+            if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_14)
             ) {
                 val section2 = section.getConfigurationSection("attributes")
                 section2?.getKeys(false)?.forEach { name ->
