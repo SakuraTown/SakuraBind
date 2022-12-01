@@ -10,11 +10,13 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.noColor
 import java.security.InvalidParameterException
 import java.util.regex.Pattern
 
-open class Setting(private val section: ConfigurationSection) {
+open class Setting(section: ConfigurationSection) {
     private var namePattern: Pattern? = null
     private var nameWithoutColorPattern: Pattern? = null
     private var materialPattern: Pattern? = null
     private var materials: HashSet<Material>? = null
+    private var ids: List<Pair<Int, Byte?>>? = null
+    private var materialIds: List<Pair<Material, Byte?>>? = null
     private var lorePatterns: List<Pattern>? = null
     private var nbt: ConfigurationSection? = null
     private var setting: ConfigurationSection
@@ -31,6 +33,21 @@ open class Setting(private val section: ConfigurationSection) {
         nameWithoutColorPattern = matcher.getString("name-without-color")?.toPattern()
         materialPattern = matcher.getString("material")?.toPattern()
         namePattern = matcher.getString("name")?.toPattern()
+        val idList = matcher.getStringList("ids")
+        ids = if (idList.isEmpty()) null else idList.mapNotNull {
+            val split = it.split(':')
+            val mainId = split.getOrNull(0)?.toIntOrNull() ?: return@mapNotNull null
+            val subId = split.getOrNull(1)?.toByteOrNull()
+            mainId to subId
+        }
+        val mIds = matcher.getStringList("materialIds")
+        materialIds = if (mIds.isEmpty()) null else mIds.mapNotNull {
+            val split = it.split(':')
+            val first = split.getOrNull(0) ?: return@mapNotNull null
+            val m = Material.matchMaterial(first) ?: return@mapNotNull null
+            val subId = split.getOrNull(1)?.toByteOrNull()
+            m to subId
+        }
         val patterns = matcher.getStringList("lore").map { it.toPattern() }
         if (patterns.isNotEmpty())
             lorePatterns = patterns
@@ -64,6 +81,30 @@ open class Setting(private val section: ConfigurationSection) {
         if (materials != null) {
             val matchMaterials = materials!!.contains(item.type)
             if (!matchMaterials) return false
+        }
+        if (ids != null) {
+            val matchId = ids!!.any {
+                val mData = item.data ?: return@any false
+                val id = mData.itemType.id
+//                println("${it.first}:${it.second} -> ${id}:${mData.data}")
+                if (it.second == null)
+                    it.first == id
+                else
+                    it.first == id && mData.data == it.second
+            }
+            if (!matchId) return false
+        }
+        if (materialIds != null) {
+            val matchMaterialIds = materialIds!!.any {
+                val mData = item.data ?: return@any false
+                val material = mData.itemType
+//                println("${it.first}:${it.second} -> ${id}:${mData.data}")
+                if (it.second == null)
+                    it.first == material
+                else
+                    it.first == material && mData.data == it.second
+            }
+            if (!matchMaterialIds) return false
         }
         if (lorePatterns != null) {
             val matchLore = with(lorePatterns!!) {

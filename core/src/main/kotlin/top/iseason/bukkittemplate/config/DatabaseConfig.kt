@@ -94,10 +94,10 @@ object DatabaseConfig : SimpleYAMLConfig() {
     var data_source__registerMbeans = false
 
     @Key
-    var data_source__connectionInitSql = null
+    var data_source__connectionInitSql = ""
 
     @Key
-    var data_source__transactionIsolation = null
+    var data_source__transactionIsolation = ""
 
     @Key
     var data_source__validationTimeout = 5000L
@@ -188,22 +188,38 @@ object DatabaseConfig : SimpleYAMLConfig() {
             with(config) {
                 username = this@DatabaseConfig.user
                 password = this@DatabaseConfig.password
-                isAutoCommit = data_source__autoCommit
-                connectionTimeout = data_source__connectionTimeout
-                idleTimeout = data_source__idleTimeout
-                keepaliveTime = data_source__keepaliveTime
-                maxLifetime = data_source__maxLifetime
-                minimumIdle = data_source__minimumIdle
-                maximumPoolSize = data_source__maximumPoolSize
-                initializationFailTimeout = data_source__initializationFailTimeout
-                isIsolateInternalQueries = data_source__isolateInternalQueries
-                isAllowPoolSuspension = data_source__allowPoolSuspension
-                isReadOnly = data_source__readOnly
-                isRegisterMbeans = data_source__registerMbeans
-                connectionInitSql = data_source__connectionInitSql
-                transactionIsolation = data_source__transactionIsolation
-                validationTimeout = data_source__validationTimeout
-                leakDetectionThreshold = data_source__leakDetectionThreshold
+//                isAutoCommit = data_source__autoCommit
+//                connectionTimeout = data_source__connectionTimeout
+//                idleTimeout = data_source__idleTimeout
+//                keepaliveTime = data_source__keepaliveTime
+//                maxLifetime = data_source__maxLifetime
+//                minimumIdle = data_source__minimumIdle
+//                maximumPoolSize = data_source__maximumPoolSize
+//                initializationFailTimeout = data_source__initializationFailTimeout
+//                isIsolateInternalQueries = data_source__isolateInternalQueries
+//                isAllowPoolSuspension = data_source__allowPoolSuspension
+//                isReadOnly = data_source__readOnly
+//                isRegisterMbeans = data_source__registerMbeans
+//                connectionInitSql = data_source__connectionInitSql
+//                transactionIsolation = data_source__transactionIsolation
+//                validationTimeout = data_source__validationTimeout
+//                leakDetectionThreshold = data_source__leakDetectionThreshold
+                addDataSourceProperty("autoCommit", data_source__autoCommit)
+                addDataSourceProperty("connectionTimeout", data_source__connectionTimeout)
+                addDataSourceProperty("idleTimeout", data_source__idleTimeout)
+                addDataSourceProperty("keepaliveTime", data_source__keepaliveTime)
+                addDataSourceProperty("maxLifetime", data_source__maxLifetime)
+                addDataSourceProperty("minimumIdle", data_source__minimumIdle)
+                addDataSourceProperty("maximumPoolSize", data_source__maximumPoolSize)
+                addDataSourceProperty("initializationFailTimeout", data_source__initializationFailTimeout)
+                addDataSourceProperty("isolateInternalQueries", data_source__isolateInternalQueries)
+                addDataSourceProperty("allowPoolSuspension", data_source__allowPoolSuspension)
+                addDataSourceProperty("readOnly", data_source__readOnly)
+                addDataSourceProperty("registerMbeans", data_source__registerMbeans)
+                addDataSourceProperty("connectionInitSql", data_source__connectionInitSql)
+                addDataSourceProperty("transactionIsolation", data_source__transactionIsolation)
+                addDataSourceProperty("validationTimeout", data_source__validationTimeout)
+                addDataSourceProperty("leakDetectionThreshold", data_source__leakDetectionThreshold)
                 poolName = BukkitTemplate.getPlugin().name
             }
             ds = HikariDataSource(config)

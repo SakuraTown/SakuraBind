@@ -29,6 +29,8 @@ object ItemSettings : SimpleYAMLConfig() {
         "match 项下的 name-without-color 为 除去颜色代码的物品名字, 必须为非原版翻译名(也就是从创造物品栏拿出来的'圆石'的name为空)",
         "match 项下的 material 为 物品材质,使用正则匹配",
         "match 项下的 materials 为 物品材质,使用全名匹配 https://bukkit.windit.net/javadoc/org/bukkit/Material.html",
+        "match 项下的 ids 为 物品id:子id 匹配方式 如 6578 或 6578:2",
+        "match 项下的 materialIds 为 物品材质:子ID 匹配方式 如 STONE 或 STONE:2 ; 如果只需要匹配材质请使用效率更高的 materials 方式",
         "match 项下的 lore 为 物品lore 如有多行则需全匹配",
         "match 项下的 nbt 为 物品NBT ",
         "",
@@ -54,6 +56,8 @@ object ItemSettings : SimpleYAMLConfig() {
             set("name", "^这是.*的物品$")
             set("material", "BOW|BOOKSHELF")
             set("materials", listOf("DIAMOND_SWORD"))
+            set("materialId", listOf("SPECIAL:2"))
+            set("ids", listOf("6578", "2233:2"))
             set("lore", listOf("绑定物品", "属于"))
             createSection("nbt").apply { set("testnbt", ".*") }
         }
