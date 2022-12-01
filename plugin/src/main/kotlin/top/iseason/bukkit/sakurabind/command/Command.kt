@@ -182,7 +182,7 @@ fun mainCommand() {
                 }
                 if (hasParma("-silent")) return@executor
 //                println(totalCount)
-                if (totalCount == -1) {
+                if (totalCount == 0 && !isEmpty) {
                     it.sendColorMessage(Lang.command__getLost_full)
                 } else if (totalCount == 0) {
                     it.sendColorMessage(Lang.command__getLost_empty)

@@ -12,7 +12,7 @@ import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toByteArray
-import top.iseason.bukkittemplate.utils.other.runAsync
+import top.iseason.bukkittemplate.utils.other.submit
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -55,11 +55,12 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
     private fun sendItem(async: Boolean = true) {
         val itemStacks = inv.filterNotNull()
         if (Config.sakuraMail_hook && SakuraMailHook.hasHooked) {
-            if (async) runAsync {
+            if (async) submit(async = true) {
                 SakuraMailHook.sendMail(uuid, itemStacks)
             } else SakuraMailHook.sendMail(uuid, itemStacks)
         } else if (DatabaseConfig.isConnected) {
-            if (async) runAsync {
+            println("send")
+            if (async) submit(async = true) {
                 sendToDataBase(uuid, itemStacks)
             } else sendToDataBase(uuid, itemStacks)
         } else {

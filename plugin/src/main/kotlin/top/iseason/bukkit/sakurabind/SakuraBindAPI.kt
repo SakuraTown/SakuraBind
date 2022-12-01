@@ -197,8 +197,12 @@ object SakuraBindAPI {
             if (!EasyCoolDown.check(uuid, 1000))
                 player.sendColorMessage(Lang.send_back)
         } else release = items.toMutableList()
+
         // 使用邮件发送
-        DelaySender.sendItem(uuid, release)
+
+        if (release.isNotEmpty()) {
+            DelaySender.sendItem(uuid, release)
+        }
         return emptyList()
     }
 }

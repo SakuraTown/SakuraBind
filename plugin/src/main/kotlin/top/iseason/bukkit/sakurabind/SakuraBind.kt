@@ -26,6 +26,7 @@ import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.listen
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.register
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
+// TODO: 掉落物掉虚空修复，优化物品返还功能
 
 object SakuraBind : KotlinPlugin() {
     override fun onAsyncEnable() {

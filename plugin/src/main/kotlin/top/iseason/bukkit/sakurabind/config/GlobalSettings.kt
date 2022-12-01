@@ -1,6 +1,7 @@
 package top.iseason.bukkit.sakurabind.config
 
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.configuration.MemorySection
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
@@ -46,7 +47,7 @@ object GlobalSettings : SimpleYAMLConfig() {
 
     @Key
     @Comment("", "", "物品禁用设置")
-    var item_deny = ""
+    var item_deny: MemorySection? = null
 
     @Key("item-deny.interact@")
     @Comment("", "手上拿着绑定物品时禁止交互(点击方块)")
@@ -126,7 +127,7 @@ object GlobalSettings : SimpleYAMLConfig() {
 
     @Key
     @Comment("", "", "方块物品相关设置", "由于监听方块物品需要较多的资源，如果不绑定方块物品关闭以节省性能")
-    var block_deny = true
+    var block_deny: MemorySection? = null
 
     @Key("block-deny.break@")
     @Comment("", "禁止方块物品被破坏")
@@ -154,7 +155,7 @@ object GlobalSettings : SimpleYAMLConfig() {
 
     @Key
     @Comment("", "", "自动绑定设置")
-    var auto_bind = ""
+    var auto_bind: MemorySection? = null
 
     @Key
     @Comment("", "是否开启自动绑定,如果全局开启将会绑定所有物品，请在setting.yml中配置开启以绑定特殊物品")
