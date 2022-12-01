@@ -15,9 +15,10 @@ open class Setting(section: ConfigurationSection) {
     private var nameWithoutColorPattern: Pattern? = null
     private var materialPattern: Pattern? = null
     private var materials: HashSet<Material>? = null
-    private var ids: List<Pair<Int, Byte?>>? = null
-    private var materialIds: List<Pair<Material, Byte?>>? = null
+    private var ids: List<Pair<Int, Int?>>? = null
+    private var materialIds: List<Pair<Material, Int?>>? = null
     private var lorePatterns: List<Pattern>? = null
+    private var stripColor = false
     private var nbt: ConfigurationSection? = null
     private var setting: ConfigurationSection
 
@@ -37,7 +38,7 @@ open class Setting(section: ConfigurationSection) {
         ids = if (idList.isEmpty()) null else idList.mapNotNull {
             val split = it.split(':')
             val mainId = split.getOrNull(0)?.toIntOrNull() ?: return@mapNotNull null
-            val subId = split.getOrNull(1)?.toByteOrNull()
+            val subId = split.getOrNull(1)?.toIntOrNull()
             mainId to subId
         }
         val mIds = matcher.getStringList("materialIds")
@@ -45,12 +46,17 @@ open class Setting(section: ConfigurationSection) {
             val split = it.split(':')
             val first = split.getOrNull(0) ?: return@mapNotNull null
             val m = Material.matchMaterial(first) ?: return@mapNotNull null
-            val subId = split.getOrNull(1)?.toByteOrNull()
+            val subId = split.getOrNull(1)?.toIntOrNull()
             m to subId
         }
-        val patterns = matcher.getStringList("lore").map { it.toPattern() }
-        if (patterns.isNotEmpty())
-            lorePatterns = patterns
+        val list = if (matcher.contains("lore"))
+            matcher.getStringList("lore")
+        else if (matcher.contains("lore-without-color")) {
+            stripColor = true
+            matcher.getStringList("lore-without-color")
+        } else emptyList()
+        if (list.isNotEmpty())
+            lorePatterns = list.map { it.toPattern() }
         val ms = matcher.getStringList("materials").mapNotNull { Material.matchMaterial(it) }.toHashSet()
         if (ms.isNotEmpty()) materials = ms
         nbt = matcher.getConfigurationSection("nbt")
@@ -86,11 +92,13 @@ open class Setting(section: ConfigurationSection) {
             val matchId = ids!!.any {
                 val mData = item.data ?: return@any false
                 val id = mData.itemType.id
-//                println("${it.first}:${it.second} -> ${id}:${mData.data}")
+                var subId = mData.data.toInt()
+                if (subId < 0) subId += 256
+//                debug("尝试匹配物品id: ${it.first}:${it.second} 实际的id ${id}:${subId}")
                 if (it.second == null)
                     it.first == id
                 else
-                    it.first == id && mData.data == it.second
+                    it.first == id && subId == it.second
             }
             if (!matchId) return false
         }
@@ -98,11 +106,13 @@ open class Setting(section: ConfigurationSection) {
             val matchMaterialIds = materialIds!!.any {
                 val mData = item.data ?: return@any false
                 val material = mData.itemType
+                var subId = mData.data.toInt()
+                if (subId < 0) subId += 256
 //                println("${it.first}:${it.second} -> ${id}:${mData.data}")
                 if (it.second == null)
                     it.first == material
                 else
-                    it.first == material && mData.data == it.second
+                    it.first == material && subId == it.second
             }
             if (!matchMaterialIds) return false
         }
@@ -118,7 +128,8 @@ open class Setting(section: ConfigurationSection) {
                 label1@ while (patternIter.hasNext()) {
                     val next = patternIter.next()
                     label2@ while (loreIter.hasNext()) {
-                        val l = loreIter.next()
+                        var l = loreIter.next()
+                        if (stripColor) l = l.noColor()
                         val find = next.matcher(l).find()
                         if (find) {
                             if (!start) {

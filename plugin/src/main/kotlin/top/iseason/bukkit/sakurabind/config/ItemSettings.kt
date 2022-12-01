@@ -32,6 +32,7 @@ object ItemSettings : SimpleYAMLConfig() {
         "match 项下的 ids 为 物品id:子id 匹配方式 如 6578 或 6578:2",
         "match 项下的 materialIds 为 物品材质:子ID 匹配方式 如 STONE 或 STONE:2 ; 如果只需要匹配材质请使用效率更高的 materials 方式",
         "match 项下的 lore 为 物品lore 如有多行则需全匹配",
+        "match 项下的 lore-without-color 为 物品lore除去颜色代码 如有多行则需全匹配 与 lore 互斥",
         "match 项下的 nbt 为 物品NBT ",
         "",
         "settings 项为此matcher独立的设置，完全兼容global-setting中的选项",
