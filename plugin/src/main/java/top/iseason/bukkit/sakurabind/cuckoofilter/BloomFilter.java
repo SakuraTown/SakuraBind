@@ -22,8 +22,8 @@ import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Collection;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static top.iseason.bukkit.sakurabind.cuckoofilter.Preconditions.checkArgument;
+import static top.iseason.bukkit.sakurabind.cuckoofilter.Preconditions.checkNotNull;
 
 /**
  * A Bloom filter for instances of {@code E} that implements the {@link ProbabilisticFilter}

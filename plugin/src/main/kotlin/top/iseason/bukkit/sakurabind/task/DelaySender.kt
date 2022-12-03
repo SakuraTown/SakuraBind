@@ -59,7 +59,7 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
                 SakuraMailHook.sendMail(uuid, itemStacks)
             } else SakuraMailHook.sendMail(uuid, itemStacks)
         } else if (DatabaseConfig.isConnected) {
-            println("send")
+//            println("send")
             if (async) submit(async = true) {
                 sendToDataBase(uuid, itemStacks)
             } else sendToDataBase(uuid, itemStacks)

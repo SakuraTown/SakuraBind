@@ -21,8 +21,8 @@ import com.google.common.hash.Hashing;
 
 import java.util.Random;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.math.LongMath.mod;
+import static top.iseason.bukkit.sakurabind.cuckoofilter.Preconditions.checkArgument;
 
 /**
  * Cuckoo Filter strategy employing Murmur3 32-bit hashes and parity-based altIndex calculation.

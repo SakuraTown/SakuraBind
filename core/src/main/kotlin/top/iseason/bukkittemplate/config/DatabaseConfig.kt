@@ -21,6 +21,7 @@ import top.iseason.bukkittemplate.debug.debug
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.dependency.DependencyDownloader
 import java.io.File
+import java.util.*
 
 @FilePath("database.yml")
 object DatabaseConfig : SimpleYAMLConfig() {
@@ -71,6 +72,9 @@ object DatabaseConfig : SimpleYAMLConfig() {
 
     @Key
     var data_source__maxLifetime = 1800000L
+
+    @Key
+    var data_source__connectionTestQuery = "SELECT 1"
 
     @Key
     var data_source__minimumIdle = 1
@@ -139,21 +143,39 @@ object DatabaseConfig : SimpleYAMLConfig() {
             val dd = DependencyDownloader()
                 .addRepository("https://maven.aliyun.com/repository/public")
                 .addRepository("https://repo.maven.apache.org/maven2/")
-
+            val props = Properties().apply {
+                setProperty("autoCommit", data_source__autoCommit.toString())
+                setProperty("connectionTimeout", data_source__connectionTimeout.toString())
+                setProperty("idleTimeout", data_source__idleTimeout.toString())
+                setProperty("keepaliveTime", data_source__keepaliveTime.toString())
+                setProperty("maxLifetime", data_source__maxLifetime.toString())
+                setProperty("connectionTestQuery", data_source__connectionTestQuery)
+                setProperty("minimumIdle", data_source__minimumIdle.toString())
+                setProperty("maximumPoolSize", data_source__maximumPoolSize.toString())
+                setProperty("initializationFailTimeout", data_source__initializationFailTimeout.toString())
+                setProperty("isolateInternalQueries", data_source__isolateInternalQueries.toString())
+                setProperty("allowPoolSuspension", data_source__allowPoolSuspension.toString())
+                setProperty("readOnly", data_source__readOnly.toString())
+                setProperty("registerMbeans", data_source__registerMbeans.toString())
+                setProperty("connectionInitSql", data_source__connectionInitSql)
+                setProperty("transactionIsolation", data_source__transactionIsolation)
+                setProperty("validationTimeout", data_source__validationTimeout.toString())
+                setProperty("leakDetectionThreshold", data_source__leakDetectionThreshold.toString())
+            }
             val config = when (database) {
-                "MySQL" -> HikariConfig().apply {
+                "MySQL" -> HikariConfig(props).apply {
                     dd.downloadDependency("mysql:mysql-connector-java:8.0.30")
                     jdbcUrl = "jdbc:mysql://$url/$dbName$params"
                     driverClassName = "com.mysql.cj.jdbc.Driver"
                 }
 
-                "MariaDB" -> HikariConfig().apply {
+                "MariaDB" -> HikariConfig(props).apply {
                     dd.downloadDependency("org.mariadb.jdbc:mariadb-java-client:3.1.0")
                     jdbcUrl = "jdbc:mariadb://$url/$dbName$params"
                     driverClassName = "org.mariadb.jdbc.Driver"
                 }
 
-                "SQLite" -> HikariConfig().apply {
+                "SQLite" -> HikariConfig(props).apply {
                     dd.downloadDependency("org.xerial:sqlite-jdbc:3.40.0.0")
                     jdbcUrl = "jdbc:sqlite:$url$params"
                     driverClassName = "org.sqlite.JDBC"
@@ -165,19 +187,19 @@ object DatabaseConfig : SimpleYAMLConfig() {
 //                    driverClassName = "org.h2.Driver"
 //                }
 
-                "PostgreSQL" -> HikariConfig().apply {
+                "PostgreSQL" -> HikariConfig(props).apply {
                     dd.downloadDependency("com.impossibl.pgjdbc-ng:pgjdbc-ng:0.8.9")
                     jdbcUrl = "jdbc:pgsql://$url/$dbName$params"
                     driverClassName = "com.impossibl.postgres.jdbc.PGDriver"
                 }
 
-                "Oracle" -> HikariConfig().apply {
+                "Oracle" -> HikariConfig(props).apply {
                     dd.downloadDependency("com.oracle.database.jdbc:ojdbc8:21.7.0.0")
                     jdbcUrl = "dbc:oracle:thin:@//$url/$dbName$params"
                     driverClassName = "oracle.jdbc.OracleDriver"
                 }
 
-                "SQLServer" -> HikariConfig().apply {
+                "SQLServer" -> HikariConfig(props).apply {
                     dd.downloadDependency("com.microsoft.sqlserver:mssql-jdbc:11.2.1.jre8")
                     jdbcUrl = "jdbc:sqlserver://$url/$dbName$params"
                     driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
@@ -188,38 +210,6 @@ object DatabaseConfig : SimpleYAMLConfig() {
             with(config) {
                 username = this@DatabaseConfig.user
                 password = this@DatabaseConfig.password
-//                isAutoCommit = data_source__autoCommit
-//                connectionTimeout = data_source__connectionTimeout
-//                idleTimeout = data_source__idleTimeout
-//                keepaliveTime = data_source__keepaliveTime
-//                maxLifetime = data_source__maxLifetime
-//                minimumIdle = data_source__minimumIdle
-//                maximumPoolSize = data_source__maximumPoolSize
-//                initializationFailTimeout = data_source__initializationFailTimeout
-//                isIsolateInternalQueries = data_source__isolateInternalQueries
-//                isAllowPoolSuspension = data_source__allowPoolSuspension
-//                isReadOnly = data_source__readOnly
-//                isRegisterMbeans = data_source__registerMbeans
-//                connectionInitSql = data_source__connectionInitSql
-//                transactionIsolation = data_source__transactionIsolation
-//                validationTimeout = data_source__validationTimeout
-//                leakDetectionThreshold = data_source__leakDetectionThreshold
-                addDataSourceProperty("autoCommit", data_source__autoCommit)
-                addDataSourceProperty("connectionTimeout", data_source__connectionTimeout)
-                addDataSourceProperty("idleTimeout", data_source__idleTimeout)
-                addDataSourceProperty("keepaliveTime", data_source__keepaliveTime)
-                addDataSourceProperty("maxLifetime", data_source__maxLifetime)
-                addDataSourceProperty("minimumIdle", data_source__minimumIdle)
-                addDataSourceProperty("maximumPoolSize", data_source__maximumPoolSize)
-                addDataSourceProperty("initializationFailTimeout", data_source__initializationFailTimeout)
-                addDataSourceProperty("isolateInternalQueries", data_source__isolateInternalQueries)
-                addDataSourceProperty("allowPoolSuspension", data_source__allowPoolSuspension)
-                addDataSourceProperty("readOnly", data_source__readOnly)
-                addDataSourceProperty("registerMbeans", data_source__registerMbeans)
-                addDataSourceProperty("connectionInitSql", data_source__connectionInitSql)
-                addDataSourceProperty("transactionIsolation", data_source__transactionIsolation)
-                addDataSourceProperty("validationTimeout", data_source__validationTimeout)
-                addDataSourceProperty("leakDetectionThreshold", data_source__leakDetectionThreshold)
                 poolName = BukkitTemplate.getPlugin().name
             }
             ds = HikariDataSource(config)

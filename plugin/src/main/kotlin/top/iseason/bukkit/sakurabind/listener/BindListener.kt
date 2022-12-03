@@ -165,7 +165,7 @@ object BindListener : Listener {
         val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
         if (sendBackItem.isEmpty())
             event.item.remove()
-        else event.item.setItemStack(sendBackItem.first())
+        else event.item.itemStack = sendBackItem.first()
         val player1 = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
         if (!EasyCoolDown.check(player.uniqueId, 1000))
             player.sendColorMessage(Lang.item__deny_pickup.formatBy(player1.name))
@@ -297,7 +297,7 @@ object BindListener : Listener {
             if (itemStack.checkAir()) return@forEachIndexed
             val owner = SakuraBindAPI.getOwner(itemStack) ?: return@forEachIndexed
             val setting = ItemSettings.getSetting(itemStack)
-            if (setting.getBoolean("item-deny.container_break", owner.toString(), event.player)) {
+            if (setting.getBoolean("item-deny.container-break", owner.toString(), event.player)) {
                 if (!EasyCoolDown.check(event.player.uniqueId, 1000))
                     event.player.sendColorMessage(Lang.item__deny_container_break)
                 event.isCancelled = true
@@ -335,7 +335,7 @@ object BindListener : Listener {
         val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(itemStack))
         if (sendBackItem.isEmpty())
             item.remove()
-        else item.setItemStack(sendBackItem.first())
+        else item.itemStack = sendBackItem.first()
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -350,7 +350,7 @@ object BindListener : Listener {
         val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(itemStack))
         if (sendBackItem.isEmpty())
             item.remove()
-        else item.setItemStack(sendBackItem.first())
+        else item.itemStack = sendBackItem.first()
         item.remove()
     }
 
@@ -444,7 +444,7 @@ object BindListener : Listener {
             val sendBackItem = SakuraBindAPI.sendBackItem(uuid, listOf(itemStack))
             if (sendBackItem.isEmpty())
                 event.isCancelled = true
-            else event.entity.setItemStack(sendBackItem.first())
+            else event.entity.itemStack = sendBackItem.first()
         } else
             DropItemList.putItem(entity, uuid, delay.toInt())
 //        if (delay > 0) {

@@ -2,6 +2,7 @@ package top.iseason.bukkit.sakurabind.listener
 
 import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Bukkit
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -97,7 +98,7 @@ object BlockListener : Listener {
         // 有主人但可以破坏
         val deny = setting.getBoolean("block-deny.break", owner, event.player)
         if (Config.checkByPass(event.player) || !deny) {
-            if (!event.isDropItems)
+            if (event.player.gameMode != GameMode.SURVIVAL)
                 BlockCacheManager.removeBlock(block)
             return
 //

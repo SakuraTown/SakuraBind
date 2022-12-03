@@ -5,12 +5,15 @@ import org.bukkit.entity.Item
 import org.bukkit.scheduler.BukkitRunnable
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import java.util.*
+import java.util.concurrent.ConcurrentLinkedQueue
 
 object DropItemList : BukkitRunnable() {
-    val hasMinHeight = NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_17)
-    private val entities = LinkedList<ItemSender>()
+    private val hasMinHeight = NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_17)
+    private val entities = ConcurrentLinkedQueue<ItemSender>()
     fun putItem(item: Item, owner: UUID, delay: Int) {
 //        ConcurrentLinkedDeque
+//        val concurrentLinkedQueue = ConcurrentLinkedQueue<ItemSender>()
+
         entities.add(ItemSender(item, owner, delay))
     }
 

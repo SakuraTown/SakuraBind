@@ -25,14 +25,14 @@ import javax.annotation.Nullable;
 import java.io.*;
 import java.util.Collection;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.math.DoubleMath.log2;
 import static com.google.common.math.LongMath.divide;
 import static java.lang.Math.ceil;
 import static java.lang.Math.pow;
 import static java.math.RoundingMode.CEILING;
 import static java.math.RoundingMode.HALF_DOWN;
+import static top.iseason.bukkit.sakurabind.cuckoofilter.Preconditions.checkArgument;
+import static top.iseason.bukkit.sakurabind.cuckoofilter.Preconditions.checkNotNull;
 
 /**
  * A Cuckoo filter for instances of {@code E} that implements the {@link ProbabilisticFilter}
@@ -304,8 +304,7 @@ public final class CuckooFilter<E> implements ProbabilisticFilter<E>, Serializab
                       + " numBuckets: " + numBuckets
                       + " numEntriesPerBucket: " + numEntriesPerBucket
                       + " numBitsPerEntry: " + numBitsPerEntry
-                      + " dataLength: " + dataLength);
-      ioException.initCause(e);
+                      + " dataLength: " + dataLength, e);
       throw ioException;
     }
   }
