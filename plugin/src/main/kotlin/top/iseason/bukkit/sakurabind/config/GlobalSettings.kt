@@ -38,12 +38,8 @@ object GlobalSettings : SimpleYAMLConfig() {
     var send_when_container_break = true
 
     @Key
-    @Comment("", "当物品作为掉落物时立刻归还物主(在线则发背包，否则发邮件)")
-    var send_immediately = false
-
-    @Key
-    @Comment("", "当物品作为掉落物时延迟多少tick还物主(在线则发背包，否则发邮件), 0则关闭")
-    var send_back_delay = 0L
+    @Comment("", "当物品作为掉落物时延迟多少tick还物主(在线则发背包，否则发邮件), 0表示立马返回，-1关闭")
+    var send_back_delay = -1L
 
     @Key
     @Comment("", "", "物品禁用设置")

@@ -27,6 +27,7 @@ import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
+import top.iseason.bukkit.sakurabind.task.DropItemList
 import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
@@ -431,6 +432,7 @@ object BindListener : Listener {
         }
     }
 
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onItemSpawnEvent(event: ItemSpawnEvent) {
         val entity = event.entity
@@ -438,19 +440,26 @@ object BindListener : Listener {
         val uuid = SakuraBindAPI.getOwner(itemStack) ?: return
         val setting = ItemSettings.getSetting(itemStack)
         val delay = setting.getLong("send-back-delay")
-        if (delay > 0) {
-            submit(delay = delay) {
-                if (event.isCancelled || entity.isDead) return@submit
-                val sendBackItem = SakuraBindAPI.sendBackItem(uuid, listOf(entity.itemStack))
-                if (sendBackItem.isEmpty())
-                    entity.remove()
-            }
-        } else if (setting.getBoolean("send-immediately")) {
+        if (delay == 0L) {
             val sendBackItem = SakuraBindAPI.sendBackItem(uuid, listOf(itemStack))
             if (sendBackItem.isEmpty())
                 event.isCancelled = true
             else event.entity.setItemStack(sendBackItem.first())
-        }
+        } else
+            DropItemList.putItem(entity, uuid, delay.toInt())
+//        if (delay > 0) {
+//            submit(delay = delay) {
+//                if (event.isCancelled || entity.isDead) return@submit
+//                val sendBackItem = SakuraBindAPI.sendBackItem(uuid, listOf(entity.itemStack))
+//                if (sendBackItem.isEmpty())
+//                    entity.remove()
+//            }
+//        } else {
+//            val sendBackItem = SakuraBindAPI.sendBackItem(uuid, listOf(itemStack))
+//            if (sendBackItem.isEmpty())
+//                event.isCancelled = true
+//            else event.entity.setItemStack(sendBackItem.first())
+//        }
     }
 
     fun onLogin(player: Player) {

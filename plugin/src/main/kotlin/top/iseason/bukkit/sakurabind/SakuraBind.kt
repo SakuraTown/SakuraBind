@@ -5,7 +5,6 @@ import org.bstats.bukkit.Metrics
 import org.bukkit.event.block.BlockPhysicsEvent
 import org.bukkit.event.player.PlayerLoginEvent
 import top.iseason.bukkit.sakurabind.cache.BlockCacheManager
-import top.iseason.bukkit.sakurabind.cache.DelaySender
 import top.iseason.bukkit.sakurabind.command.mainCommand
 import top.iseason.bukkit.sakurabind.config.*
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
@@ -16,6 +15,8 @@ import top.iseason.bukkit.sakurabind.listener.BindListener
 import top.iseason.bukkit.sakurabind.listener.BindListener194
 import top.iseason.bukkit.sakurabind.listener.BlockListener
 import top.iseason.bukkit.sakurabind.listener.BlockListener1132
+import top.iseason.bukkit.sakurabind.task.DelaySender
+import top.iseason.bukkit.sakurabind.task.DropItemList
 import top.iseason.bukkittemplate.KotlinPlugin
 import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
@@ -26,6 +27,7 @@ import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.listen
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.register
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
+
 // TODO: 掉落物掉虚空修复，优化物品返还功能
 
 object SakuraBind : KotlinPlugin() {
@@ -55,6 +57,7 @@ object SakuraBind : KotlinPlugin() {
         DefaultSetting
         BindListener.register()
         BindListener194.register()
+        DropItemList.runTaskTimerAsynchronously(javaPlugin, 0, 1)
         AuthMeHook.checkHooked()
         SakuraBindAPI
         if (AuthMeHook.hasHooked) {

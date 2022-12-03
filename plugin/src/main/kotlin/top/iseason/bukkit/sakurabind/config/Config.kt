@@ -1,23 +1,18 @@
 package top.iseason.bukkit.sakurabind.config
 
-import io.github.bananapuncher714.nbteditor.NBTEditor
-import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.HumanEntity
-import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitTask
-import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
+import top.iseason.bukkit.sakurabind.task.Scanner
 import top.iseason.bukkit.sakuramail.config.SystemMailsYml
+import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
 import top.iseason.bukkittemplate.debug.info
-import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
-import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
-import top.iseason.bukkittemplate.utils.other.submit
 import java.util.*
 
 @FilePath("config.yml")
@@ -78,54 +73,7 @@ object Config : SimpleYAMLConfig() {
         task?.cancel()
         if (scanner_period > 0L && (DatabaseConfig.isConnected || (SakuraMailHook.hasHooked && sakuraMail_hook))) {
             info("&a定时扫描任务已启动,周期: $scanner_period tick")
-            task = submit(period = scanner_period, async = true) {
-                val mutableMapOf = mutableMapOf<UUID, MutableList<ItemStack>>()
-                Bukkit.getOnlinePlayers().forEach {
-                    if (checkByPass(it)) return@forEach
-//                    info("正在检查 ${it.name} ${it.uniqueId} 的背包")
-//                    info("送回物品功能: $auto_bind__scanner_send_back")
-                    var hasFound = false
-                    val inventory = it.openInventory.bottomInventory
-                    try {
-                        //为了兼容mod，获取到的格子数不一致
-                        for (i in 0 until inventory.size) {
-                            val item = inventory.getItem(i) ?: continue
-                            if (item.checkAir()) continue
-                            val owner = SakuraBindAPI.getOwner(item)
-                            val setting = ItemSettings.getSetting(item, owner != null)
-                            if (setting.getBoolean(
-                                    "scanner-send-back",
-                                    owner.toString(),
-                                    it
-                                ) && owner != null && owner != it.uniqueId
-                            ) {
-//                                info("找到一个违规物品${item.type} 属于 ${owner}")
-                                mutableMapOf.computeIfAbsent(owner) { mutableListOf() }.add(item)
-                                inventory.setItem(i, null)
-                                hasFound = true
-                                continue
-                            }
-//                            println("${item.type} ${setting.getBoolean("auto-bind.enable", null, it)}")
-                            if (owner == null &&
-                                (setting.getBoolean("auto-bind.enable", null, it) || NBTEditor.contains(
-                                    item, auto_bind_nbt
-                                ))
-                            ) {
-//                                info("已绑定物品 ${item.type}")
-                                SakuraBindAPI.bind(item, it)
-                            }
-                        }
-                    } catch (_: Exception) {
-                    }
-                    if (hasFound) it.sendColorMessage(Lang.scanner_item_send_back)
-                }
-                if (mutableMapOf.isNotEmpty()) {
-//                    info("正在送回物品")
-                    mutableMapOf.forEach { (uid, list) ->
-                        SakuraBindAPI.sendBackItem(uid, list)
-                    }
-                }
-            }
+            task = Scanner().runTaskTimerAsynchronously(BukkitTemplate.getPlugin(), scanner_period, scanner_period)
         } else task = null
     }
 

@@ -1,5 +1,6 @@
 package top.iseason.bukkit.sakurabind.config
 
+import com.google.gson.Gson
 import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
@@ -19,7 +20,7 @@ open class Setting(section: ConfigurationSection) {
     private var materialIds: List<Pair<Material, Int?>>? = null
     private var lorePatterns: List<Pattern>? = null
     private var stripColor = false
-    private var nbt: ConfigurationSection? = null
+    private var nbt: List<Pair<Array<String>, Pattern>>? = null
     private var setting: ConfigurationSection
 
     init {
@@ -59,7 +60,15 @@ open class Setting(section: ConfigurationSection) {
             lorePatterns = list.map { it.toPattern() }
         val ms = matcher.getStringList("materials").mapNotNull { Material.matchMaterial(it) }.toHashSet()
         if (ms.isNotEmpty()) materials = ms
-        nbt = matcher.getConfigurationSection("nbt")
+        val nbtSection = matcher.getConfigurationSection("nbt")
+        if (nbtSection != null) {
+            nbt = nbtSection.getKeys(true)
+                .mapNotNull {
+                    val value = nbtSection.get(it)
+                    if (value == null || value is ConfigurationSection) return@mapNotNull null
+                    it.split('.').toTypedArray() to Pattern.compile(value.toString())
+                }
+        }
     }
 
     open fun match(item: ItemStack): Boolean {
@@ -148,14 +157,29 @@ open class Setting(section: ConfigurationSection) {
             if (!matchLore) return false
         }
         if (nbt != null) {
-            val matchNbt = nbt!!.getKeys(true)
-                .filter {
-                    val value = nbt!!.get(it)
-                    value != null && value !is ConfigurationSection
-                }.all {
-                    val string = NBTEditor.getString(item, *it.split('.').toTypedArray()) ?: return@all false
-                    nbt!!.get(it).toString().matches(Regex(string))
+            val json = Gson().fromJson(NBTEditor.getNBTCompound(item).toJson(), Map::class.java)
+            val matchNbt = nbt!!.any {
+                val path = it.first
+                val pattern = it.second
+                var temp = json
+                val size = path.size - 1
+                var value: String? = null
+                for (i in 0..size) {
+                    val node = path[i]
+                    val v = temp[node] ?: break
+                    if (i == size) {
+                        value = v.toString()
+                        break
+                    } else {
+                        temp = v as? Map<Any?, Any?> ?: break
+                    }
                 }
+//                println(path.joinToString())
+//                println(pattern)
+//                println(value)
+                if (value == null) return@any false
+                pattern.matcher(value).find()
+            }
             if (!matchNbt) return false
         }
         return true
