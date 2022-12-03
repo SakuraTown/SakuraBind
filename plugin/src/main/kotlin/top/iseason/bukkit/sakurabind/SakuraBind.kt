@@ -35,7 +35,7 @@ object SakuraBind : KotlinPlugin() {
 
     override fun onEnable() {
         SimpleLogger.prefix = "&a[&6${javaPlugin.description.name}&a]&r ".toColor()
-        SimpleYAMLConfig.notifyMessage = "&6配置 &f%s &a已重载!"
+        SimpleYAMLConfig.notifyMessage = "&6配置 &f%s &6已重载!"
         SakuraMailHook.checkHooked()
         if (PlaceHolderHook.hasHooked) {
             PlaceHolderExpansion.register()
