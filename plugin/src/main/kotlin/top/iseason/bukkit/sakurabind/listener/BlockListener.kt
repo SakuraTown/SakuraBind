@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.ItemSpawnEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.InventoryHolder
+import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BlockStateMeta
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.cache.BlockCacheManager
@@ -100,7 +101,10 @@ object BlockListener : Listener {
 //        println(deny)
         //可以破坏
         if (Config.checkByPass(event.player) || !deny) {
-            if (event.player.gameMode != GameMode.SURVIVAL)
+            if (event.player.gameMode != GameMode.SURVIVAL || block.getDrops(
+                    player.getHeldItem() ?: ItemStack(Material.AIR)
+                ).isEmpty()
+            )
                 BlockCacheManager.removeBlock(block)
             return
 //
