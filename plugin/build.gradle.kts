@@ -46,7 +46,12 @@ val exposedVersion: String by rootProject
 val obfuscated: String by rootProject
 val isObfuscated = obfuscated == "true"
 val shrink: String by rootProject
-
+val defaultFile = File("../build", "${rootProject.name}-${rootProject.version}.jar")
+//val output =
+//    if (isObfuscated)
+//        File(jarOutputFile, "${rootProject.name}-${rootProject.version}-obfuscated.jar")
+//    else
+//        File(jarOutputFile, "${rootProject.name}-${rootProject.version}.jar")
 tasks {
     shadowJar {
         if (isObfuscated) {
@@ -57,7 +62,7 @@ tasks {
         relocate("io.github.bananapuncher714.nbteditor", "$groupS.libs.nbteditor")
     }
     build {
-        dependsOn("buildPlugin")
+        dependsOn("buildPlugin", "copyJar")
     }
     compileKotlin {
         kotlinOptions.jvmTarget = "1.8"
@@ -129,22 +134,12 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     keepattributes("Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*")
 //    keepkotlinmetadata()
     repackageclasses()
-    val defaultFile = File("build", "${rootProject.name}-${rootProject.version}.jar")
-    if (!defaultFile.exists()) {
-        defaultFile.parentFile.mkdirs()
-        defaultFile.createNewFile()
-    }
-    val output =
-        if (isObfuscated)
-            File(jarOutputFile, "${rootProject.name}-${rootProject.version}-obfuscated.jar")
-        else
-            File(jarOutputFile, "${rootProject.name}-${rootProject.version}.jar")
     outjars(defaultFile)
-    org.jetbrains.kotlin.com.google.common.io.Files.copy(
-        defaultFile,
-        output
-    )
-
+}
+tasks.register<Copy>("copyJar") {
+//    dependsOn("buildPlugin")
+    from(defaultFile)
+    into(jarOutputFile)
 }
 
 fun getProperties(properties: String) = rootProject.properties[properties].toString()
