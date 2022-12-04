@@ -129,15 +129,16 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     keepattributes("Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*")
 //    keepkotlinmetadata()
     repackageclasses()
+    val defaultFile = File("build", "${rootProject.name}-${rootProject.version}.jar")
     val output =
         if (isObfuscated)
             File(jarOutputFile, "${rootProject.name}-${rootProject.version}-obfuscated.jar")
         else
             File(jarOutputFile, "${rootProject.name}-${rootProject.version}.jar")
-    outjars(output)
+    outjars(defaultFile)
     org.jetbrains.kotlin.com.google.common.io.Files.copy(
-        output,
-        File("build", "${rootProject.name}-${rootProject.version}.jar")
+        defaultFile,
+        output
     )
 
 }
