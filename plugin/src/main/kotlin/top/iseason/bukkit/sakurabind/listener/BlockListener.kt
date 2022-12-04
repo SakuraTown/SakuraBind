@@ -97,6 +97,8 @@ object BlockListener : Listener {
         val uuid = UUID.fromString(owner)
         // 有主人但可以破坏
         val deny = setting.getBoolean("block-deny.break", owner, event.player)
+//        println(deny)
+        //可以破坏
         if (Config.checkByPass(event.player) || !deny) {
             if (event.player.gameMode != GameMode.SURVIVAL)
                 BlockCacheManager.removeBlock(block)

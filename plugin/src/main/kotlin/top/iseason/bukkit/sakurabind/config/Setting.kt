@@ -211,18 +211,23 @@ open class Setting(section: ConfigurationSection) {
                 return false
             }
         }
+//        println(0)
         //是物主或者拥有物主的权限
         var isOwner = false
         if (owner != null) {
             isOwner =
                 (owner == player?.uniqueId.toString()) || player?.hasPermission("sakurabind.bypass.$owner") == true
+//            println("isOwner ${isOwner}")
             if (isOwner && setting.contains("$key@")) {
                 return !setting.getBoolean("$key@")
             }
         }
         if (setting.contains(key)) return setting.getBoolean(key)
-        if (isOwner && GlobalSettings.config.contains("$key@")) {
-            return !GlobalSettings.config.getBoolean("$key@")
+        if (GlobalSettings.config.contains("$key@")) {
+            return if (isOwner)
+                !GlobalSettings.config.getBoolean("$key@")
+            else
+                GlobalSettings.config.getBoolean("$key@")
         }
         return GlobalSettings.config.getBoolean(key)
     }
