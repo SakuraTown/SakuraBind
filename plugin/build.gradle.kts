@@ -130,6 +130,10 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
 //    keepkotlinmetadata()
     repackageclasses()
     val defaultFile = File("build", "${rootProject.name}-${rootProject.version}.jar")
+    if (!defaultFile.exists()) {
+        defaultFile.parentFile.mkdirs()
+        defaultFile.createNewFile()
+    }
     val output =
         if (isObfuscated)
             File(jarOutputFile, "${rootProject.name}-${rootProject.version}-obfuscated.jar")
