@@ -112,7 +112,7 @@ object BindListener : Listener {
     /**
      * 不能丢
      */
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onPlayerDropItemEvent(event: PlayerDropItemEvent) {
         if (Config.checkByPass(event.player)) return
 //        if (!Config.item_deny__drop) return
@@ -125,9 +125,10 @@ object BindListener : Listener {
             event.itemDrop.remove()
             val openInventory = event.player.openInventory
             val cursor = openInventory.cursor
+
             val release = event.player.inventory.addItem(item)
-            if (!cursor.checkAir()) {
-                val releaseCursor = event.player.inventory.addItem(cursor!!)
+            if (cursor != null && cursor != item && !cursor.checkAir()) {
+                val releaseCursor = event.player.inventory.addItem(cursor)
                 release.putAll(releaseCursor)
                 openInventory.cursor = null
             }
