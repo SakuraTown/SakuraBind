@@ -96,7 +96,7 @@ object BlockCacheManager {
     }
 
     fun addBlock(state: BlockState, owner: UUID, setting: String?) {
-        val blockToString = locationToString(state.location, state.type.toString())
+        val blockToString = locationToString(state.location)
         val value = if (setting != null && setting != "global-setting")
             "$owner,$setting"
         else owner.toString()
@@ -118,14 +118,14 @@ object BlockCacheManager {
     }
 
     fun blockToString(block: Block): String {
-        return locationToString(block.location, block.type.toString())
+        return locationToString(block.location)
     }
 
-    private fun locationToString(location: Location, type: String): String =
+    private fun locationToString(location: Location): String =
         "${location.world?.name},${location.blockX},${location.blockY},${location.blockZ}"
 
     fun entityToString(entity: Item): String {
-        return locationToString(entity.location, entity.itemStack.type.toString())
+        return locationToString(entity.location)
     }
 
     fun addTemp(loc: String, owner: String) = tempCache.put(loc, owner)

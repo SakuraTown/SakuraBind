@@ -28,12 +28,13 @@
 
 * Kotlin 1.7.21 自动下载
 * Exposed 0.41.1 自动下载
-* ehcache 3.10.6 自动下载
+* EhCache 3.10.6 自动下载
+* HikariCP 4.0.3 自动下载
 * 数据库依赖 视选择的数据库类型自动下载
 * NBTEditor 7.18.3 已打包进插件
 * bstats-bukkit 3.0.0 已打包进插件
-* placeholderapi 2.11.2 软依赖插件
-* authme 5.6.0-SNAPSHOT 软依赖插件
+* PlaceHolderAPI 2.11.2 软依赖插件
+* AuthMe 5.6.0-SNAPSHOT 软依赖插件
 * SakuraMail 软依赖插件
 
 ## 插件安装
