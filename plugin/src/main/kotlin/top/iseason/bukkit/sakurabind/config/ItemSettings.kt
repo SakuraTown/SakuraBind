@@ -85,7 +85,7 @@ object ItemSettings : SimpleYAMLConfig() {
         matchers.getKeys(false).forEach {
             val s = matchers.getConfigurationSection(it)!!
             try {
-                settings[it] = Setting(s)
+                settings[it] = Setting(it, s)
             } catch (e: Exception) {
                 warn("配置 ${it} 格式错误，请检查!")
             }

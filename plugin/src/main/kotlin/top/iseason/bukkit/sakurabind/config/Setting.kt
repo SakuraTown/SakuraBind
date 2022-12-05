@@ -11,7 +11,7 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.noColor
 import java.security.InvalidParameterException
 import java.util.regex.Pattern
 
-open class Setting(section: ConfigurationSection) {
+open class Setting(val keyPath: String, section: ConfigurationSection) {
     private var namePattern: Pattern? = null
     private var nameWithoutColorPattern: Pattern? = null
     private var materialPattern: Pattern? = null
@@ -205,7 +205,11 @@ open class Setting(section: ConfigurationSection) {
     fun getBoolean(key: String, owner: String? = null, player: HumanEntity? = null): Boolean {
         //权限检查
         if (player != null) {
-            if (player.hasPermission("sakurabind.settings.$key.true")) {
+            if (player.hasPermission("sakurabind.setting.$keyPath.$key.true")) {
+                return true
+            } else if (player.hasPermission("sakurabind.setting.$keyPath.$key.false")) {
+                return false
+            } else if (player.hasPermission("sakurabind.settings.$key.true")) {
                 return true
             } else if (player.hasPermission("sakurabind.settings.$key.false")) {
                 return false

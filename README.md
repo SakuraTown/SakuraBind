@@ -285,7 +285,10 @@ matchers:
 
 绑定权限`sakurabind.bypass.all`,与OP一致不受绑定限制，但没有命令的权限
 
-绑定设置权限 `sakurabind.settings.{键名}.true|false`
+绑定全局设置权限 `sakurabind.settings.{键名}.true|false`
+
+绑定设置权限 `sakurabind.setting.{设置名}.{键名}.true|false` 设置名为 `settings.yml` 匹配键,覆盖全局权限
+
 如禁止玩家放置方块物品的权限为 `sakurabind.settings.block-deny.place.true`
 
 绑定设置权限`sakurabind.bypass.{玩家uuid}`拥有此权限将享受与该uuid物主相同的权限，即可以多人共用一个绑定物品

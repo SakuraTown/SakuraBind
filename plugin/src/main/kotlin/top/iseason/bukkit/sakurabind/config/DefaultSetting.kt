@@ -3,7 +3,7 @@ package top.iseason.bukkit.sakurabind.config
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
 
-object DefaultSetting : Setting(YamlConfiguration().apply {
+object DefaultSetting : Setting("global-setting", YamlConfiguration().apply {
     set("match.material", ".*")
     set("settings.a", "")
 }) {

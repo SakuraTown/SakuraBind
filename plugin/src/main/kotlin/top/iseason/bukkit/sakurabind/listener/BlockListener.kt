@@ -104,8 +104,7 @@ object BlockListener : Listener {
             if (event.player.gameMode != GameMode.SURVIVAL || block.getDrops(
                     player.getHeldItem() ?: ItemStack(Material.AIR)
                 ).isEmpty()
-            )
-                BlockCacheManager.removeBlock(block)
+            ) BlockCacheManager.removeBlock(block)
             return
 //
 //            val itemStack = player.getHeldItem() ?: ItemStack(Material.AIR)
