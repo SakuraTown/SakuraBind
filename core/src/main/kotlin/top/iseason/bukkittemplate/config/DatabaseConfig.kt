@@ -147,19 +147,19 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 setProperty("autoCommit", data_source__autoCommit.toString())
                 setProperty("connectionTimeout", data_source__connectionTimeout.toString())
                 setProperty("idleTimeout", data_source__idleTimeout.toString())
-                setProperty("keepaliveTime", data_source__keepaliveTime.toString())
+//                setProperty("keepaliveTime", data_source__keepaliveTime.toString())
                 setProperty("maxLifetime", data_source__maxLifetime.toString())
                 setProperty("connectionTestQuery", data_source__connectionTestQuery)
                 setProperty("minimumIdle", data_source__minimumIdle.toString())
                 setProperty("maximumPoolSize", data_source__maximumPoolSize.toString())
-                setProperty("initializationFailTimeout", data_source__initializationFailTimeout.toString())
+//                setProperty("initializationFailTimeout", data_source__initializationFailTimeout.toString())
                 setProperty("isolateInternalQueries", data_source__isolateInternalQueries.toString())
                 setProperty("allowPoolSuspension", data_source__allowPoolSuspension.toString())
                 setProperty("readOnly", data_source__readOnly.toString())
                 setProperty("registerMbeans", data_source__registerMbeans.toString())
                 setProperty("connectionInitSql", data_source__connectionInitSql)
                 setProperty("transactionIsolation", data_source__transactionIsolation)
-                setProperty("validationTimeout", data_source__validationTimeout.toString())
+//                setProperty("validationTimeout", data_source__validationTimeout.toString())
                 setProperty("leakDetectionThreshold", data_source__leakDetectionThreshold.toString())
             }
             val config = when (database) {
@@ -211,6 +211,13 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 username = this@DatabaseConfig.user
                 password = this@DatabaseConfig.password
                 poolName = BukkitTemplate.getPlugin().name
+                try {
+                    validationTimeout = data_source__validationTimeout
+                    initializationFailTimeout = initializationFailTimeout
+                    keepaliveTime = data_source__keepaliveTime
+                } catch (_: Throwable) {
+
+                }
             }
             ds = HikariDataSource(config)
             connection = Database.connect(ds!!, databaseConfig = org.jetbrains.exposed.sql.DatabaseConfig.invoke {

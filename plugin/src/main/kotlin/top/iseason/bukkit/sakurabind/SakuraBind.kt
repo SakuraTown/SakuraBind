@@ -86,6 +86,11 @@ object SakuraBind : KotlinPlugin() {
 
     override fun onDisable() {
         try {
+            DropItemList.cancel()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        try {
             BlockCacheManager.save()
         } catch (e: Exception) {
             e.printStackTrace()

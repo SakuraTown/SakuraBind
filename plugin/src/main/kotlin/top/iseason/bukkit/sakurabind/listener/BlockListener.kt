@@ -130,7 +130,7 @@ object BlockListener : Listener {
         while (iterator.hasNext()) {
             val next = iterator.next()
             val (_, setting) = BlockCacheManager.getOwner(next) ?: continue
-            if (setting.getBoolean("block-deny.explode")) iterator.remove()
+            if (setting.getBoolean("block-deny.explode", null, null)) iterator.remove()
         }
     }
 
@@ -141,7 +141,7 @@ object BlockListener : Listener {
         while (iterator.hasNext()) {
             val next = iterator.next()
             val (_, setting) = BlockCacheManager.getOwner(next) ?: continue
-            if (setting.getBoolean("block-deny.explode")) iterator.remove()
+            if (setting.getBoolean("block-deny.explode", null, null)) iterator.remove()
         }
     }
 
@@ -159,7 +159,7 @@ object BlockListener : Listener {
     fun onBlockFrom(event: BlockFromToEvent) {
         val toBlock = event.toBlock
         val (owner, setting) = BlockCacheManager.getOwner(toBlock) ?: return
-        if (!setting.getBoolean("block-deny.flow")) {
+        if (!setting.getBoolean("block-deny.flow", null, null)) {
             BlockCacheManager.removeBlock(toBlock)
             val first = toBlock.drops.firstOrNull()
             if (first != null) {
@@ -177,7 +177,8 @@ object BlockListener : Listener {
     fun onBlockPistonExtendEvent(event: BlockPistonExtendEvent) {
 //        if (!Config.block__deny_piston) return
         for (block in event.blocks) {
-            val boolean = BlockCacheManager.getOwner(block)?.second?.getBoolean("block-deny.pistion") ?: continue
+            val boolean =
+                BlockCacheManager.getOwner(block)?.second?.getBoolean("block-deny.pistion", null, null) ?: continue
             if (boolean) {
                 event.isCancelled = true
                 return
@@ -189,7 +190,8 @@ object BlockListener : Listener {
     fun onBlockPistonRetractEvent(event: BlockPistonRetractEvent) {
 //        if (!Config.block__deny_piston) return
         for (block in event.blocks) {
-            val boolean = BlockCacheManager.getOwner(block)?.second?.getBoolean("block-deny.pistion") ?: continue
+            val boolean =
+                BlockCacheManager.getOwner(block)?.second?.getBoolean("block-deny.pistion", null, null) ?: continue
             if (boolean) {
                 event.isCancelled = true
                 return

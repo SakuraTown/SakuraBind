@@ -330,7 +330,7 @@ object BindListener : Listener {
         if (item.isDead) return
         val itemStack = item.itemStack
         val owner = SakuraBindAPI.getOwner(itemStack) ?: return
-        if (!ItemSettings.getSetting(itemStack).getBoolean("send-when-lost")) {
+        if (!ItemSettings.getSetting(itemStack).getBoolean("send-when-lost", null, null)) {
             return
         }
         val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(itemStack))
@@ -345,7 +345,7 @@ object BindListener : Listener {
         val item = event.entity
         val itemStack = item.itemStack
         val owner = SakuraBindAPI.getOwner(item.itemStack) ?: return
-        if (!ItemSettings.getSetting(itemStack).getBoolean("send-when-lost")) {
+        if (!ItemSettings.getSetting(itemStack).getBoolean("send-when-lost", null, null)) {
             return
         }
         val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(itemStack))
@@ -360,7 +360,7 @@ object BindListener : Listener {
 //        if (!Config.item_deny__dispense) return
         val item = event.item
         if (!SakuraBindAPI.hasBind(item)) return
-        if (ItemSettings.getSetting(item).getBoolean("item-deny.dispense")) {
+        if (ItemSettings.getSetting(item).getBoolean("item-deny.dispense", null, null)) {
             event.isCancelled = true
         }
     }
@@ -370,7 +370,7 @@ object BindListener : Listener {
 //        if (!Config.item_deny__hopper) return
         val itemStack = event.item.itemStack
         if (!SakuraBindAPI.hasBind(itemStack)) return
-        if (ItemSettings.getSetting(itemStack).getBoolean("item-deny.hopper")) {
+        if (ItemSettings.getSetting(itemStack).getBoolean("item-deny.hopper", null, null)) {
             event.isCancelled = true
         }
     }
@@ -380,7 +380,7 @@ object BindListener : Listener {
 //        if (!Config.item_deny__container_move) return
         val item = event.item
         if (!SakuraBindAPI.hasBind(item)) return
-        if (ItemSettings.getSetting(item).getBoolean("item-deny.container-move")) {
+        if (ItemSettings.getSetting(item).getBoolean("item-deny.container-move", null, null)) {
             event.isCancelled = true
         }
     }
@@ -393,8 +393,8 @@ object BindListener : Listener {
         if (item.checkAir()) return
         if (SakuraBindAPI.hasBind(item)) return
         val setting = ItemSettings.getSetting(item, false)
-        if (!setting.getBoolean("auto-bind.enable", player = player)) return
-        if (setting.getBoolean("auto-bind.onClick", player = player)
+        if (!setting.getBoolean("auto-bind.enable", null, player)) return
+        if (setting.getBoolean("auto-bind.onClick", null, player)
             || NBTEditor.contains(item, Config.auto_bind_nbt)
         ) {
             SakuraBindAPI.bind(item, player as Player)
@@ -409,8 +409,8 @@ object BindListener : Listener {
         if (item.checkAir()) return
         if (SakuraBindAPI.hasBind(item)) return
         val setting = ItemSettings.getSetting(item, false)
-        if (!setting.getBoolean("auto-bind.enable", player = player)) return
-        if (setting.getBoolean("auto-bind.onPickup", player = player) || NBTEditor.contains(
+        if (!setting.getBoolean("auto-bind.enable", null, player)) return
+        if (setting.getBoolean("auto-bind.onPickup", null, player) || NBTEditor.contains(
                 item,
                 Config.auto_bind_nbt
             )
@@ -425,8 +425,8 @@ object BindListener : Listener {
         val item = event.itemDrop.itemStack
         if (SakuraBindAPI.hasBind(item)) return
         val setting = ItemSettings.getSetting(item, false)
-        if (!setting.getBoolean("auto-bind.enable", player = event.player)) return
-        if (setting.getBoolean("auto-bind.onDrop", player = event.player)
+        if (!setting.getBoolean("auto-bind.enable", null, event.player)) return
+        if (setting.getBoolean("auto-bind.onDrop", null, event.player)
             || NBTEditor.contains(item, Config.auto_bind_nbt)
         ) {
             SakuraBindAPI.bind(item, event.player)
@@ -448,19 +448,6 @@ object BindListener : Listener {
             else event.entity.itemStack = sendBackItem.first()
         } else
             DropItemList.putItem(entity, uuid, delay.toInt())
-//        if (delay > 0) {
-//            submit(delay = delay) {
-//                if (event.isCancelled || entity.isDead) return@submit
-//                val sendBackItem = SakuraBindAPI.sendBackItem(uuid, listOf(entity.itemStack))
-//                if (sendBackItem.isEmpty())
-//                    entity.remove()
-//            }
-//        } else {
-//            val sendBackItem = SakuraBindAPI.sendBackItem(uuid, listOf(itemStack))
-//            if (sendBackItem.isEmpty())
-//                event.isCancelled = true
-//            else event.entity.setItemStack(sendBackItem.first())
-//        }
     }
 
     fun onLogin(player: Player) {

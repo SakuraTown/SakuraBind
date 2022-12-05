@@ -202,7 +202,7 @@ open class Setting(val keyPath: String, section: ConfigurationSection) {
     /**
      * 返回是否禁止操作
      */
-    fun getBoolean(key: String, owner: String? = null, player: HumanEntity? = null): Boolean {
+    open fun getBoolean(key: String, owner: String?, player: HumanEntity?): Boolean {
         //权限检查
         if (player != null) {
             if (player.hasPermission("sakurabind.setting.$keyPath.$key.true")) {
