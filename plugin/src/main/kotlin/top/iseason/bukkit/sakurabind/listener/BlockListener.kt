@@ -1,7 +1,6 @@
 package top.iseason.bukkit.sakurabind.listener
 
 import io.github.bananapuncher714.nbteditor.NBTEditor
-import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
@@ -19,19 +18,21 @@ import top.iseason.bukkit.sakurabind.cache.BlockCacheManager
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.utils.MessageTool
+import top.iseason.bukkit.sakurabind.utils.PlayerTool
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
-import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
-import top.iseason.bukkittemplate.utils.other.EasyCoolDown
 import java.util.*
 
 /**
  * 方块物品监听器
  */
 object BlockListener : Listener {
-
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    /**
+     * 玩家与方块互动
+     */
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onPlayerInteractEvent(event: PlayerInteractEvent) {
         if (Config.checkByPass(event.player)) return
         val player = event.player
@@ -39,55 +40,93 @@ object BlockListener : Listener {
             val (owner, setting) = BlockCacheManager.getOwner(event.clickedBlock!!) ?: return
             if (setting.getBoolean("block-deny.interact", owner, player)) {
                 event.isCancelled = true
-                if (!EasyCoolDown.check(event.player.uniqueId, 1000)) {
-                    val uuid = UUID.fromString(owner)
-                    val ownerPlayer = Bukkit.getPlayer(uuid) ?: Bukkit.getOfflinePlayer(uuid)
-                    event.player.sendColorMessage(Lang.block__deny_interact.formatBy(ownerPlayer.name))
-                }
+                MessageTool.sendCoolDown(
+                    player,
+                    Lang.block__deny_interact.formatBy(SakuraBindAPI.getOwnerName(UUID.fromString(owner)))
+                )
                 return
             }
         }
     }
 
+    /**
+     * 方块放置
+     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onBlockPlaceEvent(event: BlockPlaceEvent) {
-        val heldItem = event.player.getHeldItem() ?: return
-        if (heldItem.checkAir()) return
-        val owner = SakuraBindAPI.getOwner(heldItem) ?: return
-        val setting = ItemSettings.getSetting(heldItem)
-        if (!Config.checkByPass(event.player)
-            && setting.getBoolean("block-deny.place", owner.toString(), event.player)
-        ) {
-            if (!EasyCoolDown.check(event.player.uniqueId, 1000)) {
-                event.player.sendColorMessage(Lang.block__deny_place)
+        val player = event.player
+        if (Config.checkByPass(player)) return
+        //覆盖检查，比如草被覆盖，但是不实用
+//        if (BlockCacheManager.getOwner(event.block) != null) {
+//            MessageTool.sendCoolDown(event.player, Lang.block__deny_place_exist)
+//            event.isCancelled = true
+//            return
+//        }
+        val heldItem = player.getHeldItem()
+        var owner: UUID? = null
+        if (!heldItem.checkAir()) {
+            if (SakuraBindAPI.checkDenyBySetting(heldItem, player, "block-deny.place")) {
+                MessageTool.sendCoolDown(event.player, Lang.block__deny_place)
+                event.isCancelled = true
+                return
+            } else {
+                owner = SakuraBindAPI.getOwner(heldItem!!)
             }
-            event.isCancelled = true
-            return
+        } else {
+            val offHandItem = PlayerTool.getOffHandItem(player)
+            if (offHandItem.checkAir()) {
+                owner = SakuraBindAPI.getOwner(offHandItem!!)
+            } else if (SakuraBindAPI.checkDenyBySetting(offHandItem, player, "block-deny.place")) {
+                MessageTool.sendCoolDown(event.player, Lang.block__deny_place)
+                event.isCancelled = true
+                return
+            }
         }
-        val key = NBTEditor.getString(heldItem, *ItemSettings.nbtPath)
-        BlockCacheManager.addBlock(event.block, owner, key)
+        if (owner != null) {
+            BlockCacheManager.addBlock(event.block, owner, NBTEditor.getString(heldItem, *ItemSettings.nbtPath))
+        }
     }
 
+    /**
+     * 多方快放置
+     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onBlockMultiPlaceEvent(event: BlockMultiPlaceEvent) {
-        val heldItem = event.player.getHeldItem() ?: return
-        if (heldItem.checkAir()) return
-        val owner = SakuraBindAPI.getOwner(heldItem) ?: return
-        val setting = ItemSettings.getSetting(heldItem)
-        if (!Config.checkByPass(event.player)
-            && setting.getBoolean("block-deny.place", owner.toString(), event.player)
-        ) {
-            if (!EasyCoolDown.check(event.player.uniqueId, 1000)) {
-                event.player.sendColorMessage(Lang.block__deny_place)
+        val player = event.player
+        if (Config.checkByPass(player)) return
+        val heldItem = player.getHeldItem()
+        var owner: UUID? = null
+        if (!heldItem.checkAir()) {
+            if (SakuraBindAPI.checkDenyBySetting(heldItem, player, "block-deny.place")) {
+                MessageTool.sendCoolDown(event.player, Lang.block__deny_place)
+                event.isCancelled = true
+                return
+            } else {
+                owner = SakuraBindAPI.getOwner(heldItem!!)
             }
-            event.isCancelled = true
-            return
+        } else {
+            val offHandItem = PlayerTool.getOffHandItem(player)
+            if (offHandItem.checkAir()) {
+                owner = SakuraBindAPI.getOwner(offHandItem!!)
+            } else if (SakuraBindAPI.checkDenyBySetting(offHandItem, player, "block-deny.place")) {
+                MessageTool.sendCoolDown(event.player, Lang.block__deny_place)
+                event.isCancelled = true
+                return
+            }
         }
-        val key = NBTEditor.getString(heldItem, *ItemSettings.nbtPath)
-        for (state in event.replacedBlockStates) {
-//            println(state.location)
-            BlockCacheManager.addBlock(state, owner, key)
+        if (owner != null) {
+            //覆盖检查，比如草，但是不实用
+//            if (event.replacedBlockStates.any { BlockCacheManager.getOwner(it) != null }) {
+//                event.isCancelled = true
+//                MessageTool.sendCoolDown(player, Lang.block__deny_place_exist)
+//                return
+//            }
+            val key = NBTEditor.getString(heldItem, *ItemSettings.nbtPath)
+            for (state in event.replacedBlockStates) {
+                BlockCacheManager.addBlock(state, owner, key)
+            }
         }
+
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -98,9 +137,9 @@ object BlockListener : Listener {
         val uuid = UUID.fromString(owner)
         // 有主人但可以破坏
         val deny = setting.getBoolean("block-deny.break", owner, event.player)
-//        println(deny)
         //可以破坏
         if (Config.checkByPass(event.player) || !deny) {
+            //没有掉落物直接删除
             if (event.player.gameMode != GameMode.SURVIVAL || block.getDrops(
                     player.getHeldItem() ?: ItemStack(Material.AIR)
                 ).isEmpty()
@@ -115,44 +154,41 @@ object BlockListener : Listener {
 //            block.type = Material.AIR
         } else {
             event.isCancelled = true
-            if (!EasyCoolDown.check(uuid, 1000)) {
-                val ownerPlayer = Bukkit.getPlayer(uuid) ?: Bukkit.getOfflinePlayer(uuid)
-                player.sendColorMessage(Lang.block__deny_break.formatBy(ownerPlayer.name))
-            }
+            MessageTool.sendCoolDown(player, Lang.block__deny_break.formatBy(SakuraBindAPI.getOwnerName(uuid)))
         }
 
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockExplodeEvent(event: BlockExplodeEvent) {
-//        if (!Config.block__deny_explode) return
         val iterator = event.blockList().iterator()
         while (iterator.hasNext()) {
             val next = iterator.next()
-            val (_, setting) = BlockCacheManager.getOwner(next) ?: continue
-            if (setting.getBoolean("block-deny.explode", null, null)) iterator.remove()
+            val pair = BlockCacheManager.getOwner(next) ?: continue
+            if (pair.second.getBoolean("block-deny.explode", null, null)) iterator.remove()
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onEntityExplodeEvent(event: EntityExplodeEvent) {
-//        if (!Config.block__deny_explode) return
         val iterator = event.blockList().iterator()
         while (iterator.hasNext()) {
             val next = iterator.next()
-            val (_, setting) = BlockCacheManager.getOwner(next) ?: continue
-            if (setting.getBoolean("block-deny.explode", null, null)) iterator.remove()
+            val pair = BlockCacheManager.getOwner(next) ?: continue
+            if (pair.second.getBoolean("block-deny.explode", null, null)) iterator.remove()
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockPhysicsEvent(event: BlockPhysicsEvent) {
-        if (event.block.type != Material.AIR) return
-        val pair = BlockCacheManager.getOwner(event.block) ?: return
-        BlockCacheManager.removeBlock(event.block)
+        val block = event.block
+        //只检查变成空气的
+        if (block.type != Material.AIR) return
+        val pair = BlockCacheManager.getOwner(block) ?: return
+        BlockCacheManager.removeBlock(block)
 //        println("${event.block.type} -> ${event.changedType} ${event.block.location}")
 //        if(event.changedType==Material.AIR)
-        BlockCacheManager.addTemp(BlockCacheManager.blockToString(event.block), pair.first)
+        BlockCacheManager.addTemp(BlockCacheManager.blockToString(block), pair.first)
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -170,32 +206,52 @@ object BlockListener : Listener {
             event.toBlock.type = Material.AIR
         }
         event.isCancelled = true
-//        BlockCacheManager.addTemp(BlockCacheManager.blockToString(event.block), owner)
+        // 由BlockPhysicEvent 处理方块绑定
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockPistonExtendEvent(event: BlockPistonExtendEvent) {
-//        if (!Config.block__deny_piston) return
-        for (block in event.blocks) {
-            val boolean =
-                BlockCacheManager.getOwner(block)?.second?.getBoolean("block-deny.pistion", null, null) ?: continue
-            if (boolean) {
-                event.isCancelled = true
-                return
+        val direction = event.direction
+        val cancel = event.blocks.reversed().any {
+            val owner = BlockCacheManager.getOwner(it) ?: return@any false
+            val denyMove = owner.second.getBoolean("block-deny.piston", null, null)
+            //可以移动
+            if (!denyMove) {
+                BlockCacheManager.removeBlock(it)
+                BlockCacheManager.addBlock(
+                    it.getRelative(direction, 1),
+                    owner.first,
+                    owner.second.keyPath
+                )
             }
+            denyMove
+        }
+        if (cancel) {
+            event.isCancelled = true
+            return
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockPistonRetractEvent(event: BlockPistonRetractEvent) {
-//        if (!Config.block__deny_piston) return
-        for (block in event.blocks) {
-            val boolean =
-                BlockCacheManager.getOwner(block)?.second?.getBoolean("block-deny.pistion", null, null) ?: continue
-            if (boolean) {
-                event.isCancelled = true
-                return
+        val direction = event.direction
+        val cancel = event.blocks.reversed().any {
+            val owner = BlockCacheManager.getOwner(it) ?: return@any false
+            val denyMove = owner.second.getBoolean("block-deny.piston", null, null)
+            //可以移动
+            if (!denyMove) {
+                BlockCacheManager.removeBlock(it)
+                BlockCacheManager.addBlock(
+                    it.getRelative(direction, 1),
+                    owner.first,
+                    owner.second.keyPath
+                )
             }
+            denyMove
+        }
+        if (cancel) {
+            event.isCancelled = true
+            return
         }
     }
 

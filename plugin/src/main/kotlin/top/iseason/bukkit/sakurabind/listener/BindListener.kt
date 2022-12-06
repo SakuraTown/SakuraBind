@@ -1,13 +1,13 @@
 package top.iseason.bukkit.sakurabind.listener
 
 import io.github.bananapuncher714.nbteditor.NBTEditor
-import org.bukkit.Bukkit
 import org.bukkit.entity.Item
 import org.bukkit.entity.ItemFrame
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockDispenseEvent
 import org.bukkit.event.entity.EntityDamageEvent
@@ -28,6 +28,8 @@ import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkit.sakurabind.task.DropItemList
+import top.iseason.bukkit.sakurabind.utils.MessageTool
+import top.iseason.bukkit.sakurabind.utils.PlayerTool
 import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
@@ -41,28 +43,40 @@ import java.util.*
 object BindListener : Listener {
 
     /**
-     * 不能互动
+     * 互动检查
      */
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST)
     fun onPlayerInteractEvent(event: PlayerInteractEvent) {
-//        if (!Config.item_deny__interact) return
-        val item = event.item ?: return
         if (Config.checkByPass(event.player)) return
-        val owner = SakuraBindAPI.getOwner(item)
-        if (!item.checkAir() &&
-            owner != null
-        ) {
-            val boolean =
-                ItemSettings.getSetting(item)
-                    .getBoolean("item-deny.interact", owner.toString(), event.player)
-
-            if (boolean) {
+        val action = event.action
+        if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
+            if (SakuraBindAPI.checkDenyBySetting(event.item, event.player, "item-deny.interact-left")) {
                 event.isCancelled = true
-                if (!EasyCoolDown.check(event.player.uniqueId, 1000))
-                    event.player.sendColorMessage(Lang.item__deny_interact)
-
+                MessageTool.sendCoolDown(event.player, Lang.item__deny_interact)
+            }
+        } else if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+            if (SakuraBindAPI.checkDenyBySetting(event.item, event.player, "item-deny.interact-right")) {
+                event.isCancelled = true
+                MessageTool.sendCoolDown(event.player, Lang.item__deny_interact)
             }
         }
+
+    }
+
+    /**
+     * 盔甲架检查
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    fun onPlayerArmorStandManipulateEvent(event: PlayerArmorStandManipulateEvent) {
+        if (Config.checkByPass(event.player)) return
+        if (SakuraBindAPI.checkDenyBySetting(event.playerItem, event.player, "item-deny.armor-stand")) {
+            event.isCancelled = true
+            MessageTool.sendCoolDown(event.player, Lang.item__deny_armor_stand_set)
+        } else if (SakuraBindAPI.checkDenyBySetting(event.armorStandItem, event.player, "item-deny.armor-stand")) {
+            event.isCancelled = true
+            MessageTool.sendCoolDown(event.player, Lang.item__deny_armor_stand_get)
+        }
+
     }
 
     /**
@@ -70,44 +84,33 @@ object BindListener : Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onPlayerInteractEntityEvent(event: PlayerInteractEntityEvent) {
-        if (Config.checkByPass(event.player)) return
+        val player = event.player
+        if (Config.checkByPass(player)) return
         val isItemFrame = event.rightClicked is ItemFrame
-        val mainHand = event.player.inventory.itemInMainHand
-        val offHand = if (NBTEditor.getMinecraftVersion()
-                .greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_9)
-        ) event.player.inventory.itemInOffHand else null
-        val uniqueId = event.player.uniqueId
-        fun check(item: ItemStack?): Boolean {
-            if (item.checkAir()) return false
-            val setting = ItemSettings.getSetting(item!!)
-            val owner = SakuraBindAPI.getOwner(item)
-            if (isItemFrame
-                && owner != null
-                && setting.getBoolean("item-deny.item-frame", owner.toString(), event.player)
+        val mainHand = player.inventory.itemInMainHand
+        val offHand = PlayerTool.getOffHandItem(player)
+        //检查展示框
+        if (isItemFrame) {
+            if (SakuraBindAPI.checkDenyBySetting(mainHand, player, "item-deny.item-frame")
+                || (mainHand.checkAir() && SakuraBindAPI.checkDenyBySetting(offHand, player, "item-deny.item-frame"))
             ) {
-                if (!EasyCoolDown.check(event.player.uniqueId, 1000))
-                    event.player.sendColorMessage(Lang.item__deny_itemFrame)
-                return true
+                event.isCancelled = true
+                MessageTool.sendCoolDown(player, Lang.item__deny_itemFrame)
             }
-
-            if (owner != null
-                && setting.getBoolean("item-deny.interact-entity", owner.toString(), event.player)
+        } else {
+            if (SakuraBindAPI.checkDenyBySetting(mainHand, player, "item-deny.interact-entity")
+                || (mainHand.checkAir() && SakuraBindAPI.checkDenyBySetting(
+                    offHand,
+                    player,
+                    "item-deny.interact-entity"
+                ))
             ) {
-                if (!EasyCoolDown.check(event.player.uniqueId, 1000))
-                    event.player.sendColorMessage(Lang.item__deny_entity_interact)
-                return true
+                event.isCancelled = true
+                MessageTool.sendCoolDown(player, Lang.item__deny_entity_interact)
             }
-            return false
-        }
-        if (check(mainHand)) {
-            event.isCancelled = true
-            return
-        }
-        if (check(offHand)) {
-            event.isCancelled = true
-            return
         }
     }
+
 
     /**
      * 不能丢
@@ -115,17 +118,11 @@ object BindListener : Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onPlayerDropItemEvent(event: PlayerDropItemEvent) {
         if (Config.checkByPass(event.player)) return
-//        if (!Config.item_deny__drop) return
         val item = event.itemDrop.itemStack
-        if (item.checkAir()) return
-        val owner = SakuraBindAPI.getOwner(item) ?: return
-        if (ItemSettings.getSetting(item)
-                .getBoolean("item-deny.drop", owner.toString(), event.player)
-        ) {
+        if (SakuraBindAPI.checkDenyBySetting(item, event.player, "item-deny.drop")) {
             event.itemDrop.remove()
             val openInventory = event.player.openInventory
             val cursor = openInventory.cursor
-
             val release = event.player.inventory.addItem(item)
             if (cursor != null && cursor != item && !cursor.checkAir()) {
                 val releaseCursor = event.player.inventory.addItem(cursor)
@@ -133,11 +130,9 @@ object BindListener : Listener {
                 openInventory.cursor = null
             }
             if (release.isNotEmpty()) {
-//                DelaySender.sendItem(owner, release.values)
-                SakuraBindAPI.sendBackItem(owner, release.values.toList())
+                SakuraBindAPI.sendBackItem(SakuraBindAPI.getOwner(item)!!, release.values.toList())
             }
-            if (!EasyCoolDown.check(event.player.uniqueId, 1000))
-                event.player.sendColorMessage(Lang.item__deny_drop)
+            MessageTool.sendCoolDown(event.player, Lang.item__deny_drop)
         }
     }
 
@@ -147,55 +142,41 @@ object BindListener : Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onPlayerPickupItemEvent(event: PlayerPickupItemEvent) {
         if (Config.checkByPass(event.player)) return
-//        if (!Config.item_deny__pickup) return
         val player = event.player
-//        val cursor = player.openInventory.cursor
-//        if (!cursor.checkAir() && SakuraBindAPI.hasBind(cursor!!)) {
-//            event.isCancelled = true
-//            event.item.pickupDelay = 10
-//            return
-//        }
         val item = event.item.itemStack
-        if (item.checkAir()) return
-        val owner = SakuraBindAPI.getOwner(item) ?: return
-        val setting = ItemSettings.getSetting(item)
-        val deny = setting.getBoolean("item-deny.pickup", owner.toString(), player)
-        if (!deny) return
-        event.isCancelled = true
-        event.item.pickupDelay = 10
-        val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
-        if (sendBackItem.isEmpty())
-            event.item.remove()
-        else event.item.itemStack = sendBackItem.first()
-        val player1 = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
-        if (!EasyCoolDown.check(player.uniqueId, 1000))
-            player.sendColorMessage(Lang.item__deny_pickup.formatBy(player1.name))
+        if (SakuraBindAPI.checkDenyBySetting(item, player, "item-deny.pickup")) {
+            val owner = SakuraBindAPI.getOwner(item)!!
+            event.isCancelled = true
+            event.item.pickupDelay = 10
+            val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
+            if (sendBackItem.isEmpty())
+                event.item.remove()
+            else event.item.itemStack = sendBackItem.first()
+            MessageTool.sendCoolDown(player, Lang.item__deny_pickup.formatBy(SakuraBindAPI.getOwnerName(owner)))
+        }
+    }
+
+    /**
+     * 物品点击检查，只检查点击上面的物品栏
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    fun onInventoryClickEvent(event: InventoryClickEvent) {
+        val player = event.whoClicked as? Player ?: return
+        if (Config.checkByPass(player)) return
+        val item = event.currentItem ?: return
+        if (event.clickedInventory == event.view.topInventory
+            && SakuraBindAPI.checkDenyBySetting(item, player, "item-deny.click")
+        ) {
+            event.isCancelled = true
+            MessageTool.sendCoolDown(player, Lang.item__deny_click)
+        }
 
     }
 
     /**
-     * 不是你的物品不能点
+     * 上面的物品栏标题符合规则时禁止点击(放入)
      */
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    fun onInventoryClickEvent(event: InventoryClickEvent) {
-//        if (!Config.item_deny__click && !Config.item_deny__inventory) return
-        val player = event.whoClicked as? Player ?: return
-        if (Config.checkByPass(player)) return
-        val item = event.currentItem ?: return
-        if (item.checkAir()) return
-        val owner = SakuraBindAPI.getOwner(item) ?: return
-        val setting = ItemSettings.getSetting(item)
-        if (event.clickedInventory == event.view.topInventory &&
-            setting.getBoolean("item-deny.click", owner.toString(), player)
-        ) {
-            if (!EasyCoolDown.check(player.uniqueId, 1000))
-                player.sendColorMessage(Lang.item__deny_click)
-            event.isCancelled = true
-            return
-        }
-    }
-
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onInventoryClickEvent2(event: InventoryClickEvent) {
         val whoClicked = event.whoClicked
         if (Config.checkByPass(whoClicked)) return
@@ -209,11 +190,13 @@ object BindListener : Listener {
         val any = stringList.any { title.matches(Regex(it)) }
         if (any) {
             event.isCancelled = true
-            if (!EasyCoolDown.check(whoClicked.uniqueId, 1000))
-                whoClicked.sendColorMessage(Lang.item__deny_inventory)
+            MessageTool.sendCoolDown(whoClicked, Lang.item__deny_inventory)
         }
     }
 
+    /**
+     * 主手拿着物品时禁止输入符合规则的命令
+     */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun onPlayerCommandPreprocessEvent(event: PlayerCommandPreprocessEvent) {
         if (Config.checkByPass(event.player)) return
@@ -229,65 +212,65 @@ object BindListener : Listener {
         }
         if (any) {
             event.isCancelled = true
-            if (!EasyCoolDown.check(event.player.uniqueId, 1000)) {
-                event.player.sendColorMessage(Lang.item__deny_command)
-            }
+            MessageTool.sendCoolDown(player, Lang.item__deny_command)
         }
     }
 
     /**
      * 禁止用于合成
      */
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onPrepareItemCraftEvent(event: PrepareItemCraftEvent) {
         val inventory = event.inventory
         if (inventory.result == null) return
-        val uuid = event.view.player.uniqueId
+        val player = event.view.player
         for (matrix in inventory.matrix) {
-            if (matrix == null || matrix.checkAir()) continue
-            val owner = SakuraBindAPI.getOwner(matrix) ?: continue
-            if (!ItemSettings.getSetting(matrix)
-                    .getBoolean("item-deny.craft", owner.toString(), event.view.player)
-            ) continue
+            if (!SakuraBindAPI.checkDenyBySetting(matrix, player, "item-deny.craft")) continue
             inventory.result = null
-            if (!EasyCoolDown.check(uuid, 1000))
-                event.view.player.sendColorMessage(Lang.item__deny__craft)
+            MessageTool.sendCoolDown(player, Lang.item__deny__craft)
             break
         }
     }
 
     /**
-     * 禁止用于消耗
+     * 禁止用于消耗(吃)
      */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onPlayerItemConsumeEvent(event: PlayerItemConsumeEvent) {
-        if (Config.checkByPass(event.player)) return
+        val player = event.player
+        if (Config.checkByPass(player)) return
         val item = event.item
-        if (item.checkAir()) return
-        val owner = SakuraBindAPI.getOwner(item) ?: return
-        val setting = ItemSettings.getSetting(item)
-        if (!setting.getBoolean("item-deny.consume", owner.toString(), event.player)) return
-        if (!EasyCoolDown.check(event.player.uniqueId, 1000))
-            event.player.sendColorMessage(Lang.item__deny__consume)
-        event.isCancelled = true
+        if (SakuraBindAPI.checkDenyBySetting(item, player, "item-deny.consume")) {
+            event.isCancelled = true
+            MessageTool.sendCoolDown(player, Lang.item__deny__consume)
+        } else if (SakuraBindAPI.checkDenyBySetting(PlayerTool.getOffHandItem(player), player, "item-deny.consume")) {
+            event.isCancelled = true
+            MessageTool.sendCoolDown(player, Lang.item__deny__consume)
+        }
+
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    /**
+     * 禁止弹射物射出
+     */
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onProjectileLaunchEvent(event: ProjectileLaunchEvent) {
-//        if (!Config.item_deny__throw) return
         val entity = event.entity
         val player = entity.shooter as? Player ?: return
         if (Config.checkByPass(player)) return
-        val heldItem = player.getHeldItem() ?: return
-        val owner = SakuraBindAPI.getOwner(heldItem) ?: return
-        if (!ItemSettings.getSetting(heldItem).getBoolean("item-deny.throw", owner.toString(), player)) {
-            return
+        val heldItem = player.getHeldItem()
+        if (SakuraBindAPI.checkDenyBySetting(heldItem, player, "item-deny.throw")) {
+            event.isCancelled = true
+            MessageTool.sendCoolDown(player, Lang.item__deny_throw)
+        } else if (SakuraBindAPI.checkDenyBySetting(PlayerTool.getOffHandItem(player), player, "item-deny.throw")) {
+            event.isCancelled = true
+            MessageTool.sendCoolDown(player, Lang.item__deny_throw)
         }
-        if (!EasyCoolDown.check(player.uniqueId, 1000))
-            player.sendColorMessage(Lang.item__deny_throw)
-        event.isCancelled = true
     }
 
+    /**
+     * 物品位于容器中被破坏时的检查
+     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onBlockBreakEvent(event: BlockBreakEvent) {
         if (Config.checkByPass(event.player)) return
@@ -304,7 +287,12 @@ object BindListener : Listener {
                 event.isCancelled = true
                 return
             }
-            if (!setting.getBoolean("send-when-container-break", owner.toString(), event.player)) return@forEachIndexed
+            if (!setting.getBoolean(
+                    "send-when-container-break",
+                    owner.toString(),
+                    event.player
+                )
+            ) return@forEachIndexed
             val stacks = map.computeIfAbsent(owner) { mutableListOf() }
             inventory.setItem(index, null)
             removed[index] = itemStack
@@ -323,9 +311,11 @@ object BindListener : Listener {
         }
     }
 
+    /**
+     * 检查掉落物被销毁
+     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onEntityDamageEvent(event: EntityDamageEvent) {
-//        if (!Config.send_when_lost) return
         val item = event.entity as? Item ?: return
         if (item.isDead) return
         val itemStack = item.itemStack
@@ -339,9 +329,11 @@ object BindListener : Listener {
         else item.itemStack = sendBackItem.first()
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    /**
+     * 检查掉落物由原版的5分钟机制消失
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onItemDespawnEvent(event: ItemDespawnEvent) {
-//        if (!Config.send_when_lost) return
         val item = event.entity
         val itemStack = item.itemStack
         val owner = SakuraBindAPI.getOwner(item.itemStack) ?: return
@@ -355,36 +347,40 @@ object BindListener : Listener {
         item.remove()
     }
 
+    /**
+     * 物品由发射器射出,对于 CatServer 1.12.2 似乎无效
+     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockDispenseEvent(event: BlockDispenseEvent) {
-//        if (!Config.item_deny__dispense) return
         val item = event.item
-        if (!SakuraBindAPI.hasBind(item)) return
-        if (ItemSettings.getSetting(item).getBoolean("item-deny.dispense", null, null)) {
+        if (SakuraBindAPI.checkDenyBySetting(item, null, "item-deny.dispense")) {
             event.isCancelled = true
         }
     }
 
+    /**
+     * 物品被漏斗吸入,对于 CatServer 1.12.2 似乎无效
+     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onInventoryPickupItemEvent(event: InventoryPickupItemEvent) {
-//        if (!Config.item_deny__hopper) return
-        val itemStack = event.item.itemStack
-        if (!SakuraBindAPI.hasBind(itemStack)) return
-        if (ItemSettings.getSetting(itemStack).getBoolean("item-deny.hopper", null, null)) {
+        if (SakuraBindAPI.checkDenyBySetting(event.item.itemStack, null, "item-deny.hopper")) {
             event.isCancelled = true
         }
     }
 
+    /**
+     * 物品由一个容器中到另一个容器中去，如漏斗,对于 CatServer 1.12.2 似乎无效
+     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onInventoryMoveItemEvent(event: InventoryMoveItemEvent) {
-//        if (!Config.item_deny__container_move) return
-        val item = event.item
-        if (!SakuraBindAPI.hasBind(item)) return
-        if (ItemSettings.getSetting(item).getBoolean("item-deny.container-move", null, null)) {
+        if (SakuraBindAPI.checkDenyBySetting(event.item, null, "item-deny.container-move")) {
             event.isCancelled = true
         }
     }
 
+    /**
+     * 自动绑定, 点击时绑定
+     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun autoBindInventoryClickEvent(event: InventoryClickEvent) {
         val player = event.whoClicked
@@ -401,6 +397,9 @@ object BindListener : Listener {
         }
     }
 
+    /**
+     * 自动绑定, 捡起物品时绑定
+     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun autoBindPlayerPickupItemEvent(event: PlayerPickupItemEvent) {
         val player = event.player
@@ -419,6 +418,9 @@ object BindListener : Listener {
         }
     }
 
+    /**
+     * 自动绑定, 丢弃物品时绑定
+     */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun autoBindPlayerDropItemEvent(event: PlayerDropItemEvent) {
         if (Config.checkByPass(event.player)) return
@@ -433,7 +435,9 @@ object BindListener : Listener {
         }
     }
 
-
+    /**
+     * 处理掉落物的监听器
+     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onItemSpawnEvent(event: ItemSpawnEvent) {
         val entity = event.entity
@@ -450,6 +454,9 @@ object BindListener : Listener {
             DropItemList.putItem(entity, uuid, delay.toInt())
     }
 
+    /**
+     * 玩家登录时检查暂存箱子是否有物品
+     */
     fun onLogin(player: Player) {
 
         if (!DatabaseConfig.isConnected || Config.login_message_delay < 0) return
@@ -457,7 +464,8 @@ object BindListener : Listener {
             if (!player.isOnline) return@submit
             val hasItem = dbTransaction {
                 val iterator =
-                    PlayerItems.slice(PlayerItems.id).select { PlayerItems.uuid eq player.uniqueId }.limit(1).iterator()
+                    PlayerItems.slice(PlayerItems.id).select { PlayerItems.uuid eq player.uniqueId }.limit(1)
+                        .iterator()
                 iterator.hasNext()
             }
 //            debug("玩家的暂存箱: ${hasItem}")
@@ -465,5 +473,6 @@ object BindListener : Listener {
             player.sendColorMessage(Lang.has_lost_item)
         }
     }
+
 
 }

@@ -2,14 +2,17 @@ package top.iseason.bukkit.sakurabind
 
 import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Bukkit
+import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.dto.PlayerItems.item
 import top.iseason.bukkit.sakurabind.task.DelaySender
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.applyMeta
+import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 import top.iseason.bukkittemplate.utils.other.EasyCoolDown
@@ -133,6 +136,29 @@ object SakuraBindAPI {
         return kotlin.runCatching { UUID.fromString(uuidString) }.getOrNull()
     }
 
+    /**
+     * 获取物品绑定的物主
+     * @param item 目标物品
+     * @return 物主的名字，不存在物主则返回null
+     */
+    @JvmStatic
+    fun getOwnerName(item: ItemStack): String? {
+        val owner = getOwner(item) ?: return null
+        val player = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
+        return player.name
+    }
+
+    /**
+     * 获取物品绑定的物主
+     * @param item 目标物品
+     * @return 物主的名字，不存在物主则返回null
+     */
+    @JvmStatic
+    fun getOwnerName(uuid: UUID): String? {
+        val player = Bukkit.getPlayer(uuid) ?: Bukkit.getOfflinePlayer(uuid)
+        return player.name
+    }
+
 //    fun isTileEntity(block: Block): Boolean {
 //        return block.chunk.tileEntities.any { it.block == block }
 //    }
@@ -177,6 +203,7 @@ object SakuraBindAPI {
     /**
      * 将物品送回物主，玩家在线优先进背包
      */
+    @JvmStatic
     fun sendBackItem(uuid: UUID, items: List<ItemStack>): List<ItemStack> {
         val player = Bukkit.getPlayer(uuid)
         //物主在线
@@ -204,5 +231,20 @@ object SakuraBindAPI {
             DelaySender.sendItem(uuid, release)
         }
         return emptyList()
+    }
+
+    /**
+     * 检查物品行为是否被某个设置禁止
+     * @param item 待检测的物品
+     * @param player 检测的玩家
+     * @param key 检测的选项
+     * @return true 表示应该禁止行为
+     */
+    @JvmStatic
+    fun checkDenyBySetting(item: ItemStack?, player: HumanEntity?, key: String): Boolean {
+        if (item.checkAir()) return false
+        val owner = getOwner(item!!) ?: return false
+        return ItemSettings.getSetting(item)
+            .getBoolean(key, owner.toString(), player)
     }
 }

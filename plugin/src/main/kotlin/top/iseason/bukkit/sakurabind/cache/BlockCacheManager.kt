@@ -60,19 +60,6 @@ object BlockCacheManager {
             ).withExpiry(ExpiryPolicyBuilder.noExpiration())
                 .build()
         )
-//        builder = builder.withCache(
-//            "block-owner-temp",
-//            CacheConfigurationBuilder.newCacheConfigurationBuilder(
-//                String::class.java, String::class.java,
-//                ResourcePoolsBuilder.newResourcePoolsBuilder()
-//                    .heap(10, EntryUnit.ENTRIES)
-//                    .offheap(1, MemoryUnit.MB)
-//                    .disk(2, MemoryUnit.MB, false)
-//            ).withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofMillis(300)))
-//                .withKeyCopier(IdentityCopier())
-//                .withValueCopier(IdentityCopier())
-//                .build()
-//        )
         cacheManager = builder.build(true)
         cache = cacheManager.getCache("block-owner", String::class.java, String::class.java)!!
         val file = File(BukkitTemplate.getPlugin().dataFolder, "data${File.separator}filter")
@@ -92,6 +79,14 @@ object BlockCacheManager {
         val value = if (setting != null && setting != "global-setting")
             "$owner,$setting"
         else owner.toString()
+        addBlock(blockToString, value)
+    }
+
+    fun addBlock(block: Block, owner: String, setting: String?) {
+        val blockToString = blockToString(block)
+        val value = if (setting != null && setting != "global-setting")
+            "$owner,$setting"
+        else owner
         addBlock(blockToString, value)
     }
 
@@ -121,7 +116,7 @@ object BlockCacheManager {
         return locationToString(block.location)
     }
 
-    private fun locationToString(location: Location): String =
+    fun locationToString(location: Location): String =
         "${location.world?.name},${location.blockX},${location.blockY},${location.blockZ}"
 
     fun entityToString(entity: Item): String {
@@ -140,6 +135,10 @@ object BlockCacheManager {
 //            return SakuraBindAPI.getTileOwner(block)
 //        }
         return getOwner(blockToString(block))
+    }
+
+    fun getOwner(block: BlockState): Pair<String, Setting>? {
+        return getOwner(locationToString(block.location))
     }
 
 

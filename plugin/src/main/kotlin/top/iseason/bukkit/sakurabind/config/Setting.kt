@@ -215,13 +215,11 @@ open class Setting(val keyPath: String, section: ConfigurationSection) {
                 return false
             }
         }
-//        println(0)
         //是物主或者拥有物主的权限
         var isOwner = false
-        if (owner != null) {
+        if (owner != null && player != null) {
             isOwner =
-                (owner == player?.uniqueId.toString()) || player?.hasPermission("sakurabind.bypass.$owner") == true
-//            println("isOwner ${isOwner}")
+                (owner == player.uniqueId.toString()) || player.hasPermission("sakurabind.bypass.$owner") == true
             if (isOwner && setting.contains("$key@")) {
                 return !setting.getBoolean("$key@")
             }

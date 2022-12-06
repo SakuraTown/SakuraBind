@@ -45,13 +45,21 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Comment("", "", "物品禁用设置")
     var item_deny: MemorySection? = null
 
-    @Key("item-deny.interact@")
-    @Comment("", "手上拿着绑定物品时禁止交互(点击方块)")
-    var item_deny__interact = true
+    @Key("item-deny.interact-left@")
+    @Comment("", "手上拿着绑定物品时禁止左键交互")
+    var item_deny__interact_left = true
+
+    @Key("item-deny.interact-right@")
+    @Comment("", "手上拿着绑定物品时禁止右键交互")
+    var item_deny__interact_right = true
 
     @Key("item-deny.interact-entity@")
     @Comment("", "禁止实体交互(攻击或右键)")
     var item_deny__interact_entity = true
+
+    @Key("item-deny.armor-stand@")
+    @Comment("", "禁止盔甲架交互")
+    var item_deny__armor_stand = true
 
     @Key
     @Comment("", "禁止丢弃")
@@ -94,7 +102,7 @@ object GlobalSettings : SimpleYAMLConfig() {
     var item_deny__item_frame = true
 
     @Key
-    @Comment("", "禁止右键丢出(药水、雪球等投掷物)")
+    @Comment("", "禁止弹射物射出(药水、箭、雪球等)")
     var item_deny__throw = true
 
     @Key
@@ -142,11 +150,11 @@ object GlobalSettings : SimpleYAMLConfig() {
     var block_deny__explode = true
 
     @Key
-    @Comment("", "禁止方块物品被活塞推动/拉动")
+    @Comment("", "禁止方块物品被活塞推动/拉动. 如果不禁止，被活塞推/拉动后的方块也会绑定")
     var block_deny__piston = true
 
     @Key
-    @Comment("", "禁止流水/岩浆破坏,如关闭被冲走的绑定物品将送回玩家或发邮件")
+    @Comment("", "禁止流水/岩浆破坏, 被岩浆破坏的物品将不会有掉落物,故而设置为false时将会把物品直接送回物主")
     var block_deny__flow = true
 
     @Key

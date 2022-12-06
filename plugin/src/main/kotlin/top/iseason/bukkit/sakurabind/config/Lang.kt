@@ -19,6 +19,8 @@ object Lang : SimpleYAMLConfig() {
     var item__deny_pickup = "&6该物品属于 &a{0},&6已归还"
     var item__deny_itemFrame = "&6该物品禁止放入展示框!"
     var item__deny_interact = "&6该物品禁止交互!"
+    var item__deny_armor_stand_set = "&6该物品禁止放入盔甲架!"
+    var item__deny_armor_stand_get = "&6该物品禁止从盔甲架取出!"
     var item__deny_entity_interact = "&6该物品禁止与实体交互!"
     var item__deny_click = "&6你不能拿走这个物品!"
     var item__deny_inventory = "&6此物品禁止放入这个容器!"
@@ -30,6 +32,7 @@ object Lang : SimpleYAMLConfig() {
 
     var block__deny_break = "&6你不能破坏这个方块,这个方块属于 &b{0}"
     var block__deny_place = "&6你不能放置这个方块，此物物品已绑定"
+    var block__deny_place_exist = "&6你不能放置这个方块，这个位置已有一个方块了!"
     var block__deny_interact = "&6你没有这个方块的使用权限,这个方块属于 &b{0}"
 
     var scanner_item_send_back = "&6检测到你的背包存在别人的物品，已归还物主!"

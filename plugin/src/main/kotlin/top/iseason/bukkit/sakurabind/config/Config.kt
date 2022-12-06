@@ -57,6 +57,10 @@ object Config : SimpleYAMLConfig() {
     )
     var scanner_period = 60L
 
+    @Key
+    @Comment("", "玩家禁用消息的冷却时间, 单位毫秒")
+    var message_coolDown = 1000L
+
     private var task: BukkitTask? = null
 
     @Key
