@@ -4,7 +4,7 @@ import fr.xephi.authme.events.LoginEvent
 import org.bstats.bukkit.Metrics
 import org.bukkit.event.block.BlockPhysicsEvent
 import org.bukkit.event.player.PlayerLoginEvent
-import top.iseason.bukkit.sakurabind.cache.BlockCacheManager
+import top.iseason.bukkit.sakurabind.cache.CacheManager
 import top.iseason.bukkit.sakurabind.command.mainCommand
 import top.iseason.bukkit.sakurabind.config.*
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
@@ -71,7 +71,7 @@ object SakuraBind : KotlinPlugin() {
         }
         if (Config.block_listener) {
             try {
-                BlockCacheManager
+                CacheManager
             } catch (e: Exception) {
                 warn("缓存初始化异常!")
             }
@@ -93,7 +93,7 @@ object SakuraBind : KotlinPlugin() {
             e.printStackTrace()
         }
         try {
-            BlockCacheManager.save()
+            CacheManager.save()
         } catch (e: Exception) {
             e.printStackTrace()
         }

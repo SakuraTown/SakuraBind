@@ -29,7 +29,6 @@ class AutoBindMessageEvent(
 
         @JvmStatic
         fun getHandlerList() = handlers
-
     }
 
     override fun getHandlers(): HandlerList {

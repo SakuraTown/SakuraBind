@@ -158,6 +158,10 @@ object GlobalSettings : SimpleYAMLConfig() {
     var block_deny__flow = true
 
     @Key
+    @Comment("", "禁止绑定的方块转化为实体，比如重力方块变成下落方块，tnt被点燃")
+    var block_deny__change_to_entity = true
+
+    @Key
     @Comment("", "", "自动绑定设置")
     var auto_bind: MemorySection? = null
 

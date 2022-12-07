@@ -25,9 +25,9 @@ import top.iseason.bukkittemplate.utils.other.EasyCoolDown
 
 fun mainCommand() {
     CommandNode.usageFooter = "&7所有命令加上 '-silent' 参数可以不显示提示消息\n "
-    command("sakuraBind") {
+    command("sakurabind") {
         description = "樱花绑定根节点"
-        alias = arrayOf("sBind", "sb", "sab", "bind")
+        alias = arrayOf("sbind", "sb", "sab", "bind")
         default = PermissionDefault.OP
         node(
             "bind"

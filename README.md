@@ -253,7 +253,7 @@ matchers:
 
 ## 插件命令
 
-根命令全称 `sakurabind`,别名为 `sBind`, `sb`, `sab`, `bind`
+根命令全称 `sakurabind`,别名为 `sbind`, `sb`, `sab`, `bind`
 
 ~~~ text
 /sakurabind bind <player> [-noLore]  绑定某玩家手上的物品

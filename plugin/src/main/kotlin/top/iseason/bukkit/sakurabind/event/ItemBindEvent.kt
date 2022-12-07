@@ -1,5 +1,7 @@
 package top.iseason.bukkit.sakurabind.event
 
+import org.bukkit.Bukkit
+import org.bukkit.OfflinePlayer
 import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
@@ -20,6 +22,10 @@ class ItemBindEvent(
      */
     var uuid: UUID
 ) : Event(Thread.currentThread() != SakuraBind.mainThread), Cancellable {
+    /**
+     * 获取要绑定的玩家, 懒加载
+     */
+    val player: OfflinePlayer by lazy { Bukkit.getPlayer(uuid) ?: Bukkit.getOfflinePlayer(uuid) }
 
     companion object {
         @JvmStatic
