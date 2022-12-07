@@ -19,13 +19,13 @@ import java.util.*
 object Config : SimpleYAMLConfig() {
 
     @Key
-    @Comment("", "识别绑定玩家的NBT路径，数据是玩家uuid")
-    var nbt_path_uuid = "PublicBukkitValues.sakurabind:sakura_bind"
+    @Comment("", "识别绑定玩家的NBT路径(由tag开始)，'.' 为路径分隔符,数据是玩家uuid")
+    var nbt_path_uuid = "sakura_bind_uuid"
     var nbtPathUuid = arrayOf<String>()
 
     @Key
-    @Comment("", "识别绑定Lore的NBT路径，数据是玩家旧的lore")
-    var nbt_path_lore = "PublicBukkitValues.sakurabind:sakura_bind_lore"
+    @Comment("", "识别绑定Lore的NBT路径(由tag开始)，'.' 为路径分隔符,数据是玩家旧的lore")
+    var nbt_path_lore = "sakura_bind_lore"
     var nbtPathLore = arrayOf<String>()
 
     @Key

@@ -1,6 +1,7 @@
 package top.iseason.bukkit.sakurabind.config
 
 import io.github.bananapuncher714.nbteditor.NBTEditor
+import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
@@ -8,6 +9,7 @@ import org.ehcache.UserManagedCache
 import org.ehcache.config.builders.ExpiryPolicyBuilder
 import org.ehcache.config.builders.UserManagedCacheBuilder
 import org.ehcache.impl.copy.IdentityCopier
+import top.iseason.bukkit.sakurabind.event.ItemMatchedEvent
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
@@ -45,7 +47,7 @@ object ItemSettings : SimpleYAMLConfig() {
 
     @Key
     @Comment(
-        "为提高性能，匹配过一次的物品在绑定之后将会把匹配到的设置键存入物品NBT，此为NBT的路径 '.' 为路径分隔符",
+        "为提高性能，匹配过一次的物品在绑定之后将会把匹配到的设置键存入物品NBT，此为NBT的路径(由tag路径开始) '.' 为路径分隔符",
     )
     var nbt_cache_path: String = "sakura_bind_setting_cache"
     var nbtPath: Array<String> = arrayOf("sakura_bind_setting_cache")
@@ -69,13 +71,13 @@ object ItemSettings : SimpleYAMLConfig() {
         }
     }
 
-    val settingCache: UserManagedCache<Integer, Setting> = UserManagedCacheBuilder
-        .newUserManagedCacheBuilder(Integer::class.java, Setting::class.java)
+    val settingCache: UserManagedCache<Integer, BaseSetting> = UserManagedCacheBuilder
+        .newUserManagedCacheBuilder(Integer::class.java, BaseSetting::class.java)
         .withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofSeconds(3)))
         .withKeyCopier(IdentityCopier())
         .withValueCopier(IdentityCopier())
         .build(true)
-    private var settings = LinkedHashMap<String, Setting>()
+    private var settings = LinkedHashMap<String, ItemSetting>()
 
     override fun onLoaded(section: ConfigurationSection) {
         settingCache.clear()
@@ -85,22 +87,22 @@ object ItemSettings : SimpleYAMLConfig() {
         matchers.getKeys(false).forEach {
             val s = matchers.getConfigurationSection(it)!!
             try {
-                settings[it] = Setting(it, s)
+                settings[it] = ItemSetting(it, s)
             } catch (e: Exception) {
                 warn("配置 ${it} 格式错误，请检查!")
             }
         }
-        settings["global-setting"] = DefaultSetting
+        settings["global-setting"] = DefaultItemSetting
     }
 
     /**
-     * 获取物品对应的设置
+     * 获取物品对应的设置,具有三级缓存
      */
-    fun getSetting(item: ItemStack, setInCache: Boolean = true): Setting {
+    fun getSetting(item: ItemStack, setInCache: Boolean = true): BaseSetting {
         //一级缓存
 //        println("物品地址: ${item.hashCode()} ${settingCache.containsKey(item.hashCode())}")
         val hash = Integer(item.hashCode())
-        var setting: Setting? = settingCache.get(hash)
+        var setting: BaseSetting? = settingCache.get(hash)
         if (setting != null) {
             return setting
         }
@@ -113,19 +115,21 @@ object ItemSettings : SimpleYAMLConfig() {
             return setting
         }
         //匹配
-        for ((k, s) in settings) {
+        for ((_, s) in settings) {
             if (s.match(item)) {
-                setting = s
-                if (setInCache) item.itemMeta = NBTEditor.set(item, k, *nbtPath).itemMeta
+                val itemMatchedEvent = ItemMatchedEvent(item, s)
+                Bukkit.getPluginManager().callEvent(itemMatchedEvent)
+                setting = itemMatchedEvent.matchSetting ?: DefaultItemSetting
+                if (setInCache) item.itemMeta = NBTEditor.set(item, setting.keyPath, *nbtPath).itemMeta
                 break
             }
         }
         if (setting == null && setInCache) item.itemMeta = NBTEditor.set(item, null, *nbtPath).itemMeta
-        setting = setting ?: DefaultSetting
+        setting = setting ?: DefaultItemSetting
         settingCache.put(hash, setting)
         return setting
     }
 
-    fun getSetting(key: String?) = settings[key ?: "global-setting"] ?: DefaultSetting
+    fun getSetting(key: String?) = settings[key ?: "global-setting"] ?: DefaultItemSetting
 
 }

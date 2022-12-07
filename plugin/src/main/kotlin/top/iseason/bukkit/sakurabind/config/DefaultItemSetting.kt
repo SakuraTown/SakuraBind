@@ -4,7 +4,7 @@ import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.HumanEntity
 import org.bukkit.inventory.ItemStack
 
-object DefaultSetting : Setting("global-setting", YamlConfiguration().apply {
+object DefaultItemSetting : ItemSetting("global-setting", YamlConfiguration().apply {
     set("match.material", ".*")
     set("settings.a", "")
 }) {

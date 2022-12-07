@@ -36,7 +36,6 @@ import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
-import top.iseason.bukkittemplate.utils.other.EasyCoolDown
 import top.iseason.bukkittemplate.utils.other.submit
 import java.util.*
 
@@ -52,12 +51,22 @@ object BindListener : Listener {
         if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
             if (SakuraBindAPI.checkDenyBySetting(event.item, event.player, "item-deny.interact-left")) {
                 event.isCancelled = true
-                MessageTool.sendCoolDown(event.player, Lang.item__deny_interact)
+                MessageTool.denyMessageCoolDown(
+                    event.player,
+                    Lang.item__deny_interact,
+                    ItemSettings.getSetting(event.item!!),
+                    event.item
+                )
             }
         } else if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
             if (SakuraBindAPI.checkDenyBySetting(event.item, event.player, "item-deny.interact-right")) {
                 event.isCancelled = true
-                MessageTool.sendCoolDown(event.player, Lang.item__deny_interact)
+                MessageTool.denyMessageCoolDown(
+                    event.player,
+                    Lang.item__deny_interact,
+                    ItemSettings.getSetting(event.item!!),
+                    event.item
+                )
             }
         }
 
@@ -71,10 +80,19 @@ object BindListener : Listener {
         if (Config.checkByPass(event.player)) return
         if (SakuraBindAPI.checkDenyBySetting(event.playerItem, event.player, "item-deny.armor-stand")) {
             event.isCancelled = true
-            MessageTool.sendCoolDown(event.player, Lang.item__deny_armor_stand_set)
+            MessageTool.denyMessageCoolDown(
+                event.player, Lang.item__deny_armor_stand_set,
+                ItemSettings.getSetting(event.playerItem),
+                event.playerItem
+            )
         } else if (SakuraBindAPI.checkDenyBySetting(event.armorStandItem, event.player, "item-deny.armor-stand")) {
             event.isCancelled = true
-            MessageTool.sendCoolDown(event.player, Lang.item__deny_armor_stand_get)
+            MessageTool.denyMessageCoolDown(
+                event.player,
+                Lang.item__deny_armor_stand_get,
+                ItemSettings.getSetting(event.armorStandItem),
+                event.armorStandItem
+            )
         }
 
     }
@@ -94,8 +112,15 @@ object BindListener : Listener {
             if (SakuraBindAPI.checkDenyBySetting(mainHand, player, "item-deny.item-frame")
                 || (mainHand.checkAir() && SakuraBindAPI.checkDenyBySetting(offHand, player, "item-deny.item-frame"))
             ) {
+                val item = if (mainHand.checkAir()) {
+                    offHand!!
+                } else mainHand
                 event.isCancelled = true
-                MessageTool.sendCoolDown(player, Lang.item__deny_itemFrame)
+                MessageTool.denyMessageCoolDown(
+                    player, Lang.item__deny_itemFrame,
+                    ItemSettings.getSetting(item),
+                    item
+                )
             }
         } else {
             if (SakuraBindAPI.checkDenyBySetting(mainHand, player, "item-deny.interact-entity")
@@ -105,8 +130,15 @@ object BindListener : Listener {
                     "item-deny.interact-entity"
                 ))
             ) {
+                val item = if (mainHand.checkAir()) {
+                    offHand!!
+                } else mainHand
                 event.isCancelled = true
-                MessageTool.sendCoolDown(player, Lang.item__deny_entity_interact)
+                MessageTool.denyMessageCoolDown(
+                    player, Lang.item__deny_entity_interact,
+                    ItemSettings.getSetting(item),
+                    item
+                )
             }
         }
     }
@@ -132,7 +164,7 @@ object BindListener : Listener {
             if (release.isNotEmpty()) {
                 SakuraBindAPI.sendBackItem(SakuraBindAPI.getOwner(item)!!, release.values.toList())
             }
-            MessageTool.sendCoolDown(event.player, Lang.item__deny_drop)
+            MessageTool.denyMessageCoolDown(event.player, Lang.item__deny_drop, ItemSettings.getSetting(item), item)
         }
     }
 
@@ -152,7 +184,12 @@ object BindListener : Listener {
             if (sendBackItem.isEmpty())
                 event.item.remove()
             else event.item.itemStack = sendBackItem.first()
-            MessageTool.sendCoolDown(player, Lang.item__deny_pickup.formatBy(SakuraBindAPI.getOwnerName(owner)))
+            MessageTool.denyMessageCoolDown(
+                player,
+                Lang.item__deny_pickup.formatBy(SakuraBindAPI.getOwnerName(owner)),
+                ItemSettings.getSetting(item),
+                item
+            )
         }
     }
 
@@ -168,7 +205,7 @@ object BindListener : Listener {
             && SakuraBindAPI.checkDenyBySetting(item, player, "item-deny.click")
         ) {
             event.isCancelled = true
-            MessageTool.sendCoolDown(player, Lang.item__deny_click)
+            MessageTool.denyMessageCoolDown(player, Lang.item__deny_click, ItemSettings.getSetting(item), item)
         }
 
     }
@@ -190,7 +227,7 @@ object BindListener : Listener {
         val any = stringList.any { title.matches(Regex(it)) }
         if (any) {
             event.isCancelled = true
-            MessageTool.sendCoolDown(whoClicked, Lang.item__deny_inventory)
+            MessageTool.denyMessageCoolDown(whoClicked, Lang.item__deny_inventory, setting, item)
         }
     }
 
@@ -212,7 +249,7 @@ object BindListener : Listener {
         }
         if (any) {
             event.isCancelled = true
-            MessageTool.sendCoolDown(player, Lang.item__deny_command)
+            MessageTool.denyMessageCoolDown(player, Lang.item__deny_command, setting, heldItem)
         }
     }
 
@@ -227,7 +264,7 @@ object BindListener : Listener {
         for (matrix in inventory.matrix) {
             if (!SakuraBindAPI.checkDenyBySetting(matrix, player, "item-deny.craft")) continue
             inventory.result = null
-            MessageTool.sendCoolDown(player, Lang.item__deny__craft)
+            MessageTool.denyMessageCoolDown(player, Lang.item__deny__craft, ItemSettings.getSetting(matrix), matrix)
             break
         }
     }
@@ -242,10 +279,16 @@ object BindListener : Listener {
         val item = event.item
         if (SakuraBindAPI.checkDenyBySetting(item, player, "item-deny.consume")) {
             event.isCancelled = true
-            MessageTool.sendCoolDown(player, Lang.item__deny__consume)
+            MessageTool.denyMessageCoolDown(player, Lang.item__deny__consume, ItemSettings.getSetting(item), item)
         } else if (SakuraBindAPI.checkDenyBySetting(PlayerTool.getOffHandItem(player), player, "item-deny.consume")) {
             event.isCancelled = true
-            MessageTool.sendCoolDown(player, Lang.item__deny__consume)
+            val offHandItem = PlayerTool.getOffHandItem(player)!!
+            MessageTool.denyMessageCoolDown(
+                player,
+                Lang.item__deny__consume,
+                ItemSettings.getSetting(offHandItem),
+                offHandItem
+            )
         }
 
     }
@@ -261,10 +304,21 @@ object BindListener : Listener {
         val heldItem = player.getHeldItem()
         if (SakuraBindAPI.checkDenyBySetting(heldItem, player, "item-deny.throw")) {
             event.isCancelled = true
-            MessageTool.sendCoolDown(player, Lang.item__deny_throw)
+            MessageTool.denyMessageCoolDown(
+                player,
+                Lang.item__deny_throw,
+                ItemSettings.getSetting(heldItem!!),
+                heldItem
+            )
         } else if (SakuraBindAPI.checkDenyBySetting(PlayerTool.getOffHandItem(player), player, "item-deny.throw")) {
             event.isCancelled = true
-            MessageTool.sendCoolDown(player, Lang.item__deny_throw)
+            val offHandItem = PlayerTool.getOffHandItem(player)!!
+            MessageTool.denyMessageCoolDown(
+                player,
+                Lang.item__deny_throw,
+                ItemSettings.getSetting(offHandItem),
+                offHandItem
+            )
         }
     }
 
@@ -282,8 +336,7 @@ object BindListener : Listener {
             val owner = SakuraBindAPI.getOwner(itemStack) ?: return@forEachIndexed
             val setting = ItemSettings.getSetting(itemStack)
             if (setting.getBoolean("item-deny.container-break", owner.toString(), event.player)) {
-                if (!EasyCoolDown.check(event.player.uniqueId, 1000))
-                    event.player.sendColorMessage(Lang.item__deny_container_break)
+                MessageTool.denyMessageCoolDown(event.player, Lang.item__deny_container_break, setting, itemStack)
                 event.isCancelled = true
                 return
             }
@@ -394,6 +447,7 @@ object BindListener : Listener {
             || NBTEditor.contains(item, Config.auto_bind_nbt)
         ) {
             SakuraBindAPI.bind(item, player as Player)
+            MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onClick, setting, item)
         }
     }
 
@@ -415,6 +469,7 @@ object BindListener : Listener {
             )
         ) {
             SakuraBindAPI.bind(item, player)
+            MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onPickup, setting, item)
         }
     }
 
@@ -432,6 +487,7 @@ object BindListener : Listener {
             || NBTEditor.contains(item, Config.auto_bind_nbt)
         ) {
             SakuraBindAPI.bind(item, event.player)
+            MessageTool.bindMessageCoolDown(event.player, Lang.auto_bind__onDrop, setting, item)
         }
     }
 

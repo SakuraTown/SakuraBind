@@ -8,6 +8,7 @@ import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import java.util.*
@@ -22,7 +23,7 @@ class Scanner : BukkitRunnable() {
 //                    info("正在检查 ${it.name} ${it.uniqueId} 的背包")
 //                    info("送回物品功能: $auto_bind__scanner_send_back")
             var hasFound = false
-            val inventory = it.openInventory?.bottomInventory ?: return@forEach
+            val inventory = it.openInventory.bottomInventory
             try {
                 //为了兼容mod，获取到的格子数不一致
                 for (i in 0 until inventory.size) {
@@ -49,6 +50,7 @@ class Scanner : BukkitRunnable() {
                         ))
                     ) {
 //                                info("已绑定物品 ${item.type}")
+                        MessageTool.bindMessageCoolDown(it, Lang.auto_bind__onScanner, setting, item)
                         SakuraBindAPI.bind(item, it)
                     }
                 }

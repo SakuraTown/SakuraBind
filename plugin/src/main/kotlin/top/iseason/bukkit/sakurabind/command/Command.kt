@@ -7,9 +7,11 @@ import org.bukkit.permissions.PermissionDefault
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.Config
+import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.dto.PlayerItem
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
+import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.command.*
 import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.debug.SimpleLogger
@@ -43,8 +45,15 @@ fun mainCommand() {
                 val itemInMainHand = player.getHeldItem()
                 if (itemInMainHand.checkAir()) return@executor
                 SakuraBindAPI.bind(itemInMainHand!!, player, showLore)
-                if (!hasParma("-silent"))
+                if (!hasParma("-silent")) {
                     it.sendColorMessages(Lang.command__bind.formatBy(player.name))
+                    MessageTool.bindMessageCoolDown(
+                        player,
+                        Lang.item_bind_hand,
+                        ItemSettings.getSetting(itemInMainHand),
+                        itemInMainHand
+                    )
+                }
             }
         }
         node(
@@ -64,8 +73,9 @@ fun mainCommand() {
                 val itemInMainHand = (it as Player).getHeldItem()
                 if (itemInMainHand.checkAir()) return@executor
                 SakuraBindAPI.bind(itemInMainHand!!, player, showLore)
-                if (!hasParma("-silent"))
+                if (!hasParma("-silent")) {
                     it.sendColorMessages(Lang.command__bindTo.formatBy(player.name))
+                }
             }
         }
         node(
@@ -82,8 +92,12 @@ fun mainCommand() {
                 val itemInMainHand = player.inventory.itemInMainHand
                 if (itemInMainHand.checkAir()) return@executor
                 SakuraBindAPI.unBind(itemInMainHand)
-                if (!hasParma("-silent"))
+                if (!hasParma("-silent")) {
                     it.sendColorMessages(Lang.command__unbind)
+                    if (!SakuraBindAPI.hasBind(itemInMainHand)) {
+                        MessageTool.messageCoolDown(player, Lang.item_unbind_hand)
+                    }
+                }
             }
         }
         node(
@@ -99,14 +113,24 @@ fun mainCommand() {
             executor {
                 val player = getParam<Player>(0)
                 val showLore = !hasParma("-noLore")
+                val hasParma = hasParma("-silent")
                 for (itemStack in player.inventory) {
                     if (itemStack == null) continue
                     if (itemStack.checkAir()) continue
                     SakuraBindAPI.bind(itemStack, player, showLore)
+                    if (!hasParma)
+                        MessageTool.bindMessageCoolDown(
+                            player,
+                            Lang.item_bind_all,
+                            ItemSettings.getSetting(itemStack),
+                            itemStack
+                        )
                 }
                 player.updateInventory()
-                if (!hasParma("-silent"))
+                if (!hasParma) {
                     it.sendColorMessages(Lang.command__bindAll)
+                    MessageTool.messageCoolDown(player, Lang.item_unbind_all)
+                }
             }
         }
         node(

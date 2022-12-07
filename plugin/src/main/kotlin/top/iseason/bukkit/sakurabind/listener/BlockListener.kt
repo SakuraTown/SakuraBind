@@ -40,9 +40,11 @@ object BlockListener : Listener {
             val (owner, setting) = BlockCacheManager.getOwner(event.clickedBlock!!) ?: return
             if (setting.getBoolean("block-deny.interact", owner, player)) {
                 event.isCancelled = true
-                MessageTool.sendCoolDown(
+                MessageTool.denyMessageCoolDown(
                     player,
-                    Lang.block__deny_interact.formatBy(SakuraBindAPI.getOwnerName(UUID.fromString(owner)))
+                    Lang.block__deny_interact.formatBy(SakuraBindAPI.getOwnerName(UUID.fromString(owner))),
+                    setting,
+                    block = event.clickedBlock
                 )
                 return
             }
@@ -66,7 +68,11 @@ object BlockListener : Listener {
         var owner: UUID? = null
         if (!heldItem.checkAir()) {
             if (SakuraBindAPI.checkDenyBySetting(heldItem, player, "block-deny.place")) {
-                MessageTool.sendCoolDown(event.player, Lang.block__deny_place)
+                MessageTool.denyMessageCoolDown(
+                    event.player, Lang.block__deny_place,
+                    ItemSettings.getSetting(heldItem!!),
+                    heldItem
+                )
                 event.isCancelled = true
                 return
             } else {
@@ -77,7 +83,10 @@ object BlockListener : Listener {
             if (offHandItem.checkAir()) {
                 owner = SakuraBindAPI.getOwner(offHandItem!!)
             } else if (SakuraBindAPI.checkDenyBySetting(offHandItem, player, "block-deny.place")) {
-                MessageTool.sendCoolDown(event.player, Lang.block__deny_place)
+                MessageTool.denyMessageCoolDown(
+                    event.player, Lang.block__deny_place, ItemSettings.getSetting(offHandItem!!),
+                    offHandItem
+                )
                 event.isCancelled = true
                 return
             }
@@ -98,7 +107,12 @@ object BlockListener : Listener {
         var owner: UUID? = null
         if (!heldItem.checkAir()) {
             if (SakuraBindAPI.checkDenyBySetting(heldItem, player, "block-deny.place")) {
-                MessageTool.sendCoolDown(event.player, Lang.block__deny_place)
+                MessageTool.denyMessageCoolDown(
+                    event.player,
+                    Lang.block__deny_place,
+                    ItemSettings.getSetting(heldItem!!),
+                    heldItem
+                )
                 event.isCancelled = true
                 return
             } else {
@@ -109,7 +123,11 @@ object BlockListener : Listener {
             if (offHandItem.checkAir()) {
                 owner = SakuraBindAPI.getOwner(offHandItem!!)
             } else if (SakuraBindAPI.checkDenyBySetting(offHandItem, player, "block-deny.place")) {
-                MessageTool.sendCoolDown(event.player, Lang.block__deny_place)
+                MessageTool.denyMessageCoolDown(
+                    event.player, Lang.block__deny_place,
+                    ItemSettings.getSetting(offHandItem!!),
+                    offHandItem
+                )
                 event.isCancelled = true
                 return
             }
@@ -154,7 +172,10 @@ object BlockListener : Listener {
 //            block.type = Material.AIR
         } else {
             event.isCancelled = true
-            MessageTool.sendCoolDown(player, Lang.block__deny_break.formatBy(SakuraBindAPI.getOwnerName(uuid)))
+            MessageTool.denyMessageCoolDown(
+                player, Lang.block__deny_break.formatBy(SakuraBindAPI.getOwnerName(uuid)),
+                setting, block = block
+            )
         }
 
     }

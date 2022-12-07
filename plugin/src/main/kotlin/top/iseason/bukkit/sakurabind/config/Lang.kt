@@ -3,6 +3,7 @@ package top.iseason.bukkit.sakurabind.config
 import org.bukkit.configuration.ConfigurationSection
 import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
+import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils
@@ -10,9 +11,23 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils
 @Key
 @FilePath("lang.yml")
 object Lang : SimpleYAMLConfig() {
+    @Comment(
+        "",
+        "消息留空将不会显示，使用 '\\n' 可以换行",
+        "支持 & 颜色符号，1.17以上支持16进制颜色代码，如 #66ccff",
+        "{0}、{1}、{2}、{3} 等格式为该消息独有的变量占位符",
+        "所有消息支持PlaceHolderAPI"
+    )
+    var readme = ""
+
     var prefix = "&a[&6${BukkitTemplate.getPlugin().description.name}&a] &f"
     var send_back_all = "&7你的遗失物品已全部放入你的背包"
     var send_back = "&7你的部分遗失物品已放入你的背包, 剩下的已发往邮箱"
+
+    var item_bind_hand = "&7你手上的物品已绑定"
+    var item_bind_all = "&7你的背包物品已绑定"
+    var item_unbind_hand = "&7你手上的物品已解绑"
+    var item_unbind_all = "&7你的背包物品已解绑"
 
     var item__deny_command = "&6你不能拿着此物品输入该命令!"
     var item__deny_drop = "&6该物品不能丢出!"
@@ -30,9 +45,13 @@ object Lang : SimpleYAMLConfig() {
     var item__deny__anvil = "&6该物品禁止用于铁砧!"
     var item__deny_container_break = "&6该容器含有绑定物品，禁止破坏!"
 
+    var auto_bind__onClick = "&a此物品已绑定你的灵魂!"
+    var auto_bind__onPickup = "&a你捡到了与你相性最好的物品!"
+    var auto_bind__onDrop = "&a你刚刚丢弃的物品将永远属于你!"
+    var auto_bind__onScanner = "&a你背包有适合你的物品，已绑定你的灵魂!"
+
     var block__deny_break = "&6你不能破坏这个方块,这个方块属于 &b{0}"
     var block__deny_place = "&6你不能放置这个方块，此物物品已绑定"
-    var block__deny_place_exist = "&6你不能放置这个方块，这个位置已有一个方块了!"
     var block__deny_interact = "&6你没有这个方块的使用权限,这个方块属于 &b{0}"
 
     var scanner_item_send_back = "&6检测到你的背包存在别人的物品，已归还物主!"
@@ -49,7 +68,7 @@ object Lang : SimpleYAMLConfig() {
     var command__autoBind = "&a已添加 &b{0}"
     var command__debug = "&aDebug模式: &b{0}"
 
-    var has_lost_item = "&a你有遗失的物品,请输入 &6'/sakurabind get' &a领取"
+    var has_lost_item = "&a你有遗失的物品,请输入 &6'/sakurabind getLost' &a领取"
 
     override fun onLoaded(section: ConfigurationSection) {
         MessageUtils.defaultPrefix = prefix

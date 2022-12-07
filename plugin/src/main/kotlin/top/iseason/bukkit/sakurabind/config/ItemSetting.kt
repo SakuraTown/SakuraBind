@@ -11,7 +11,7 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.noColor
 import java.security.InvalidParameterException
 import java.util.regex.Pattern
 
-open class Setting(val keyPath: String, section: ConfigurationSection) {
+open class ItemSetting(override val keyPath: String, section: ConfigurationSection) : BaseSetting {
     private var namePattern: Pattern? = null
     private var nameWithoutColorPattern: Pattern? = null
     private var materialPattern: Pattern? = null
@@ -71,7 +71,7 @@ open class Setting(val keyPath: String, section: ConfigurationSection) {
         }
     }
 
-    open fun match(item: ItemStack): Boolean {
+    override fun match(item: ItemStack): Boolean {
         val meta = item.itemMeta
         if (namePattern != null) {
             val matchName = with(namePattern!!) {
@@ -185,24 +185,22 @@ open class Setting(val keyPath: String, section: ConfigurationSection) {
         return true
     }
 
-    fun getString(key: String): String {
+    override fun getString(key: String): String {
         return setting.getString(key, GlobalSettings.config.getString(key)) ?: ""
     }
 
-    fun getStringList(key: String): List<String> {
+    override fun getStringList(key: String): List<String> {
         return if (setting.contains(key))
             setting.getStringList(key)
         else GlobalSettings.config.getStringList(key)
     }
 
-    fun getInt(key: String): Int = setting.getInt(key, GlobalSettings.config.getInt(key))
+    override fun getInt(key: String): Int = setting.getInt(key, GlobalSettings.config.getInt(key))
 
-    fun getLong(key: String): Long = setting.getLong(key, GlobalSettings.config.getLong(key))
+    override fun getLong(key: String): Long = setting.getLong(key, GlobalSettings.config.getLong(key))
+    override fun getDouble(key: String): Double = setting.getDouble(key, GlobalSettings.config.getDouble(key))
 
-    /**
-     * 返回是否禁止操作
-     */
-    open fun getBoolean(key: String, owner: String?, player: HumanEntity?): Boolean {
+    override fun getBoolean(key: String, owner: String?, player: HumanEntity?): Boolean {
         //权限检查
         if (player != null) {
             if (player.hasPermission("sakurabind.setting.$keyPath.$key.true")) {

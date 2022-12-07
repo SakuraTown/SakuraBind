@@ -9,6 +9,8 @@ import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.dto.PlayerItems.item
+import top.iseason.bukkit.sakurabind.event.ItemBindEvent
+import top.iseason.bukkit.sakurabind.event.ItemUnBIndEvent
 import top.iseason.bukkit.sakurabind.task.DelaySender
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.applyMeta
@@ -23,9 +25,6 @@ import java.util.*
  */
 @Suppress("UNUSED")
 object SakuraBindAPI {
-//    private val SAKURA_BIND = NamespacedKey(SakuraBind.javaPlugin, "sakura_bind")
-//    private val SAKURA_BIND_LORE = NamespacedKey(SakuraBind.javaPlugin, "sakura_bind_lore")
-
     /**
      * 将物品绑定玩家
      * @param item 需要绑定的物品
@@ -45,7 +44,10 @@ object SakuraBindAPI {
     @JvmStatic
     @JvmOverloads
     fun bind(item: ItemStack, uuid: UUID, showLore: Boolean = true) {
-        val set = NBTEditor.set(item, uuid.toString(), *Config.nbtPathUuid) ?: return
+        val itemBindEvent = ItemBindEvent(item, uuid)
+        Bukkit.getPluginManager().callEvent(itemBindEvent)
+        if (itemBindEvent.isCancelled) return
+        val set = NBTEditor.set(item, itemBindEvent.uuid.toString(), *Config.nbtPathUuid) ?: return
         item.itemMeta = set.itemMeta
         if (showLore) updateLore(item)
     }
@@ -56,9 +58,15 @@ object SakuraBindAPI {
      */
     @JvmStatic
     fun unBind(item: ItemStack) {
-        val set = NBTEditor.set(item, null, *Config.nbtPathUuid)
+        val itemUnBIndEvent = ItemUnBIndEvent(item, ItemSettings.getSetting(item))
+        Bukkit.getPluginManager().callEvent(itemUnBIndEvent)
+        if (itemUnBIndEvent.isCancelled) return
+        var set = NBTEditor.set(item, null, *Config.nbtPathUuid)
+        set = NBTEditor.set(set, null, *ItemSettings.nbtPath)
+//        println(set.toJson())
         item.itemMeta = set.itemMeta
         updateLore(item)
+//        println(item.toJson())
     }
 
     /**

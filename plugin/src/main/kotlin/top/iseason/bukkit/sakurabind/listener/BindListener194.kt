@@ -6,6 +6,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.inventory.PrepareAnvilEvent
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.Config
+import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 
@@ -22,10 +23,10 @@ object BindListener194 : Listener {
         val player = event.view.player
         if (SakuraBindAPI.checkDenyBySetting(item1, player, "item-deny.anvil")) {
             event.result = null
-            MessageTool.sendCoolDown(player, Lang.item__deny__anvil)
+            MessageTool.denyMessageCoolDown(player, Lang.item__deny__anvil, ItemSettings.getSetting(item1!!), item1)
         } else if (SakuraBindAPI.checkDenyBySetting(item2, player, "item-deny.anvil")) {
             event.result = null
-            MessageTool.sendCoolDown(player, Lang.item__deny__anvil)
+            MessageTool.denyMessageCoolDown(player, Lang.item__deny__anvil, ItemSettings.getSetting(item2!!), item2)
         }
     }
 }

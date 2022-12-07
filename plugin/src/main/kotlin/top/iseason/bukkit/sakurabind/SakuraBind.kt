@@ -29,11 +29,13 @@ import top.iseason.bukkittemplate.utils.bukkit.EventUtils.register
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 
 object SakuraBind : KotlinPlugin() {
+    lateinit var mainThread: Thread
     override fun onAsyncEnable() {
         Metrics(javaPlugin, 16968)
     }
 
     override fun onEnable() {
+        mainThread = Thread.currentThread()
         SimpleLogger.prefix = "&a[&6${javaPlugin.description.name}&a]&r ".toColor()
         SimpleYAMLConfig.notifyMessage = "&6配置 &f%s &6已重载!"
         SakuraMailHook.checkHooked()
@@ -52,7 +54,7 @@ object SakuraBind : KotlinPlugin() {
         DatabaseConfig.initTables(PlayerItems)
         Config.load(false)
         ItemSettings.load(false)
-        DefaultSetting
+        DefaultItemSetting
         BindListener.register()
         BindListener194.register()
         DropItemList.runTaskTimerAsynchronously(javaPlugin, 0, 1)
