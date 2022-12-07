@@ -42,7 +42,7 @@ object CacheManager {
         .build(true)
 
     init {
-        val blockDataFile = File(BukkitTemplate.getPlugin().dataFolder, "data${File.separator}block-owner")
+        val blockDataFile = File(BukkitTemplate.getPlugin().dataFolder, "data${File.separator}owner-cache")
         if (!blockDataFile.exists()) {
             blockDataFile.mkdirs()
         }
