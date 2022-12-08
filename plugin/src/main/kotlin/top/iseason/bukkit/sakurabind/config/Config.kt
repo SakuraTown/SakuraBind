@@ -47,7 +47,11 @@ object Config : SimpleYAMLConfig() {
 
     @Key
     @Comment("", "方块物品检测开关，需要重启生效。打开才能支持方块物品，同时性能损耗也会增加")
-    var block_listener = true
+    var block_listener = false
+
+    @Key
+    @Comment("", "实体检测开关，需要重启生效。打开才能支持实体绑定，同时性能损耗也会增加")
+    var entity_listener = false
 
     @Key
     @Comment(

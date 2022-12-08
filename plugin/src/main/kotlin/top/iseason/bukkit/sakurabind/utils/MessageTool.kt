@@ -2,6 +2,7 @@ package top.iseason.bukkit.sakurabind.utils
 
 import org.bukkit.Bukkit
 import org.bukkit.block.Block
+import org.bukkit.entity.Entity
 import org.bukkit.entity.HumanEntity
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.config.BaseSetting
@@ -21,6 +22,7 @@ object MessageTool {
         setting: BaseSetting,
         item: ItemStack? = null,
         block: Block? = null,
+        entity: Entity? = null,
     ) {
         val check = EasyCoolDown.check(player.uniqueId, Config.message_coolDown)
         val event = PlayerDenyMessageEvent(player, setting, message, check, item, block)

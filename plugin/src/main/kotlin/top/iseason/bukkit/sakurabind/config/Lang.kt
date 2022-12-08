@@ -23,11 +23,11 @@ object Lang : SimpleYAMLConfig() {
     var prefix = "&a[&6${BukkitTemplate.getPlugin().description.name}&a] &f"
     var send_back_all = "&7你的遗失物品已全部放入你的背包"
     var send_back = "&7你的部分遗失物品已放入你的背包, 剩下的已发往邮箱"
-
     var item_bind_hand = "&7你手上的物品已绑定"
     var item_bind_all = "&7你的背包物品已绑定"
     var item_unbind_hand = "&7你手上的物品已解绑"
     var item_unbind_all = "&7你的背包物品已解绑"
+    var entity_bind_on_spawner_egg = "&6你的生物已绑定!"
 
     var item__deny_command = "&6你不能拿着此物品输入该命令!"
     var item__deny_drop = "&6该物品不能丢出!"
@@ -53,6 +53,9 @@ object Lang : SimpleYAMLConfig() {
     var block__deny_break = "&6你不能破坏这个方块,这个方块属于 &b{0}"
     var block__deny_place = "&6你不能放置这个方块，此物物品已绑定"
     var block__deny_interact = "&6你没有这个方块的使用权限,这个方块属于 &b{0}"
+
+    var entity__deny_damage = "&6你不能伤害这个实体，这个实体属于 &b{0}"
+    var entity__deny_interact = "&6你没有这个实体的交互,这个实体属于 &b{0}"
 
     var scanner_item_send_back = "&6检测到你的背包存在别人的物品，已归还物主!"
     var command__bind = "&a已绑定 &b{0} &a手上的物品"

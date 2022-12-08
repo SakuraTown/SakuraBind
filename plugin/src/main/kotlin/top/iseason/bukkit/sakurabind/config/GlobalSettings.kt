@@ -150,7 +150,7 @@ object GlobalSettings : SimpleYAMLConfig() {
     var block_deny__explode = true
 
     @Key
-    @Comment("", "禁止方块物品被活塞推动/拉动. 如果不禁止，被活塞推/拉动后的方块也会绑定")
+    @Comment("", "禁止方块物品被活塞推动/拉动. 建议禁止, 如果不禁止，被活塞推/拉动后的方块也会绑定(实验性功能)")
     var block_deny__piston = true
 
     @Key
@@ -160,6 +160,54 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Key
     @Comment("", "禁止绑定的方块转化为实体，比如重力方块变成下落方块，tnt被点燃")
     var block_deny__change_to_entity = true
+
+    @Key
+    @Comment("", "", "由绑定物品生成的实体的监听器", "一般指刷怪蛋")
+    var entity_deny: MemorySection? = null
+
+    @Key("entity.spawn-check")
+    @Comment("", "是否禁止刷怪蛋检测, 启用之后绑定的刷怪蛋生成的生物不会绑定")
+    var entity_spawn_check = true
+
+    @Key("entity.bind-name")
+    @Comment("", "绑定的生物的名字, {0} 为玩家名 {1} 为实体名")
+    var entity_bind_name = "&a{0} &f的 &7{1}"
+
+    @Key("entity-deny.damage-by-entity")
+    @Comment("", "是否禁止该实体被除了玩家之外的实体攻击掉血")
+    var entity_deny_damage_by_entity = false
+
+    @Key("entity-deny.damage-by-player@")
+    @Comment("", "是否禁止该实体被玩家攻击掉血")
+    var entity_deny_damage_by_player = true
+
+    @Key("entity-deny.damage")
+    @Comment("", "是否禁止该实体受到任何伤害")
+    var entity_deny_damage = false
+
+    @Key("entity-deny.interact@")
+    @Comment("", "是否禁止与该实体交互(右键)")
+    var entity_deny_interact = true
+
+    @Key("entity-deny.ai")
+    @Comment("", "是否禁用实体AI (1.9+)")
+    var entity_deny_ai = false
+
+    @Key("entity-deny.gravity")
+    @Comment("", "是否禁用实体重力 (1.10+)")
+    var entity_deny_gravity = false
+
+    @Key("entity-deny.friendly@")
+    @Comment("", "是否禁用实体对目标友好(不会攻击)")
+    var entity_deny_friendly = true
+
+    @Key("entity-deny.defend@")
+    @Comment("", "是否禁用绑定的实体对友好目标的守护(会帮友好目标吸引仇恨)")
+    var entity_deny_defend = true
+
+    @Key("entity-deny.defend-distance")
+    @Comment("", "绑定的实体对友好目标的守护距离")
+    var entity_deny_defend_distance = 10.0
 
     @Key
     @Comment("", "", "自动绑定设置")

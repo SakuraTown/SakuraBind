@@ -1,6 +1,7 @@
 package top.iseason.bukkit.sakurabind.event
 
 import org.bukkit.block.Block
+import org.bukkit.entity.Entity
 import org.bukkit.entity.HumanEntity
 import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
@@ -10,7 +11,7 @@ import top.iseason.bukkit.sakurabind.SakuraBind
 import top.iseason.bukkit.sakurabind.config.BaseSetting
 
 /**
- * 玩家被禁止某种行为后发送消息的事件,触发的可能是物品或方块
+ * 玩家被禁止某种行为后发送消息的事件,触发的可能是物品、方块、或实体
  * 取消将不会有消息
  */
 class PlayerDenyMessageEvent(
@@ -26,6 +27,7 @@ class PlayerDenyMessageEvent(
     var isCoolDown: Boolean,
     val item: ItemStack? = null,
     val block: Block? = null,
+    val entity: Entity? = null,
 ) : Event(Thread.currentThread() != SakuraBind.mainThread), Cancellable {
 
     companion object {

@@ -4,17 +4,17 @@ import fr.xephi.authme.events.LoginEvent
 import org.bstats.bukkit.Metrics
 import org.bukkit.event.block.BlockPhysicsEvent
 import org.bukkit.event.player.PlayerLoginEvent
+import top.iseason.bukkit.sakurabind.cache.BlockCache
 import top.iseason.bukkit.sakurabind.cache.CacheManager
+import top.iseason.bukkit.sakurabind.cache.EntityCache
+import top.iseason.bukkit.sakurabind.cache.FallingBlockCache
 import top.iseason.bukkit.sakurabind.command.mainCommand
 import top.iseason.bukkit.sakurabind.config.*
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkit.sakurabind.hook.AuthMeHook
 import top.iseason.bukkit.sakurabind.hook.PlaceHolderExpansion
 import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
-import top.iseason.bukkit.sakurabind.listener.BindListener
-import top.iseason.bukkit.sakurabind.listener.BindListener194
-import top.iseason.bukkit.sakurabind.listener.BlockListener
-import top.iseason.bukkit.sakurabind.listener.BlockListener1132
+import top.iseason.bukkit.sakurabind.listener.*
 import top.iseason.bukkit.sakurabind.task.DelaySender
 import top.iseason.bukkit.sakurabind.task.DropItemList
 import top.iseason.bukkittemplate.KotlinPlugin
@@ -30,6 +30,7 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 
 object SakuraBind : KotlinPlugin() {
     lateinit var mainThread: Thread
+
     override fun onAsyncEnable() {
         Metrics(javaPlugin, 16968)
     }
@@ -38,28 +39,63 @@ object SakuraBind : KotlinPlugin() {
         mainThread = Thread.currentThread()
         SimpleLogger.prefix = "&a[&6${javaPlugin.description.name}&a]&r ".toColor()
         SimpleYAMLConfig.notifyMessage = "&6配置 &f%s &6已重载!"
-        SakuraMailHook.checkHooked()
-        if (PlaceHolderHook.hasHooked) {
-            PlaceHolderExpansion.register()
-        }
+        checkHooks()
         try {
             mainCommand()
         } catch (e: Exception) {
             warn("命令注册异常,请重新启动......")
             e.printStackTrace()
         }
+        try {
+            initConfig()
+        } catch (e: Exception) {
+            warn("配置或数据库初始化异常!")
+        }
+        initCaches()
+        initListeners()
+        initTasks()
+        info("&a插件已启用!")
+    }
+
+    /**
+     * 初始化配置与数据库
+     */
+    @Throws(Exception::class)
+    private fun initConfig() {
         GlobalSettings.load(false)
         Lang.load(false)
-        DatabaseConfig.load(false)
-        DatabaseConfig.initTables(PlayerItems)
         Config.load(false)
         ItemSettings.load(false)
-        DefaultItemSetting
+        DatabaseConfig.load(false)
+        DatabaseConfig.initTables(PlayerItems)
+        info("&a配置已初始化!")
+    }
+
+    /**
+     * 检查插件钩子
+     */
+    private fun checkHooks() {
+        SakuraMailHook.checkHooked()
+        AuthMeHook.checkHooked()
+        if (PlaceHolderHook.hasHooked) {
+            PlaceHolderExpansion.register()
+        }
+
+    }
+
+    /**
+     * 开启任务
+     */
+    private fun initTasks() {
+        DropItemList.runTaskTimerAsynchronously(javaPlugin, 0, 1)
+    }
+
+    /**
+     * 注册监听器
+     */
+    private fun initListeners() {
         BindListener.register()
         BindListener194.register()
-        DropItemList.runTaskTimerAsynchronously(javaPlugin, 0, 1)
-        AuthMeHook.checkHooked()
-        SakuraBindAPI
         if (AuthMeHook.hasHooked) {
             listen<LoginEvent> {
                 BindListener.onLogin(this.player)
@@ -70,30 +106,45 @@ object SakuraBind : KotlinPlugin() {
             }
         }
         if (Config.block_listener) {
-            try {
-                CacheManager
-            } catch (e: Exception) {
-                warn("缓存初始化异常!")
-            }
             BlockListener.register()
-            info("&a已启用方块监听器!")
             try {
                 BlockPhysicsEvent::class.java.getMethod("getSourceBlock")
                 BlockListener1132.register()
             } catch (_: Exception) {
             }
+            info("&a已启用方块监听器!")
         }
-        info("&a插件已启用!")
+        if (Config.entity_listener) {
+            CacheManager.register(EntityCache)
+            EntityListener.register()
+            info("&a已启用实体监听器!")
+        }
+    }
+
+    /**
+     * 初始化缓存
+     */
+    private fun initCaches() {
+        if (Config.block_listener) {
+            CacheManager.register(BlockCache)
+            CacheManager.register(FallingBlockCache)
+        }
+        if (Config.entity_listener) {
+            CacheManager.register(EntityCache)
+        }
+        try {
+            CacheManager.build()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            warn("缓存初始化异常,请重启!")
+        }
+        info("&a缓存初始化成功!")
     }
 
     override fun onDisable() {
+        info("&6插件注销中...")
         try {
             DropItemList.cancel()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        try {
-            CacheManager.save()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -107,6 +158,11 @@ object SakuraBind : KotlinPlugin() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        info("&6插件已卸载")
+        try {
+            CacheManager.save()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        info("&a插件已注销")
     }
 }
