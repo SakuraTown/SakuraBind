@@ -161,17 +161,17 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Comment("", "禁止绑定的方块转化为实体，比如重力方块变成下落方块，tnt被点燃")
     var block_deny__change_to_entity = true
 
+    @Key("entity.bind-name")
+    @Comment("", "绑定的生物的名字, {0} 为玩家名 {1} 为实体名")
+    var entity_bind_name = "&a{0} &f的 &7{1}"
+
     @Key
     @Comment("", "", "由绑定物品生成的实体的监听器", "一般指刷怪蛋")
     var entity_deny: MemorySection? = null
 
-    @Key("entity.spawn-check")
+    @Key("entity-deny.spawn-check")
     @Comment("", "是否禁止刷怪蛋检测, 启用之后绑定的刷怪蛋生成的生物不会绑定")
-    var entity_spawn_check = true
-
-    @Key("entity.bind-name")
-    @Comment("", "绑定的生物的名字, {0} 为玩家名 {1} 为实体名")
-    var entity_bind_name = "&a{0} &f的 &7{1}"
+    var entity_deny__spawn_check = true
 
     @Key("entity-deny.damage-by-entity")
     @Comment("", "是否禁止该实体被除了玩家之外的实体攻击掉血")
