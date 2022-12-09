@@ -11,12 +11,15 @@
 * 支持 Minecraft 1.8+的服务端。包括 spigot、paper、甚至catserver等mod服务器端
 * 多级配置。从权限到某类特殊物品的配置到全局统一配置灵活控制绑定物品行为
 * 极致性能优化。通过内存TTL、NBT、文件存储三级缓存以减少物品匹配性能损耗,并利用布谷鸟过滤器处理缓存穿透问题
-* 完美方块物品支持。支持多方快结构、装饰物，无论是流体、爆炸、活塞、丢失支撑方块等造成的方块物品变成掉落物绑定依旧存在
+* 方块绑定支持。支持多方快结构、装饰物，无论是流体、爆炸、活塞、丢失支撑方块等造成的方块物品变成掉落物绑定依旧存在
 * 丢失物品找回功能。掉落物掉虚空、仙人掌、岩浆、被他人拿走甚至在容器中被破坏，都可以将物品送回玩家背包中，如玩家不在线则存入暂存箱中
 * 全面PlaceHolderAPI支持。任何看得见的地方都能使用papi，如消息、lore
-* 自动绑定功能。
-* 多数据库支持(暂存箱功能)。支持 SQLite(本地|默认)、MySQL、MariaDB、Oracle、PostgreSQL、SQLServer
-* ......
+* 实体绑定功能, 支持刷怪蛋绑定实体
+* 自动绑定功能, 名字、lore、材质、nbt多种方式自由组合识别绑定
+* 多数据库支持(暂存箱)。支持 SQLite(本地|默认)、MySQL、MariaDB、Oracle、PostgreSQL、SQLServer
+* 插件在设计之初就考虑兼容性，理论上兼容大部分插件，可以提issue兼容
+* 监听器开关。可通过关闭不需要的功能减少性能损耗
+* 物品 -> 方块 -> 实体 -> 物品 全链路追踪绑定
 
 ### 要求
 
@@ -63,7 +66,8 @@
 
 `global-setting.yml`配置内容如下
 
-~~~ yam
+~~~ yaml
+
 
 # 本配置为绑定的全局权限设置，优先级最低
 # 在布尔类型的选项之后加上@则表示对于物主采取相反的结果,部分没有提示消息的无效
@@ -72,31 +76,41 @@
 # 如 block-deny.place@: true 表示禁止所有人放置方块，但允许物主放置
 global-setting: ''
 
-# 显示的lore,玩家名称占位符为 %player%
-lore:
-- '&a灵魂绑定: &6%player%'
 
-# 显示的lore位置
-lore-index: 0
+# 物品设置
+item:
 
-# 当物品丢失时(掉虚空、消失等)归还物主(在线则发背包，否则发邮件)
-send-when-lost: true
+  # 显示的lore,玩家名称占位符为 %player%
+  lore:
+  - '&a灵魂绑定: &6%player%'
 
-# 当容器被破坏时将绑定物品归还物主(在线则发背包，否则发邮件)
-send-when-container-break: true
+  # 显示的lore位置
+  lore-index: 0
 
-# 当物品作为掉落物时延迟多少tick还物主(在线则发背包，否则发邮件), 0表示立马返回，-1关闭
-send-back-delay: -1
+  # 当物品丢失时(掉虚空、消失等)归还物主(在线则发背包，否则发邮件)
+  send-when-lost: true
+
+  # 当容器被破坏时将绑定物品归还物主(在线则发背包，否则发邮件)
+  send-when-container-break: true
+
+  # 当物品作为掉落物时延迟多少tick还物主(在线则发背包，否则发邮件), 0表示立马返回，-1关闭
+  send-back-delay: -1
 
 
 # 物品禁用设置
 item-deny:
 
-  # 手上拿着绑定物品时禁止交互(点击方块)
-  interact@: true
+  # 手上拿着绑定物品时禁止左键交互
+  interact-left@: true
+
+  # 手上拿着绑定物品时禁止右键交互
+  interact-right@: true
 
   # 禁止实体交互(攻击或右键)
   interact-entity@: true
+
+  # 禁止盔甲架交互
+  armor-stand@: true
 
   # 禁止丢弃
   drop: true
@@ -128,7 +142,7 @@ item-deny:
   # 禁止放入展示框
   item-frame: true
 
-  # 禁止右键丢出(药水、雪球等投掷物)
+  # 禁止弹射物射出(药水、箭、雪球等)
   throw: true
 
   # 禁止消耗(吃)
@@ -148,8 +162,11 @@ item-deny:
   inventory-pattern:
   - ^垃圾桶$
 
+  # 禁止绑定物品死亡掉落(只在死亡不掉落游戏规则未开启时有效)
+  drop-on-death: true
 
-# 方块物品相关设置
+
+# 方块禁用设置
 # 由于监听方块物品需要较多的资源，如果不绑定方块物品关闭以节省性能
 block-deny:
 
@@ -165,11 +182,62 @@ block-deny:
   # 禁止方块物品被爆炸损坏
   explode: true
 
-  # 禁止方块物品被活塞推动/拉动
+  # 禁止方块物品被活塞推动/拉动. 建议禁止, 如果不禁止，被活塞推/拉动后的方块也会绑定(实验性功能)
   piston: true
 
-  # 禁止流水/岩浆破坏,如关闭被冲走的绑定物品将送回玩家或发邮件
+  # 禁止流水/岩浆破坏, 被岩浆破坏的物品将不会有掉落物,故而设置为false时将会把物品直接送回物主
   flow: true
+
+  # 禁止绑定的方块转化为实体，比如重力方块变成下落方块，tnt被点燃
+  change-to-entity: false
+
+
+# 实体设置
+entity:
+
+  # 绑定的生物的名字, {0} 为玩家名 {1} 为实体名
+  bind-name: '&a{0} &f的 &7{1}'
+
+  # 绑定实体死亡掉落物也绑定
+  bind-drops: true
+
+  # 是否对敌对目标
+  hostility@: true
+
+  # 是否守护非敌对目标(吸引仇恨)
+  defend: true
+
+  # 绑定的实体对友好目标的守护距离
+  defend-distance: 10.0
+
+  # 是否启用刷怪蛋检测, 启用之后绑定的刷怪蛋生成的生物会绑定
+  spawn-egg-check: true
+
+
+# 由绑定物品生成的实体的监听器
+# 一般指刷怪蛋
+entity-deny:
+
+  # 是否禁止该实体被除了玩家之外的实体攻击掉血
+  damage-by-entity: false
+
+  # 是否禁止该实体被玩家攻击掉血
+  damage-by-player@: true
+
+  # 是否禁止该实体受到任何伤害
+  damage: false
+
+  # 是否禁止与该实体交互(右键)
+  interact@: true
+
+  # 是否禁用实体AI (1.9+)
+  ai: false
+
+  # 是否禁用实体重力 (1.10+)
+  gravity: false
+
+  # 禁止绑定实体死亡掉落物
+  drops: false
 
 
 # 自动绑定设置
@@ -241,14 +309,16 @@ matchers:
     match:
       material: 'SWORD$' #正则表达式匹配所有 SWORD 结尾的材质
     settings:
-      send-back-delay: 100 #丢弃100tick(5秒)之后返还物主
-      auto-bind:
-        enable: true  # 开启自动绑定
-      lore:
-        - "&a这是专属于 &6%player% &a的宝剑" #独立于全局设置的lore
+      item:
+        send-back-delay: 100 #丢弃100tick(5秒)之后返还物主
+        lore:
+          - "&a这是专属于 &6%player% &a的宝剑" #独立于全局设置的lore
       item-deny:
         drop: true    #禁止丢弃
         interact-entity@: true  #禁止实体左右键，但是主人可以
+      auto-bind:
+        enable: true  # 开启自动绑定
+        
 ~~~
 
 ## 插件命令
@@ -280,7 +350,7 @@ matchers:
 
 玩家默认拥有 `/sakurabind getLost` 的权限，其他均为OP权限
 
-`sakurabind.sakurabind.*`所有权限的命令
+`sakurabind.sakurabind.*`所有命令的权限
 
 ### 其他
 
