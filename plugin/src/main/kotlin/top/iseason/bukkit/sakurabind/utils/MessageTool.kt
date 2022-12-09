@@ -25,10 +25,10 @@ object MessageTool {
         entity: Entity? = null,
     ) {
         val check = EasyCoolDown.check(player.uniqueId, Config.message_coolDown)
-        val event = PlayerDenyMessageEvent(player, setting, message, check, item, block)
+        val event = PlayerDenyMessageEvent(player, setting, message, check, item, block, entity)
         Bukkit.getPluginManager().callEvent(event)
         if (event.isCancelled) return
-        if (!event.isCoolDown)
+        if (!event.coolDown)
             player.sendColorMessage(event.message)
     }
 
@@ -45,8 +45,8 @@ object MessageTool {
         val event = AutoBindMessageEvent(player, setting, message, check, item)
         Bukkit.getPluginManager().callEvent(event)
         if (event.isCancelled) return
-        if (!event.isCoolDown)
-            player.sendColorMessage(message)
+        if (!event.coolDown)
+            player.sendColorMessage(event.message)
     }
 
     fun messageCoolDown(
