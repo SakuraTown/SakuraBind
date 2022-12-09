@@ -128,6 +128,10 @@ object GlobalSettings : SimpleYAMLConfig() {
     var item_deny__inventory_pattern = listOf("^垃圾桶$")
 
     @Key
+    @Comment("", "禁止绑定物品死亡掉落(只在死亡不掉落游戏规则未开启时有效)")
+    var item_deny__drop_on_death = true
+
+    @Key
     @Comment("", "", "方块禁用设置", "由于监听方块物品需要较多的资源，如果不绑定方块物品关闭以节省性能")
     var block_deny: MemorySection? = null
 
@@ -183,13 +187,14 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Comment("", "绑定的实体对友好目标的守护距离")
     var entity__defend_distance = 10.0
 
+    @Key("entity.spawn-egg-check")
+    @Comment("", "是否启用刷怪蛋检测, 启用之后绑定的刷怪蛋生成的生物会绑定")
+    var entity__spawn_egg_check = true
+
     @Key
     @Comment("", "", "由绑定物品生成的实体的监听器", "一般指刷怪蛋")
     var entity_deny: MemorySection? = null
 
-    @Key("entity-deny.spawn-check")
-    @Comment("", "是否禁止刷怪蛋检测, 启用之后绑定的刷怪蛋生成的生物不会绑定")
-    var entity_deny__spawn_check = false
 
     @Key("entity-deny.damage-by-entity")
     @Comment("", "是否禁止该实体被除了玩家之外的实体攻击掉血")

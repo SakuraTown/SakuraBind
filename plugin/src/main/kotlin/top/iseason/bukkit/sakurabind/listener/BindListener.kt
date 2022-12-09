@@ -10,10 +10,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockDispenseEvent
-import org.bukkit.event.entity.EntityDamageEvent
-import org.bukkit.event.entity.ItemDespawnEvent
-import org.bukkit.event.entity.ItemSpawnEvent
-import org.bukkit.event.entity.ProjectileLaunchEvent
+import org.bukkit.event.entity.*
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryMoveItemEvent
 import org.bukkit.event.inventory.InventoryPickupItemEvent
@@ -507,6 +504,30 @@ object BindListener : Listener {
             else event.entity.itemStack = sendBackItem.first()
         } else
             DropItemList.putItem(entity, uuid, delay.toInt())
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    fun onPlayerDeathEvent(event: PlayerDeathEvent) {
+        //item_deny__drop_on_death
+        val entity = event.entity
+        if (event.keepInventory || Config.checkByPass(entity)) {
+            return
+        }
+        val iterator = event.drops.iterator()
+        val sendBackList = mutableListOf<ItemStack>()
+        while (iterator.hasNext()) {
+            val next = iterator.next()
+            val owner = SakuraBindAPI.getOwner(next) ?: continue
+            val setting = ItemSettings.getSetting(next)
+            if (!setting.getBoolean("item-deny.drop-on-death", owner.toString(), entity)) continue
+            iterator.remove()
+            sendBackList.add(next)
+        }
+        if (sendBackList.isNotEmpty()) {
+            submit(async = true) {
+                SakuraBindAPI.sendBackItem(entity.uniqueId, sendBackList)
+            }
+        }
     }
 
     /**

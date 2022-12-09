@@ -43,7 +43,7 @@ object EntityListener : Listener {
             return
         }
         val owner = SakuraBindAPI.getOwner(item) ?: return
-        if (ItemSettings.getSetting(item).getBoolean("entity-deny.spawn-check", owner.toString(), event.player)) {
+        if (!ItemSettings.getSetting(item).getBoolean("entity.spawn-egg-check", owner.toString(), event.player)) {
             return
         }
         val player = event.player
