@@ -2,10 +2,10 @@ package top.iseason.bukkit.sakurabind.event
 
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
+import org.bukkit.entity.Entity
 import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
-import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.SakuraBind
 import top.iseason.bukkit.sakurabind.config.BaseSetting
 import java.util.*
@@ -13,11 +13,11 @@ import java.util.*
 /**
  * 在物品绑定某个uuid时触发
  */
-class ItemBindEvent(
+class EntityBindEvent(
     /**
      * 绑定的物品
      */
-    val item: ItemStack,
+    val entity: Entity,
     var setting: BaseSetting,
     /**
      * 绑定的玩家的uuid

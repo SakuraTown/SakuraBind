@@ -13,6 +13,8 @@ import top.iseason.bukkit.sakurabind.config.BaseSetting
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.event.BlockBindEvent
+import top.iseason.bukkit.sakurabind.event.EntityBindEvent
 import top.iseason.bukkit.sakurabind.event.ItemBindEvent
 import top.iseason.bukkit.sakurabind.event.ItemUnBIndEvent
 import top.iseason.bukkit.sakurabind.task.DelaySender
@@ -48,7 +50,7 @@ object SakuraBindAPI {
     @JvmStatic
     @JvmOverloads
     fun bind(item: ItemStack, uuid: UUID, showLore: Boolean = true) {
-        val itemBindEvent = ItemBindEvent(item, uuid)
+        val itemBindEvent = ItemBindEvent(item, ItemSettings.getSetting(item), uuid)
         Bukkit.getPluginManager().callEvent(itemBindEvent)
         if (itemBindEvent.isCancelled) return
         val set = NBTEditor.set(item, itemBindEvent.uuid.toString(), *Config.nbtPathUuid) ?: return
@@ -78,7 +80,6 @@ object SakuraBindAPI {
      */
     @JvmStatic
     fun updateLore(item: ItemStack) {
-
         val itemMeta = item.itemMeta ?: return
         var oldLore = NBTEditor.getKeys(item, *Config.nbtPathLore)
 //        println(NBTEditor.getNBTCompound(item).toString())
@@ -274,6 +275,48 @@ object SakuraBindAPI {
             DelaySender.sendItem(uuid, release)
         }
         return emptyList()
+    }
+
+    /**
+     * 绑定方块
+     */
+    @JvmStatic
+    fun bindBlock(block: Block, uuid: UUID, setting: BaseSetting) {
+        if (!isBlockEnable()) return
+        val blockBindEvent = BlockBindEvent(block, setting, uuid)
+        Bukkit.getPluginManager().callEvent(blockBindEvent)
+        if (blockBindEvent.isCancelled) return
+        BlockCache.addBlock(block, blockBindEvent.uuid, blockBindEvent.setting.keyPath)
+    }
+
+    /**
+     * 解绑方块
+     */
+    @JvmStatic
+    fun unbindBlock(block: Block) {
+        if (!isBlockEnable()) return
+        BlockCache.removeBlock(block)
+    }
+
+    /**
+     * 绑定实体
+     */
+    @JvmStatic
+    fun bindEntity(entity: Entity, uuid: UUID, setting: BaseSetting) {
+        if (!isEntityEnable()) return
+        val entityBindEvent = EntityBindEvent(entity, setting, uuid)
+        Bukkit.getPluginManager().callEvent(entityBindEvent)
+        if (entityBindEvent.isCancelled) return
+        EntityCache.addEntity(entity, entityBindEvent.uuid.toString(), entityBindEvent.setting.keyPath)
+    }
+
+    /**
+     * 解绑实体
+     */
+    @JvmStatic
+    fun unbindEntity(entity: Entity) {
+        if (!isEntityEnable()) return
+        EntityCache.removeEntity(entity)
     }
 
     /**

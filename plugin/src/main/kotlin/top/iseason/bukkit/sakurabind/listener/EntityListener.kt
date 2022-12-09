@@ -19,10 +19,10 @@ import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.utils.Defenders
 import top.iseason.bukkit.sakurabind.utils.MessageTool
+import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
-import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 import top.iseason.bukkittemplate.utils.other.submit
 import java.util.*
 
@@ -83,7 +83,11 @@ object EntityListener : Listener {
         val owner = SakuraBindAPI.getOwner(pair.second)
         val setting = ItemSettings.getSetting(pair.second)
         val entity = event.entity
-        EntityCache.addEntity(entity, owner.toString(), setting.keyPath)
+        SakuraBindAPI.bindEntity(entity, owner!!, setting)
+        if (SakuraBindAPI.getEntityOwner(entity) == null) {
+            return
+        }
+        MessageTool.messageCoolDown(player, Lang.entity_bind_on_spawner_egg)
         // 1.9 才有这个API
         if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_9) &&
             setting.getBoolean("entity-deny.ai", owner.toString(), player)
@@ -97,9 +101,9 @@ object EntityListener : Listener {
         }
         val name = setting.getString("entity.bind-name")
         if (name.isNotEmpty()) {
-            entity.customName = name.formatBy(player.name, entity.type.name).toColor()
+            entity.customName = PlaceHolderHook.setPlaceHolder(name.formatBy(player.name, entity.type.name), player)
         }
-        MessageTool.messageCoolDown(player, Lang.entity_bind_on_spawner_egg)
+
     }
 
     /**
@@ -177,7 +181,7 @@ object EntityListener : Listener {
         if (EntityCache.getEntityOwner(entity) == null) {
             return
         }
-        EntityCache.removeEntity(entity)
+        SakuraBindAPI.unbindEntity(entity)
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
