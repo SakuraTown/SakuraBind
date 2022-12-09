@@ -2,7 +2,7 @@ package top.iseason.bukkit.sakurabind.listener
 
 import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Location
-import org.bukkit.entity.Entity
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -30,7 +30,7 @@ object EntityListener : Listener {
     private val temp = HashMap<String, Pair<Player, ItemStack>>()
 
     //某个实体的防卫者
-    private val defenderMap = WeakHashMap<Entity, Defenders>()
+    private val defenderMap = WeakHashMap<LivingEntity, Defenders>()
 
     /**
      * 检测生物蛋的模块
@@ -184,15 +184,22 @@ object EntityListener : Listener {
     fun onEntityTargetEvent(event: EntityTargetEvent) {
         //被攻击者
         val target = event.target ?: return
+        if (target !is LivingEntity) return
         val player = target as? Player
         if (player != null && Config.checkByPass(player)) {
             return
         }
         // 攻击者
         val entity = event.entity
+        if (entity !is LivingEntity) return
         val entityOwner = EntityCache.getEntityOwner(entity)
         if (entityOwner != null && !entityOwner.second.getBoolean("entity-deny.friendly", entityOwner.first, player)) {
-            if (!entityOwner.second.getBoolean("entity-deny.defend", entityOwner.first, player)) {
+            if (!entityOwner.second.getBoolean(
+                    "entity-deny.defend",
+                    entityOwner.first,
+                    player
+                )
+            ) {
                 defenderMap.computeIfAbsent(target) { Defenders(target, entityOwner.second) }.addDefender(entity)
             }
             event.isCancelled = true

@@ -2,13 +2,17 @@ package top.iseason.bukkit.sakurabind
 
 import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Bukkit
+import org.bukkit.block.Block
+import org.bukkit.entity.Entity
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import top.iseason.bukkit.sakurabind.cache.BlockCache
+import top.iseason.bukkit.sakurabind.cache.EntityCache
+import top.iseason.bukkit.sakurabind.config.BaseSetting
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
-import top.iseason.bukkit.sakurabind.dto.PlayerItems.item
 import top.iseason.bukkit.sakurabind.event.ItemBindEvent
 import top.iseason.bukkit.sakurabind.event.ItemUnBIndEvent
 import top.iseason.bukkit.sakurabind.task.DelaySender
@@ -157,27 +161,59 @@ object SakuraBindAPI {
     }
 
     /**
-     * 获取物品绑定的物主
-     * @param item 目标物品
-     * @return 物主的名字，不存在物主则返回null
+     * 获取某个uuid的玩家名字
+     * @param uuid
+     * @return 玩家名字，没有则返回nmull
      */
     @JvmStatic
     fun getOwnerName(uuid: UUID): String? {
         val player = Bukkit.getPlayer(uuid) ?: Bukkit.getOfflinePlayer(uuid)
-        return player.name
+        return if (player.hasPlayedBefore()) player.name else null
     }
 
-//    fun isTileEntity(block: Block): Boolean {
-//        return block.chunk.tileEntities.any { it.block == block }
-//    }
-//
-//    fun getTileOwner(block: Block): String? {
-//        return NBTEditor.getString(block, *Config.nbtPathUuid)
-//    }
-//
-//    fun setTileOwner(block: Block, uuid: UUID) {
-//        NBTEditor.set(block, uuid.toString(),"Tags", *Config.nbtPathUuid)
-//    }
+    /**
+     * 获取方块的拥有者
+     * @param block
+     * @return 物主的uuid，没有则返回null
+     */
+    @JvmStatic
+    fun getBlockOwner(block: Block): String? {
+        if (!isBlockEnable()) throw IllegalStateException("方块监听器未启用，请在config.yml中打开 'block-listener'")
+        return BlockCache.getBlockOwner(block)?.first
+    }
+
+    /**
+     * 获取方块的设置
+     * @param block
+     * @return 绑定设置，没有则返回null
+     */
+    @JvmStatic
+    fun getBlockSetting(block: Block): BaseSetting? {
+        if (!isBlockEnable()) throw IllegalStateException("方块监听器未启用，请在config.yml中打开 'block-listener'")
+        return BlockCache.getBlockOwner(block)?.second
+    }
+
+    /**
+     * 获取实体的拥有者
+     * @param entity
+     * @return 物主的uuid，没有则返回null
+     */
+    @JvmStatic
+    fun getEntityOwner(entity: Entity): String? {
+        if (!isEntityEnable()) throw IllegalStateException("实体监听器未启用，请在config.yml中打开 'block-listener'")
+        return EntityCache.getEntityOwner(entity)?.first
+    }
+
+    /**
+     * 获取方块的设置
+     * @param entity
+     * @return 绑定设置，没有则返回null
+     */
+    @JvmStatic
+    fun getEntitySetting(entity: Entity): BaseSetting? {
+        if (!isEntityEnable()) throw IllegalStateException("实体监听器未启用，请在config.yml中打开 'block-listener'")
+        return EntityCache.getEntityOwner(entity)?.second
+    }
 
     /**
      * 判断物品是否属于某个uuid的
@@ -233,8 +269,7 @@ object SakuraBindAPI {
                 player.sendColorMessage(Lang.send_back)
         } else release = items.toMutableList()
 
-        // 使用邮件发送
-
+        // 延迟发送队列
         if (release.isNotEmpty()) {
             DelaySender.sendItem(uuid, release)
         }
@@ -255,4 +290,17 @@ object SakuraBindAPI {
         return ItemSettings.getSetting(item)
             .getBoolean(key, owner.toString(), player)
     }
+
+    /**
+     * 是否启用方块绑定
+     */
+    @JvmStatic
+    fun isBlockEnable() = Config.block_listener
+
+    /**
+     * 是否启用实体绑定
+     */
+    @JvmStatic
+    fun isEntityEnable() = Config.entity_listener
+
 }

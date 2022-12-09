@@ -43,12 +43,13 @@ object SakuraBind : KotlinPlugin() {
         try {
             mainCommand()
         } catch (e: Exception) {
-            warn("命令注册异常,请重新启动......")
             e.printStackTrace()
+            warn("命令注册异常,请重新启动......")
         }
         try {
             initConfig()
         } catch (e: Exception) {
+            e.printStackTrace()
             warn("配置或数据库初始化异常!")
         }
         initCaches()
