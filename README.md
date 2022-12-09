@@ -67,8 +67,6 @@
 `global-setting.yml`配置内容如下
 
 ~~~ yaml
-
-
 # 本配置为绑定的全局权限设置，优先级最低
 # 在布尔类型的选项之后加上@则表示对于物主采取相反的结果,部分没有提示消息的无效
 # 如 item-deny.click@: true 表示仅允许物主拿走容器内的物品
@@ -370,3 +368,20 @@ matchers:
 * spigot1.12.2以下的版本由于sqlitejdbc旧版本被内嵌在服务端内，导致无法使用，请使用非sqlite连接数据库
 * spigot1.8.x 版本的配置编码会乱码，请自行更改编码或在服务端启动参数里加上 `-Dfile.encoding=UTF-8`
 * 部分mod服务端的漏斗、发射器禁用功能失效
+
+## API
+
+您可以将本插件作为本地依赖来开发，插件注册的事件有
+
+~~~ text
+BlockBindEvent 方块绑定时触发
+EntityBindEvent 实体绑定时触发
+ItemBindEvent 物品绑定时触发
+AutoBindMessageEvent 玩家物品被绑定发送消息时触发
+ItemMatchedEvent 物品获取设置时触发
+ItemUnBindEvent 物品解绑时触发
+PlayerDenyMessageEvent 玩家被禁用某种行为时触发
+~~~
+
+其他常用的API在 SakuraBindAPI 类中，源代码有注释
+
