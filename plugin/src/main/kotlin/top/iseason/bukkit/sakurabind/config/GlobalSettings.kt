@@ -1,12 +1,10 @@
 package top.iseason.bukkit.sakurabind.config
 
-import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.MemorySection
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
-import java.util.regex.Pattern
 
 @FilePath("global-setting.yml")
 object GlobalSettings : SimpleYAMLConfig() {
@@ -22,24 +20,28 @@ object GlobalSettings : SimpleYAMLConfig() {
     var global_setting = ""
 
     @Key
+    @Comment("", "", "物品设置")
+    var item: MemorySection? = null
+
+    @Key
     @Comment("", "显示的lore,玩家名称占位符为 %player%")
-    var lore = listOf("&a灵魂绑定: &6%player%")
+    var item__lore = listOf("&a灵魂绑定: &6%player%")
 
     @Key
     @Comment("", "显示的lore位置")
-    var lore_index = 0
+    var item__lore_index = 0
 
     @Key
     @Comment("", "当物品丢失时(掉虚空、消失等)归还物主(在线则发背包，否则发邮件)")
-    var send_when_lost = true
+    var item__send_when_lost = true
 
     @Key
     @Comment("", "当容器被破坏时将绑定物品归还物主(在线则发背包，否则发邮件)")
-    var send_when_container_break = true
+    var item__send_when_container_break = true
 
     @Key
     @Comment("", "当物品作为掉落物时延迟多少tick还物主(在线则发背包，否则发邮件), 0表示立马返回，-1关闭")
-    var send_back_delay = -1L
+    var item__send_back_delay = -1L
 
     @Key
     @Comment("", "", "物品禁用设置")
@@ -117,8 +119,6 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Comment("", "匹配的命令正则表达式: '.*' 表示全部。测试: https://www.bejson.com/othertools/regex/")
     var item_deny__command_pattern = listOf(".*")
 
-    var itemDenyCommands = emptyList<Pattern>()
-
     @Key
     @Comment("", "禁止绑定物品放入特定标题的容器里")
     var item_deny__inventory = true
@@ -127,10 +127,8 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Comment("", "禁止绑定物品放入特定标题的容器里,正则表达式")
     var item_deny__inventory_pattern = listOf("^垃圾桶$")
 
-    var itemDenyInventories = emptyList<Pattern>()
-
     @Key
-    @Comment("", "", "方块物品相关设置", "由于监听方块物品需要较多的资源，如果不绑定方块物品关闭以节省性能")
+    @Comment("", "", "方块禁用设置", "由于监听方块物品需要较多的资源，如果不绑定方块物品关闭以节省性能")
     var block_deny: MemorySection? = null
 
     @Key("block-deny.break@")
@@ -161,9 +159,29 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Comment("", "禁止绑定的方块转化为实体，比如重力方块变成下落方块，tnt被点燃")
     var block_deny__change_to_entity = true
 
+    @Key
+    @Comment("", "", "实体设置")
+    var entity: MemorySection? = null
+
     @Key("entity.bind-name")
     @Comment("", "绑定的生物的名字, {0} 为玩家名 {1} 为实体名")
-    var entity_bind_name = "&a{0} &f的 &7{1}"
+    var entity__bind_name = "&a{0} &f的 &7{1}"
+
+    @Key("entity.bind-drops")
+    @Comment("", "绑定实体死亡掉落物也绑定")
+    var entity__bind_drops = true
+
+    @Key("entity.hostility@")
+    @Comment("", "是否对敌对目标")
+    var entity__hostility = true
+
+    @Key("entity.defend")
+    @Comment("", "是否守护非敌对目标(吸引仇恨)")
+    var entity__defend = true
+
+    @Key("entity.defend-distance")
+    @Comment("", "绑定的实体对友好目标的守护距离")
+    var entity__defend_distance = 10.0
 
     @Key
     @Comment("", "", "由绑定物品生成的实体的监听器", "一般指刷怪蛋")
@@ -171,7 +189,7 @@ object GlobalSettings : SimpleYAMLConfig() {
 
     @Key("entity-deny.spawn-check")
     @Comment("", "是否禁止刷怪蛋检测, 启用之后绑定的刷怪蛋生成的生物不会绑定")
-    var entity_deny__spawn_check = true
+    var entity_deny__spawn_check = false
 
     @Key("entity-deny.damage-by-entity")
     @Comment("", "是否禁止该实体被除了玩家之外的实体攻击掉血")
@@ -197,17 +215,10 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Comment("", "是否禁用实体重力 (1.10+)")
     var entity_deny_gravity = false
 
-    @Key("entity-deny.friendly@")
-    @Comment("", "是否禁用实体对目标友好(不会攻击)")
-    var entity_deny_friendly = true
+    @Key("entity-deny.drops")
+    @Comment("", "禁止绑定实体死亡掉落物")
+    var entity_deny_drops = false
 
-    @Key("entity-deny.defend@")
-    @Comment("", "是否禁用绑定的实体对友好目标的守护(会帮友好目标吸引仇恨)")
-    var entity_deny_defend = true
-
-    @Key("entity-deny.defend-distance")
-    @Comment("", "绑定的实体对友好目标的守护距离")
-    var entity_deny_defend_distance = 10.0
 
     @Key
     @Comment("", "", "自动绑定设置")
@@ -233,11 +244,4 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Comment("", "扫描玩家时如果发现不属于这个玩家的物品则送回去")
     var scanner_send_back = true
 
-    override fun onLoaded(section: ConfigurationSection) {
-        itemDenyCommands =
-            item_deny__command_pattern.mapNotNull { kotlin.runCatching { Pattern.compile(it) }.getOrNull() }
-        itemDenyInventories =
-            item_deny__inventory_pattern.mapNotNull { kotlin.runCatching { Pattern.compile(it) }.getOrNull() }
-
-    }
 }

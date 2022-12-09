@@ -340,7 +340,7 @@ object BindListener : Listener {
                 return
             }
             if (!setting.getBoolean(
-                    "send-when-container-break",
+                    "item.send-when-container-break",
                     owner.toString(),
                     event.player
                 )
@@ -389,7 +389,7 @@ object BindListener : Listener {
         val item = event.entity
         val itemStack = item.itemStack
         val owner = SakuraBindAPI.getOwner(item.itemStack) ?: return
-        if (!ItemSettings.getSetting(itemStack).getBoolean("send-when-lost", null, null)) {
+        if (!ItemSettings.getSetting(itemStack).getBoolean("item.send-when-lost", null, null)) {
             return
         }
         val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(itemStack))
@@ -499,7 +499,7 @@ object BindListener : Listener {
         val itemStack = entity.itemStack
         val uuid = SakuraBindAPI.getOwner(itemStack) ?: return
         val setting = ItemSettings.getSetting(itemStack)
-        val delay = setting.getLong("send-back-delay")
+        val delay = setting.getLong("item.send-back-delay")
         if (delay == 0L) {
             val sendBackItem = SakuraBindAPI.sendBackItem(uuid, listOf(itemStack))
             if (sendBackItem.isEmpty())

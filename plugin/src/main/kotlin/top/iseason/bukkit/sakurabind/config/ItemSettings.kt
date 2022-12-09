@@ -65,7 +65,7 @@ object ItemSettings : SimpleYAMLConfig() {
             createSection("nbt").apply { set("testnbt", ".*") }
         }
         example.createSection("settings").apply {
-            set("lore", listOf("&a灵魂绑定2: &6%player%"))
+            set("item.lore", listOf("&a灵魂绑定2: &6%player%"))
             set("item-deny.interact", false)
             set("block-deny.interact@", false)
         }

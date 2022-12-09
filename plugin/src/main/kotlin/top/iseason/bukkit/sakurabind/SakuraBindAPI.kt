@@ -97,7 +97,7 @@ object SakuraBindAPI {
         // 有主人
         if (owner != null) {
             val player = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
-            val loreStr = setting.getStringList("lore").map { str ->
+            val loreStr = setting.getStringList("item.lore").map { str ->
                 var t = str
                 t = t.replace("%player%", player.name!!)
                 t = PlaceHolderHook.setPlaceHolder(t, player)
@@ -108,7 +108,7 @@ object SakuraBindAPI {
             temp.applyMeta {
                 lore = if (hasLore()) {
                     lore!!.apply {
-                        val index = setting.getInt("lore-index")
+                        val index = setting.getInt("item.lore-index")
                         if (index >= size - 1)
                             addAll(loreStr)
                         else addAll(index, loreStr)

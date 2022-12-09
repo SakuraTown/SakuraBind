@@ -33,10 +33,6 @@ object Config : SimpleYAMLConfig() {
     var sakuraMail_hook = false
 
     @Key
-    @Comment("", "登入时如果暂存箱有物品则提醒，此为延迟，单位tick, 设置小于0以关闭提示")
-    var login_message_delay = 100L
-
-    @Key
     @Comment(
         "",
         "如果要发送丢失物品邮件",
@@ -44,6 +40,10 @@ object Config : SimpleYAMLConfig() {
         "按顺序替换，不够的将会删除, 多余的将会在另外的邮件里"
     )
     var mailId = "bind_mail"
+
+    @Key
+    @Comment("", "登入时如果暂存箱有物品则提醒，此为延迟，单位tick, 设置小于0以关闭提示")
+    var login_message_delay = 100L
 
     @Key
     @Comment("", "方块物品检测开关，需要重启生效。打开才能支持方块物品，同时性能损耗也会增加")

@@ -50,9 +50,10 @@ object EntityListener : Listener {
         val clickedBlock = event.clickedBlock
         var location: Location? = null
         if (clickedBlock != null) {
-            location = if (clickedBlock.type.isSolid) {
-                clickedBlock.getRelative(event.blockFace).location
-            } else clickedBlock.location
+            location = if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_13)
+                && !clickedBlock.type.isSolid
+            ) clickedBlock.location
+            else clickedBlock.getRelative(event.blockFace).location
 
         } else {
             val block = player.eyeLocation.block
@@ -173,15 +174,22 @@ object EntityListener : Listener {
     }
 
     /**
-     * 实体死亡去掉缓存
+     * 实体死亡
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onEntityDeathEvent(event: EntityDeathEvent) {
         val entity = event.entity
-        if (EntityCache.getEntityOwner(entity) == null) {
+        val entityOwner = EntityCache.getEntityOwner(entity) ?: return
+        //去除绑定
+        SakuraBindAPI.unbindEntity(entity)
+        if (entityOwner.second.getBoolean("entity-deny.drops", null, null)) {
+            event.drops.clear()
             return
         }
-        SakuraBindAPI.unbindEntity(entity)
+        if (entityOwner.second.getBoolean("entity.bind-drops", null, null)) {
+            event.drops.forEach { SakuraBindAPI.bind(it, UUID.fromString(entityOwner.first)) }
+        }
+
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -197,9 +205,11 @@ object EntityListener : Listener {
         val entity = event.entity
         if (entity !is LivingEntity) return
         val entityOwner = EntityCache.getEntityOwner(entity)
-        if (entityOwner != null && !entityOwner.second.getBoolean("entity-deny.friendly", entityOwner.first, player)) {
-            if (!entityOwner.second.getBoolean(
-                    "entity-deny.defend",
+        //不敌对
+        if (entityOwner != null && !entityOwner.second.getBoolean("entity.hostility", entityOwner.first, player)) {
+            //守护目标
+            if (entityOwner.second.getBoolean(
+                    "entity.defend",
                     entityOwner.first,
                     player
                 )

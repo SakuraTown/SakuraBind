@@ -25,7 +25,7 @@ class Defenders(val target: LivingEntity, val setting: BaseSetting) {
             val next = iterator.next()
             val l1 = next.location
             val l2 = target.location
-            if (next.isDead || l1.world != l2.world || l1.distance(l2) >= setting.getDouble("entity-deny.defend-distance")) iterator.remove()
+            if (next.isDead || l1.world != l2.world || l1.distance(l2) >= setting.getDouble("entity.defend-distance")) iterator.remove()
             defender = next
             break
         }
