@@ -1,5 +1,6 @@
 package top.iseason.bukkit.sakurabind.listener
 
+import fr.xephi.authme.api.v3.AuthMeApi
 import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.entity.Item
 import org.bukkit.entity.ItemFrame
@@ -24,6 +25,7 @@ import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
+import top.iseason.bukkit.sakurabind.hook.AuthMeHook
 import top.iseason.bukkit.sakurabind.task.DropItemList
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkit.sakurabind.utils.PlayerTool
@@ -241,10 +243,14 @@ object BindListener : Listener {
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun onPlayerCommandPreprocessEvent(event: PlayerCommandPreprocessEvent) {
-        if (Config.checkByPass(event.player)) return
-        val heldItem = event.player.getHeldItem() ?: return
-        val owner = SakuraBindAPI.getOwner(heldItem) ?: return
         val player = event.player
+        //未登录就不禁止
+        if (AuthMeHook.hasHooked && !AuthMeApi.getInstance().isAuthenticated(player)) {
+            return
+        }
+        if (Config.checkByPass(player)) return
+        val heldItem = player.getHeldItem() ?: return
+        val owner = SakuraBindAPI.getOwner(heldItem) ?: return
         val setting = ItemSettings.getSetting(heldItem)
         if (!setting.getBoolean("item-deny.command", owner.toString(), player))
             return
