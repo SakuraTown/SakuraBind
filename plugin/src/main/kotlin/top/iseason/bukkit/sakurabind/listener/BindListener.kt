@@ -217,14 +217,23 @@ object BindListener : Listener {
         val item = event.currentItem ?: event.cursor ?: return
         val owner = SakuraBindAPI.getOwner(item) ?: return
         val setting = ItemSettings.getSetting(item)
-        val boolean = setting.getBoolean("item-deny.inventory", owner.toString(), whoClicked)
-        if (!boolean) return
-        val stringList = setting.getStringList("item-deny.inventory-pattern")
-        val any = stringList.any { title.matches(Regex(it)) }
-        if (any) {
-            event.isCancelled = true
-            MessageTool.denyMessageCoolDown(whoClicked, Lang.item__deny_inventory, setting, item)
+        if (setting.getBoolean("item-deny.inventory", owner.toString(), whoClicked)) {
+            val types = setting.getStringList("item-deny.inventory-types")
+            val name = event.view.topInventory.type.name
+            var any = types.any { name.equals(it, true) }
+            if (!any) {
+                val namePatterns = setting.getStringList("item-deny.inventory-pattern")
+                any = namePatterns.any {
+                    title.matches(Regex(it))
+                }
+            }
+            if (any) {
+                event.isCancelled = true
+                MessageTool.denyMessageCoolDown(whoClicked, Lang.item__deny_inventory, setting, item)
+            }
+            return
         }
+
     }
 
     /**
@@ -534,7 +543,6 @@ object BindListener : Listener {
      * 玩家登录时检查暂存箱子是否有物品
      */
     fun onLogin(player: Player) {
-
         if (!DatabaseConfig.isConnected || Config.login_message_delay < 0) return
         submit(async = true, delay = Config.login_message_delay) {
             if (!player.isOnline) return@submit

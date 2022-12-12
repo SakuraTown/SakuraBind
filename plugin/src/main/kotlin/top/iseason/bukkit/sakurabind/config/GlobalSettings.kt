@@ -120,12 +120,19 @@ object GlobalSettings : SimpleYAMLConfig() {
     var item_deny__command_pattern = listOf(".*")
 
     @Key
-    @Comment("", "禁止绑定物品放入特定标题的容器里")
+    @Comment("", "禁止绑定物品放入特定标题的容器里,为了防止各种操作绕过将同时也会禁止点击")
     var item_deny__inventory = true
 
     @Key
     @Comment("", "禁止绑定物品放入特定标题的容器里,正则表达式")
     var item_deny__inventory_pattern = listOf("^垃圾桶$")
+
+    @Key
+    @Comment(
+        "",
+        "禁止绑定物品放入特定类型的容器里, https://bukkit.windit.net/javadoc/org/bukkit/event/inventory/InventoryType.html"
+    )
+    var item_deny__inventory_types = listOf("ANVIL", "DISPENSER", "DROPPER", "FURNACE", "GRINDSTONE", "SMITHING")
 
     @Key
     @Comment("", "禁止绑定物品死亡掉落(只在死亡不掉落游戏规则未开启时有效)")
@@ -194,7 +201,6 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Key
     @Comment("", "", "由绑定物品生成的实体的监听器", "一般指刷怪蛋")
     var entity_deny: MemorySection? = null
-
 
     @Key("entity-deny.damage-by-entity")
     @Comment("", "是否禁止该实体被除了玩家之外的实体攻击掉血")
