@@ -1,9 +1,7 @@
 package top.iseason.bukkit.sakurabind
 
-import fr.xephi.authme.events.LoginEvent
 import org.bstats.bukkit.Metrics
 import org.bukkit.event.block.BlockPhysicsEvent
-import org.bukkit.event.player.PlayerLoginEvent
 import top.iseason.bukkit.sakurabind.cache.BlockCache
 import top.iseason.bukkit.sakurabind.cache.CacheManager
 import top.iseason.bukkit.sakurabind.cache.EntityCache
@@ -24,7 +22,6 @@ import top.iseason.bukkittemplate.debug.SimpleLogger
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
-import top.iseason.bukkittemplate.utils.bukkit.EventUtils.listen
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.register
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 
@@ -98,13 +95,9 @@ object SakuraBind : KotlinPlugin() {
         BindListener.register()
         BindListener194.register()
         if (AuthMeHook.hasHooked) {
-            listen<LoginEvent> {
-                BindListener.onLogin(this.player)
-            }
+            LoginAuthMeListener.register()
         } else {
-            listen<PlayerLoginEvent> {
-                BindListener.onLogin(this.player)
-            }
+            LoginListener.register()
         }
         if (Config.block_listener) {
             BlockListener.register()
