@@ -1,7 +1,6 @@
 package top.iseason.bukkittemplate.command
 
 import org.bukkit.Bukkit
-import org.bukkit.command.CommandSender
 import org.bukkit.command.PluginCommand
 import org.bukkit.command.SimpleCommandMap
 import org.bukkit.permissions.Permission
@@ -136,6 +135,18 @@ fun command(name: String, modify: (CommandNode.() -> Unit)? = null): CommandNode
 }
 
 /**
+ * 创建命令根节点
+ * @param name 名字
+ * @param modify 对节点的修改
+ * @return 创建的节点
+ */
+fun command(node: CommandNode, modify: (CommandNode.() -> Unit)? = null): CommandNode {
+    modify?.invoke(node)
+    CommandHandler.register(node)
+    return node
+}
+
+/**
  * 为节点添加子节点
  * @param name 名字
  * @param modify 对节点的修改
@@ -175,7 +186,7 @@ fun CommandNode.node(node: CommandNode): CommandNode {
 /**
  * 设置命令执行者
  */
-fun CommandNode.executor(onExecute: (Params.(sender: CommandSender) -> Unit)? = null) {
+fun CommandNode.executor(onExecute: CommandNodeExecutor? = null) {
     this.onExecute = onExecute
 }
 

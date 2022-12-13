@@ -6,7 +6,7 @@ import top.iseason.bukkit.sakurabind.cache.BlockCache
 import top.iseason.bukkit.sakurabind.cache.CacheManager
 import top.iseason.bukkit.sakurabind.cache.EntityCache
 import top.iseason.bukkit.sakurabind.cache.FallingBlockCache
-import top.iseason.bukkit.sakurabind.command.mainCommand
+import top.iseason.bukkit.sakurabind.command.*
 import top.iseason.bukkit.sakurabind.config.*
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkit.sakurabind.hook.AuthMeHook
@@ -16,6 +16,8 @@ import top.iseason.bukkit.sakurabind.listener.*
 import top.iseason.bukkit.sakurabind.task.DelaySender
 import top.iseason.bukkit.sakurabind.task.DropItemList
 import top.iseason.bukkittemplate.KotlinPlugin
+import top.iseason.bukkittemplate.command.CommandHandler
+import top.iseason.bukkittemplate.command.CommandNode
 import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.debug.SimpleLogger
@@ -38,7 +40,7 @@ object SakuraBind : KotlinPlugin() {
         SimpleYAMLConfig.notifyMessage = "&6配置 &f%s &6已重载!"
         checkHooks()
         try {
-            mainCommand()
+            initCommands()
         } catch (e: Exception) {
             e.printStackTrace()
             warn("命令注册异常,请重新启动......")
@@ -133,6 +135,25 @@ object SakuraBind : KotlinPlugin() {
             warn("缓存初始化异常,请重启!")
         }
         info("&a缓存初始化成功!")
+    }
+
+    /**
+     * 注册命令
+     */
+    private fun initCommands() {
+        CommandNode.usageFooter = "&7所有命令加上 '-silent' 参数可以不显示提示消息\n "
+        with(RootCommand) {
+            addSubNode(BindCommand)
+            addSubNode(BindToCommand)
+            addSubNode(BindAllCommand)
+            addSubNode(UnBindCommand)
+            addSubNode(UnBindAllCommand)
+            addSubNode(GetLostCommand)
+            addSubNode(AutoBindCommand)
+            addSubNode(DebugCommand)
+        }
+        CommandHandler.register(RootCommand)
+        CommandHandler.updateCommands()
     }
 
     override fun onDisable() {
