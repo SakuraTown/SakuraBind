@@ -324,9 +324,10 @@ matchers:
 根命令全称 `sakurabind`,别名为 `sbind`, `sb`, `sab`, `bind`
 
 ~~~ text
-/sakurabind bind <player> [-noLore]  绑定某玩家手上的物品
-/sakurabind bindTo <player> [-noLore]  绑定手上的物品给某玩家
-/sakurabind unBind <player>  解绑定某玩家手上的物品
+<> 为必选参数 []为可选参数或条件可选,支持tab补全
+/sakurabind bind <type> <player> [setting] [-noLore]  绑定某玩家 手上的物品、前面的方块、前面的实体
+/sakurabind bindTo <type> <player> [setting] [-noLore]  绑定 手上的物品、前方的方块、前方的实体 给 某玩家
+/sakurabind unBind <type> <player>  解绑定某玩家手上的物品、前面的方块、前面的实体
 /sakurabind bindAll <player> [-noLore]  绑定某玩家背包里的所有物品
 /sakurabind unBindAll <player>  解绑定某玩家背包的物品
 /sakurabind getLost  获取暂存箱物品
