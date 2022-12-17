@@ -90,7 +90,7 @@ object SakuraBindAPI {
         var temp = item
         //有旧的lore,先删除
         if (oldLore != null && itemMeta.hasLore()) {
-            oldLore = oldLore.map { it.substring(0, it.length - 1) }
+            oldLore = oldLore.map { it.substring(0, it.length - 2) }
             val newLore = itemMeta.lore!!.apply { removeAll(oldLore) }
             temp.applyMeta { this.lore = newLore }
             temp = NBTEditor.set(temp, null, *Config.nbtPathLore)
@@ -122,7 +122,8 @@ object SakuraBindAPI {
             if (player.hasPlayedBefore()) {
                 val compound = NBTEditor.getEmptyNBTCompound()
                 for ((i, s) in loreStr.withIndex()) {
-                    compound.set("", "$s$i")
+                    val index = if (i < 10) "0$i" else i.toString()
+                    compound.set("", "$s$index")
                 }
                 temp = NBTEditor.set(temp, compound, *Config.nbtPathLore)
             }

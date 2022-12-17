@@ -35,7 +35,7 @@ object ItemSettings : SimpleYAMLConfig() {
         "match 项下的 materialIds 为 物品材质:子ID 匹配方式 如 STONE 或 STONE:2 ; 如果只需要匹配材质请使用效率更高的 materials 方式",
         "match 项下的 lore 为 物品lore 如有多行则需全匹配",
         "match 项下的 lore-without-color 为 物品lore除去颜色代码 如有多行则需全匹配 与 lore 互斥",
-        "match 项下的 nbt 为 物品NBT ",
+        "match 项下的 nbt 为 物品NBT，注意：常规的nbt储存在tag下",
         "",
         "settings 项为此matcher独立的设置，完全兼容global-setting中的选项",
         "settings 项中以 '@' 结尾的布尔类型的项，其物主将使用与他人相反的设置",
@@ -62,7 +62,7 @@ object ItemSettings : SimpleYAMLConfig() {
             set("materialId", listOf("SPECIAL:2"))
             set("ids", listOf("6578", "2233:2"))
             set("lore", listOf("绑定物品", "属于"))
-            createSection("nbt").apply { set("testnbt", ".*") }
+            set("nbt.tag.testnbt", ".*")
         }
         example.createSection("settings").apply {
             set("item.lore", listOf("&a灵魂绑定2: &6%player%"))
@@ -77,6 +77,7 @@ object ItemSettings : SimpleYAMLConfig() {
         .withKeyCopier(IdentityCopier())
         .withValueCopier(IdentityCopier())
         .build(true)
+
     private var settings = LinkedHashMap<String, ItemSetting>()
 
     override fun onLoaded(section: ConfigurationSection) {
