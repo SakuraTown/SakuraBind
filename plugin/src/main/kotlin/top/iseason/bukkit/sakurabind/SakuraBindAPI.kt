@@ -5,6 +5,7 @@ import org.bukkit.Bukkit
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.entity.HumanEntity
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.cache.BlockCache
@@ -21,6 +22,7 @@ import top.iseason.bukkit.sakurabind.task.DelaySender
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.applyMeta
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
+import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 import top.iseason.bukkittemplate.utils.other.EasyCoolDown
@@ -302,12 +304,30 @@ object SakuraBindAPI {
      * 绑定实体
      */
     @JvmStatic
-    fun bindEntity(entity: Entity, uuid: UUID, setting: BaseSetting) {
+    fun bindEntity(entity: Entity, player: Player, setting: BaseSetting) {
         if (!isEntityEnable()) return
-        val entityBindEvent = EntityBindEvent(entity, setting, uuid)
+        val uniqueId = player.uniqueId
+        val entityBindEvent = EntityBindEvent(entity, setting, uniqueId)
         Bukkit.getPluginManager().callEvent(entityBindEvent)
         if (entityBindEvent.isCancelled) return
-        EntityCache.addEntity(entity, entityBindEvent.uuid.toString(), entityBindEvent.setting.keyPath)
+        val toString = entityBindEvent.uuid.toString()
+        EntityCache.addEntity(entity, toString, entityBindEvent.setting.keyPath)
+        // 1.9 才有这个API
+        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_9) &&
+            entity is LivingEntity &&
+            setting.getBoolean("entity-deny.ai", toString, player)
+        ) {
+            entity.setAI(false)
+        }
+        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_10) &&
+            setting.getBoolean("entity-deny.gravity", toString, player)
+        ) {
+            entity.setGravity(false)
+        }
+        val name = setting.getString("entity.bind-name")
+        if (name.isNotEmpty()) {
+            entity.customName = PlaceHolderHook.setPlaceHolder(name.formatBy(player.name, entity.type.name), player)
+        }
     }
 
     /**

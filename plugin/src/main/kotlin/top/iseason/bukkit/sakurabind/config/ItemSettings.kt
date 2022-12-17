@@ -95,6 +95,8 @@ object ItemSettings : SimpleYAMLConfig() {
         settings["global-setting"] = DefaultItemSetting
     }
 
+    fun getSettingsName() = settings.keys.toSet()
+
     /**
      * 获取物品对应的设置,具有三级缓存
      */

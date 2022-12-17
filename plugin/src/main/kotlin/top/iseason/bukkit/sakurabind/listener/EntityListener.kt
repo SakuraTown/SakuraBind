@@ -19,7 +19,6 @@ import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.utils.Defenders
 import top.iseason.bukkit.sakurabind.utils.MessageTool
-import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
@@ -81,29 +80,13 @@ object EntityListener : Listener {
         temp.remove(str)
         val player = pair.first
         if (pair.second != player.getHeldItem()) return
-        val owner = SakuraBindAPI.getOwner(pair.second)
         val setting = ItemSettings.getSetting(pair.second)
         val entity = event.entity
-        SakuraBindAPI.bindEntity(entity, owner!!, setting)
+        SakuraBindAPI.bindEntity(entity, player, setting)
         if (SakuraBindAPI.getEntityOwner(entity) == null) {
             return
         }
         MessageTool.messageCoolDown(player, Lang.entity_bind_on_spawner_egg)
-        // 1.9 才有这个API
-        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_9) &&
-            setting.getBoolean("entity-deny.ai", owner.toString(), player)
-        ) {
-            entity.setAI(false)
-        }
-        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_10) &&
-            setting.getBoolean("entity-deny.gravity", owner.toString(), player)
-        ) {
-            entity.setGravity(false)
-        }
-        val name = setting.getString("entity.bind-name")
-        if (name.isNotEmpty()) {
-            entity.customName = PlaceHolderHook.setPlaceHolder(name.formatBy(player.name, entity.type.name), player)
-        }
 
     }
 
