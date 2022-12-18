@@ -67,6 +67,7 @@
 `global-setting.yml`配置内容如下
 
 ~~~ yaml
+
 # 本配置为绑定的全局权限设置，优先级最低
 # 在布尔类型的选项之后加上@则表示对于物主采取相反的结果,部分没有提示消息的无效
 # 如 item-deny.click@: true 表示仅允许物主拿走容器内的物品
@@ -153,12 +154,21 @@ item-deny:
   command-pattern:
   - .*
 
-  # 禁止绑定物品放入特定标题的容器里
+  # 禁止绑定物品放入特定标题的容器里,为了防止各种操作绕过将同时也会禁止点击
   inventory: true
 
   # 禁止绑定物品放入特定标题的容器里,正则表达式
   inventory-pattern:
   - ^垃圾桶$
+
+  # 禁止绑定物品放入特定类型的容器里, https://bukkit.windit.net/javadoc/org/bukkit/event/inventory/InventoryType.html
+  inventory-types:
+  - ANVIL
+  - DISPENSER
+  - DROPPER
+  - FURNACE
+  - GRINDSTONE
+  - SMITHING
 
   # 禁止绑定物品死亡掉落(只在死亡不掉落游戏规则未开启时有效)
   drop-on-death: true
@@ -175,13 +185,13 @@ block-deny:
   place@: true
 
   # 禁止方块物品被互动(左右键)
-  interact@: true
+  interact: false
 
   # 禁止方块物品被爆炸损坏
   explode: true
 
   # 禁止方块物品被活塞推动/拉动. 建议禁止, 如果不禁止，被活塞推/拉动后的方块也会绑定(实验性功能)
-  piston: true
+  piston: false
 
   # 禁止流水/岩浆破坏, 被岩浆破坏的物品将不会有掉落物,故而设置为false时将会把物品直接送回物主
   flow: true
