@@ -31,7 +31,7 @@ object BlockCache : BaseCache {
 
     private val tempBlockCache: UserManagedCache<String, String> = UserManagedCacheBuilder
         .newUserManagedCacheBuilder(String::class.java, String::class.java)
-        .withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofSeconds(3)))
+        .withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofSeconds(1)))
         .withKeyCopier(IdentityCopier())
         .withValueCopier(IdentityCopier())
         .build(true)

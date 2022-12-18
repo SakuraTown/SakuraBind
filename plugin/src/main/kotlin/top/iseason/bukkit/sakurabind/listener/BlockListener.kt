@@ -170,6 +170,7 @@ object BlockListener : Listener {
         val deny = setting.getBoolean("block-deny.break", owner, event.player)
         //可以破坏
         if (Config.checkByPass(event.player) || !deny) {
+            BlockCache.addBlockTemp(BlockCache.blockToString(block), owner)
             //没有掉落物直接删除
             if (event.player.gameMode != GameMode.SURVIVAL || block.getDrops(
                     player.getHeldItem() ?: ItemStack(Material.AIR)
@@ -303,7 +304,6 @@ object BlockListener : Listener {
         // 处理下落方块变成掉落物
         kotlin.run {
             val location = entity.location
-//            location.y += 0.5
             val findEntity = FallingList.findFalling(FallingList.locationToString(location))
             FallingList.check()
             if (findEntity == null) return@run
