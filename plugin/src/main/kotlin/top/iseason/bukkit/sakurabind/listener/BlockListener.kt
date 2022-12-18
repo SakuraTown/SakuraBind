@@ -4,7 +4,6 @@ import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.block.PistonMoveReaction
-import org.bukkit.entity.Entity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -22,6 +21,7 @@ import top.iseason.bukkit.sakurabind.cache.FallingBlockCache
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.task.FallingList
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkit.sakurabind.utils.PlayerTool
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
@@ -300,35 +300,29 @@ object BlockListener : Listener {
     fun onItemSpawnEvent(event: ItemSpawnEvent) {
         val entity = event.entity
         val itemStack = entity.itemStack
-        /**
-         * 处理方块变成掉落物
-         */
-        kotlin.run {
-            val itemMeta = itemStack.itemMeta
-            if (itemMeta is BlockStateMeta && itemMeta.blockState is InventoryHolder && itemStack.amount != 1) return@run
-            val entityToString = BlockCache.dropItemToString(entity)
-            val owner =
-                BlockCache.getBlockTemp(entityToString) ?: BlockCache.getBlockOwner(entityToString)?.first ?: return@run
-            SakuraBindAPI.bind(itemStack, UUID.fromString(owner))
-            BlockCache.removeCache(entityToString)
-            BlockCache.removeBlockTemp(entityToString)
-            return
-        }
         // 处理下落方块变成掉落物
-        val location = entity.location.clone()
-        location.y += 0.5
-        var entityOwner: String? = null
-        var findEntity: Entity? = null
-        for (nearbyEntity in location.world!!.getNearbyEntities(location, 0.5, 0.5, 0.5)) {
-            entityOwner = FallingBlockCache.getEntityOwner(nearbyEntity)?.first ?: continue
-            findEntity = nearbyEntity
-            break
-        }
-        if (entityOwner != null) {
-            FallingBlockCache.removeEntity(findEntity!!)
+        kotlin.run {
+            val location = entity.location
+//            location.y += 0.5
+            val findEntity = FallingList.findFalling(FallingList.locationToString(location))
+            FallingList.check()
+            if (findEntity == null) return@run
+            val entityOwner = FallingBlockCache.getEntityOwner(findEntity)?.first ?: return
+            FallingBlockCache.removeEntity(findEntity)
             SakuraBindAPI.bind(itemStack, UUID.fromString(entityOwner))
             return
         }
+        //处理方块变成掉落物
+        val itemMeta = itemStack.itemMeta
+        if (itemMeta is BlockStateMeta && itemMeta.blockState is InventoryHolder && itemStack.amount != 1) return
+        val entityToString = BlockCache.dropItemToString(entity)
+        val owner =
+            BlockCache.getBlockTemp(entityToString) ?: BlockCache.getBlockOwner(entityToString)?.first ?: return
+        SakuraBindAPI.bind(itemStack, UUID.fromString(owner))
+        BlockCache.removeCache(entityToString)
+        BlockCache.removeBlockTemp(entityToString)
+        return
+
     }
 
     /**
@@ -353,6 +347,8 @@ object BlockListener : Listener {
         } else {
             SakuraBindAPI.unbindBlock(block)
             FallingBlockCache.addEntity(entity, pair.first, pair.second.keyPath)
+            FallingList.addFalling(entity)
+            FallingList.check()
         }
     }
 
