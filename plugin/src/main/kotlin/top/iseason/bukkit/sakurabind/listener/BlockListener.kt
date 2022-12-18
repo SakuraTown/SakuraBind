@@ -61,7 +61,7 @@ object BlockListener : Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onBlockPlaceEvent(event: BlockPlaceEvent) {
         val player = event.player
-        if (Config.checkByPass(player)) return
+//        if (Config.checkByPass(player)) return
         //覆盖检查，比如草被覆盖，但是不实用
 //        if (BlockCache.getOwner(event.block) != null) {
 //            MessageTool.sendCoolDown(event.player, Lang.block__deny_place_exist)
@@ -71,7 +71,7 @@ object BlockListener : Listener {
         val heldItem = player.getHeldItem()
         var owner: UUID? = null
         if (!heldItem.checkAir()) {
-            if (SakuraBindAPI.checkDenyBySetting(heldItem, player, "block-deny.place")) {
+            if (!Config.checkByPass(player) && SakuraBindAPI.checkDenyBySetting(heldItem, player, "block-deny.place")) {
                 MessageTool.denyMessageCoolDown(
                     event.player, Lang.block__deny_place,
                     ItemSettings.getSetting(heldItem!!),
@@ -86,7 +86,12 @@ object BlockListener : Listener {
             val offHandItem = PlayerTool.getOffHandItem(player)
             if (offHandItem.checkAir()) {
                 owner = SakuraBindAPI.getOwner(offHandItem!!)
-            } else if (SakuraBindAPI.checkDenyBySetting(offHandItem, player, "block-deny.place")) {
+            } else if (!Config.checkByPass(player) && SakuraBindAPI.checkDenyBySetting(
+                    offHandItem,
+                    player,
+                    "block-deny.place"
+                )
+            ) {
                 MessageTool.denyMessageCoolDown(
                     event.player, Lang.block__deny_place, ItemSettings.getSetting(offHandItem!!),
                     offHandItem
@@ -114,7 +119,7 @@ object BlockListener : Listener {
         val heldItem = player.getHeldItem()
         var owner: UUID? = null
         if (!heldItem.checkAir()) {
-            if (SakuraBindAPI.checkDenyBySetting(heldItem, player, "block-deny.place")) {
+            if (!Config.checkByPass(player) && SakuraBindAPI.checkDenyBySetting(heldItem, player, "block-deny.place")) {
                 MessageTool.denyMessageCoolDown(
                     event.player,
                     Lang.block__deny_place,
@@ -130,7 +135,12 @@ object BlockListener : Listener {
             val offHandItem = PlayerTool.getOffHandItem(player)
             if (offHandItem.checkAir()) {
                 owner = SakuraBindAPI.getOwner(offHandItem!!)
-            } else if (SakuraBindAPI.checkDenyBySetting(offHandItem, player, "block-deny.place")) {
+            } else if (!Config.checkByPass(player) && SakuraBindAPI.checkDenyBySetting(
+                    offHandItem,
+                    player,
+                    "block-deny.place"
+                )
+            ) {
                 MessageTool.denyMessageCoolDown(
                     event.player, Lang.block__deny_place,
                     ItemSettings.getSetting(offHandItem!!),
