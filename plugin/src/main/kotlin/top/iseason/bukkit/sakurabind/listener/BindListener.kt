@@ -103,7 +103,7 @@ object BindListener : Listener {
         val player = event.player
         if (Config.checkByPass(player)) return
         val isItemFrame = event.rightClicked is ItemFrame
-        val mainHand = player.inventory.itemInMainHand
+        val mainHand = player.getHeldItem()
         val offHand = PlayerTool.getOffHandItem(player)
         //检查展示框
         if (isItemFrame) {
@@ -116,7 +116,7 @@ object BindListener : Listener {
                 event.isCancelled = true
                 MessageTool.denyMessageCoolDown(
                     player, Lang.item__deny_itemFrame,
-                    ItemSettings.getSetting(item),
+                    ItemSettings.getSetting(item!!),
                     item
                 )
             }
@@ -134,7 +134,7 @@ object BindListener : Listener {
                 event.isCancelled = true
                 MessageTool.denyMessageCoolDown(
                     player, Lang.item__deny_entity_interact,
-                    ItemSettings.getSetting(item),
+                    ItemSettings.getSetting(item!!),
                     item
                 )
             }
