@@ -1,5 +1,6 @@
 package top.iseason.bukkit.sakurabind
 
+import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bstats.bukkit.Metrics
 import org.bukkit.event.block.BlockPhysicsEvent
 import top.iseason.bukkit.sakurabind.cache.BlockCache
@@ -95,7 +96,9 @@ object SakuraBind : KotlinPlugin() {
      */
     private fun initListeners() {
         BindListener.register()
-        BindListener194.register()
+        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_9)) {
+            BindListener194.register()
+        }
         if (AuthMeHook.hasHooked) {
             LoginAuthMeListener.register()
         } else {
