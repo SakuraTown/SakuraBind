@@ -65,10 +65,10 @@ object SakuraBind : KotlinPlugin() {
     private fun initConfig() {
         GlobalSettings.load(false)
         Lang.load(false)
-        Config.load(false)
         ItemSettings.load(false)
         DatabaseConfig.load(false)
         DatabaseConfig.initTables(PlayerItems)
+        Config.load(false)
         info("&a配置已初始化!")
     }
 

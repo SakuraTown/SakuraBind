@@ -384,7 +384,7 @@ object BindListener : Listener {
         if (item.isDead) return
         val itemStack = item.itemStack
         val owner = SakuraBindAPI.getOwner(itemStack) ?: return
-        if (!ItemSettings.getSetting(itemStack).getBoolean("send-when-lost", null, null)) {
+        if (!ItemSettings.getSetting(itemStack).getBoolean("item.send-when-lost", null, null)) {
             return
         }
         val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(itemStack))
