@@ -5,6 +5,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import top.iseason.bukkit.sakurabind.config.Config
+import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.dto.PlayerItem
 import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
 import top.iseason.bukkittemplate.BukkitTemplate
@@ -12,6 +13,7 @@ import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toByteArray
+import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.other.submit
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -66,6 +68,7 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
             warn("数据库未启用,无法发送暂存箱子!")
         }
         inv.clear()
+        Bukkit.getPlayer(uuid)?.sendColorMessage(Lang.lost_item_send_when_online)
     }
 
     companion object {

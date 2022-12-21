@@ -80,6 +80,7 @@ object Lang : SimpleYAMLConfig() {
     var command__debug = "&aDebug模式: &b{0}"
 
     var has_lost_item = "&a你有遗失的物品,请输入 &6'/sakurabind getLost' &a领取"
+    var lost_item_send_when_online = "&a你有遗失的物品,请输入 &6'/sakurabind getLost' &a领取"
 
     override fun onLoaded(section: ConfigurationSection) {
         MessageUtils.defaultPrefix = prefix
