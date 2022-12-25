@@ -23,7 +23,7 @@ class Scanner : BukkitRunnable() {
 //                    info("正在检查 ${it.name} ${it.uniqueId} 的背包")
 //                    info("送回物品功能: $auto_bind__scanner_send_back")
             var hasFound = false
-            val inventory = it.openInventory.bottomInventory
+            val inventory = it?.openInventory?.bottomInventory ?: return@forEach
             try {
                 //为了兼容mod，获取到的格子数不一致
                 for (i in 0 until inventory.size) {
