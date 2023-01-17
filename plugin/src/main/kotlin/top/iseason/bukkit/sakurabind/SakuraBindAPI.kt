@@ -270,8 +270,25 @@ object SakuraBindAPI {
                 return release
             }
             if (!EasyCoolDown.check(uuid, 1000))
-                player.sendColorMessage(Lang.send_back)
+                player.sendColorMessage(Lang.send_back_inventory)
         } else release = items.toMutableList()
+
+        /**
+         * 开启末影箱缓存下，背包已满但末影箱有空间
+         */
+        if (player != null && Config.ender_chest_cache && release.isNotEmpty()) {
+            val release2 = mutableListOf<ItemStack>()
+            val enderChest = player.enderChest
+            for (itemStack in release) {
+                val addItem = enderChest.addItem(itemStack)
+                if (addItem.isNotEmpty()) {
+                    release2.addAll(addItem.values)
+                }
+            }
+            if (release.size != release2.size && !EasyCoolDown.check(uuid, 1000))
+                player.sendColorMessage(Lang.send_back_ender_chest)
+            release = release2
+        }
 
         // 延迟发送队列
         if (release.isNotEmpty()) {

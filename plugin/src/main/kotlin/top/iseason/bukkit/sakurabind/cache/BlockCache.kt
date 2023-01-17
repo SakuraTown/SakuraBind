@@ -42,10 +42,12 @@ object BlockCache : BaseCache {
             CacheConfigurationBuilder.newCacheConfigurationBuilder(
                 String::class.java, String::class.java,
                 ResourcePoolsBuilder.newResourcePoolsBuilder()
-                    .heap(50, EntryUnit.ENTRIES)
-                    .offheap(50, MemoryUnit.MB)
+                    .heap(100, EntryUnit.ENTRIES)
+                    .offheap(10, MemoryUnit.MB)
                     .disk(500, MemoryUnit.MB, true)
-            ).withExpiry(ExpiryPolicyBuilder.noExpiration())
+            )
+                .withExpiry(ExpiryPolicyBuilder.noExpiration())
+//                .withService(OffHeapDiskStoreConfiguration(2))
                 .build()
         )
     }
@@ -90,6 +92,7 @@ object BlockCache : BaseCache {
     fun addBlock(key: String, value: String) {
         blockCache.put(key, value)
         blockFilter.add(key)
+
     }
 
     fun removeBlock(block: Block) {

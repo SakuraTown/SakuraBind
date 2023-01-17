@@ -32,10 +32,11 @@ object EntityCache : BaseCache {
             CacheConfigurationBuilder.newCacheConfigurationBuilder(
                 String::class.java, String::class.java,
                 ResourcePoolsBuilder.newResourcePoolsBuilder()
-                    .heap(30, EntryUnit.ENTRIES)
+                    .heap(100, EntryUnit.ENTRIES)
                     .offheap(10, MemoryUnit.MB)
                     .disk(200, MemoryUnit.MB, true)
             ).withExpiry(ExpiryPolicyBuilder.noExpiration())
+//                .withService(OffHeapDiskStoreConfiguration(2))
                 .build()
         )
     }

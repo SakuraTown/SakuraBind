@@ -89,10 +89,10 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
             }
         }
 
-        fun sendToDataBase(uuid: UUID, items: List<ItemStack>) {
+        fun sendToDataBase(uid: UUID, items: List<ItemStack>) {
             dbTransaction {
                 PlayerItem.new {
-                    this.uuid = uuid
+                    this.uuid = uid
                     this.item = ExposedBlob(items.toByteArray())
                 }
             }

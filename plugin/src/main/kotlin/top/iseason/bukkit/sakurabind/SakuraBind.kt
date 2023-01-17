@@ -118,6 +118,7 @@ object SakuraBind : KotlinPlugin() {
             EntityListener.register()
             info("&a已启用实体监听器!")
         }
+        SelectListener.register()
     }
 
     /**
@@ -153,7 +154,9 @@ object SakuraBind : KotlinPlugin() {
             addSubNode(UnBindAllCommand)
             addSubNode(GetLostCommand)
             addSubNode(AutoBindCommand)
+            addSubNode(SelectCommand)
             addSubNode(DebugCommand)
+            addSubNode(OpenLostCommand)
         }
         CommandHandler.register(RootCommand)
         CommandHandler.updateCommands()
@@ -178,6 +181,7 @@ object SakuraBind : KotlinPlugin() {
         }
         try {
             CacheManager.save()
+
         } catch (e: Exception) {
             e.printStackTrace()
         }

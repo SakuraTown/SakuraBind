@@ -19,9 +19,9 @@ dependencies {
 
     // 本地依赖放在libs文件夹内
     compileOnly(fileTree("libs") { include("*.jar") })
-    implementation("io.github.bananapuncher714:nbteditor:7.18.3")
+    implementation("io.github.bananapuncher714:nbteditor:7.18.4")
     implementation("org.bstats:bstats-bukkit:3.0.0")
-    compileOnly("org.ehcache:ehcache:3.10.6")
+    compileOnly("org.ehcache:ehcache:3.10.8")
     compileOnly("me.clip:placeholderapi:2.11.2")
     compileOnly("fr.xephi:authme:5.6.0-SNAPSHOT")
     compileOnly("org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT")

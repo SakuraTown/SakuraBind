@@ -5,6 +5,7 @@ package top.iseason.bukkit.sakurabind.cache
 import org.bukkit.Location
 import org.ehcache.CacheManager
 import org.ehcache.PersistentCacheManager
+import org.ehcache.Status
 import org.ehcache.config.builders.*
 import top.iseason.bukkittemplate.BukkitTemplate
 import java.io.File
@@ -18,9 +19,6 @@ object CacheManager {
 
     private val cacheManagerList = mutableListOf<BaseCache>()
 
-    //    private val tempCache: Cache<String, String>
-
-
     init {
         val dataFile = File(BukkitTemplate.getPlugin().dataFolder, "data")
         if (!dataFile.exists()) {
@@ -29,6 +27,13 @@ object CacheManager {
         builder = CacheManagerBuilder
             .persistence(dataFile)
             .builder(CacheManagerBuilder.newCacheManagerBuilder())
+    }
+
+    private val hook = Thread {
+        if (cacheManager.status != Status.UNINITIALIZED) {
+            cacheManager.close()
+            println("[SakuraBind] shutdown hook for encache has finished!")
+        }
     }
 
     /**
@@ -42,6 +47,7 @@ object CacheManager {
      * 构建初始化缓存管理器
      */
     fun build() {
+        if (cacheManagerList.isEmpty()) return
         for (baseCacheManager in cacheManagerList) {
             builder = baseCacheManager.setCache(builder!!)
         }
@@ -50,6 +56,9 @@ object CacheManager {
             baseCacheManager.init(cacheManager)
         }
         builder = null
+        //容灾
+        Runtime.getRuntime().addShutdownHook(hook)
+
     }
 
     fun locationToString(location: Location): String =
@@ -62,6 +71,7 @@ object CacheManager {
             baseCache.onSave()
         }
         cacheManager.close()
+        Runtime.getRuntime().removeShutdownHook(hook)
     }
 
 }

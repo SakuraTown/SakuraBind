@@ -65,11 +65,19 @@ object Config : SimpleYAMLConfig() {
     @Comment("", "玩家禁用消息的冷却时间, 单位毫秒")
     var message_coolDown = 1000L
 
+    @Key
+    @Comment("", "丢失物品返还玩家时如果玩家在线且背包满了优先进入玩家末影箱，末影箱满了再进入暂存箱")
+    var ender_chest_cache = false
+
     private var task: BukkitTask? = null
 
     @Key
     @Comment("", "识别到此NBT就自动绑定物主")
     var auto_bind_nbt = "sakura_auto_bind"
+
+    @Key
+    @Comment("", "选择命令的最大超时时间,单位毫秒")
+    var command_select_timeout = 30000L
 
     override fun onLoaded(section: ConfigurationSection) {
         nbtPathUuid = nbt_path_uuid.split('.').toTypedArray()

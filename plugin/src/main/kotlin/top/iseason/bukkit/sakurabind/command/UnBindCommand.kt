@@ -9,6 +9,8 @@ import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.command.*
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
+import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
+import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.other.submit
 
 object UnBindCommand : CommandNode(
@@ -32,7 +34,8 @@ object UnBindCommand : CommandNode(
                 if (itemInMainHand.checkAir()) return@CommandNodeExecutor
                 SakuraBindAPI.unBind(itemInMainHand!!)
                 if (!isSilent) {
-                    MessageTool.messageCoolDown(player, Lang.command__unbind_item)
+                    sender.sendColorMessage(Lang.command__unbind_item.formatBy(player.name))
+                    MessageTool.messageCoolDown(player, Lang.item_unbind_hand)
                 }
             }
 
@@ -41,7 +44,8 @@ object UnBindCommand : CommandNode(
                 if (targetBlock == null || targetBlock.isEmpty) throw ParmaException("目标前方没有一个有效的方块")
                 SakuraBindAPI.unbindBlock(targetBlock)
                 if (!isSilent) {
-                    MessageTool.messageCoolDown(player, Lang.command__unbind_block)
+                    sender.sendColorMessage(Lang.command__unbind_block.formatBy(player.name))
+                    MessageTool.messageCoolDown(player, Lang.block_unbind)
                 }
             }
 
@@ -58,7 +62,8 @@ object UnBindCommand : CommandNode(
                     val hitEntity = rayTraceEntities.hitEntity ?: return@submit
                     SakuraBindAPI.unbindEntity(hitEntity)
                     if (!isSilent) {
-                        MessageTool.messageCoolDown(player, Lang.command__unbind_entity)
+                        sender.sendColorMessage(Lang.command__unbind_entity.formatBy(player.name))
+                        MessageTool.messageCoolDown(player, Lang.entity_unbind)
                     }
                 }
             }

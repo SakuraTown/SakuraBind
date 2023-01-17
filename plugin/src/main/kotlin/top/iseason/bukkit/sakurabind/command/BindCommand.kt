@@ -80,7 +80,6 @@ object BindCommand : CommandNode(
                     }
                 }
             }
-
             else -> throw ParmaException("未知的绑定类型!")
         }
     }

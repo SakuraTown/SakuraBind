@@ -20,6 +20,7 @@ open class ItemSetting(override val keyPath: String, section: ConfigurationSecti
     private var materialIds: List<Pair<Material, Int?>>? = null
     private var lorePatterns: List<Pattern>? = null
     private var stripColor = false
+    private var removeLore = false
     private var nbt: List<Pair<Array<String>, Pattern>>? = null
     private var setting: ConfigurationSection
 
@@ -52,9 +53,16 @@ open class ItemSetting(override val keyPath: String, section: ConfigurationSecti
         }
         val list = if (matcher.contains("lore"))
             matcher.getStringList("lore")
-        else if (matcher.contains("lore-without-color")) {
+        else if (matcher.contains("lore!")) {
+            removeLore = true
+            matcher.getStringList("lore!")
+        } else if (matcher.contains("lore-without-color")) {
             stripColor = true
             matcher.getStringList("lore-without-color")
+        } else if (matcher.contains("lore-without-color!")) {
+            stripColor = true
+            removeLore = true
+            matcher.getStringList("lore-without-color!")
         } else emptyList()
         if (list.isNotEmpty())
             lorePatterns = list.map { it.toPattern() }
@@ -128,7 +136,7 @@ open class ItemSetting(override val keyPath: String, section: ConfigurationSecti
         if (lorePatterns != null) {
             val matchLore = with(lorePatterns!!) {
                 meta ?: return@with false
-                if (meta.hasLore()) return@with false
+                if (!meta.hasLore()) return@with false
                 val lore = meta.lore ?: return@with false
                 var mLore = false
                 val loreIter = lore.iterator()
@@ -145,12 +153,18 @@ open class ItemSetting(override val keyPath: String, section: ConfigurationSecti
                                 start = true
                                 mLore = true
                             }
+                            if (removeLore) loreIter.remove()
                             break@label2
                         } else if (start) {
                             mLore = false
                             break@label1
                         }
                     }
+                }
+                //匹配到了且删除lore
+                if (mLore && removeLore) {
+                    meta.lore = lore
+                    item.itemMeta = meta
                 }
                 mLore
             }

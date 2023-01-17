@@ -4,11 +4,13 @@ import org.bukkit.entity.Player
 import org.bukkit.permissions.PermissionDefault
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.command.CommandNode
 import top.iseason.bukkittemplate.command.CommandNodeExecutor
 import top.iseason.bukkittemplate.command.Param
 import top.iseason.bukkittemplate.command.ParamSuggestCache
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
+import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessages
 
 object UnBindAllCommand : CommandNode(
@@ -27,6 +29,7 @@ object UnBindAllCommand : CommandNode(
         }
         player.updateInventory()
         if (!params.hasParma("-silent"))
-            sender.sendColorMessages(Lang.command__unbindAll)
+            sender.sendColorMessages(Lang.command__unbindAll.formatBy(player.name))
+        MessageTool.messageCoolDown(player, Lang.item_unbind_all)
     }
 }

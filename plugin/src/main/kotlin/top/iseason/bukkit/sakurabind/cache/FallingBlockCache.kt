@@ -36,6 +36,7 @@ object FallingBlockCache : BaseCache {
                     .offheap(1, MemoryUnit.MB)
                     .disk(20, MemoryUnit.MB, true)
             ).withExpiry(ExpiryPolicyBuilder.noExpiration())
+//                .withService(OffHeapDiskStoreConfiguration(2))
                 .build()
         )
     }
