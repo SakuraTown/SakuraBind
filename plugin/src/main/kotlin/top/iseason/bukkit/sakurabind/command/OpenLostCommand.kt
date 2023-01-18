@@ -1,12 +1,14 @@
 package top.iseason.bukkit.sakurabind.command
 
 import org.bukkit.Bukkit
+import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.PermissionDefault
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
+import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.dto.PlayerItem
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
@@ -30,13 +32,14 @@ object OpenLostCommand : CommandNode(
     )
 ) {
     override var onExecute: CommandNodeExecutor? = CommandNodeExecutor { params, sender ->
-        val player = params.next<Player>()
+        val player = params.next<OfflinePlayer>()
         val page = params.nextOrNull<Int>() ?: 1
         val silent = params.hasParma("-silent")
 //        var inventory = Bukkit.createInventory(player, 36)
         val items = dbTransaction { PlayerItem.find { PlayerItems.uuid eq player.uniqueId }.toList() }
-        if (items.isEmpty()) throw ParmaException(Lang.command__openLost_empty)
-        val inventories = mutableListOf(Bukkit.createInventory(player, 36))
+        if (!Config.command_openLost_open_empty && items.isEmpty()) throw ParmaException(Lang.command__openLost_empty)
+        val senderPlayer = sender as Player
+        val inventories = mutableListOf(Bukkit.createInventory(senderPlayer, 36))
         var temp: Array<ItemStack>
         var index: Int
         for (item in items) {
@@ -45,7 +48,7 @@ object OpenLostCommand : CommandNode(
             while (temp.isNotEmpty()) {
                 var inventory = inventories.getOrNull(index)
                 if (inventory == null) {
-                    inventory = Bukkit.createInventory(player, 36)
+                    inventory = Bukkit.createInventory(senderPlayer, 36)
                     inventories.add(inventory)
                 }
                 temp = inventory.addItem(*temp).values.toTypedArray()
@@ -55,16 +58,17 @@ object OpenLostCommand : CommandNode(
         val inv = inventories.getOrNull(page - 1) ?: throw ParmaException(
             Lang.command__openLost_page_not_exist.formatBy(inventories.size)
         )
-        val senderPlayer = sender as Player
         if (!silent)
             senderPlayer.sendColorMessage(Lang.command__openLost_open.formatBy(player.name, page))
         senderPlayer.onItemInput(inv, true) {
             dbTransaction {
                 PlayerItems.deleteWhere { uuid eq player.uniqueId }
                 for (inventory in inventories) {
+                    val itemStacks = inventory.filter { !it.checkAir() }
+                    if (itemStacks.isEmpty()) continue
                     PlayerItem.new {
                         this.uuid = player.uniqueId
-                        this.item = ExposedBlob(inventory.filter { !it.checkAir() }.toByteArray())
+                        this.item = ExposedBlob(itemStacks.toByteArray())
                     }
                 }
             }
