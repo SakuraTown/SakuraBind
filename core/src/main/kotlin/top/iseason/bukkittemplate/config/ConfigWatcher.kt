@@ -22,7 +22,6 @@ class ConfigWatcher private constructor(private val folder: File) : BukkitRunnab
      * 自动重载的实现方法
      */
     override fun run() {
-        FileSystems.getDefault().newWatchService()
         while (isEnable) {
             val key = try {
                 service.take()
