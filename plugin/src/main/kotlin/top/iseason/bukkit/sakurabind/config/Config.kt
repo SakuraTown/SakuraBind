@@ -83,6 +83,7 @@ object Config : SimpleYAMLConfig() {
     @Comment("", "允许打开空的暂存箱")
     var command_openLost_open_empty = false
 
+
     override fun onLoaded(section: ConfigurationSection) {
         nbtPathUuid = nbt_path_uuid.split('.').toTypedArray()
         nbtPathLore = nbt_path_lore.split('.').toTypedArray()

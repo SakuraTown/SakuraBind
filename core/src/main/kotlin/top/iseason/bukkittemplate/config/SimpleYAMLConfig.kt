@@ -223,16 +223,6 @@ open class SimpleYAMLConfig(
                     incomplete = true
                 }
             }
-            //将数据写入临时配置
-            try {
-                var value = key.getValue(this)
-                if (value is Set<*>) {
-                    value = value.toList()
-                }
-                temp.set(finalKey, value)
-            } catch (e: Exception) {
-                debug("setting config $configPath error! key:${finalKey}")
-            }
             if (!(!incomplete && isReadOnly)) {
                 val comments = key.comments
                 if (comments != null) {
@@ -247,6 +237,16 @@ open class SimpleYAMLConfig(
                         temp.set(s, "")
                     }
                 }
+            }
+            //将数据写入临时配置
+            try {
+                var value = key.getValue(this)
+                if (value is Set<*>) {
+                    value = value.toList()
+                }
+                temp.set(finalKey, value)
+            } catch (e: Exception) {
+                debug("setting config $configPath error! key:${finalKey}")
             }
         }
         if (!(!incomplete && isReadOnly) || !configPath.exists()) {

@@ -10,10 +10,8 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.cache.BlockCache
 import top.iseason.bukkit.sakurabind.cache.EntityCache
-import top.iseason.bukkit.sakurabind.config.BaseSetting
-import top.iseason.bukkit.sakurabind.config.Config
-import top.iseason.bukkit.sakurabind.config.ItemSettings
-import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.config.*
+import top.iseason.bukkit.sakurabind.config.DefaultItemSetting.stripColor
 import top.iseason.bukkit.sakurabind.event.BlockBindEvent
 import top.iseason.bukkit.sakurabind.event.EntityBindEvent
 import top.iseason.bukkit.sakurabind.event.ItemBindEvent
@@ -23,6 +21,7 @@ import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.applyMeta
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
+import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.noColor
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 import top.iseason.bukkittemplate.utils.other.EasyCoolDown
@@ -95,7 +94,7 @@ object SakuraBindAPI {
             temp.applyMeta { this.lore = newLore }
             temp = NBTEditor.set(temp, null, *Config.nbtPathLore)
         }
-        val setting = ItemSettings.getSetting(item, true)
+        val setting = ItemSettings.getSetting(item, true) as ItemSetting
         // 有主人
         if (owner != null) {
             val player = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
@@ -109,14 +108,51 @@ object SakuraBindAPI {
             //添加lore
             temp.applyMeta {
                 lore = if (hasLore()) {
-                    lore!!.apply {
-                        val index = setting.getInt("item.lore-index")
-                        if (index >= size - 1)
-                            addAll(loreStr)
-                        else addAll(index, loreStr)
+                    val lore = LinkedList(lore!!)
+                    var index = setting.getInt("item.lore-index")
+                    if (setting.removeLore && !setting.lorePatterns.isNullOrEmpty()) {
+                        val lorePatterns = setting.lorePatterns!!
+                        val patternIter = lorePatterns.iterator()
+                        var match = true
+                        var pattern = patternIter.next()
+                        val indexOfFirst = lore.indexOfFirst {
+                            pattern.matcher(if (stripColor) it else it.noColor()!!).find()
+                        }
+                        //lore大小小于正则肯定不匹配
+                        if (lore.size < indexOfFirst + lorePatterns.size) {
+                            match = false
+                        } else {
+                            //除了第一个lore匹配其他的也得匹配
+                            for (i in (indexOfFirst + 1) until (indexOfFirst + lorePatterns.size)) {
+                                pattern = patternIter.next()
+                                val s = lore[i]
+                                if (!pattern.matcher(if (stripColor) s else s.noColor()!!).find()) {
+                                    match = false
+                                    break
+                                }
+                            }
+                        }
+                        if (match) {
+                            repeat(lorePatterns.size) {
+                                lore.removeAt(indexOfFirst)
+                            }
+                            if (setting.getBoolean(
+                                    "item.lore-replace-matched",
+                                    owner.toString(),
+                                    player as? HumanEntity
+                                )
+                            ) {
+                                index = indexOfFirst
+                            }
+                        }
                     }
+                    if (index > lore.size - 1) {
+                        lore.addAll(loreStr)
+                    } else {
+                        lore.addAll(index, loreStr)
+                    }
+                    lore
                 } else loreStr
-//                println(lore)
             }
             //记录历史
             if (player.hasPlayedBefore()) {

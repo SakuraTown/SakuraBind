@@ -18,9 +18,12 @@ open class ItemSetting(override val keyPath: String, section: ConfigurationSecti
     private var materials: HashSet<Material>? = null
     private var ids: List<Pair<Int, Int?>>? = null
     private var materialIds: List<Pair<Material, Int?>>? = null
-    private var lorePatterns: List<Pattern>? = null
-    private var stripColor = false
-    private var removeLore = false
+    var lorePatterns: List<Pattern>? = null
+        private set
+    var stripColor = false
+        private set
+    var removeLore = false
+        private set
     private var nbt: List<Pair<Array<String>, Pattern>>? = null
     private var setting: ConfigurationSection
 
@@ -84,7 +87,7 @@ open class ItemSetting(override val keyPath: String, section: ConfigurationSecti
         if (namePattern != null) {
             val matchName = with(namePattern!!) {
                 meta ?: return@with false
-                if (meta.hasDisplayName() || meta.displayName == null) return@with false
+                if (meta.hasDisplayName()) return@with false
                 this.matcher(meta.displayName).find()
             }
             if (!matchName) return false
@@ -138,33 +141,25 @@ open class ItemSetting(override val keyPath: String, section: ConfigurationSecti
                 meta ?: return@with false
                 if (!meta.hasLore()) return@with false
                 val lore = meta.lore ?: return@with false
-                var mLore = false
-                val loreIter = lore.iterator()
+//                val loreIter = lore.iterator()
                 val patternIter = this.iterator()
-                var start = false
-                label1@ while (patternIter.hasNext()) {
-                    val next = patternIter.next()
-                    label2@ while (loreIter.hasNext()) {
-                        var l = loreIter.next()
-                        if (stripColor) l = l.noColor()
-                        val find = next.matcher(l).find()
-                        if (find) {
-                            if (!start) {
-                                start = true
-                                mLore = true
-                            }
-                            if (removeLore) loreIter.remove()
-                            break@label2
-                        } else if (start) {
+                var mLore = true
+//                var start = false
+                var pattern = patternIter.next()
+                val indexOfFirst = lore.indexOfFirst {
+                    pattern.matcher(if (stripColor) it else it.noColor()!!).find()
+                }
+                if (indexOfFirst < 0 || lore.size < indexOfFirst + this.size) {
+                    mLore = false
+                } else {
+                    for (i in (indexOfFirst + 1) until (indexOfFirst + this.size)) {
+                        pattern = patternIter.next()
+                        val s = lore[i]
+                        if (!pattern.matcher(if (stripColor) s else s.noColor()!!).find()) {
                             mLore = false
-                            break@label1
+                            break
                         }
                     }
-                }
-                //匹配到了且删除lore
-                if (mLore && removeLore) {
-                    meta.lore = lore
-                    item.itemMeta = meta
                 }
                 mLore
             }

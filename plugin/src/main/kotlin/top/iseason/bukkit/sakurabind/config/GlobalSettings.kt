@@ -32,6 +32,10 @@ object GlobalSettings : SimpleYAMLConfig() {
     var item__lore_index = 0
 
     @Key
+    @Comment("", "如果删除匹配的lore则以绑定lore替换之(覆盖lore-index)")
+    var item__lore_replace_matched = true
+
+    @Key
     @Comment("", "当物品丢失时(掉虚空、消失等)归还物主(在线则发背包，否则发邮件)")
     var item__send_when_lost = true
 
