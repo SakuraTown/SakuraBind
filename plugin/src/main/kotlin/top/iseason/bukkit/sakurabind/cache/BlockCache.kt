@@ -29,7 +29,7 @@ object BlockCache : BaseCache {
     )
     else filterFile.inputStream().use { CuckooFilter.readFrom(it, Funnels.stringFunnel(StandardCharsets.UTF_8)) }
 
-    private val tempBlockCache: UserManagedCache<String, String> = UserManagedCacheBuilder
+    val tempBlockCache: UserManagedCache<String, String> = UserManagedCacheBuilder
         .newUserManagedCacheBuilder(String::class.java, String::class.java)
         .withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofSeconds(1)))
         .withKeyCopier(IdentityCopier())

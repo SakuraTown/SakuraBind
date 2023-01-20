@@ -62,7 +62,7 @@ object SakuraBind : KotlinPlugin() {
      * 初始化配置与数据库
      */
     @Throws(Exception::class)
-    private fun initConfig() {
+    fun initConfig() {
         GlobalSettings.load(false)
         Lang.load(false)
         ItemSettings.load(false)
@@ -157,6 +157,7 @@ object SakuraBind : KotlinPlugin() {
             addSubNode(SelectCommand)
             addSubNode(DebugCommand)
             addSubNode(OpenLostCommand)
+            addSubNode(ReloadCommand)
         }
         CommandHandler.register(RootCommand)
         CommandHandler.updateCommands()
@@ -176,12 +177,12 @@ object SakuraBind : KotlinPlugin() {
         }
         try {
             ItemSettings.settingCache.close()
+            BlockCache.tempBlockCache.close()
         } catch (e: Exception) {
             e.printStackTrace()
         }
         try {
             CacheManager.save()
-
         } catch (e: Exception) {
             e.printStackTrace()
         }

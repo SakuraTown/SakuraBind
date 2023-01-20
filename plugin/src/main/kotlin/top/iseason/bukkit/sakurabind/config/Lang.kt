@@ -6,6 +6,7 @@ import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
+import top.iseason.bukkittemplate.debug.SimpleLogger
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils
 
 @Key
@@ -101,5 +102,6 @@ object Lang : SimpleYAMLConfig() {
 
     override fun onLoaded(section: ConfigurationSection) {
         MessageUtils.defaultPrefix = prefix
+        SimpleLogger.prefix = prefix
     }
 }

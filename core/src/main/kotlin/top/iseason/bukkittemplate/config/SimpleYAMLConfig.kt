@@ -9,6 +9,7 @@ import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
 import top.iseason.bukkittemplate.debug.debug
 import top.iseason.bukkittemplate.debug.info
+import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.other.submit
 import java.io.File
 import java.io.FileInputStream
@@ -107,8 +108,14 @@ open class SimpleYAMLConfig(
     }
 
     init {
-        if (isAutoUpdate)
-            ConfigWatcher.fromFile(configPath.absoluteFile)
+        if (isAutoUpdate) {
+            try {
+                ConfigWatcher.fromFile(configPath.absoluteFile)
+            } catch (e: Exception) {
+                warn("file watch Service error. Automatic updates will been closed!")
+                isAutoUpdate = false
+            }
+        }
         configs[configPath.absolutePath] = this
     }
 
@@ -240,7 +247,7 @@ open class SimpleYAMLConfig(
                 debug("setting config $configPath error! key:${key.key}")
             }
         }
-        if (!(!incomplete && isReadOnly)) {
+        if (!(!incomplete && isReadOnly) || !configPath.exists()) {
             //保存临时配置，此时注释尚未转换
             temp.save(configPath)
         }
