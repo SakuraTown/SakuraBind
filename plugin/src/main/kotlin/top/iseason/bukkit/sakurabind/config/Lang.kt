@@ -46,9 +46,9 @@ object Lang : SimpleYAMLConfig() {
     var item__deny_click = "&6你不能拿走这个物品!"
     var item__deny_inventory = "&6此物品禁止放入这个容器!"
     var item__deny_throw = "&6该物品禁止投掷!"
-    var item__deny__consume = "&6该物品禁止消耗!"
-    var item__deny__craft = "&6该物品禁止用于合成!"
-    var item__deny__anvil = "&6该物品禁止用于铁砧!"
+    var item__deny_consume = "&6该物品禁止消耗!"
+    var item__deny_craft = "&6该物品禁止用于合成!"
+    var item__deny_anvil = "&6该物品禁止用于铁砧!"
     var item__deny_container_break = "&6该容器含有绑定物品，禁止破坏!"
 
     var auto_bind__onClick = "&a此物品已绑定你的灵魂!"

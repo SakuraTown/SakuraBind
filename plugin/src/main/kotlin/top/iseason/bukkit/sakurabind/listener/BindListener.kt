@@ -275,7 +275,7 @@ object BindListener : Listener {
         for (matrix in inventory.matrix) {
             if (!SakuraBindAPI.checkDenyBySetting(matrix, player, "item-deny.craft")) continue
             inventory.result = null
-            MessageTool.denyMessageCoolDown(player, Lang.item__deny__craft, ItemSettings.getSetting(matrix), matrix)
+            MessageTool.denyMessageCoolDown(player, Lang.item__deny_craft, ItemSettings.getSetting(matrix), matrix)
             break
         }
     }
@@ -290,13 +290,13 @@ object BindListener : Listener {
         val item = event.item
         if (SakuraBindAPI.checkDenyBySetting(item, player, "item-deny.consume")) {
             event.isCancelled = true
-            MessageTool.denyMessageCoolDown(player, Lang.item__deny__consume, ItemSettings.getSetting(item), item)
+            MessageTool.denyMessageCoolDown(player, Lang.item__deny_consume, ItemSettings.getSetting(item), item)
         } else if (SakuraBindAPI.checkDenyBySetting(PlayerTool.getOffHandItem(player), player, "item-deny.consume")) {
             event.isCancelled = true
             val offHandItem = PlayerTool.getOffHandItem(player)!!
             MessageTool.denyMessageCoolDown(
                 player,
-                Lang.item__deny__consume,
+                Lang.item__deny_consume,
                 ItemSettings.getSetting(offHandItem),
                 offHandItem
             )

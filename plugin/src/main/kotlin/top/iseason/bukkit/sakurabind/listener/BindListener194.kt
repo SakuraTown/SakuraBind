@@ -23,10 +23,10 @@ object BindListener194 : Listener {
         val player = event.view.player
         if (SakuraBindAPI.checkDenyBySetting(item1, player, "item-deny.anvil")) {
             event.result = null
-            MessageTool.denyMessageCoolDown(player, Lang.item__deny__anvil, ItemSettings.getSetting(item1!!), item1)
+            MessageTool.denyMessageCoolDown(player, Lang.item__deny_anvil, ItemSettings.getSetting(item1!!), item1)
         } else if (SakuraBindAPI.checkDenyBySetting(item2, player, "item-deny.anvil")) {
             event.result = null
-            MessageTool.denyMessageCoolDown(player, Lang.item__deny__anvil, ItemSettings.getSetting(item2!!), item2)
+            MessageTool.denyMessageCoolDown(player, Lang.item__deny_anvil, ItemSettings.getSetting(item2!!), item2)
         }
     }
 }
