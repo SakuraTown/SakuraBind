@@ -18,7 +18,7 @@ import java.util.*
 object CacheManager {
 
     private var builder: CacheManagerBuilder<PersistentCacheManager>? = null
-    private lateinit var cacheManager: CacheManager
+    private var cacheManager: CacheManager? = null
 
     private val cacheManagerList = mutableListOf<BaseCache>()
 
@@ -33,8 +33,8 @@ object CacheManager {
     }
 
     private val hook = Thread {
-        if (cacheManager.status != Status.UNINITIALIZED) {
-            cacheManager.close()
+        if (cacheManager?.status != Status.UNINITIALIZED) {
+            cacheManager?.close()
             println("[SakuraBind] shutdown hook for encache has finished!")
         }
     }
@@ -45,8 +45,8 @@ object CacheManager {
         while (!pluginDisabled) {
             if (System.currentTimeMillis() - lastTime > timeout) {
                 println("[SakuraBind] detect server has not response over 60000")
-                if (cacheManager.status != Status.UNINITIALIZED) {
-                    cacheManager.close()
+                if (cacheManager?.status != Status.UNINITIALIZED) {
+                    cacheManager?.close()
                     println("[SakuraBind] saved cache data!")
                 }
                 break
@@ -72,7 +72,7 @@ object CacheManager {
         }
         cacheManager = builder!!.build(true)
         for (baseCacheManager in cacheManagerList) {
-            baseCacheManager.init(cacheManager)
+            baseCacheManager.init(cacheManager!!)
         }
         builder = null
         //容灾
@@ -92,7 +92,7 @@ object CacheManager {
         for (baseCache in cacheManagerList) {
             baseCache.onSave()
         }
-        cacheManager.close()
+        cacheManager?.close()
         pluginDisabled = true
         Runtime.getRuntime().removeShutdownHook(hook)
     }

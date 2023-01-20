@@ -58,7 +58,7 @@ open class SimpleYAMLConfig(
     /**
      * 配置对象,修改并不会生效，只能直接修改成员
      */
-    var config: ConfigurationSection = YamlConfiguration.loadConfiguration(configPath)
+    var config: ConfigurationSection = YamlConfiguration()
         private set
 
     /**
@@ -195,19 +195,18 @@ open class SimpleYAMLConfig(
         if (currentTimeMillis - updateTime < 2000L) return false
         updateTime = currentTimeMillis
 //        sleep(300L)
-        val loadConfiguration = config
+        val loadConfiguration = YamlConfiguration.loadConfiguration(configPath)
         val temp = YamlConfiguration()
-        val commentMap = mutableMapOf<String, String>()
+        val commentMap = hashMapOf<String, String>()
         //缺了键补上
         var incomplete = false
         keys.forEach { key ->
             //获取并设置注释
             val keyName = key.key
             val anotherName = if (keyName.endsWith('@')) keyName.substring(0, keyName.length - 1) else "$keyName@"
-            val finalKey = if (loadConfiguration.contains(keyName)) keyName else anotherName
+            val finalKey = if (loadConfiguration.contains(anotherName)) anotherName else keyName
             if (isReadOnly) {
                 var value = loadConfiguration.get(finalKey)
-
                 if (Map::class.java.isAssignableFrom(key.field.type) && value != null) {
                     value = (value as MemorySection).getValues(false)
                 } else if (Set::class.java.isAssignableFrom(key.field.type) && value != null) {
@@ -224,35 +223,38 @@ open class SimpleYAMLConfig(
                     incomplete = true
                 }
             }
-            val comments = key.comments
-            if (comments != null) {
-                for (str in comments) {
-                    val noPathKey = finalKey.substring(finalKey.lastIndexOf('.') + 1)
-                    //注释识别标识
-                    val random = "comment-${UUID.randomUUID()}"
-                    //传入注释内容，待转换
-                    commentMap["$noPathKey-$random"] = "# $str"
-                    //将注释当作键值写入配置文件
-                    temp.set("${finalKey}-$random", "")
-                }
-            }
             //将数据写入临时配置
             try {
                 var value = key.getValue(this)
                 if (value is Set<*>) {
                     value = value.toList()
                 }
-                temp.set(key.key, value)
+                temp.set(finalKey, value)
             } catch (e: Exception) {
-                debug("setting config $configPath error! key:${key.key}")
+                debug("setting config $configPath error! key:${finalKey}")
+            }
+            if (!(!incomplete && isReadOnly)) {
+                val comments = key.comments
+                if (comments != null) {
+                    for (str in comments) {
+                        val noPathKey = finalKey.substring(finalKey.lastIndexOf('.') + 1)
+                        //注释识别标识
+                        val random = "comment-${UUID.randomUUID()}"
+                        //传入注释内容，待转换
+                        commentMap["$noPathKey-$random"] = "# $str"
+                        //将注释当作键值写入配置文件
+                        val s = "${finalKey}-$random"
+                        temp.set(s, "")
+                    }
+                }
             }
         }
         if (!(!incomplete && isReadOnly) || !configPath.exists()) {
             //保存临时配置，此时注释尚未转换
             temp.save(configPath)
+            //转换注释
+            commentFile(configPath, commentMap)
         }
-        //转换注释
-        commentFile(configPath, commentMap)
         config = YamlConfiguration.loadConfiguration(configPath)
         return true
     }
@@ -277,24 +279,35 @@ open class SimpleYAMLConfig(
     private fun commentFile(file: File, commentMap: Map<String, String>) {
         // 创建临时文件
         val commentedFile = File(file.path + ".tmp")
-        val newFile: MutableList<String> = ArrayList()
+        val readLines = file.readLines()
+        val newFile: MutableList<String> = ArrayList(readLines.size)
         //逐行扫描,匹配注释并替换
-        file.readLines().forEach {
+        readLines.forEach {
             var nextLine: String = it
-            for ((key, value) in commentMap) {
-                if (nextLine.contains(key)) {
-                    if (value == "# ") {
-                        nextLine = ""
-                        break
-                    }
-                    nextLine = nextLine.substring(0, nextLine.indexOf(key)) + value
-                    break
+            val trim = nextLine.trim()
+            val key = trim.substring(0, trim.length - 4)
+            val comment = commentMap[key]
+            // 是注释
+            if (comment != null) {
+                nextLine = if (comment.trim() == "#") ""
+                else nextLine.substring(0, nextLine.indexOf(key)) + comment
+                newFile.add(nextLine)
+                return@forEach
+            }
+            // 是旧注释
+            if (key.length > 36) {
+                val uuid = key.substring(key.length - 36, key.length)
+                try {
+                    UUID.fromString(uuid)
+                    return@forEach
+                } catch (_: Exception) {
                 }
             }
             newFile.add(nextLine)
         }
         //写入数据到临时文件
         Files.write(commentedFile.toPath(), newFile)
+//        commentedFile.readLines().forEach { println(it) }
         //复制替换
         copyFileUsingStream(commentedFile, file)
         //删除临时文件

@@ -1,10 +1,7 @@
 package top.iseason.bukkittemplate.config
 
-import org.bukkit.scheduler.BukkitRunnable
-import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.DisableHook
 import java.io.File
-import java.lang.Thread.sleep
 import java.nio.file.FileSystems
 import java.nio.file.Path
 import java.nio.file.StandardWatchEventKinds
@@ -13,7 +10,7 @@ import java.nio.file.WatchService
 /**
  * 配置文件监听器，负责实现配置修改之后的自动重载
  */
-class ConfigWatcher private constructor(private val folder: File) : BukkitRunnable() {
+class ConfigWatcher private constructor(private val folder: File) : Thread() {
     private var isEnable = true
     private var service: WatchService = FileSystems.getDefault().newWatchService()
         .apply { folder.toPath().register(this, StandardWatchEventKinds.ENTRY_MODIFY) }
@@ -53,10 +50,11 @@ class ConfigWatcher private constructor(private val folder: File) : BukkitRunnab
     /**
      * 取消本监听器
      */
-    override fun cancel() {
-        super.cancel()
+    fun cancel() {
+        if (!isEnable) return
         isEnable = false
         service.close()
+        interrupt()
     }
 
     companion object {
@@ -78,13 +76,19 @@ class ConfigWatcher private constructor(private val folder: File) : BukkitRunnab
             if (existWatcher != null) return existWatcher
             val configWatcher = ConfigWatcher(parentFile)
             folders[folder] = configWatcher
-            configWatcher.runTaskAsynchronously(BukkitTemplate.getPlugin())
+            configWatcher.isDaemon = true
+            configWatcher.name = "File Watch for $folder"
+            configWatcher.start()
             return configWatcher
         }
 
         private fun onDisable() {
             for (v in folders.values) {
-                v.cancel()
+                try {
+                    v.cancel()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
             folders.clear()
         }
