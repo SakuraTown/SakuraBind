@@ -1,5 +1,7 @@
 # SakuraBind
 
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=Iseason2000_SakuraBind&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=Iseason2000_SakuraBind)[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Iseason2000_SakuraBind&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=Iseason2000_SakuraBind)[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Iseason2000_SakuraBind&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=Iseason2000_SakuraBind)
+
 ## 插件介绍
 
 > SakuraBind源自自用的绑定插件，功能有限，经过一系列功能定制之后我决定完善其功能并发布出来。
