@@ -14,6 +14,7 @@ import top.iseason.bukkit.sakurabind.dto.PlayerItem
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkittemplate.command.*
 import top.iseason.bukkittemplate.config.dbTransaction
+import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.IOUtils.onItemInput
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toByteArray
@@ -35,11 +36,11 @@ object OpenLostCommand : CommandNode(
         val player = params.next<OfflinePlayer>()
         val page = params.nextOrNull<Int>() ?: 1
         val silent = params.hasParma("-silent")
-//        var inventory = Bukkit.createInventory(player, 36)
         val items = dbTransaction { PlayerItem.find { PlayerItems.uuid eq player.uniqueId }.toList() }
         if (!Config.command_openLost_open_empty && items.isEmpty()) throw ParmaException(Lang.command__openLost_empty)
         val senderPlayer = sender as Player
-        val inventories = mutableListOf(Bukkit.createInventory(senderPlayer, 36))
+        val tempChestTitle = PlaceHolderHook.setPlaceHolder(Config.temp_chest_title.formatBy(player.name), player)
+        val inventories = mutableListOf(Bukkit.createInventory(senderPlayer, 36, tempChestTitle))
         var temp: Array<ItemStack>
         var index: Int
         for (item in items) {
@@ -48,7 +49,7 @@ object OpenLostCommand : CommandNode(
             while (temp.isNotEmpty()) {
                 var inventory = inventories.getOrNull(index)
                 if (inventory == null) {
-                    inventory = Bukkit.createInventory(senderPlayer, 36)
+                    inventory = Bukkit.createInventory(senderPlayer, 36, tempChestTitle)
                     inventories.add(inventory)
                 }
                 temp = inventory.addItem(*temp).values.toTypedArray()

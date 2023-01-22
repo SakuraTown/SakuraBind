@@ -83,6 +83,10 @@ object Config : SimpleYAMLConfig() {
     @Comment("", "允许打开空的暂存箱")
     var command_openLost_open_empty = false
 
+    @Key
+    @Comment("", "暂存箱标题，支持placeholder")
+    var temp_chest_title = "&a{0} 的暂存箱"
+
 
     override fun onLoaded(section: ConfigurationSection) {
         nbtPathUuid = nbt_path_uuid.split('.').toTypedArray()
