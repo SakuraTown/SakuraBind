@@ -12,9 +12,6 @@ import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.other.submit
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.IOException
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import java.nio.file.Files
@@ -80,10 +77,21 @@ open class SimpleYAMLConfig(
                 it.getAnnotationsByType(Comment::class.java).forEach { an ->
                     //注释内容遍历
                     an.value.forEach { value ->
-                        comments.add(value)
+                        if (value.isBlank())
+                            comments.add("")
+                        else if (!value.startsWith("#"))
+                            comments.add("# $value")
+                        else
+                            comments.add(value)
                     }
                 }
-                list.add(ConfigKey(it.name.replace("__", ".").replace('_', '-'), it, comments))
+                list.add(
+                    ConfigKey(
+                        it.name.replace("__", ".").replace('_', '-'),
+                        it,
+                        if (comments.isEmpty()) null else comments
+                    )
+                )
             }
             return@also
         }
@@ -97,7 +105,12 @@ open class SimpleYAMLConfig(
             it.getAnnotationsByType(Comment::class.java).forEach { an ->
                 //注释内容遍历
                 an.value.forEach { value ->
-                    comments.add(value)
+                    if (value.isBlank())
+                        comments.add("")
+                    else if (!value.startsWith("#"))
+                        comments.add("# $value")
+                    else
+                        comments.add(value)
                 }
             }
             it.isAccessible = true
@@ -193,69 +206,93 @@ open class SimpleYAMLConfig(
     private fun update(isReadOnly: Boolean): Boolean {
         val currentTimeMillis = System.currentTimeMillis()
         if (currentTimeMillis - updateTime < 2000L) return false
-        updateTime = currentTimeMillis
-//        sleep(300L)
-        val loadConfiguration = YamlConfiguration.loadConfiguration(configPath)
-        val temp = YamlConfiguration()
-        val commentMap = hashMapOf<String, String>()
+        val newConfig =
+            if (configPath.exists()) YamlConfiguration.loadConfiguration(configPath) else YamlConfiguration()
+        var temp = YamlConfiguration()
+        val commentMap = hashMapOf<String, List<String>>()
         //缺了键补上
         var incomplete = false
-        keys.forEach { key ->
+        var iterator = keys.iterator()
+        while (iterator.hasNext()) {
+            val key = iterator.next()
             //获取并设置注释
-            val keyName = key.key
+            var keyName = key.key
+            //识别@键 SakuraBind start
             val anotherName = if (keyName.endsWith('@')) keyName.substring(0, keyName.length - 1) else "$keyName@"
-            val finalKey = if (loadConfiguration.contains(anotherName)) anotherName else keyName
+            keyName = if (newConfig.contains(anotherName)) anotherName else keyName
+            // SakuraBind end
             if (isReadOnly) {
-                var value = loadConfiguration.get(finalKey)
+                var value = newConfig.get(keyName)
                 if (Map::class.java.isAssignableFrom(key.field.type) && value != null) {
                     value = (value as MemorySection).getValues(false)
                 } else if (Set::class.java.isAssignableFrom(key.field.type) && value != null) {
-                    value = loadConfiguration.getList(finalKey)?.toSet()
+                    value = newConfig.getList(keyName)?.toSet()
                 }
                 if (value != null) {
                     //获取修改的键值
                     try {
                         key.setValue(this, value)
                     } catch (e: Exception) {
-                        debug("Loading config $configPath error! key:${finalKey} value: $value")
+                        debug("Loading config $configPath error! key:${keyName} value: $value")
                     }
                 } else {
-                    incomplete = true
+                    //缺少键，重写入
+                    if (!incomplete) {
+                        incomplete = true
+                        iterator = keys.iterator()
+                        temp = YamlConfiguration()
+                        commentMap.clear()
+                        debug("completing file $configPath ")
+                        continue
+                    }
                 }
             }
             if (!(!incomplete && isReadOnly)) {
+                //处理注释
                 val comments = key.comments
                 if (comments != null) {
-                    for (str in comments) {
-                        val noPathKey = finalKey.substring(finalKey.lastIndexOf('.') + 1)
-                        //注释识别标识
-                        val random = "comment-${UUID.randomUUID()}"
-                        //传入注释内容，待转换
-                        commentMap["$noPathKey-$random"] = "# $str"
-                        //将注释当作键值写入配置文件
-                        val s = "${finalKey}-$random"
-                        temp.set(s, "")
-                    }
+                    val random = UUID.randomUUID().toString()
+                    commentMap[random] = comments
+                    keyName = "${keyName}$random"
                 }
             }
             //将数据写入临时配置
             try {
                 var value = key.getValue(this)
-                if (value is Set<*>) {
+                if (value is Collection<*>) {
                     value = value.toList()
                 }
-                temp.set(finalKey, value)
+                temp.set(keyName, value)
+                if (!temp.contains(keyName)) {
+                    temp.createSection(keyName)
+                }
             } catch (e: Exception) {
-                debug("setting config $configPath error! key:${finalKey}")
+                debug("setting config $configPath error! key:${keyName}")
             }
         }
         if (!(!incomplete && isReadOnly) || !configPath.exists()) {
-            //保存临时配置，此时注释尚未转换
-            temp.save(configPath)
+            //删除重复的键
+            temp.getKeys(true)
+                .sortedByDescending { it.count { c -> c == '.' } }
+                .forEach {
+                    if (it.length <= 36) return@forEach
+                    val takeLast = it.takeLast(36)
+                    if (!commentMap.containsKey(takeLast)) return@forEach
+                    val dropLast = it.dropLast(36)
+                    if (temp.isConfigurationSection(dropLast)) {
+                        temp.set(it, temp.getConfigurationSection(dropLast))
+                        temp.set(dropLast, null)
+                    }
+                }
+
+            val saveToString = temp.saveToString()
+//            println(saveToString)
+            val split = saveToString.split('\n')
             //转换注释
-            commentFile(configPath, commentMap)
+            commentFile(split, commentMap)
         }
         config = YamlConfiguration.loadConfiguration(configPath)
+        updateTime = System.currentTimeMillis()
         return true
     }
 
@@ -276,59 +313,32 @@ open class SimpleYAMLConfig(
     /**
      * 转换配置文件的注释
      */
-    private fun commentFile(file: File, commentMap: Map<String, String>) {
-        // 创建临时文件
-        val commentedFile = File(file.path + ".tmp")
-        val readLines = file.readLines()
-        val newFile: MutableList<String> = ArrayList(readLines.size)
+    private fun commentFile(lines: List<String>, commentMap: Map<String, List<String>>) {
+        val newFile: MutableList<String> = LinkedList()
         //逐行扫描,匹配注释并替换
-        readLines.forEach {
+        lines.forEach {
             var nextLine: String = it
-            val trim = nextLine.trim()
-            val key = trim.substring(0, trim.length - 4)
-            val comment = commentMap[key]
-            // 是注释
-            if (comment != null) {
-                nextLine = if (comment.trim() == "#") ""
-                else nextLine.substring(0, nextLine.indexOf(key)) + comment
-                newFile.add(nextLine)
-                return@forEach
-            }
-            // 是旧注释
-            if (key.length > 36) {
-                val uuid = key.substring(key.length - 36, key.length)
-                try {
-                    UUID.fromString(uuid)
-                    return@forEach
-                } catch (_: Exception) {
+            //判断注释
+            val split = nextLine.split(':', ignoreCase = false, limit = 2)
+            if (split.size == 2 && split[0].length > 36) {
+                val uuid = split[0].takeLast(36)
+                var comments = commentMap[uuid]
+                //是注释
+                if (comments != null) {
+                    val indexOfFirst = split[0].indexOfFirst { char -> !char.isWhitespace() }
+                    if (indexOfFirst > 0) {
+                        val prefix = String(CharArray(indexOfFirst) { ' ' })
+                        comments = comments.map { com -> "$prefix$com" }
+                    }
+                    newFile.addAll(comments)
+//                    return@forEach
+                    nextLine = nextLine.replace(uuid, "")
                 }
             }
             newFile.add(nextLine)
         }
-        //写入数据到临时文件
-        Files.write(commentedFile.toPath(), newFile)
-//        commentedFile.readLines().forEach { println(it) }
-        //复制替换
-        copyFileUsingStream(commentedFile, file)
-        //删除临时文件
-        Files.delete(commentedFile.toPath())
-
-    }
-
-    /**
-     * 复制文件内容
-     */
-    @Throws(IOException::class)
-    private fun copyFileUsingStream(source: File, dest: File) {
-        FileInputStream(source).use { fis ->
-            FileOutputStream(dest).use { fos ->
-                val buffer = ByteArray(1024)
-                var length: Int
-                while (fis.read(buffer).also { length = it } > 0) {
-                    fos.write(buffer, 0, length)
-                }
-            }
-        }
+        //写入数据到文件
+        Files.write(configPath.toPath(), newFile)
     }
 
     private fun getAllFields(): List<Field> {

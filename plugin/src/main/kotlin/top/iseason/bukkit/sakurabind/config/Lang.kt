@@ -64,6 +64,9 @@ object Lang : SimpleYAMLConfig() {
     var entity__deny_interact = "&6你没有这个实体的交互,这个实体属于 &b{0}"
 
     var scanner_item_send_back = "&6检测到你的背包存在别人的物品，已归还物主!"
+
+    @Comment("", "命令消息")
+    var command = ""
     var command__bind_item = "&a已绑定 &b{0} &a手上的物品"
     var command__bind_block = "&a已绑定 &b{0} &a前面的方块"
     var command__bind_entity = "&a已绑定 &b{0} &a前面的实体"
@@ -96,7 +99,6 @@ object Lang : SimpleYAMLConfig() {
     var command__select_timeout = "&6长时间未确认绑定，已退出选择模式!"
     var command__autoBind = "&a已添加 &b{0}"
     var command__debug = "&aDebug模式: &b{0}"
-
     var has_lost_item = "&a你有遗失的物品,请输入 &6'/sakurabind getLost' &a领取"
     var lost_item_send_when_online = "&a你有遗失的物品,请输入 &6'/sakurabind getLost' &a领取"
 
