@@ -3,7 +3,7 @@ package top.iseason.bukkittemplate;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
-import top.iseason.bukkittemplate.dependency.DependencyManager;
+import top.iseason.bukkittemplate.dependency.PluginDependency;
 import top.iseason.bukkittemplate.hook.PlaceHolderHook;
 
 import java.io.File;
@@ -33,7 +33,9 @@ public class BukkitTemplate extends JavaPlugin {
     public BukkitTemplate() {
         plugin = this;
         //防止卡主线程
-        DependencyManager.parsePluginYml();
+        if (!PluginDependency.parsePluginYml()) {
+            throw new RuntimeException("Loading dependencies error! please check your network!");
+        }
         classes = loadClass();
         ktPlugin = findInstance();
 //        CompletableFuture.supplyAsync(() -> {

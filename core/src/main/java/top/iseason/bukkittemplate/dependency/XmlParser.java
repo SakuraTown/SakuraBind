@@ -19,11 +19,12 @@ import java.util.regex.Pattern;
 /**
  * XML文件依赖解析器
  */
-public class XmlDependency {
+public class XmlParser {
     private static final Pattern placeHolder = Pattern.compile("\\$\\{(.*)}");
+
     Document doc;
 
-    public XmlDependency(File file) throws ParserConfigurationException, IOException, SAXException {
+    public XmlParser(File file) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         doc = builder.parse(file);

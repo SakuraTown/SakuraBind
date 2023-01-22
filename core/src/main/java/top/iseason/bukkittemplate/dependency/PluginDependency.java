@@ -10,15 +10,15 @@ import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
-public class DependencyManager {
+public class PluginDependency {
 
     /**
      * 解析下载plugin.yml中的依赖
      */
-    public static void parsePluginYml() {
+    public static boolean parsePluginYml() {
         YamlConfiguration yml = YamlConfiguration.loadConfiguration(new InputStreamReader(requireNonNull(BukkitTemplate.class.getClassLoader().getResourceAsStream("plugin.yml"), "Jar does not contain plugin.yml")));
         ConfigurationSection libConfigs = yml.getConfigurationSection("runtime-libraries");
-        if (libConfigs == null) return;
+        if (libConfigs == null) return true;
         DependencyDownloader dd = new DependencyDownloader();
         String folder = libConfigs.getString("libraries-folder");
         if (folder != null) {
@@ -38,6 +38,6 @@ public class DependencyManager {
             }
         }
         dd.dependencies = libConfigs.getStringList("libraries");
-        dd.setup();
+        return dd.setup();
     }
 }
