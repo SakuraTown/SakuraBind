@@ -9,6 +9,6 @@ object LoginAuthMeListener : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onPlayerLoginEvent(event: LoginEvent) {
-        BindListener.onLogin(event.player)
+        ItemListener.onLogin(event.player)
     }
 }

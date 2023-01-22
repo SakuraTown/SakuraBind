@@ -87,7 +87,7 @@ open class ItemSetting(override val keyPath: String, section: ConfigurationSecti
         if (namePattern != null) {
             val matchName = with(namePattern!!) {
                 meta ?: return@with false
-                if (meta.hasDisplayName()) return@with false
+                if (meta.hasDisplayName() || meta.displayName == null) return@with false
                 this.matcher(meta.displayName).find()
             }
             if (!matchName) return false

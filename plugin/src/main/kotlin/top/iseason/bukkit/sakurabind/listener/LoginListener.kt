@@ -8,6 +8,6 @@ import org.bukkit.event.player.PlayerLoginEvent
 object LoginListener : Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onPlayerLoginEvent(event: PlayerLoginEvent) {
-        BindListener.onLogin(event.player)
+        ItemListener.onLogin(event.player)
     }
 }

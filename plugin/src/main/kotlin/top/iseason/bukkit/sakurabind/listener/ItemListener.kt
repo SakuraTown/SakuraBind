@@ -38,7 +38,7 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.other.submit
 import java.util.*
 
-object BindListener : Listener {
+object ItemListener : Listener {
 
     /**
      * 互动检查
@@ -215,8 +215,16 @@ object BindListener : Listener {
     fun onInventoryClickEvent2(event: InventoryClickEvent) {
         val whoClicked = event.whoClicked
         if (Config.checkByPass(whoClicked)) return
+
         val title = event.view.title
-        val item = event.currentItem ?: event.cursor ?: return
+        var item: ItemStack?
+        if (event.hotbarButton >= 0) {
+            item = whoClicked.inventory.getItem(event.hotbarButton)
+        } else {
+            item = event.currentItem
+            if (item == null || item.checkAir()) item = event.cursor
+        }
+        if (item == null || item.checkAir()) return
         val owner = SakuraBindAPI.getOwner(item) ?: return
         val setting = ItemSettings.getSetting(item)
         if (setting.getBoolean("item-deny.inventory", owner.toString(), whoClicked)) {

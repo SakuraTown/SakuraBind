@@ -95,9 +95,9 @@ object SakuraBind : KotlinPlugin() {
      * 注册监听器
      */
     private fun initListeners() {
-        BindListener.register()
+        ItemListener.register()
         if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_9)) {
-            BindListener194.register()
+            ItemListener194.register()
         }
         if (AuthMeHook.hasHooked) {
             LoginAuthMeListener.register()
