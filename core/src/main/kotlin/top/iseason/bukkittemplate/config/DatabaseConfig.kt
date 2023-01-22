@@ -213,7 +213,7 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 poolName = BukkitTemplate.getPlugin().name
                 try {
                     validationTimeout = data_source__validationTimeout
-                    initializationFailTimeout = initializationFailTimeout
+                    initializationFailTimeout = data_source__initializationFailTimeout
                     keepaliveTime = data_source__keepaliveTime
                 } catch (_: Throwable) {
 
