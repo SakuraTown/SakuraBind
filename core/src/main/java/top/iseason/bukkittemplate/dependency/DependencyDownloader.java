@@ -2,6 +2,7 @@ package top.iseason.bukkittemplate.dependency;
 
 import org.bukkit.Bukkit;
 import org.xml.sax.SAXException;
+import top.iseason.bukkittemplate.BukkitTemplate;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
@@ -235,7 +236,7 @@ public class DependencyDownloader {
     }
 
     public boolean downloadDependency(String dependency) {
-        if (Bukkit.getPluginManager().getPlugin("IseasonOfflineLib") != null) return true;
+        if (BukkitTemplate.isOfflineLibInstalled()) return true;
         return downloadDependency(dependency, true, repositories);
     }
 }

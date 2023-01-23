@@ -27,16 +27,16 @@ public class BukkitTemplate extends JavaPlugin {
     private static KotlinPlugin ktPlugin;
     private static BukkitTemplate plugin = null;
 
+    private static boolean offlineLibInstalled = false;
+
     /**
      * 构造方法，负责下载/添加依赖，并启动插件
      */
     public BukkitTemplate() {
         plugin = this;
-        //防止卡主线程
-        if (Bukkit.getPluginManager().getPlugin("IseasonOfflineLib") == null) {
-            if (!PluginDependency.parsePluginYml()) {
-                throw new RuntimeException("Loading dependencies error! please check your network!");
-            }
+        offlineLibInstalled = Bukkit.getPluginManager().getPlugin("IseasonOfflineLib") != null;
+        if (!offlineLibInstalled && !PluginDependency.parsePluginYml()) {
+            throw new RuntimeException("Loading dependencies error! please check your network!");
         }
         classes = loadClass();
         ktPlugin = findInstance();
@@ -161,4 +161,7 @@ public class BukkitTemplate extends JavaPlugin {
         DisableHook.disableAll();
     }
 
+    public static boolean isOfflineLibInstalled() {
+        return offlineLibInstalled;
+    }
 }
