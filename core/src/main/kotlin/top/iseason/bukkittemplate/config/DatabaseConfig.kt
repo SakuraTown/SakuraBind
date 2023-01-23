@@ -164,13 +164,13 @@ object DatabaseConfig : SimpleYAMLConfig() {
             }
             val config = when (database) {
                 "MySQL" -> HikariConfig(props).apply {
-                    dd.downloadDependency("mysql:mysql-connector-java:8.0.30")
+                    dd.downloadDependency("mysql:mysql-connector-java:8.0.32")
                     jdbcUrl = "jdbc:mysql://$url/$dbName$params"
                     driverClassName = "com.mysql.cj.jdbc.Driver"
                 }
 
                 "MariaDB" -> HikariConfig(props).apply {
-                    dd.downloadDependency("org.mariadb.jdbc:mariadb-java-client:3.1.0")
+                    dd.downloadDependency("org.mariadb.jdbc:mariadb-java-client:3.1.1")
                     jdbcUrl = "jdbc:mariadb://$url/$dbName$params"
                     driverClassName = "org.mariadb.jdbc.Driver"
                 }
@@ -194,13 +194,13 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 }
 
                 "Oracle" -> HikariConfig(props).apply {
-                    dd.downloadDependency("com.oracle.database.jdbc:ojdbc8:21.7.0.0")
+                    dd.downloadDependency("com.oracle.database.jdbc:ojdbc8:21.8.0.0")
                     jdbcUrl = "dbc:oracle:thin:@//$url/$dbName$params"
                     driverClassName = "oracle.jdbc.OracleDriver"
                 }
 
                 "SQLServer" -> HikariConfig(props).apply {
-                    dd.downloadDependency("com.microsoft.sqlserver:mssql-jdbc:11.2.1.jre8")
+                    dd.downloadDependency("com.microsoft.sqlserver:mssql-jdbc:11.2.3.jre8")
                     jdbcUrl = "jdbc:sqlserver://$url/$dbName$params"
                     driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
                 }
@@ -213,7 +213,7 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 poolName = BukkitTemplate.getPlugin().name
                 try {
                     validationTimeout = data_source__validationTimeout
-                    initializationFailTimeout = data_source__initializationFailTimeout
+                    initializationFailTimeout = initializationFailTimeout
                     keepaliveTime = data_source__keepaliveTime
                 } catch (_: Throwable) {
 

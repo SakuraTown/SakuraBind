@@ -26,7 +26,7 @@ public class PluginDependency {
             if (folder.toLowerCase().startsWith("@plugin:")) {
                 parent = new File(BukkitTemplate.getPlugin().getDataFolder(), folder.substring(8));
             } else {
-                parent = new File(".", folder);
+                parent = new File(folder);
             }
             DependencyDownloader.parent = parent;
         }

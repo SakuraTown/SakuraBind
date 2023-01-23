@@ -33,31 +33,13 @@ public class BukkitTemplate extends JavaPlugin {
     public BukkitTemplate() {
         plugin = this;
         //防止卡主线程
-        if (!PluginDependency.parsePluginYml()) {
-            throw new RuntimeException("Loading dependencies error! please check your network!");
+        if (Bukkit.getPluginManager().getPlugin("IseasonOfflineLib") == null) {
+            if (!PluginDependency.parsePluginYml()) {
+                throw new RuntimeException("Loading dependencies error! please check your network!");
+            }
         }
         classes = loadClass();
         ktPlugin = findInstance();
-//        CompletableFuture.supplyAsync(() -> {
-//            classes = loadClass();
-//            return findInstance();
-//        }).exceptionally(throwable -> {
-//            throwable.printStackTrace();
-//            onDisable();
-//            this.getLogger().warning("插件依赖异常，已注销插件!");
-//            return null;
-//        }).thenAcceptAsync(instance -> {
-//            if (instance == null) return;
-//            ktPlugin = instance;
-//            instance.onAsyncLoad();
-//            setEnabled(true);
-//            Bukkit.getScheduler().runTask(this, instance::onEnable);
-//            Bukkit.getScheduler().runTaskAsynchronously(this, instance::onAsyncEnable);
-//        }).exceptionally(throwable -> {
-//            throwable.printStackTrace();
-//            this.getLogger().warning("插件加载异常!");
-//            return null;
-//        });
     }
 
 

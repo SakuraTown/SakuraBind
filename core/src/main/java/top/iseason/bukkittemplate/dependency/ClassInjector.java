@@ -35,7 +35,6 @@ public class ClassInjector {
      * 将URl添加进插件的ClassLoader
      */
     public static void addURL(URL url) {
-
         try {
             addUrlHandle.invoke(ucp, url);
         } catch (Throwable e) {
