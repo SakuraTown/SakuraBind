@@ -18,8 +18,12 @@ object Lang : SimpleYAMLConfig() {
         "支持 & 颜色符号，1.17以上支持16进制颜色代码，如 #66ccff",
         "{0}、{1}、{2}、{3} 等格式为该消息独有的变量占位符",
         "所有消息支持PlaceHolderAPI",
-        "如果消息以 [boardcast] 开头将以广播的形式发送，支持BungeeCord",
-        "如果消息以 [actionbar] 开头将发送ActionBar消息"
+        "以下是一些特殊消息, 大小写不敏感，可以通过 \\n 自由组合",
+        "以 [BoardCast] 开头将以广播的形式发送，支持BungeeCord",
+        "以 [Actionbar] 开头将发送ActionBar消息",
+        "以 [Command] 开头将以消息接收者的身份运行命令",
+        "以 [Console] 开头将以控制台的身份运行命令",
+        "以 [OP-Command] 开头将赋予消息接收者临时op运行命令 (慎用)"
     )
     var readme = ""
 

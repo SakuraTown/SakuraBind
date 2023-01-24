@@ -13,6 +13,7 @@ import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.hook.BungeeCordHook
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
+import top.iseason.bukkittemplate.utils.other.submit
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -83,21 +84,56 @@ object MessageUtils {
     fun CommandSender.sendColorMessage(message: Any?, prefix: String = defaultPrefix) {
         val msg = message?.toString()
         if (msg.isNullOrEmpty()) return
-        msg.split("\\n").forEach { m ->
-            if (m.startsWith("[boardcast]", true)) {
-                broadcast(m.drop(11), prefix)
-                return@forEach
+        msg.split("\\n")
+            .forEach { m ->
+                //普通消息
+                if (!m.startsWith('[')) {
+                    sendMessage(PlaceHolderHook.setPlaceHolder("$prefix$m", this as? OfflinePlayer))
+                    return@forEach
+                }
+                //特殊消息
+                if (m.startsWith("[boardcast]", true)) {
+                    broadcast(m.drop(11), prefix)
+                    return@forEach
+                }
+                if (this is Player && m.startsWith("[actionbar]", true)) {
+                    sendActionBar("$prefix${m.drop(11)}".toColor())
+                    return@forEach
+                }
+                if (m.startsWith("[command]", true) ||
+                    m.startsWith("[console]", true) ||
+                    m.startsWith("[op-command]", true)
+                ) {
+                    val opCommand = m.startsWith("[op-command]", true)
+                    val size = if (opCommand) 12 else 9
+                    val command = PlaceHolderHook.setPlaceHolder(m.drop(size).trim(), this as? OfflinePlayer)
+                    val sender = if (m.startsWith("[console]", true)) Bukkit.getConsoleSender() else this
+                    val tempOP = opCommand && !sender.isOp
+                    if (Bukkit.isPrimaryThread()) {
+                        try {
+                            if (tempOP) sender.isOp = true
+                            Bukkit.dispatchCommand(sender, command)
+                        } catch (e: Throwable) {
+                            e.printStackTrace()
+                        } finally {
+                            if (tempOP) sender.isOp = false
+                        }
+                    } else {
+                        submit {
+                            try {
+                                if (tempOP) sender.isOp = true
+                                Bukkit.dispatchCommand(sender, command)
+                            } catch (e: Throwable) {
+                                e.printStackTrace()
+                            } finally {
+                                if (tempOP) sender.isOp = false
+                            }
+                        }
+                    }
+                    return@forEach
+                }
+
             }
-            if (this is Player && m.startsWith("[actionbar]", true)) {
-                sendActionBar("$prefix${m.drop(11)}".toColor())
-                return@forEach
-            }
-            if (PlaceHolderHook.hasHooked) {
-                sendMessage(PlaceHolderHook.setPlaceHolder("$prefix$m", this as? OfflinePlayer))
-            } else {
-                sendMessage("$prefix$m".toColor())
-            }
-        }
 
     }
 
@@ -126,11 +162,7 @@ object MessageUtils {
      */
     fun broadcast(message: Any?, prefix: String = defaultPrefix) {
         if (message == null || message.toString().isEmpty()) return
-        val finalMessage = if (PlaceHolderHook.hasHooked) {
-            PlaceHolderHook.setPlaceHolder("$prefix$message", null)
-        } else {
-            "$prefix$message".toColor()
-        }
+        val finalMessage = PlaceHolderHook.setPlaceHolder("$prefix$message", null)
         if (BungeeCordHook.bungeeCordEnabled) {
             BungeeCordHook.broadcast(finalMessage)
         } else {
@@ -179,9 +211,11 @@ object MessageUtils {
         return temp
     }
 
-    fun Player.sendActionBar(message: String) {
+    fun Player.sendActionBar(message: String?, prefix: String = defaultPrefix) {
+        if (message == null || message.toString().isEmpty()) return
+        val finalMessage = PlaceHolderHook.setPlaceHolder("$prefix$message", this)
         try {
-            this.spigot().sendMessage(ChatMessageType.ACTION_BAR, *TextComponent.fromLegacyText(message))
+            this.spigot().sendMessage(ChatMessageType.ACTION_BAR, *TextComponent.fromLegacyText(finalMessage))
         } catch (e: Throwable) {
             e.printStackTrace()
             warn("该服务端版本不支持 ActionBar 消息!")
