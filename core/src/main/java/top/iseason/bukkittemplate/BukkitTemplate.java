@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import top.iseason.bukkittemplate.dependency.PluginDependency;
+import top.iseason.bukkittemplate.hook.BungeeCordHook;
 import top.iseason.bukkittemplate.hook.PlaceHolderHook;
 
 import java.io.File;
@@ -143,9 +144,15 @@ public class BukkitTemplate extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        PlaceHolderHook.INSTANCE.checkHooked();
-        ktPlugin.onEnable();
-        CompletableFuture.runAsync(this::onAsyncEnabled);
+        try {
+            PlaceHolderHook.INSTANCE.checkHooked();
+            BungeeCordHook.onEnable();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        } finally {
+            ktPlugin.onEnable();
+            CompletableFuture.runAsync(this::onAsyncEnabled);
+        }
     }
 
     public void onAsyncEnabled() {
@@ -159,9 +166,12 @@ public class BukkitTemplate extends JavaPlugin {
         Bukkit.getScheduler().cancelTasks(this);
         HandlerList.unregisterAll(this);
         DisableHook.disableAll();
+        BungeeCordHook.onDisable();
     }
 
     public static boolean isOfflineLibInstalled() {
         return offlineLibInstalled;
     }
+
+
 }
