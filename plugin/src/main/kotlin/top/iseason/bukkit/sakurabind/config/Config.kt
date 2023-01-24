@@ -39,7 +39,7 @@ object Config : SimpleYAMLConfig() {
         "填入SakuraMail的邮件id，丢失物品将会替换邮件的物品",
         "按顺序替换，不够的将会删除, 多余的将会在另外的邮件里"
     )
-    var mailId = "bind_mail"
+    var mailId = ""
 
     @Key
     @Comment("", "登入时如果暂存箱有物品则提醒，此为延迟，单位tick, 设置小于0以关闭提示")

@@ -14,7 +14,7 @@ object SakuraMailHook : BaseHook("SakuraMail") {
      * 将遗失的物品发送给玩家
      */
     fun sendMail(uuid: UUID, list: List<ItemStack>) {
-        if (!hasHooked) return
+        if (!hasHooked || Config.mailId.isBlank()) return
         val mailYml = SystemMailsYml.getMailYml(Config.mailId) ?: return
         val icon = mailYml.icon.clone()
         val iterator = mailYml.items.keys.iterator()
