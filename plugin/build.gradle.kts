@@ -52,6 +52,7 @@ val output =
         File(jarOutputFile, "${rootProject.name}-${rootProject.version}-obfuscated.jar")
     else
         File(jarOutputFile, "${rootProject.name}-${rootProject.version}.jar")
+
 tasks {
     shadowJar {
         if (isObfuscated) {

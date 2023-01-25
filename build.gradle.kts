@@ -10,7 +10,7 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.0.2")
-        classpath("com.guardsquare:proguard-gradle:7.3.0")
+        classpath("com.guardsquare:proguard-gradle:7.3.1")
     }
 }
 subprojects {
