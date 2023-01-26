@@ -913,5 +913,4 @@ object ItemUtils {
      */
     fun Inventory.canAddItem(itemStacks: Collection<ItemStack>): Int = canAddItem(*itemStacks.toTypedArray())
 
-
 }

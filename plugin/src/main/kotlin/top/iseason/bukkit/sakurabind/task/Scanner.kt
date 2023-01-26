@@ -8,6 +8,7 @@ import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.logger.BindType
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
@@ -51,7 +52,7 @@ class Scanner : BukkitRunnable() {
                     ) {
 //                                info("已绑定物品 ${item.type}")
                         MessageTool.bindMessageCoolDown(it, Lang.auto_bind__onScanner, setting, item)
-                        SakuraBindAPI.bind(item, it)
+                        SakuraBindAPI.bind(item, it, type = BindType.SCANNER_BIND_ITEM)
                     }
                 }
             } catch (_: Exception) {

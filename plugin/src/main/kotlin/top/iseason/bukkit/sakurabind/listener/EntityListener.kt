@@ -13,10 +13,10 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
-import top.iseason.bukkit.sakurabind.cache.EntityCache
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.logger.BindType
 import top.iseason.bukkit.sakurabind.utils.Defenders
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
@@ -82,7 +82,7 @@ object EntityListener : Listener {
         if (pair.second != player.getHeldItem()) return
         val setting = ItemSettings.getSetting(pair.second)
         val entity = event.entity
-        SakuraBindAPI.bindEntity(entity, player, setting)
+        SakuraBindAPI.bindEntity(entity, player, setting, BindType.ITEM_TO_ENTITY_BIND)
         if (SakuraBindAPI.getEntityOwner(entity) == null) {
             return
         }
@@ -99,7 +99,7 @@ object EntityListener : Listener {
             return
         }
         val rightClicked = event.rightClicked
-        val entityOwner = EntityCache.getEntityOwner(rightClicked) ?: return
+        val entityOwner = SakuraBindAPI.getEntityInfo(rightClicked) ?: return
         if (entityOwner.second.getBoolean("entity-deny.interact", entityOwner.first, event.player)) {
             MessageTool.denyMessageCoolDown(
                 event.player,
@@ -121,7 +121,7 @@ object EntityListener : Listener {
         if (player != null && Config.checkByPass(player)) {
             return
         }
-        val entityOwner = EntityCache.getEntityOwner(entity) ?: return
+        val entityOwner = SakuraBindAPI.getEntityInfo(entity) ?: return
         if (player != null) {
             if (entityOwner.second.getBoolean("entity-deny.damage-by-player", entityOwner.first, player)) {
                 event.isCancelled = true
@@ -150,7 +150,7 @@ object EntityListener : Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     fun onEntityDamageEvent(event: EntityDamageEvent) {
         val entity = event.entity
-        val entityOwner = EntityCache.getEntityOwner(entity) ?: return
+        val entityOwner = SakuraBindAPI.getEntityInfo(entity) ?: return
         if (entityOwner.second.getBoolean("entity-deny.damage", null, null)) {
             event.isCancelled = true
         }
@@ -162,15 +162,21 @@ object EntityListener : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onEntityDeathEvent(event: EntityDeathEvent) {
         val entity = event.entity
-        val entityOwner = EntityCache.getEntityOwner(entity) ?: return
+        val entityOwner = SakuraBindAPI.getEntityInfo(entity) ?: return
         //去除绑定
-        SakuraBindAPI.unbindEntity(entity)
+        SakuraBindAPI.unbindEntity(entity, BindType.ENTITY_TO_ITEM_UNBIND)
         if (entityOwner.second.getBoolean("entity-deny.drops", null, null)) {
             event.drops.clear()
             return
         }
         if (entityOwner.second.getBoolean("entity.bind-drops", null, null)) {
-            event.drops.forEach { SakuraBindAPI.bind(it, UUID.fromString(entityOwner.first)) }
+            event.drops.forEach {
+                SakuraBindAPI.bind(
+                    it,
+                    UUID.fromString(entityOwner.first),
+                    type = BindType.ENTITY_TO_ITEM_BIND
+                )
+            }
         }
 
     }
@@ -187,7 +193,7 @@ object EntityListener : Listener {
         // 攻击者
         val entity = event.entity
         if (entity !is LivingEntity) return
-        val entityOwner = EntityCache.getEntityOwner(entity)
+        val entityOwner = SakuraBindAPI.getEntityInfo(entity)
         //不敌对
         if (entityOwner != null && !entityOwner.second.getBoolean("entity.hostility", entityOwner.first, player)) {
             //守护目标

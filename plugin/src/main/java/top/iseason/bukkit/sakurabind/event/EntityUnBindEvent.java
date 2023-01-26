@@ -1,27 +1,29 @@
 package top.iseason.bukkit.sakurabind.event;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.event.HandlerList;
-import org.bukkit.inventory.ItemStack;
 import top.iseason.bukkit.sakurabind.config.BaseSetting;
 import top.iseason.bukkit.sakurabind.logger.BindType;
 
 import java.util.UUID;
 
-public class ItemBindEvent extends BindEvent {
+public class EntityUnBindEvent extends UnBindEvent {
     private static final HandlerList handlers = new HandlerList();
-    /**
-     * 绑定的物品
-     */
-    private final ItemStack item;
 
 
-    public ItemBindEvent(ItemStack item, BaseSetting setting, UUID uuid, BindType bindType) {
-        super(setting, uuid, bindType);
-        this.item = item;
+    private final Entity entity;
+
+    public EntityUnBindEvent(Entity entity, BaseSetting setting, UUID owner, BindType bindType) {
+        super(setting, owner, bindType);
+        this.entity = entity;
     }
 
     public static HandlerList getHandlerList() {
         return handlers;
+    }
+
+    public Entity getEntity() {
+        return entity;
     }
 
     @Override
@@ -29,8 +31,5 @@ public class ItemBindEvent extends BindEvent {
         return handlers;
     }
 
-    public ItemStack getItem() {
-        return item;
-    }
-
 }
+

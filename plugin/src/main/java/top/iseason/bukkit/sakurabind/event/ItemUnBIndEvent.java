@@ -1,22 +1,19 @@
 package top.iseason.bukkit.sakurabind.event;
 
-import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
-import top.iseason.bukkit.sakurabind.SakuraBind;
 import top.iseason.bukkit.sakurabind.config.BaseSetting;
+import top.iseason.bukkit.sakurabind.logger.BindType;
 
-public class ItemUnBIndEvent extends Event implements Cancellable {
+import java.util.UUID;
+
+public class ItemUnBIndEvent extends UnBindEvent {
     private static final HandlerList handlers = new HandlerList();
     private final ItemStack item;
-    private final BaseSetting setting;
-    private boolean isCancelled = false;
 
-    public ItemUnBIndEvent(ItemStack item, BaseSetting setting) {
-        super(Thread.currentThread() != SakuraBind.mainThread);
+    public ItemUnBIndEvent(ItemStack item, UUID uuid, BaseSetting setting, BindType bindType) {
+        super(setting, uuid, bindType);
         this.item = item;
-        this.setting = setting;
     }
 
     public static HandlerList getHandlerList() {
@@ -28,21 +25,8 @@ public class ItemUnBIndEvent extends Event implements Cancellable {
         return handlers;
     }
 
-    @Override
-    public boolean isCancelled() {
-        return isCancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean cancel) {
-        isCancelled = cancel;
-    }
-
     public ItemStack getItem() {
         return item;
     }
 
-    public BaseSetting getSetting() {
-        return setting;
-    }
 }

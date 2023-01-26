@@ -6,6 +6,7 @@ import org.bukkit.permissions.PermissionDefault
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.logger.BindType
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.command.*
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
@@ -36,7 +37,7 @@ object BindToCommand : CommandNode(
             "item" -> {
                 val itemInMainHand = player.getHeldItem()
                 if (itemInMainHand.checkAir()) return@CommandNodeExecutor
-                SakuraBindAPI.bind(itemInMainHand!!, target, showLore)
+                SakuraBindAPI.bind(itemInMainHand!!, target, showLore, BindType.COMMAND_BIND_ITEM)
                 if (!isSilent) {
                     MessageTool.bindMessageCoolDown(
                         player,
@@ -52,7 +53,7 @@ object BindToCommand : CommandNode(
                 if (targetBlock == null || targetBlock.isEmpty) throw ParmaException("目标前方没有一个有效的方块")
                 val settingStr = params.next<String>()
                 val setting = ItemSettings.getSetting(settingStr)
-                SakuraBindAPI.bindBlock(targetBlock, target.uniqueId, setting)
+                SakuraBindAPI.bindBlock(targetBlock, target.uniqueId, setting, BindType.COMMAND_BIND_BLOCK)
                 MessageTool.messageCoolDown(player, Lang.command__bindTo_block.formatBy(target.name))
             }
 
@@ -69,7 +70,7 @@ object BindToCommand : CommandNode(
                     val hitEntity = rayTraceEntities.hitEntity ?: return@submit
                     val settingStr = params.next<String>()
                     val setting = ItemSettings.getSetting(settingStr)
-                    SakuraBindAPI.bindEntity(hitEntity, target, setting)
+                    SakuraBindAPI.bindEntity(hitEntity, target, setting, BindType.COMMAND_BIND_ENTITY)
                     MessageTool.messageCoolDown(player, Lang.command__bindTo_entity.formatBy(target.name))
                 }
             }

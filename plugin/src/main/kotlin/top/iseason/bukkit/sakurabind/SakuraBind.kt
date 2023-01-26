@@ -9,11 +9,13 @@ import top.iseason.bukkit.sakurabind.cache.EntityCache
 import top.iseason.bukkit.sakurabind.cache.FallingBlockCache
 import top.iseason.bukkit.sakurabind.command.*
 import top.iseason.bukkit.sakurabind.config.*
+import top.iseason.bukkit.sakurabind.dto.BindLogs
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkit.sakurabind.hook.AuthMeHook
 import top.iseason.bukkit.sakurabind.hook.PlaceHolderExpansion
 import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
 import top.iseason.bukkit.sakurabind.listener.*
+import top.iseason.bukkit.sakurabind.logger.BindLogger
 import top.iseason.bukkit.sakurabind.task.DelaySender
 import top.iseason.bukkit.sakurabind.task.DropItemList
 import top.iseason.bukkittemplate.KotlinPlugin
@@ -67,8 +69,9 @@ object SakuraBind : KotlinPlugin() {
         Lang.load(false)
         ItemSettings.load(false)
         DatabaseConfig.load(false)
-        DatabaseConfig.initTables(PlayerItems)
+        DatabaseConfig.initTables(PlayerItems, BindLogs)
         Config.load(false)
+        BindLogger
         info("&a配置已初始化!")
     }
 

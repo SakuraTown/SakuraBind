@@ -79,6 +79,7 @@ object Lang : SimpleYAMLConfig() {
     var command__bindTo_item = "&a已将手上的物品绑定至 &b{0}"
     var command__bindTo_block = "&a已将前方的方块绑定至 &b{0}"
     var command__bindTo_entity = "&a已将前方的实体绑定至 &b{0}"
+    var command__unbind_not_bind = "&6该目标并未绑定!"
     var command__unbind_item = "&a已将 &b{0} 手上的物品解绑"
     var command__unbind_block = "&a已将 &b{0} 前方的方块解绑"
     var command__unbind_entity = "&a已将 &b{0} 前方的实体解绑"

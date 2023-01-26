@@ -6,6 +6,7 @@ import org.bukkit.permissions.PermissionDefault
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.logger.BindType
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.command.*
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
@@ -35,7 +36,7 @@ object BindCommand : CommandNode(
             "item" -> {
                 val itemInMainHand = player.getHeldItem()
                 if (itemInMainHand.checkAir()) return@CommandNodeExecutor
-                SakuraBindAPI.bind(itemInMainHand!!, player, showLore)
+                SakuraBindAPI.bind(itemInMainHand!!, player, showLore, BindType.COMMAND_BIND_ITEM)
                 if (!isSilent) {
                     sender.sendColorMessages(Lang.command__bind_item.formatBy(player.name))
                     MessageTool.bindMessageCoolDown(
@@ -52,7 +53,7 @@ object BindCommand : CommandNode(
                 if (targetBlock == null || targetBlock.isEmpty) throw ParmaException("目标前方没有一个有效的方块")
                 val settingStr = params.next<String>()
                 val setting = ItemSettings.getSetting(settingStr)
-                SakuraBindAPI.bindBlock(targetBlock, player.uniqueId, setting)
+                SakuraBindAPI.bindBlock(targetBlock, player.uniqueId, setting, BindType.COMMAND_BIND_BLOCK)
                 if (!isSilent) {
                     sender.sendColorMessages(Lang.command__bind_block.formatBy(player.name))
                     MessageTool.messageCoolDown(player, Lang.block_bind)
@@ -73,7 +74,7 @@ object BindCommand : CommandNode(
                     val hitEntity = rayTraceEntities.hitEntity ?: return@submit
                     val settingStr = params.next<String>()
                     val setting = ItemSettings.getSetting(settingStr)
-                    SakuraBindAPI.bindEntity(hitEntity, player, setting)
+                    SakuraBindAPI.bindEntity(hitEntity, player, setting, BindType.COMMAND_BIND_ENTITY)
                     if (!isSilent) {
                         sender.sendColorMessages(Lang.command__bind_entity.formatBy(player.name))
                         MessageTool.messageCoolDown(player, Lang.entity_bind)

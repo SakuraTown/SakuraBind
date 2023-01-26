@@ -11,6 +11,7 @@ import top.iseason.bukkit.sakurabind.config.DefaultItemSetting
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.listener.SelectListener
+import top.iseason.bukkit.sakurabind.logger.BindType
 import top.iseason.bukkittemplate.command.CommandNode
 import top.iseason.bukkittemplate.command.CommandNodeExecutor
 import top.iseason.bukkittemplate.command.Param
@@ -36,15 +37,20 @@ object SelectCommand : CommandNode(
         if ("bind" == next) {
             when (val any = SelectListener.selecting[player]) {
                 is ItemStack -> {
-                    SakuraBindAPI.bind(any, player)
+                    SakuraBindAPI.bind(any, player, type = BindType.COMMAND_BIND_ITEM)
                 }
 
                 is Block -> {
-                    SakuraBindAPI.bindBlock(any, player.uniqueId, ItemSettings.getSetting(any.drops.first()))
+                    SakuraBindAPI.bindBlock(
+                        any,
+                        player.uniqueId,
+                        ItemSettings.getSetting(any.drops.first()),
+                        BindType.COMMAND_BIND_BLOCK
+                    )
                 }
 
                 is Entity -> {
-                    SakuraBindAPI.bindEntity(any, player, DefaultItemSetting)
+                    SakuraBindAPI.bindEntity(any, player, DefaultItemSetting, BindType.COMMAND_BIND_ENTITY)
                 }
 
                 else -> {

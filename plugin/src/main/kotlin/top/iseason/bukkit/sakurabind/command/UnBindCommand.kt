@@ -5,6 +5,7 @@ import org.bukkit.entity.Player
 import org.bukkit.permissions.PermissionDefault
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.logger.BindType
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.command.*
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
@@ -32,7 +33,8 @@ object UnBindCommand : CommandNode(
             "item" -> {
                 val itemInMainHand = player.getHeldItem()
                 if (itemInMainHand.checkAir()) return@CommandNodeExecutor
-                SakuraBindAPI.unBind(itemInMainHand!!)
+                if (!SakuraBindAPI.hasBind(itemInMainHand!!)) throw ParmaException(Lang.command__unbind_not_bind)
+                SakuraBindAPI.unBind(itemInMainHand, BindType.COMMAND_UNBIND_ITEM)
                 if (!isSilent) {
                     sender.sendColorMessage(Lang.command__unbind_item.formatBy(player.name))
                     MessageTool.messageCoolDown(player, Lang.item_unbind_hand)
@@ -42,7 +44,8 @@ object UnBindCommand : CommandNode(
             "block" -> {
                 val targetBlock = player.getTargetBlock(null, 5)
                 if (targetBlock == null || targetBlock.isEmpty) throw ParmaException("目标前方没有一个有效的方块")
-                SakuraBindAPI.unbindBlock(targetBlock)
+                if (SakuraBindAPI.getBlockOwner(targetBlock) == null) throw ParmaException(Lang.command__unbind_not_bind)
+                SakuraBindAPI.unbindBlock(targetBlock, BindType.COMMAND_UNBIND_BLOCK)
                 if (!isSilent) {
                     sender.sendColorMessage(Lang.command__unbind_block.formatBy(player.name))
                     MessageTool.messageCoolDown(player, Lang.block_unbind)
@@ -60,7 +63,8 @@ object UnBindCommand : CommandNode(
                         player.world.rayTraceEntities(eyeLocation.clone().add(direction), direction, 5.0)
                             ?: return@submit
                     val hitEntity = rayTraceEntities.hitEntity ?: return@submit
-                    SakuraBindAPI.unbindEntity(hitEntity)
+                    if (SakuraBindAPI.getEntityOwner(hitEntity) == null) throw ParmaException(Lang.command__unbind_not_bind)
+                    SakuraBindAPI.unbindEntity(hitEntity, BindType.COMMAND_UNBIND_ENTITY)
                     if (!isSilent) {
                         sender.sendColorMessage(Lang.command__unbind_entity.formatBy(player.name))
                         MessageTool.messageCoolDown(player, Lang.entity_unbind)

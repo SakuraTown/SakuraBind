@@ -4,6 +4,7 @@ import org.bukkit.entity.Player
 import org.bukkit.permissions.PermissionDefault
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.logger.BindType
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.command.CommandNode
 import top.iseason.bukkittemplate.command.CommandNodeExecutor
@@ -25,7 +26,7 @@ object UnBindAllCommand : CommandNode(
         for (itemStack in player.inventory) {
             if (itemStack == null) continue
             if (itemStack.checkAir()) continue
-            SakuraBindAPI.unBind(itemStack)
+            SakuraBindAPI.unBind(itemStack, BindType.COMMAND_UNBIND_ITEM)
         }
         player.updateInventory()
         if (!params.hasParma("-silent"))

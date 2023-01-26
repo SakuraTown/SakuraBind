@@ -54,16 +54,13 @@ object EntityCache : BaseCache {
         }
     }
 
-    fun getEntityOwner(entity: Entity): Pair<String, ItemSetting>? {
+    fun getEntityInfo(entity: Entity): Pair<String, ItemSetting>? {
         //使用布谷鸟过滤防止缓存穿透
-//        val nanoTime = System.nanoTime()
         val uuid = entity.uniqueId.toString()
         if (!entityFilter.contains(uuid)) return null
-//        println("mightContain cost ${System.nanoTime() - nanoTime}")
         val get = entityCache.get(uuid) ?: return null
         val split = get.split(',')
         return split[0] to ItemSettings.getSetting(split.getOrNull(1))
-//        return cache.get(str)
     }
 
     fun addEntity(entity: Entity, owner: String, setting: String?) {

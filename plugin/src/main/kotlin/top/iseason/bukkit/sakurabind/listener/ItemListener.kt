@@ -26,6 +26,7 @@ import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkit.sakurabind.hook.AuthMeHook
+import top.iseason.bukkit.sakurabind.logger.BindType
 import top.iseason.bukkit.sakurabind.task.DropItemList
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkit.sakurabind.utils.PlayerTool
@@ -465,7 +466,7 @@ object ItemListener : Listener {
         if (setting.getBoolean("auto-bind.onClick", null, player)
             || NBTEditor.contains(item, Config.auto_bind_nbt)
         ) {
-            SakuraBindAPI.bind(item, player as Player)
+            SakuraBindAPI.bind(item, player as Player, type = BindType.CLICK_BIND_ITEM)
             MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onClick, setting, item)
         }
     }
@@ -487,7 +488,7 @@ object ItemListener : Listener {
                 Config.auto_bind_nbt
             )
         ) {
-            SakuraBindAPI.bind(item, player)
+            SakuraBindAPI.bind(item, player, type = BindType.PICKUP_BIND_ITEM)
             MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onPickup, setting, item)
         }
     }
@@ -505,7 +506,7 @@ object ItemListener : Listener {
         if (setting.getBoolean("auto-bind.onDrop", null, event.player)
             || NBTEditor.contains(item, Config.auto_bind_nbt)
         ) {
-            SakuraBindAPI.bind(item, event.player)
+            SakuraBindAPI.bind(item, event.player, type = BindType.DROP_BIND_ITEM)
             MessageTool.bindMessageCoolDown(event.player, Lang.auto_bind__onDrop, setting, item)
         }
     }

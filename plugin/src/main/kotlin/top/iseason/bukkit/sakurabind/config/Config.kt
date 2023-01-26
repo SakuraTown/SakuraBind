@@ -13,6 +13,7 @@ import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
 import top.iseason.bukkittemplate.debug.info
+import java.io.File
 import java.util.*
 
 @FilePath("config.yml")
@@ -87,6 +88,50 @@ object Config : SimpleYAMLConfig() {
     @Comment("", "暂存箱标题，支持placeholder")
     var temp_chest_title = "&a{0} 的暂存箱"
 
+    @Key
+    @Comment("", "日志系统，用于记录绑定信息")
+    var logger = ""
+
+    @Key
+    @Comment("", "开关")
+    var logger__enable = false
+
+    @Key
+    @Comment("", "将绑定信息输出到控制台")
+    var logger__console = false
+
+    @Key
+    @Comment("", "将绑定信息输出到数据库中，可跨服")
+    var logger__database = false
+
+    @Key
+    @Comment("", "将绑定信息输出到独立的文件中")
+    var logger__file = true
+
+    @Key
+    @Comment("", "独立的文件的位置,修改需重启生效")
+    var logger__file_path = File(BukkitTemplate.getPlugin().dataFolder, "log${File.separatorChar}bind-log").toString()
+
+    @Key
+    @Comment("", "独立的文件的最大数量，每个1M,修改需重启生效")
+    var logger__file_max_count = 10
+
+
+    @Key
+    @Comment("", "日志显示格式")
+    var logger__format = "物主: {0} 行为: {1} 配置: {2} 信息: {3}"
+
+    @Key
+    @Comment("", "物品显示格式, 替换logger.format的 {4}", "占位符分别为 类型、名字、数量")
+    var logger__format_item = "物品 {0} {1} x {2}"
+
+    @Key
+    @Comment("", "物品显示格式, 替换logger.format的 {4}", "占位符分别为 类型、位置")
+    var logger__format_block = "方块: {0} {1}"
+
+    @Key
+    @Comment("", "物品显示格式, 替换logger.format的 {4}", "占位符分别为 类型、名字、UUID、位置")
+    var logger__format_entity = "实体: {0} {1} {2} {3} {4}"
 
     override fun onLoaded(section: ConfigurationSection) {
         nbtPathUuid = nbt_path_uuid.split('.').toTypedArray()

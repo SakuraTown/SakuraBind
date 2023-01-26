@@ -12,10 +12,9 @@ import top.iseason.bukkit.sakurabind.cache.BlockCache
 import top.iseason.bukkit.sakurabind.cache.EntityCache
 import top.iseason.bukkit.sakurabind.config.*
 import top.iseason.bukkit.sakurabind.config.DefaultItemSetting.stripColor
-import top.iseason.bukkit.sakurabind.event.BlockBindEvent
-import top.iseason.bukkit.sakurabind.event.EntityBindEvent
-import top.iseason.bukkit.sakurabind.event.ItemBindEvent
-import top.iseason.bukkit.sakurabind.event.ItemUnBIndEvent
+import top.iseason.bukkit.sakurabind.event.*
+import top.iseason.bukkit.sakurabind.logger.BindLogger
+import top.iseason.bukkit.sakurabind.logger.BindType
 import top.iseason.bukkit.sakurabind.task.DelaySender
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.applyMeta
@@ -40,7 +39,12 @@ object SakuraBindAPI {
      */
     @JvmStatic
     @JvmOverloads
-    fun bind(item: ItemStack, player: Player, showLore: Boolean = true) = bind(item, player.uniqueId, showLore)
+    fun bind(
+        item: ItemStack,
+        player: Player,
+        showLore: Boolean = true,
+        type: BindType = BindType.API_BIND_ITEM
+    ) = bind(item, player.uniqueId, showLore, type)
 
     /**
      * 将物品绑定UUID
@@ -50,13 +54,19 @@ object SakuraBindAPI {
      */
     @JvmStatic
     @JvmOverloads
-    fun bind(item: ItemStack, uuid: UUID, showLore: Boolean = true) {
-        val itemBindEvent = ItemBindEvent(item, ItemSettings.getSetting(item), uuid)
+    fun bind(item: ItemStack, uuid: UUID, showLore: Boolean = true, type: BindType) {
+        val itemBindEvent = ItemBindEvent(item, ItemSettings.getSetting(item), uuid, type)
         Bukkit.getPluginManager().callEvent(itemBindEvent)
         if (itemBindEvent.isCancelled) return
-        val set = NBTEditor.set(item, itemBindEvent.uuid.toString(), *Config.nbtPathUuid) ?: return
+        val set = NBTEditor.set(item, itemBindEvent.owner.toString(), *Config.nbtPathUuid) ?: return
         item.itemMeta = set.itemMeta
         if (showLore) updateLore(item)
+        BindLogger.log(
+            itemBindEvent.owner,
+            itemBindEvent.bindType,
+            itemBindEvent.setting,
+            item
+        )
     }
 
     /**
@@ -64,16 +74,116 @@ object SakuraBindAPI {
      * @param item 解绑的物品
      */
     @JvmStatic
-    fun unBind(item: ItemStack) {
-        val itemUnBIndEvent = ItemUnBIndEvent(item, ItemSettings.getSetting(item))
+    fun unBind(item: ItemStack, type: BindType = BindType.API_UNBIND_ITEM) {
+        val owner = getOwner(item) ?: return
+        val itemUnBIndEvent = ItemUnBIndEvent(item, owner, ItemSettings.getSetting(item), type)
         Bukkit.getPluginManager().callEvent(itemUnBIndEvent)
         if (itemUnBIndEvent.isCancelled) return
         var set = NBTEditor.set(item, null, *Config.nbtPathUuid)
         set = NBTEditor.set(set, null, *ItemSettings.nbtPath)
-//        println(set.toJson())
         item.itemMeta = set.itemMeta
         updateLore(item)
-//        println(item.toJson())
+        BindLogger.log(
+            itemUnBIndEvent.owner,
+            itemUnBIndEvent.bindType,
+            itemUnBIndEvent.setting,
+            item
+        )
+    }
+
+
+    /**
+     * 绑定方块
+     */
+    @JvmStatic
+    fun bindBlock(block: Block, uuid: UUID, setting: BaseSetting, type: BindType = BindType.API_BIND_BLOCK) {
+        if (!isBlockEnable()) return
+        val blockBindEvent = BlockBindEvent(block, setting, uuid, type)
+        Bukkit.getPluginManager().callEvent(blockBindEvent)
+        if (blockBindEvent.isCancelled) return
+        BlockCache.addBlock(block, blockBindEvent.owner, blockBindEvent.setting.keyPath)
+        BindLogger.log(
+            blockBindEvent.owner,
+            blockBindEvent.bindType,
+            blockBindEvent.setting,
+            block
+        )
+
+    }
+
+    /**
+     * 解绑方块
+     */
+    @JvmStatic
+    fun unbindBlock(block: Block, type: BindType = BindType.API_UNBIND_BLOCK) {
+        if (!isBlockEnable()) return
+        val blockOwner = BlockCache.getBlockInfo(block) ?: return
+        val blockUnBindEvent = BlockUnBindEvent(block, blockOwner.second, UUID.fromString(blockOwner.first), type)
+        Bukkit.getPluginManager().callEvent(blockUnBindEvent)
+        if (blockUnBindEvent.isCancelled) return
+        BlockCache.removeBlock(block)
+        BindLogger.log(
+            blockUnBindEvent.owner,
+            blockUnBindEvent.bindType,
+            blockUnBindEvent.setting,
+            block
+        )
+
+    }
+
+    /**
+     * 绑定实体
+     */
+    @JvmStatic
+    fun bindEntity(entity: Entity, player: Player, setting: BaseSetting, type: BindType = BindType.API_BIND_ENTITY) {
+        if (!isEntityEnable()) return
+        val uniqueId = player.uniqueId
+        val entityBindEvent = EntityBindEvent(entity, setting, uniqueId, type)
+        Bukkit.getPluginManager().callEvent(entityBindEvent)
+        if (entityBindEvent.isCancelled) return
+        val toString = entityBindEvent.owner.toString()
+        EntityCache.addEntity(entity, toString, entityBindEvent.setting.keyPath)
+        // 1.9 才有这个API
+        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_9) &&
+            entity is LivingEntity &&
+            setting.getBoolean("entity-deny.ai", toString, player)
+        ) {
+            entity.setAI(false)
+        }
+        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_10) &&
+            setting.getBoolean("entity-deny.gravity", toString, player)
+        ) {
+            entity.setGravity(false)
+        }
+        val name = setting.getString("entity.bind-name")
+        if (name.isNotEmpty()) {
+            entity.customName = PlaceHolderHook.setPlaceHolder(name.formatBy(player.name, entity.type.name), player)
+        }
+        BindLogger.log(
+            entityBindEvent.owner,
+            entityBindEvent.bindType,
+            entityBindEvent.setting,
+            entity
+        )
+    }
+
+    /**
+     * 解绑实体
+     */
+    @JvmStatic
+    fun unbindEntity(entity: Entity, type: BindType = BindType.API_UNBIND_ENTITY) {
+        if (!isEntityEnable()) return
+        val entityOwner = EntityCache.getEntityInfo(entity) ?: return
+        val entityUnBindEvent = EntityUnBindEvent(entity, entityOwner.second, UUID.fromString(entityOwner.first), type)
+        Bukkit.getPluginManager().callEvent(entityUnBindEvent)
+        if (entityUnBindEvent.isCancelled) return
+        EntityCache.removeEntity(entity)
+        BindLogger.log(
+            entityUnBindEvent.owner,
+            entityUnBindEvent.bindType,
+            entityUnBindEvent.setting,
+            entity
+        )
     }
 
     /**
@@ -212,6 +322,16 @@ object SakuraBindAPI {
     }
 
     /**
+     * 获取物品的设置
+     * @param item
+     * @return 绑定设置
+     */
+    @JvmStatic
+    fun getItemSetting(item: ItemStack): BaseSetting {
+        return ItemSettings.getSetting(item)
+    }
+
+    /**
      * 获取方块的拥有者
      * @param block
      * @return 物主的uuid，没有则返回null
@@ -219,7 +339,18 @@ object SakuraBindAPI {
     @JvmStatic
     fun getBlockOwner(block: Block): String? {
         if (!isBlockEnable()) throw IllegalStateException("方块监听器未启用，请在config.yml中打开 'block-listener'")
-        return BlockCache.getBlockOwner(block)?.first
+        return BlockCache.getBlockInfo(block)?.first
+    }
+
+    /**
+     * 获取方块的信息
+     * @param block
+     * @return 方块绑定信息
+     */
+    @JvmStatic
+    fun getBlockInfo(block: Block): Pair<String, ItemSetting>? {
+        if (!isBlockEnable()) throw IllegalStateException("方块监听器未启用，请在config.yml中打开 'block-listener'")
+        return BlockCache.getBlockInfo(block)
     }
 
     /**
@@ -230,7 +361,18 @@ object SakuraBindAPI {
     @JvmStatic
     fun getBlockSetting(block: Block): BaseSetting? {
         if (!isBlockEnable()) throw IllegalStateException("方块监听器未启用，请在config.yml中打开 'block-listener'")
-        return BlockCache.getBlockOwner(block)?.second
+        return BlockCache.getBlockInfo(block)?.second
+    }
+
+    /**
+     * 获取实体的绑定信息
+     * @param entity
+     * @return 实体的绑定信息
+     */
+    @JvmStatic
+    fun getEntityInfo(entity: Entity): Pair<String, ItemSetting>? {
+        if (!isEntityEnable()) throw IllegalStateException("实体监听器未启用，请在config.yml中打开 'block-listener'")
+        return EntityCache.getEntityInfo(entity)
     }
 
     /**
@@ -241,7 +383,7 @@ object SakuraBindAPI {
     @JvmStatic
     fun getEntityOwner(entity: Entity): String? {
         if (!isEntityEnable()) throw IllegalStateException("实体监听器未启用，请在config.yml中打开 'block-listener'")
-        return EntityCache.getEntityOwner(entity)?.first
+        return EntityCache.getEntityInfo(entity)?.first
     }
 
     /**
@@ -252,7 +394,7 @@ object SakuraBindAPI {
     @JvmStatic
     fun getEntitySetting(entity: Entity): BaseSetting? {
         if (!isEntityEnable()) throw IllegalStateException("实体监听器未启用，请在config.yml中打开 'block-listener'")
-        return EntityCache.getEntityOwner(entity)?.second
+        return EntityCache.getEntityInfo(entity)?.second
     }
 
     /**
@@ -333,65 +475,6 @@ object SakuraBindAPI {
         return emptyList()
     }
 
-    /**
-     * 绑定方块
-     */
-    @JvmStatic
-    fun bindBlock(block: Block, uuid: UUID, setting: BaseSetting) {
-        if (!isBlockEnable()) return
-        val blockBindEvent = BlockBindEvent(block, setting, uuid)
-        Bukkit.getPluginManager().callEvent(blockBindEvent)
-        if (blockBindEvent.isCancelled) return
-        BlockCache.addBlock(block, blockBindEvent.uuid, blockBindEvent.setting.keyPath)
-    }
-
-    /**
-     * 解绑方块
-     */
-    @JvmStatic
-    fun unbindBlock(block: Block) {
-        if (!isBlockEnable()) return
-        BlockCache.removeBlock(block)
-    }
-
-    /**
-     * 绑定实体
-     */
-    @JvmStatic
-    fun bindEntity(entity: Entity, player: Player, setting: BaseSetting) {
-        if (!isEntityEnable()) return
-        val uniqueId = player.uniqueId
-        val entityBindEvent = EntityBindEvent(entity, setting, uniqueId)
-        Bukkit.getPluginManager().callEvent(entityBindEvent)
-        if (entityBindEvent.isCancelled) return
-        val toString = entityBindEvent.uuid.toString()
-        EntityCache.addEntity(entity, toString, entityBindEvent.setting.keyPath)
-        // 1.9 才有这个API
-        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_9) &&
-            entity is LivingEntity &&
-            setting.getBoolean("entity-deny.ai", toString, player)
-        ) {
-            entity.setAI(false)
-        }
-        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_10) &&
-            setting.getBoolean("entity-deny.gravity", toString, player)
-        ) {
-            entity.setGravity(false)
-        }
-        val name = setting.getString("entity.bind-name")
-        if (name.isNotEmpty()) {
-            entity.customName = PlaceHolderHook.setPlaceHolder(name.formatBy(player.name, entity.type.name), player)
-        }
-    }
-
-    /**
-     * 解绑实体
-     */
-    @JvmStatic
-    fun unbindEntity(entity: Entity) {
-        if (!isEntityEnable()) return
-        EntityCache.removeEntity(entity)
-    }
 
     /**
      * 检查物品行为是否被某个设置禁止

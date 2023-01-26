@@ -113,23 +113,23 @@ object BlockCache : BaseCache {
     }
 
     /**
-     * 获取方块绑定的玩家
+     * 获取方块绑定的信息
      */
-    fun getBlockOwner(block: Block): Pair<String, ItemSetting>? {
+    fun getBlockInfo(block: Block): Pair<String, ItemSetting>? {
 //        if (SakuraBindAPI.isTileEntity(block)) {
 //            return SakuraBindAPI.getTileOwner(block)
 //        }
-        return getBlockOwner(blockToString(block))
+        return getBlockInfo(blockToString(block))
     }
 
-    fun getBlockOwner(block: BlockState): Pair<String, ItemSetting>? {
-        return getBlockOwner(CacheManager.locationToString(block.location))
+    fun getBlockInfo(block: BlockState): Pair<String, ItemSetting>? {
+        return getBlockInfo(CacheManager.locationToString(block.location))
     }
 
     /**
      * 获取方块绑定的玩家
      */
-    fun getBlockOwner(str: String): Pair<String, ItemSetting>? {
+    fun getBlockInfo(str: String): Pair<String, ItemSetting>? {
         //使用布谷鸟过滤防止缓存穿透
 //        val nanoTime = System.nanoTime()
         if (!blockFilter.contains(str)) return null
