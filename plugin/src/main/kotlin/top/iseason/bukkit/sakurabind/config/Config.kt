@@ -116,6 +116,24 @@ object Config : SimpleYAMLConfig() {
     @Comment("", "独立的文件的最大数量，每个1M,修改需重启生效")
     var logger__file_max_count = 10
 
+    @Key
+    @Comment("", "日志忽略特定绑定类型")
+    var logger__filter = setOf(
+        "ITEM_TO_BLOCK_BIND",
+        "ITEM_TO_BLOCK_UNBIND",
+        "BLOCK_TO_ENTITY_BIND",
+        "BLOCK_TO_ENTITY_UNBIND",
+        "BLOCK_MOVE_BIND",
+        "BLOCK_MOVE_UNBIND",
+        "ENTITY_TO_ITEM_BIND",
+        "ENTITY_TO_ITEM_UNBIND",
+        "ITEM_TO_ENTITY_BIND",
+        "ITEM_TO_ENTITY_UNBIND",
+        "BLOCK_TO_ITEM_BIND",
+        "BLOCK_TO_ITEM_UNBIND",
+        "ENTITY_TO_BLOCK_BIND",
+        "ENTITY_TO_BLOCK_UNBIND",
+    )
 
     @Key
     @Comment("", "日志显示格式")

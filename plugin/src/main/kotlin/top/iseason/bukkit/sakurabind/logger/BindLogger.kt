@@ -47,7 +47,7 @@ object BindLogger {
     }
 
     fun log(owner: UUID, type: BindType, setting: BaseSetting, item: ItemStack) {
-        if (!Config.logger__enable) return
+        if (!Config.logger__enable || Config.logger__filter.contains(type.name)) return
         val name = if (item.hasItemMeta() && item.itemMeta!!.hasDisplayName()) {
             item.itemMeta!!.displayName
         } else ""
@@ -56,14 +56,14 @@ object BindLogger {
     }
 
     fun log(owner: UUID, type: BindType, setting: BaseSetting, block: Block) {
-        if (!Config.logger__enable) return
+        if (!Config.logger__enable || Config.logger__filter.contains(type.name)) return
         val attach =
             Config.logger__format_block.formatBy(block.type, "${block.world.name},${block.x},${block.y},${block.z}")
         log(owner, type, setting, attach)
     }
 
     fun log(owner: UUID, type: BindType, setting: BaseSetting, entity: Entity) {
-        if (!Config.logger__enable) return
+        if (!Config.logger__enable || Config.logger__filter.contains(type.name)) return
         val attach = Config.logger__format_entity.formatBy(
             entity.type,
             entity.customName ?: "",
@@ -72,7 +72,6 @@ object BindLogger {
         )
         log(owner, type, setting, attach)
     }
-
 
     private fun log(owner: UUID, type: BindType, setting: BaseSetting, attach: String) {
         runAsync {

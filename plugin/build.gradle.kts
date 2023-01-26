@@ -126,6 +126,7 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     else keep("class $groupS.libs.core.BukkitTemplate {}")
     keep("class kotlin.Metadata {}")
     keep(allowObf, "class * implements $groupS.libs.core.KotlinPlugin {*;}")
+    keep(allowObf, "class top.iseason.bukkit.sakurabind.logger.BindType {*;}")
     keepclassmembers("class * extends $groupS.libs.core.config.SimpleYAMLConfig {*;}")
     keepclassmembers("class * implements $groupS.libs.core.ui.container.BaseUI {*;}")
     keepclassmembers(allowObf, "class * implements org.bukkit.event.Listener {*;}")

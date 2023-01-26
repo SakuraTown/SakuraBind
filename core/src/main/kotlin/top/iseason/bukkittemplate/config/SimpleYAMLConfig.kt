@@ -226,7 +226,7 @@ open class SimpleYAMLConfig(
                 if (Map::class.java.isAssignableFrom(key.field.type) && value != null) {
                     value = (value as MemorySection).getValues(false)
                 } else if (Set::class.java.isAssignableFrom(key.field.type) && value != null) {
-                    value = newConfig.getList(keyName)?.toSet()
+                    value = newConfig.getStringList(keyName).toHashSet()
                 }
                 if (value != null) {
                     //获取修改的键值
