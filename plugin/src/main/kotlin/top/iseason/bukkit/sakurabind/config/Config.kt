@@ -117,7 +117,11 @@ object Config : SimpleYAMLConfig() {
     var logger__file_max_count = 10
 
     @Key
-    @Comment("", "日志忽略特定绑定类型")
+    @Comment(
+        "",
+        "日志忽略特定绑定类型, 所有类型如下",
+        "https://github.com/SakuraTown/SakuraBind/blob/master/plugin/src/main/kotlin/top/iseason/bukkit/sakurabind/logger/BindType.kt"
+    )
     var logger__filter = setOf(
         "ITEM_TO_BLOCK_BIND",
         "ITEM_TO_BLOCK_UNBIND",
@@ -140,15 +144,15 @@ object Config : SimpleYAMLConfig() {
     var logger__format = "物主: {0} 行为: {1} 配置: {2} 信息: {3}"
 
     @Key
-    @Comment("", "物品显示格式, 替换logger.format的 {4}", "占位符分别为 类型、名字、数量")
+    @Comment("", "物品显示格式, 替换logger.format的 {3}", "占位符分别为 类型、名字、数量")
     var logger__format_item = "物品 {0} {1} x {2}"
 
     @Key
-    @Comment("", "物品显示格式, 替换logger.format的 {4}", "占位符分别为 类型、位置")
+    @Comment("", "方块显示格式, 替换logger.format的 {3}", "占位符分别为 类型、位置")
     var logger__format_block = "方块: {0} {1}"
 
     @Key
-    @Comment("", "物品显示格式, 替换logger.format的 {4}", "占位符分别为 类型、名字、UUID、位置")
+    @Comment("", "实体显示格式, 替换logger.format的 {3}", "占位符分别为 类型、名字、UUID、位置")
     var logger__format_entity = "实体: {0} {1} {2} {3} {4}"
 
     override fun onLoaded(section: ConfigurationSection) {

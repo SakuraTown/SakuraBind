@@ -32,6 +32,13 @@ class Scanner : BukkitRunnable() {
                     if (item.checkAir()) continue
                     val owner = SakuraBindAPI.getOwner(item)
                     val setting = ItemSettings.getSetting(item, owner != null)
+                    if (owner != null &&
+                        setting.getBoolean("auto-unbind.enable", owner.toString(), it)
+                    ) {
+                        SakuraBindAPI.unBind(item, BindType.SCANNER_UNBIND_ITEM)
+                        MessageTool.messageCoolDown(it, Lang.auto_unbind__onScanner)
+                        continue
+                    }
                     if (setting.getBoolean(
                             "scanner-send-back",
                             owner.toString(),

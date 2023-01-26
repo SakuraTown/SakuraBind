@@ -256,6 +256,26 @@ object GlobalSettings : SimpleYAMLConfig() {
     var auto_bind__onDrop = false
 
     @Key
+    @Comment("", "", "自动解绑设置(前提是已经绑定)")
+    var auto_unbind: MemorySection? = null
+
+    @Key
+    @Comment("", "是否开启自动解绑,如果全局开启将会解绑所有物品，请在setting.yml中配置开启以解绑特殊物品")
+    var auto_unbind__enable = false
+
+    @Key
+    @Comment("", "点击物品时解绑")
+    var auto_unbind__onClick = false
+
+    @Key
+    @Comment("", "捡起物品时解绑")
+    var auto_unbind__onPickup = false
+
+    @Key
+    @Comment("", "丢弃物品时解绑")
+    var auto_unbind__onDrop = false
+
+    @Key
     @Comment("", "扫描玩家时如果发现不属于这个玩家的物品则送回去")
     var scanner_send_back = true
 

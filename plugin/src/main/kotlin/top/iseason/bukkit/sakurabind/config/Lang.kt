@@ -61,6 +61,10 @@ object Lang : SimpleYAMLConfig() {
     var auto_bind__onPickup = "&a你捡到了与你相性最好的物品!"
     var auto_bind__onDrop = "&a你刚刚丢弃的物品将永远属于你!"
     var auto_bind__onScanner = "&a你背包有适合你的物品，已绑定你的灵魂!"
+    var auto_unbind__onClick = "&6此物品已解除绑定!"
+    var auto_unbind__onPickup = "&6此物品已解除绑定!"
+    var auto_unbind__onDrop = "&6此物品已解除绑定!"
+    var auto_unbind__onScanner = "&6你背包的部分物品已解除绑定!"
 
     var block__deny_break = "&6你不能破坏这个方块,这个方块属于 &b{0}"
     var block__deny_place = "&6你不能放置这个方块，此物物品已绑定"

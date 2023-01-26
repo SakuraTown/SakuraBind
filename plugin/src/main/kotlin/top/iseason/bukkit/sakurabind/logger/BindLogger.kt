@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.config.BaseSetting
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.dto.BindLog
+import top.iseason.bukkittemplate.DisableHook
 import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.debug.SimpleLogger
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
@@ -39,11 +40,14 @@ object BindLogger {
             private val format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
             override fun format(record: LogRecord?): String {
                 record ?: return ""
-                return "[${LocalDateTime.now().format(format)}] ${record.message}"
+                return "[${LocalDateTime.now().format(format)}] ${record.message}\n"
             }
         }
         file_logger.useParentHandlers = false
         file_logger.addHandler(fileHandler)
+        DisableHook.addTask {
+            file_logger.handlers.forEach { it.close() }
+        }
     }
 
     fun log(owner: UUID, type: BindType, setting: BaseSetting, item: ItemStack) {
@@ -102,4 +106,5 @@ object BindLogger {
         val z = String.format("%.2f", loc.z)
         return "${loc.world?.name},$x,$y,$z"
     }
+
 }
