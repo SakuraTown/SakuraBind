@@ -84,7 +84,7 @@ object MessageUtils {
     fun CommandSender.sendColorMessage(message: Any?, prefix: String = defaultPrefix) {
         val msg = message?.toString()
         if (msg.isNullOrEmpty()) return
-        msg.split("\\n")
+        msg.split("\\n", "\n")
             .forEach { m ->
                 //普通消息
                 if (!m.startsWith('[')) {
