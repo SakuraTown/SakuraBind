@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.cache.BlockCache
 import top.iseason.bukkit.sakurabind.cache.EntityCache
 import top.iseason.bukkit.sakurabind.config.*
-import top.iseason.bukkit.sakurabind.config.DefaultItemSetting.stripColor
+import top.iseason.bukkit.sakurabind.config.DefaultItemSetting.stripLoreColor
 import top.iseason.bukkit.sakurabind.event.*
 import top.iseason.bukkit.sakurabind.task.DelaySender
 import top.iseason.bukkit.sakurabind.utils.BindType
@@ -225,7 +225,7 @@ object SakuraBindAPI {
                         var match = true
                         var pattern = patternIter.next()
                         val indexOfFirst = lore.indexOfFirst {
-                            pattern.matcher(if (stripColor) it else it.noColor()!!).find()
+                            pattern.matcher(if (stripLoreColor) it else it.noColor()).find()
                         }
                         //lore大小小于正则肯定不匹配
                         if (lore.size < indexOfFirst + lorePatterns.size) {
@@ -235,7 +235,7 @@ object SakuraBindAPI {
                             for (i in (indexOfFirst + 1) until (indexOfFirst + lorePatterns.size)) {
                                 pattern = patternIter.next()
                                 val s = lore[i]
-                                if (!pattern.matcher(if (stripColor) s else s.noColor()!!).find()) {
+                                if (!pattern.matcher(if (stripLoreColor) s else s.noColor()).find()) {
                                     match = false
                                     break
                                 }

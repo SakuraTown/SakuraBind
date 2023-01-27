@@ -1,5 +1,6 @@
 package top.iseason.bukkit.sakurabind.config
 
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.HumanEntity
 import org.bukkit.inventory.ItemStack
 
@@ -14,9 +15,18 @@ interface BaseSetting {
 
     /**
      * 匹配物品
+     * @param item 待匹配的物品
      * @return true 匹配成功, false 匹配失败
      */
     fun match(item: ItemStack): Boolean
+
+    /**
+     * 匹配物品
+     * @param item 待匹配的物品
+     * @param sender 发送调试信息的人
+     * @return true 匹配成功, false 匹配失败
+     */
+    fun match(item: ItemStack, sender: CommandSender?): Boolean
     fun getString(key: String): String
     fun getStringList(key: String): List<String>
     fun getInt(key: String): Int

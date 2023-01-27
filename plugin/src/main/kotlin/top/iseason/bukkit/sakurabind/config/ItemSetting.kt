@@ -3,24 +3,31 @@ package top.iseason.bukkit.sakurabind.config
 import com.google.gson.Gson
 import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Material
+import org.bukkit.command.CommandSender
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.HumanEntity
 import org.bukkit.inventory.ItemStack
+import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.getDisplayName
+import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.noColor
+import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import java.security.InvalidParameterException
 import java.util.regex.Pattern
 
 open class ItemSetting(override val keyPath: String, section: ConfigurationSection) : BaseSetting {
     private var namePattern: Pattern? = null
-    private var nameWithoutColorPattern: Pattern? = null
+
+    //    private var nameWithoutColorPattern: Pattern? = null
     private var materialPattern: Pattern? = null
     private var materials: HashSet<Material>? = null
-    private var ids: List<Pair<Int, Int?>>? = null
-    private var materialIds: List<Pair<Material, Int?>>? = null
+    private var ids: Set<String>? = null
+    private var materialIds: Set<String>? = null
     var lorePatterns: List<Pattern>? = null
         private set
-    var stripColor = false
+    var stripNameColor = false
+        private set
+    var stripLoreColor = false
         private set
     var removeLore = false
         private set
@@ -35,35 +42,28 @@ open class ItemSetting(override val keyPath: String, section: ConfigurationSecti
         }
         setting =
             section.getConfigurationSection("settings") ?: YamlConfiguration()
-        namePattern = matcher.getString("name")?.toPattern()
-        nameWithoutColorPattern = matcher.getString("name-without-color")?.toPattern()
+        var name = matcher.getString("name")
+        if (name == null) {
+            name = matcher.getString("name-without-color")?.also { stripNameColor = true }
+        }
+        if (name != null)
+            namePattern = name.toPattern()
         materialPattern = matcher.getString("material")?.toPattern()
         namePattern = matcher.getString("name")?.toPattern()
         val idList = matcher.getStringList("ids")
-        ids = if (idList.isEmpty()) null else idList.mapNotNull {
-            val split = it.split(':')
-            val mainId = split.getOrNull(0)?.toIntOrNull() ?: return@mapNotNull null
-            val subId = split.getOrNull(1)?.toIntOrNull()
-            mainId to subId
-        }
+        ids = if (idList.isEmpty()) null else idList.toHashSet()
         val mIds = matcher.getStringList("materialIds")
-        materialIds = if (mIds.isEmpty()) null else mIds.mapNotNull {
-            val split = it.split(':')
-            val first = split.getOrNull(0) ?: return@mapNotNull null
-            val m = Material.matchMaterial(first) ?: return@mapNotNull null
-            val subId = split.getOrNull(1)?.toIntOrNull()
-            m to subId
-        }
+        materialIds = if (mIds.isEmpty()) null else mIds.toHashSet()
         val list = if (matcher.contains("lore"))
             matcher.getStringList("lore")
         else if (matcher.contains("lore!")) {
             removeLore = true
             matcher.getStringList("lore!")
         } else if (matcher.contains("lore-without-color")) {
-            stripColor = true
+            stripLoreColor = true
             matcher.getStringList("lore-without-color")
         } else if (matcher.contains("lore-without-color!")) {
-            stripColor = true
+            stripLoreColor = true
             removeLore = true
             matcher.getStringList("lore-without-color!")
         } else emptyList()
@@ -83,57 +83,89 @@ open class ItemSetting(override val keyPath: String, section: ConfigurationSecti
     }
 
     override fun match(item: ItemStack): Boolean {
+        return match(item, null)
+    }
+
+    override fun match(item: ItemStack, sender: CommandSender?): Boolean {
         val meta = item.itemMeta
         if (namePattern != null) {
             val matchName = with(namePattern!!) {
-                meta ?: return@with false
-                if (meta.hasDisplayName() || meta.displayName == null) return@with false
-                this.matcher(meta.displayName).find()
+                var displayName = item.getDisplayName() ?: return@with false
+                if (stripNameColor) displayName = displayName.noColor()
+                this.matcher(displayName).find()
+            }
+            if (sender != null) {
+                val message =
+                    if (!stripNameColor)
+                        Lang.command__test__try_match_name
+                    else
+                        Lang.command__test__try_match_name_strip
+                sender.sendColorMessage(message.formatBy(namePattern, item.getDisplayName(), matchName))
             }
             if (!matchName) return false
         }
-        if (nameWithoutColorPattern != null) {
-            val matchNameNoColor = with(nameWithoutColorPattern!!) {
-                meta ?: return@with false
-                if (meta.hasDisplayName()) return@with false
-                this.matcher(meta.displayName.noColor()!!).find()
-            }
-            if (!matchNameNoColor) return false
-        }
         if (materialPattern != null) {
             val matchMaterial = materialPattern!!.matcher(item.type.toString()).find()
+            sender?.sendColorMessage(
+                Lang.command__test__try_match_material_pattern.formatBy(
+                    materialPattern,
+                    item.type,
+                    matchMaterial
+                )
+            )
             if (!matchMaterial) return false
         }
         if (materials != null) {
             val matchMaterials = materials!!.contains(item.type)
+            sender?.sendColorMessage(
+                Lang.command__test__try_match_material_set.formatBy(
+                    if (materials!!.size > 3) "..." else materials!!.joinToString(),
+                    item.type,
+                    matchMaterials
+                )
+            )
             if (!matchMaterials) return false
         }
         if (ids != null) {
-            val matchId = ids!!.any {
-                val mData = item.data ?: return@any false
-                val id = mData.itemType.id
-                var subId = mData.data.toInt()
-                if (subId < 0) subId += 256
-//                debug("尝试匹配物品id: ${it.first}:${it.second} 实际的id ${id}:${subId}")
-                if (it.second == null)
-                    it.first == id
-                else
-                    it.first == id && subId == it.second
+            var matchId = false
+            var idStr = item.type.id.toString()
+            //主ID识别
+            if (ids!!.contains(idStr)) matchId = true
+            else {
+                //子ID识别
+                val mData = item.data
+                if (mData != null) {
+                    var subId = mData.data.toInt()
+                    if (subId < 0) subId += 256
+                    idStr = "$idStr:$subId"
+                    matchId = ids!!.contains(idStr)
+                }
             }
+            sender?.sendColorMessage(
+                Lang.command__test__try_match_ids.formatBy(
+                    if (ids!!.size > 5) "..." else ids!!.joinToString(),
+                    idStr,
+                    matchId
+                )
+            )
             if (!matchId) return false
         }
         if (materialIds != null) {
-            val matchMaterialIds = materialIds!!.any {
-                val mData = item.data ?: return@any false
-                val material = mData.itemType
+            var str = item.type.toString()
+            val mData = item.data
+            if (mData != null) {
                 var subId = mData.data.toInt()
                 if (subId < 0) subId += 256
-//                println("${it.first}:${it.second} -> ${id}:${mData.data}")
-                if (it.second == null)
-                    it.first == material
-                else
-                    it.first == material && subId == it.second
+                str = "$str:$subId"
             }
+            val matchMaterialIds = materialIds!!.contains(str)
+            sender?.sendColorMessage(
+                Lang.command__test__try_match_material_id.formatBy(
+                    if (materialIds!!.size > 5) "..." else materialIds!!.joinToString(),
+                    str,
+                    matchMaterialIds
+                )
+            )
             if (!matchMaterialIds) return false
         }
         if (lorePatterns != null) {
@@ -141,21 +173,38 @@ open class ItemSetting(override val keyPath: String, section: ConfigurationSecti
                 meta ?: return@with false
                 if (!meta.hasLore()) return@with false
                 val lore = meta.lore ?: return@with false
-//                val loreIter = lore.iterator()
                 val patternIter = this.iterator()
                 var mLore = true
-//                var start = false
                 var pattern = patternIter.next()
+                val lang =
+                    if (stripLoreColor) Lang.command__test__try_match_lore_strip else Lang.command__test__try_match_lore
                 val indexOfFirst = lore.indexOfFirst {
-                    pattern.matcher(if (stripColor) it else it.noColor()!!).find()
+                    pattern.matcher(if (stripLoreColor) it else it.noColor()).find()
                 }
+                sender?.sendColorMessage(
+                    lang.formatBy(
+                        if (indexOfFirst < 0) 0 else indexOfFirst,
+                        pattern,
+                        lore[if (indexOfFirst < 0) 0 else indexOfFirst],
+                        indexOfFirst >= 0
+                    )
+                )
                 if (indexOfFirst < 0 || lore.size < indexOfFirst + this.size) {
                     mLore = false
                 } else {
                     for (i in (indexOfFirst + 1) until (indexOfFirst + this.size)) {
                         pattern = patternIter.next()
                         val s = lore[i]
-                        if (!pattern.matcher(if (stripColor) s else s.noColor()!!).find()) {
+                        val result = pattern.matcher(if (stripLoreColor) s else s.noColor()).find()
+                        sender?.sendColorMessage(
+                            lang.formatBy(
+                                indexOfFirst,
+                                pattern,
+                                s,
+                                result
+                            )
+                        )
+                        if (!result) {
                             mLore = false
                             break
                         }
@@ -167,6 +216,7 @@ open class ItemSetting(override val keyPath: String, section: ConfigurationSecti
         }
         if (nbt != null) {
             val json = Gson().fromJson(NBTEditor.getNBTCompound(item).toJson(), Map::class.java)
+
             val matchNbt = nbt!!.any {
                 val path = it.first
                 val pattern = it.second
@@ -183,12 +233,17 @@ open class ItemSetting(override val keyPath: String, section: ConfigurationSecti
                         temp = v as? Map<Any?, Any?> ?: break
                     }
                 }
-//                println(path.joinToString())
-//                println(pattern)
-//                println(value)
+                sender?.sendColorMessage(
+                    Lang.command__test__try_match_nbt.formatBy(
+                        pattern,
+                        value,
+                        pattern.matcher(value ?: "").find()
+                    )
+                )
                 if (value == null) return@any false
                 pattern.matcher(value).find()
             }
+
             if (!matchNbt) return false
         }
         return true

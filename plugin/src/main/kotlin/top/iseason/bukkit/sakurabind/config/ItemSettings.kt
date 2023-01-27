@@ -145,4 +145,5 @@ object ItemSettings : SimpleYAMLConfig() {
 
     fun getSetting(key: String?) = settings[key ?: "global-setting"] ?: DefaultItemSetting
 
+    fun getSettingKeys() = settings.keys
 }

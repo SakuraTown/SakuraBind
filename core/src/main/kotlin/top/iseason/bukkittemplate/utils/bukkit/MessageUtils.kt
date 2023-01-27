@@ -191,7 +191,7 @@ object MessageUtils {
     /**
      * 去除字符串里的bukkit颜色代码
      */
-    fun String.noColor(): String? = ChatColor.stripColor(this)
+    fun String.noColor(): String = ChatColor.stripColor(this)!!
 
     /**
      * 快速格式化字符串
