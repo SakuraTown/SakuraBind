@@ -1,4 +1,4 @@
-package top.iseason.bukkit.sakurabind.logger
+package top.iseason.bukkit.sakurabind.utils
 
 enum class BindType(var description: String) {
 

@@ -13,9 +13,8 @@ import top.iseason.bukkit.sakurabind.cache.EntityCache
 import top.iseason.bukkit.sakurabind.config.*
 import top.iseason.bukkit.sakurabind.config.DefaultItemSetting.stripColor
 import top.iseason.bukkit.sakurabind.event.*
-import top.iseason.bukkit.sakurabind.logger.BindLogger
-import top.iseason.bukkit.sakurabind.logger.BindType
 import top.iseason.bukkit.sakurabind.task.DelaySender
+import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.applyMeta
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir

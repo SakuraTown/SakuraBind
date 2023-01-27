@@ -3,7 +3,7 @@ package top.iseason.bukkit.sakurabind.event;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.HandlerList;
 import top.iseason.bukkit.sakurabind.config.BaseSetting;
-import top.iseason.bukkit.sakurabind.logger.BindType;
+import top.iseason.bukkit.sakurabind.utils.BindType;
 
 import java.util.UUID;
 

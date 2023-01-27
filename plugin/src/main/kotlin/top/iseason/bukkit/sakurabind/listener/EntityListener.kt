@@ -16,7 +16,7 @@ import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
-import top.iseason.bukkit.sakurabind.logger.BindType
+import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkit.sakurabind.utils.Defenders
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem

@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import top.iseason.bukkit.sakurabind.config.BaseSetting;
-import top.iseason.bukkit.sakurabind.logger.BindType;
+import top.iseason.bukkit.sakurabind.utils.BindType;
 
 import java.util.UUID;
 

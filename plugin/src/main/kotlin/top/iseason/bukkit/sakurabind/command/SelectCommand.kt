@@ -11,7 +11,7 @@ import top.iseason.bukkit.sakurabind.config.DefaultItemSetting
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.listener.SelectListener
-import top.iseason.bukkit.sakurabind.logger.BindType
+import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkittemplate.command.CommandNode
 import top.iseason.bukkittemplate.command.CommandNodeExecutor
 import top.iseason.bukkittemplate.command.Param

@@ -6,7 +6,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockPhysicsEvent
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.cache.BlockCache
-import top.iseason.bukkit.sakurabind.logger.BindType
+import top.iseason.bukkit.sakurabind.utils.BindType
 
 object BlockListener1132 : Listener {
 

@@ -26,8 +26,8 @@ import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkit.sakurabind.hook.AuthMeHook
-import top.iseason.bukkit.sakurabind.logger.BindType
 import top.iseason.bukkit.sakurabind.task.DropItemList
+import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkit.sakurabind.utils.PlayerTool
 import top.iseason.bukkittemplate.config.DatabaseConfig
@@ -460,7 +460,6 @@ object ItemListener : Listener {
         if (Config.checkByPass(player)) return
         val item = event.currentItem ?: return
         if (item.checkAir()) return
-//        runAsync {
         val owner = SakuraBindAPI.getOwner(item)?.toString()
         if (owner != null) {
             val setting = ItemSettings.getSetting(item)
@@ -481,7 +480,6 @@ object ItemListener : Listener {
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onClick, setting, item)
             }
         }
-//        }
     }
 
 
@@ -494,7 +492,6 @@ object ItemListener : Listener {
         if (Config.checkByPass(player)) return
         val item = event.item.itemStack
         if (item.checkAir()) return
-//        runAsync {
         val owner = SakuraBindAPI.getOwner(item)?.toString()
         if (owner != null) {
             val setting = ItemSettings.getSetting(item)
@@ -515,7 +512,6 @@ object ItemListener : Listener {
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onPickup, setting, item)
             }
         }
-//        }
 
     }
 
@@ -527,7 +523,6 @@ object ItemListener : Listener {
         val player = event.player
         if (Config.checkByPass(player)) return
         val item = event.itemDrop.itemStack
-//        runAsync {
         val owner = SakuraBindAPI.getOwner(item)?.toString()
         if (owner != null) {
             val setting = ItemSettings.getSetting(item)
@@ -548,7 +543,6 @@ object ItemListener : Listener {
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onDrop, setting, item)
             }
         }
-//        }
     }
 
     /**
