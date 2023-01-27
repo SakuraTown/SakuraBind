@@ -10,7 +10,6 @@ import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.command.*
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
-import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessages
 import top.iseason.bukkittemplate.utils.other.submit
@@ -34,9 +33,8 @@ object BindCommand : CommandNode(
         val isSilent = params.hasParma("-silent")
         when (type.lowercase()) {
             "item" -> {
-                val itemInMainHand = player.getHeldItem()
-                if (itemInMainHand.checkAir()) return@CommandNodeExecutor
-                SakuraBindAPI.bind(itemInMainHand!!, player, showLore, BindType.COMMAND_BIND_ITEM)
+                val itemInMainHand = player.getHeldItem() ?: return@CommandNodeExecutor
+                SakuraBindAPI.bind(itemInMainHand, player, showLore, BindType.COMMAND_BIND_ITEM)
                 if (!isSilent) {
                     sender.sendColorMessages(Lang.command__bind_item.formatBy(player.name))
                     MessageTool.bindMessageCoolDown(
@@ -81,6 +79,7 @@ object BindCommand : CommandNode(
                     }
                 }
             }
+
             else -> throw ParmaException("未知的绑定类型!")
         }
     }

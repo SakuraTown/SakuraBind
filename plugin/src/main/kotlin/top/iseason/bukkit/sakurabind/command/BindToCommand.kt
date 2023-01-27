@@ -10,7 +10,6 @@ import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.command.*
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
-import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.other.submit
 
@@ -35,9 +34,8 @@ object BindToCommand : CommandNode(
         val isSilent = params.hasParma("-silent")
         when (type.lowercase()) {
             "item" -> {
-                val itemInMainHand = player.getHeldItem()
-                if (itemInMainHand.checkAir()) return@CommandNodeExecutor
-                SakuraBindAPI.bind(itemInMainHand!!, target, showLore, BindType.COMMAND_BIND_ITEM)
+                val itemInMainHand = player.getHeldItem() ?: throw ParmaException("请拿着物品")
+                SakuraBindAPI.bind(itemInMainHand, target, showLore, BindType.COMMAND_BIND_ITEM)
                 if (!isSilent) {
                     MessageTool.bindMessageCoolDown(
                         player,

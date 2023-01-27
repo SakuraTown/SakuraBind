@@ -109,33 +109,29 @@ object ItemListener : Listener {
         //检查展示框
         if (isItemFrame) {
             if (SakuraBindAPI.checkDenyBySetting(mainHand, player, "item-deny.item-frame")
-                || (mainHand.checkAir() && SakuraBindAPI.checkDenyBySetting(offHand, player, "item-deny.item-frame"))
+                || (mainHand == null && SakuraBindAPI.checkDenyBySetting(offHand, player, "item-deny.item-frame"))
             ) {
-                val item = if (mainHand.checkAir()) {
-                    offHand!!
-                } else mainHand
+                val item = mainHand ?: offHand!!
                 event.isCancelled = true
                 MessageTool.denyMessageCoolDown(
                     player, Lang.item__deny_itemFrame,
-                    ItemSettings.getSetting(item!!),
+                    ItemSettings.getSetting(item),
                     item
                 )
             }
         } else {
             if (SakuraBindAPI.checkDenyBySetting(mainHand, player, "item-deny.interact-entity")
-                || (mainHand.checkAir() && SakuraBindAPI.checkDenyBySetting(
+                || (mainHand == null && SakuraBindAPI.checkDenyBySetting(
                     offHand,
                     player,
                     "item-deny.interact-entity"
                 ))
             ) {
-                val item = if (mainHand.checkAir()) {
-                    offHand!!
-                } else mainHand
+                val item = mainHand ?: offHand!!
                 event.isCancelled = true
                 MessageTool.denyMessageCoolDown(
                     player, Lang.item__deny_entity_interact,
-                    ItemSettings.getSetting(item!!),
+                    ItemSettings.getSetting(item),
                     item
                 )
             }
@@ -321,24 +317,27 @@ object ItemListener : Listener {
         val entity = event.entity
         val player = entity.shooter as? Player ?: return
         if (Config.checkByPass(player)) return
-        val heldItem = player.getHeldItem()
+        val heldItem = player.getHeldItem() ?: return
         if (SakuraBindAPI.checkDenyBySetting(heldItem, player, "item-deny.throw")) {
             event.isCancelled = true
             MessageTool.denyMessageCoolDown(
                 player,
                 Lang.item__deny_throw,
-                ItemSettings.getSetting(heldItem!!),
+                ItemSettings.getSetting(heldItem),
                 heldItem
             )
-        } else if (SakuraBindAPI.checkDenyBySetting(PlayerTool.getOffHandItem(player), player, "item-deny.throw")) {
-            event.isCancelled = true
-            val offHandItem = PlayerTool.getOffHandItem(player)!!
-            MessageTool.denyMessageCoolDown(
-                player,
-                Lang.item__deny_throw,
-                ItemSettings.getSetting(offHandItem),
-                offHandItem
-            )
+        } else {
+            val offHandItem = PlayerTool.getOffHandItem(player)
+            if (offHandItem.checkAir()) return
+            if (SakuraBindAPI.checkDenyBySetting(offHandItem, player, "item-deny.throw")) {
+                event.isCancelled = true
+                MessageTool.denyMessageCoolDown(
+                    player,
+                    Lang.item__deny_throw,
+                    ItemSettings.getSetting(offHandItem!!),
+                    offHandItem
+                )
+            }
         }
     }
 

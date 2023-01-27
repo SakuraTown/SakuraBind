@@ -71,17 +71,17 @@ object BlockListener : Listener {
 //        }
         val heldItem = player.getHeldItem()
         var owner: UUID? = null
-        if (!heldItem.checkAir()) {
+        if (heldItem != null) {
             if (!Config.checkByPass(player) && SakuraBindAPI.checkDenyBySetting(heldItem, player, "block-deny.place")) {
                 MessageTool.denyMessageCoolDown(
                     event.player, Lang.block__deny_place,
-                    ItemSettings.getSetting(heldItem!!),
+                    ItemSettings.getSetting(heldItem),
                     heldItem
                 )
                 event.isCancelled = true
                 return
             } else {
-                owner = SakuraBindAPI.getOwner(heldItem!!)
+                owner = SakuraBindAPI.getOwner(heldItem)
             }
         } else {
             val offHandItem = PlayerTool.getOffHandItem(player)
@@ -120,18 +120,18 @@ object BlockListener : Listener {
         if (Config.checkByPass(player)) return
         val heldItem = player.getHeldItem()
         var owner: UUID? = null
-        if (!heldItem.checkAir()) {
+        if (heldItem != null) {
             if (!Config.checkByPass(player) && SakuraBindAPI.checkDenyBySetting(heldItem, player, "block-deny.place")) {
                 MessageTool.denyMessageCoolDown(
                     event.player,
                     Lang.block__deny_place,
-                    ItemSettings.getSetting(heldItem!!),
+                    ItemSettings.getSetting(heldItem),
                     heldItem
                 )
                 event.isCancelled = true
                 return
             } else {
-                owner = SakuraBindAPI.getOwner(heldItem!!)
+                owner = SakuraBindAPI.getOwner(heldItem)
             }
         } else {
             val offHandItem = PlayerTool.getOffHandItem(player)

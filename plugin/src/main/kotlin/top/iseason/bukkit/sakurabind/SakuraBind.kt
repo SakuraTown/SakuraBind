@@ -160,6 +160,7 @@ object SakuraBind : KotlinPlugin() {
             addSubNode(DebugCommand)
             addSubNode(OpenLostCommand)
             addSubNode(ReloadCommand)
+            addSubNode(MatchCommand)
         }
         CommandHandler.register(RootCommand)
         CommandHandler.updateCommands()

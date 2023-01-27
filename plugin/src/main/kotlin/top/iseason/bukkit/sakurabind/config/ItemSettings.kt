@@ -133,6 +133,16 @@ object ItemSettings : SimpleYAMLConfig() {
         return setting
     }
 
+
+    fun getMatchedSetting(item: ItemStack): BaseSetting {
+        for ((_, s) in settings) {
+            if (s.match(item)) {
+                return s
+            }
+        }
+        return DefaultItemSetting
+    }
+
     fun getSetting(key: String?) = settings[key ?: "global-setting"] ?: DefaultItemSetting
 
 }
