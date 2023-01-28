@@ -600,6 +600,10 @@ object ItemListener : Listener {
      */
     fun onLogin(player: Player) {
         if (!DatabaseConfig.isConnected || Config.login_message_delay < 0) return
+        if (EasyCoolDown.check("${player.uniqueId}-login_message", 60000)
+        ) {
+            return
+        }
         submit(async = true, delay = Config.login_message_delay) {
             if (!player.isOnline) return@submit
             val hasItem = dbTransaction {
@@ -618,10 +622,9 @@ object ItemListener : Listener {
     fun onPlayerQuit(event: PlayerQuitEvent) {
         if (!Config.temp_chest_purge_on_quit) return
         val uuid = event.player.uniqueId
-        val id = uuid.toString() + "purge-database"
         // 每人2小时冷却 5分钟只能一个
         if (EasyCoolDown.check("purge-database", 300000) ||
-            EasyCoolDown.check(id, 7200000)
+            EasyCoolDown.check("$uuid-purge-database", 7200000)
         ) {
             return
         }
