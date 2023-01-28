@@ -2,6 +2,7 @@ package top.iseason.bukkit.sakurabind.listener
 
 import fr.xephi.authme.api.v3.AuthMeApi
 import io.github.bananapuncher714.nbteditor.NBTEditor
+import org.bukkit.Bukkit
 import org.bukkit.entity.Item
 import org.bukkit.entity.ItemFrame
 import org.bukkit.entity.Player
@@ -19,11 +20,15 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.*
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.dto.PlayerItem
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkit.sakurabind.hook.AuthMeHook
 import top.iseason.bukkit.sakurabind.task.DropItemList
@@ -34,8 +39,11 @@ import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
+import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toByteArray
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
+import top.iseason.bukkittemplate.utils.other.EasyCoolDown
+import top.iseason.bukkittemplate.utils.other.runAsync
 import top.iseason.bukkittemplate.utils.other.submit
 import java.util.*
 
@@ -604,6 +612,53 @@ object ItemListener : Listener {
             if (!hasItem) return@submit
             player.sendColorMessage(Lang.has_lost_item)
         }
+    }
+
+    @EventHandler
+    fun onPlayerQuit(event: PlayerQuitEvent) {
+        if (!Config.temp_chest_purge_on_quit) return
+        val uuid = event.player.uniqueId
+        val id = uuid.toString() + "purge-database"
+        // 每人2小时冷却 5分钟只能一个
+        if (EasyCoolDown.check("purge-database", 300000) ||
+            EasyCoolDown.check(id, 7200000)
+        ) {
+            return
+        }
+        runAsync {
+            val items = dbTransaction {
+                PlayerItem.find { PlayerItems.uuid eq uuid }.toList()
+            }
+            if (items.size <= 1) return@runAsync
+            val inventories = mutableListOf(Bukkit.createInventory(null, 36))
+            var temp: Array<ItemStack>
+            var index: Int
+            for (item in items) {
+                temp = item.getItemStacks().toTypedArray()
+                index = 0
+                while (temp.isNotEmpty()) {
+                    var inventory = inventories.getOrNull(index)
+                    if (inventory == null) {
+                        inventory = Bukkit.createInventory(null, 36)
+                        inventories.add(inventory)
+                    }
+                    temp = inventory.addItem(*temp).values.toTypedArray()
+                    index++
+                }
+            }
+            dbTransaction {
+                PlayerItems.deleteWhere { PlayerItems.uuid eq uuid }
+                for (inventory in inventories) {
+                    val itemStacks = inventory.filter { !it.checkAir() }
+                    if (itemStacks.isEmpty()) continue
+                    PlayerItem.new {
+                        this.uuid = uuid
+                        this.item = ExposedBlob(itemStacks.toByteArray())
+                    }
+                }
+            }
+        }
+
     }
 
 

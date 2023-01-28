@@ -1,6 +1,7 @@
 package top.iseason.bukkit.sakurabind.config
 
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.configuration.MemorySection
 import org.bukkit.entity.HumanEntity
 import org.bukkit.scheduler.BukkitTask
 import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
@@ -87,6 +88,33 @@ object Config : SimpleYAMLConfig() {
     @Comment("", "暂存箱标题，支持placeholder")
     var temp_chest_title = "&a{0} 的暂存箱"
 
+    @Key
+    @Comment(
+        "",
+        "当玩家退出登陆时优化暂存箱数据库(整理分散的物品数据)",
+        "全服5分钟内只能优化一次 每玩家2小时冷却"
+    )
+    var temp_chest_purge_on_quit = false
+
+    @Key
+    @Comment("", "当主线程卡顿时可能会导致放下的方块丢失绑定, 重启生效")
+    var thread_dump_protection: MemorySection? = null
+
+    @Key
+    @Comment("", "是否启用")
+    var thread_dump_protection__enable = false
+
+    @Key
+    @Comment("", "主线程卡顿判断时间，单位秒")
+    var thread_dump_protection__timeout = 50
+
+    @Key
+    @Comment("", "当主线程卡顿时, 注销插件")
+    var thread_dump_protection__disable_plugin = false
+
+    @Key
+    @Comment("", "当主线程卡顿时, 关闭服务器")
+    var thread_dump_protection__stop_server = false
 
 
     override fun onLoaded(section: ConfigurationSection) {
@@ -110,4 +138,5 @@ object Config : SimpleYAMLConfig() {
         if (player.isOp || player.hasPermission("sakurabind.bypass.all")) return true
         return false
     }
+
 }

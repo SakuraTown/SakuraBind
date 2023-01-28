@@ -14,7 +14,7 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils
 object Lang : SimpleYAMLConfig() {
     @Comment(
         "",
-        "消息留空将不会显示，使用 '\\n' 可以换行",
+        "消息留空将不会显示，使用 '\\n' 或换行符 可以换行",
         "支持 & 颜色符号，1.17以上支持16进制颜色代码，如 #66ccff",
         "{0}、{1}、{2}、{3} 等格式为该消息独有的变量占位符",
         "所有消息支持PlaceHolderAPI",
@@ -113,7 +113,7 @@ object Lang : SimpleYAMLConfig() {
     var command__test__match = "&a匹配物品 &b{0} &a次, 设置为: &6{1} &7耗时: {2} 毫秒 / {3} 纳秒"
     var command__test__try_match_not_found = "&6该设置不存在"
     var command__test__try_match_header =
-        "&4<--------使用设置 &6{0} &4匹配物品-------->\\n&6  - [选项]: {模板} -> {物品内容} = {对比结果}"
+        "&4<--------使用设置 &6{0} &4匹配物品-------->\n&6  - [选项]: {模板} -> {物品内容} = {对比结果}"
     var command__test__try_match_name = "&a  - 名字: &f{0} -> &7{1} = &6{2}"
     var command__test__try_match_name_strip = "&a  - 名字(去色): &f{0} -> &7{1} = &6{2}"
     var command__test__try_match_lore = "&a  - Lore[{0}]: &f{1} -> &7{2} = &6{3}"

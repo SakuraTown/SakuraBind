@@ -8,6 +8,7 @@ import org.ehcache.CacheManager
 import org.ehcache.PersistentCacheManager
 import org.ehcache.Status
 import org.ehcache.config.builders.*
+import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.utils.other.submit
 import java.io.File
@@ -32,28 +33,13 @@ object CacheManager {
             .builder(CacheManagerBuilder.newCacheManagerBuilder())
     }
 
-    private val hook = Thread {
-        if (cacheManager?.status != Status.UNINITIALIZED) {
-            cacheManager?.close()
-            println("[SakuraBind] shutdown hook for encache has finished!")
-        }
-    }
     private var lastTime = System.currentTimeMillis()
-    private val timeout = Bukkit.spigot().config.getInt("settings.timeout-time", 60) * 1000
+    private val timeout = Config.thread_dump_protection__timeout * 1000
     private var pluginDisabled = false
-    private val watchDog = Thread {
-        while (!pluginDisabled) {
-            if (System.currentTimeMillis() - lastTime > timeout) {
-                println("[SakuraBind] detect server has not response over 60000")
-                if (cacheManager?.status != Status.UNINITIALIZED) {
-                    cacheManager?.close()
-                    println("[SakuraBind] saved cache data!")
-                }
-                break
-            }
-            sleep(3000)
-        }
-    }
+
+    private var hook: Thread? = null
+
+    private var watchDog: Thread? = null
 
     /**
      * 添加注册缓存管理器
@@ -75,13 +61,39 @@ object CacheManager {
             baseCacheManager.init(cacheManager!!)
         }
         builder = null
+        if (!Config.thread_dump_protection__enable) return
+        hook = Thread {
+            if (cacheManager?.status != Status.UNINITIALIZED) {
+                cacheManager?.close()
+                println("[SakuraBind] shutdown hook for encache has finished!")
+            }
+        }
+        watchDog = Thread {
+            while (!pluginDisabled) {
+                if (System.currentTimeMillis() - lastTime > timeout) {
+                    println("[SakuraBind] detect server has not response over $timeout seconds")
+                    if (cacheManager?.status != Status.UNINITIALIZED) {
+                        cacheManager?.close()
+                        println("[SakuraBind] saved cache data!")
+                    }
+                    if (Config.thread_dump_protection__disable_plugin) {
+                        Bukkit.getPluginManager().disablePlugin(BukkitTemplate.getPlugin())
+                    }
+                    if (Config.thread_dump_protection__stop_server) {
+                        Bukkit.getServer().shutdown()
+                    }
+                    break
+                }
+                sleep(3000)
+            }
+        }
         //容灾
         Runtime.getRuntime().addShutdownHook(hook)
         submit(period = 20) {
             lastTime = System.currentTimeMillis()
         }
-        watchDog.isDaemon = true
-        watchDog.start()
+        watchDog!!.isDaemon = true
+        watchDog!!.start()
     }
 
     fun locationToString(location: Location): String =
@@ -94,7 +106,13 @@ object CacheManager {
         }
         cacheManager?.close()
         pluginDisabled = true
-        Runtime.getRuntime().removeShutdownHook(hook)
+        try {
+            watchDog?.interrupt()
+            if (hook != null)
+                Runtime.getRuntime().removeShutdownHook(hook)
+        } catch (_: Throwable) {
+        }
+
     }
 
 }
