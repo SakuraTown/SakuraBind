@@ -5,11 +5,12 @@ plugins {
 
 buildscript {
     repositories {
+
         mavenCentral()
-        google()
+//        google()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.0.2")
+//        classpath("com.android.tools.build:gradle:7.3.1")
         classpath("com.guardsquare:proguard-gradle:7.3.1")
     }
 }
@@ -76,5 +77,5 @@ repositories {
 }
 dependencies {
     //基础库
-    compileOnly(kotlin("stdlib-jdk8"))
+    compileOnly(kotlin("stdlib"))
 }
