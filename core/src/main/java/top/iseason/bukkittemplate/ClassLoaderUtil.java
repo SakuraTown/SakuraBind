@@ -15,6 +15,7 @@ public class ClassLoaderUtil {
     private static MethodHandle addUrlHandle;
     private static Object ucp;
     private static LinkedList<URL> urls = new LinkedList<>();
+    private static LinkedList<URL> subUrls = new LinkedList<>();
     private static boolean isInit = false;
     private static Unsafe unsafe;
 
@@ -23,19 +24,26 @@ public class ClassLoaderUtil {
      */
     public static void enable() {
         //通过反射获取ClassLoader addUrl 方法，因为涉及java17 无奈使用UnSafe方法
+        isInit = true;
         try {
             Field f = Unsafe.class.getDeclaredField("theUnsafe");
             f.setAccessible(true);
             unsafe = (Unsafe) f.get(null);
+            //将子依赖填入插件classloader
+            setUcpTarget(BukkitTemplate.class.getClassLoader());
+            for (URL subUrl : subUrls) {
+                addURL(subUrl);
+            }
             setUcpTarget(BukkitTemplate.isolatedClassLoader);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        isInit = true;
+        clear();
     }
 
     public static void clear() {
         urls = null;
+        subUrls = null;
     }
 
     private static void setUcpTarget(ClassLoader classLoader) throws NoSuchFieldException, NoSuchMethodException, IllegalAccessException {
@@ -55,6 +63,18 @@ public class ClassLoaderUtil {
                 urls.add(url);
             else
                 addUrlHandle.invoke(ucp, url);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 将URl添加进插件的ClassLoader
+     */
+    public static synchronized void addSubURL(URL url) {
+        try {
+            if (!isInit)
+                subUrls.add(url);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }

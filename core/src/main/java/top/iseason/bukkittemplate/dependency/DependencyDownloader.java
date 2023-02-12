@@ -59,7 +59,9 @@ public class DependencyDownloader {
         //已经存在
         if (jarFile.exists()) {
             try {
-                ClassLoaderUtil.addURL(jarFile.toURI().toURL());
+                if (recursiveSub)
+                    ClassLoaderUtil.addURL(jarFile.toURI().toURL());
+                else ClassLoaderUtil.addSubURL(jarFile.toURI().toURL());
             } catch (Exception e) {
                 e.printStackTrace();
             }
