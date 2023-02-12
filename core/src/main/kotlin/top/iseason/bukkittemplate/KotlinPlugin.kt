@@ -1,5 +1,7 @@
 package top.iseason.bukkittemplate
 
+import org.bukkit.plugin.java.JavaPlugin
+
 /**
  * kotlin插件的入口
  * 请使用 object 单例继承本类,一个插件只能有一个 KotlinPlugin 单例
@@ -10,7 +12,8 @@ abstract class KotlinPlugin {
     /**
      * 获取bukkit插件对象,在onLoad阶段才会被赋值
      */
-    val javaPlugin = BukkitTemplate.getPlugin()
+    val javaPlugin: JavaPlugin = BukkitTemplate.getPlugin()
+
 
     /**
      * 在其他线程加载，比onEnable先调用,结束了才调用onEnable
@@ -31,6 +34,5 @@ abstract class KotlinPlugin {
      * 在插件停用时运行
      */
     open fun onDisable() {}
-
 
 }

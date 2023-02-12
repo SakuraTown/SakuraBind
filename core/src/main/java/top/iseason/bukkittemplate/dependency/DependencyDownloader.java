@@ -3,6 +3,7 @@ package top.iseason.bukkittemplate.dependency;
 import org.bukkit.Bukkit;
 import org.xml.sax.SAXException;
 import top.iseason.bukkittemplate.BukkitTemplate;
+import top.iseason.bukkittemplate.ClassLoaderUtil;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
@@ -12,6 +13,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -24,7 +27,7 @@ public class DependencyDownloader {
     public static File parent = new File("libraries");
     public List<String> repositories = new ArrayList<>();
     public List<String> dependencies = new ArrayList<>();
-    public static Set<String> exists = new HashSet<>();
+    public static Set<String> exists = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     /**
      * 下载依赖
@@ -45,6 +48,7 @@ public class DependencyDownloader {
         String classId = groupId + "." + artifact;
         if (exists.contains(classId)) return true;
         exists.add(classId);
+        Bukkit.getLogger().info("[" + BukkitTemplate.getPlugin().getName() + "] Loading library " + dependency);
         String version = split[2];
         String suffix = groupId.replace(".", "/") + "/" + artifact + "/" + version + "/";
         File saveLocation = new File(parent, suffix.replace("/", File.separator));
@@ -55,7 +59,7 @@ public class DependencyDownloader {
         //已经存在
         if (jarFile.exists()) {
             try {
-                ClassInjector.addURL(jarFile.toURI().toURL());
+                ClassLoaderUtil.addURL(jarFile.toURI().toURL());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -69,7 +73,7 @@ public class DependencyDownloader {
                         jarFile.delete();
                         continue;
                     }
-                    ClassInjector.addURL(jarFile.toURI().toURL());
+                    ClassLoaderUtil.addURL(jarFile.toURI().toURL());
                     downloaded = true;
                     break;
                 } catch (Exception e) {
@@ -226,13 +230,26 @@ public class DependencyDownloader {
         return this;
     }
 
+    /**
+     * 下载所有积压的依赖
+     *
+     * @return
+     */
     public boolean setup() {
-        for (String dependency : dependencies) {
-            if (!downloadDependency(dependency, true, repositories)) {
-                return false;
-            }
-        }
-        return true;
+//        for (String dependency : dependencies) {
+//            if (!downloadDependency(dependency, true, repositories)) {
+//                return false;
+//            }
+//        }
+//        return true;
+        AtomicBoolean failure = new AtomicBoolean(false);
+        dependencies.parallelStream().forEach(dependency -> {
+                    if (failure.get()) return;
+                    failure.set(!downloadDependency(dependency, true, repositories));
+                }
+        );
+        dependencies.clear();
+        return !failure.get();
     }
 
     public boolean downloadDependency(String dependency) {

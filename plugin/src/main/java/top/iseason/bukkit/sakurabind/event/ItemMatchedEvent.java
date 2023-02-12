@@ -1,10 +1,10 @@
 package top.iseason.bukkit.sakurabind.event;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
-import top.iseason.bukkit.sakurabind.SakuraBind;
 import top.iseason.bukkit.sakurabind.config.BaseSetting;
 
 public class ItemMatchedEvent extends Event implements Cancellable {
@@ -20,7 +20,7 @@ public class ItemMatchedEvent extends Event implements Cancellable {
     private BaseSetting matchSetting;
 
     public ItemMatchedEvent(ItemStack item, BaseSetting matchSetting) {
-        super(Thread.currentThread() != SakuraBind.mainThread);
+        super(!Bukkit.isPrimaryThread());
         this.item = item;
         this.matchSetting = matchSetting;
     }

@@ -121,7 +121,7 @@ object Config : SimpleYAMLConfig() {
         nbtPathUuid = nbt_path_uuid.split('.').toTypedArray()
         nbtPathLore = nbt_path_lore.split('.').toTypedArray()
 
-        if (SakuraMailHook.hasHooked) {
+        if (SakuraMailHook.hasHooked && mailId.isNotBlank()) {
             SystemMailsYml.getMailYml(mailId) ?: info("&c邮件&7 $mailId &c不存在!")
         }
         task?.cancel()

@@ -52,7 +52,6 @@ val output =
         File(jarOutputFile, "${rootProject.name}-${rootProject.version}-obfuscated.jar")
     else
         File(jarOutputFile, "${rootProject.name}-${rootProject.version}.jar")
-
 tasks {
     shadowJar {
         if (isObfuscated) {
@@ -102,9 +101,11 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     if (shrink != "true") {
         dontshrink()
     }
+    allowaccessmodification() //优化时允许访问并修改有修饰符的类和类的成员
+    dontusemixedcaseclassnames() // 混淆时不要大小写混合
     optimizationpasses(5)
     dontwarn()
-//    dontpreverify()
+
     //添加运行环境
     val javaHome = System.getProperty("java.home")
     if (JavaVersion.current() < JavaVersion.toVersion(9)) {
@@ -121,31 +122,23 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     libraryjars(configurations.compileClasspath.get().files)
     //启用混淆的选项
     val allowObf = mapOf("allowobfuscation" to true)
+
     //class规则
     if (isObfuscated) keep(allowObf, "class a {}")
     else keep("class $groupS.libs.core.BukkitTemplate {}")
     keep("class kotlin.Metadata {}")
+    keep(allowObf, "class $groupS.libs.core.PluginBootStrap {*;}")
     keep(allowObf, "class * implements $groupS.libs.core.KotlinPlugin {*;}")
-    keep(allowObf, "class top.iseason.bukkit.sakurabind.logger.BindType {*;}")
     keepclassmembers("class * extends $groupS.libs.core.config.SimpleYAMLConfig {*;}")
     keepclassmembers("class * implements $groupS.libs.core.ui.container.BaseUI {*;}")
     keepclassmembers(allowObf, "class * implements org.bukkit.event.Listener {*;}")
-    keepclassmembers(allowObf, "class $groupS.libs.bstats {}")
     keepclassmembers(allowObf, "class * extends org.bukkit.event.Event {*;}")
     keepclassmembers(allowObf, "class * extends org.jetbrains.exposed.dao.id.IdTable {*;}")
     keepclassmembers(allowObf, "class * extends org.jetbrains.exposed.dao.Entity {*;}")
     keepattributes("Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*")
-//    keepkotlinmetadata()
+    keepclassmembers("enum * {public static **[] values();public static ** valueOf(java.lang.String);}")
     repackageclasses()
     outjars(defaultFile)
 }
-//tasks.register<Copy>("copyJar") {
-////    dependsOn("buildPlugin")
-//    from(defaultFile)
-//    val file = File(jarOutputFile)
-//    if (file.exists()) {
-//        into(jarOutputFile)
-//    }
-//}
 
 fun getProperties(properties: String) = rootProject.properties[properties].toString()

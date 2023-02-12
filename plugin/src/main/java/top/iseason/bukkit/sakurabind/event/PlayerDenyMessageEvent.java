@@ -1,5 +1,6 @@
 package top.iseason.bukkit.sakurabind.event;
 
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
@@ -7,7 +8,6 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
-import top.iseason.bukkit.sakurabind.SakuraBind;
 import top.iseason.bukkit.sakurabind.config.BaseSetting;
 
 public class PlayerDenyMessageEvent extends Event implements Cancellable {
@@ -36,7 +36,7 @@ public class PlayerDenyMessageEvent extends Event implements Cancellable {
             Block block,
             Entity entity
     ) {
-        super(Thread.currentThread() != SakuraBind.mainThread);
+        super(!Bukkit.isPrimaryThread());
         this.player = player;
         this.setting = setting;
         this.message = message;

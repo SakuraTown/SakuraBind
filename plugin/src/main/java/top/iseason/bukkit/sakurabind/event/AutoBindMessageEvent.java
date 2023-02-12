@@ -1,11 +1,11 @@
 package top.iseason.bukkit.sakurabind.event;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
-import top.iseason.bukkit.sakurabind.SakuraBind;
 import top.iseason.bukkit.sakurabind.config.BaseSetting;
 
 public class AutoBindMessageEvent extends Event implements Cancellable {
@@ -25,7 +25,8 @@ public class AutoBindMessageEvent extends Event implements Cancellable {
 
 
     public AutoBindMessageEvent(HumanEntity player, BaseSetting setting, String message, Boolean isCoolDown, ItemStack item) {
-        super(Thread.currentThread() != SakuraBind.mainThread);
+        super(!Bukkit.isPrimaryThread());
+
         this.player = player;
         this.setting = setting;
         this.message = message;
