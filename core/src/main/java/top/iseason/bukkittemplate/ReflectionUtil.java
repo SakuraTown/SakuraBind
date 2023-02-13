@@ -11,7 +11,7 @@ import java.net.URLClassLoader;
 import java.util.LinkedList;
 
 //注入器
-public class ClassLoaderUtil {
+public class ReflectionUtil {
     private static MethodHandle addUrlHandle;
     private static Object ucp;
     private static LinkedList<URL> urls = new LinkedList<>();

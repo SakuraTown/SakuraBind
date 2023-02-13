@@ -3,7 +3,7 @@ package top.iseason.bukkittemplate.dependency;
 import org.bukkit.Bukkit;
 import org.xml.sax.SAXException;
 import top.iseason.bukkittemplate.BukkitTemplate;
-import top.iseason.bukkittemplate.ClassLoaderUtil;
+import top.iseason.bukkittemplate.ReflectionUtil;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
@@ -60,8 +60,8 @@ public class DependencyDownloader {
         if (jarFile.exists()) {
             try {
                 if (recursiveSub)
-                    ClassLoaderUtil.addURL(jarFile.toURI().toURL());
-                else ClassLoaderUtil.addSubURL(jarFile.toURI().toURL());
+                    ReflectionUtil.addURL(jarFile.toURI().toURL());
+                else ReflectionUtil.addSubURL(jarFile.toURI().toURL());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -75,7 +75,7 @@ public class DependencyDownloader {
                         jarFile.delete();
                         continue;
                     }
-                    ClassLoaderUtil.addURL(jarFile.toURI().toURL());
+                    ReflectionUtil.addURL(jarFile.toURI().toURL());
                     downloaded = true;
                     break;
                 } catch (Exception e) {
