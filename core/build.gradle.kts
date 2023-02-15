@@ -12,8 +12,8 @@ repositories {
 dependencies {
 
     implementation("io.github.bananapuncher714:nbteditor:7.18.4")
-    compileOnly("org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT")
-    compileOnly("me.clip:placeholderapi:2.11.2")
+    compileOnly("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT")
+    compileOnly("me.clip:placeholderapi:2.11.2") { isTransitive = false }
 
     dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.7.20")
 }
