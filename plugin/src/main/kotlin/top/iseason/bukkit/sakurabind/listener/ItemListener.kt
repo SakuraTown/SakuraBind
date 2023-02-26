@@ -180,9 +180,11 @@ object ItemListener : Listener {
         val player = event.player
         val item = event.item.itemStack
         if (SakuraBindAPI.checkDenyBySetting(item, player, "item-deny.pickup")) {
-            val owner = SakuraBindAPI.getOwner(item)!!
             event.isCancelled = true
             event.item.pickupDelay = 10
+        }
+        val owner = SakuraBindAPI.getOwner(item)!!
+        if (SakuraBindAPI.getItemSetting(item).getBoolean("item.send-back-on-pickup", owner.toString(), player)) {
             val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
             if (sendBackItem.isEmpty())
                 event.item.remove()

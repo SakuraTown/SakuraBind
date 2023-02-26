@@ -44,6 +44,10 @@ object GlobalSettings : SimpleYAMLConfig() {
     var item__send_when_container_break = true
 
     @Key
+    @Comment("", "当捡到不属于你的绑定物品时是否送回原物主")
+    var item__send_back_on_pickup = true
+
+    @Key
     @Comment("", "当物品作为掉落物时延迟多少tick还物主(在线则发背包，否则发邮件), 0表示立马返回，-1关闭")
     var item__send_back_delay = -1L
 
