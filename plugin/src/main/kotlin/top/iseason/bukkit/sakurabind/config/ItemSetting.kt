@@ -216,8 +216,7 @@ open class ItemSetting(override val keyPath: String, section: ConfigurationSecti
         }
         if (nbt != null) {
             val json = Gson().fromJson(NBTEditor.getNBTCompound(item).toJson(), Map::class.java)
-
-            val matchNbt = nbt!!.any {
+            val matchNbt = nbt!!.all {
                 val path = it.first
                 val pattern = it.second
                 var temp = json
@@ -230,18 +229,22 @@ open class ItemSetting(override val keyPath: String, section: ConfigurationSecti
                         value = v.toString()
                         break
                     } else {
-                        temp = v as? Map<Any?, Any?> ?: break
+                        temp = v as? Map<*, *> ?: break
                     }
+                }
+                var nbtResult = false
+                if (value != null && pattern.matcher(value).find()) {
+                    nbtResult = true
                 }
                 sender?.sendColorMessage(
                     Lang.command__test__try_match_nbt.formatBy(
                         pattern,
                         value,
-                        pattern.matcher(value ?: "").find()
+                        nbtResult,
+                        path.joinToString(".")
                     )
                 )
-                if (value == null) return@any false
-                pattern.matcher(value).find()
+                nbtResult
             }
 
             if (!matchNbt) return false

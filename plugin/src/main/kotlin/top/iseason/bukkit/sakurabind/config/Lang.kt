@@ -122,7 +122,7 @@ object Lang : SimpleYAMLConfig() {
     var command__test__try_match_material_set = "&a  - 材质集合: &f{0} -> &7{1} = &6{2}"
     var command__test__try_match_material_id = "&a  - 材质:子ID: &f{0} -> &7{1} = &6{2}"
     var command__test__try_match_ids = "&a  - ID: &f{0} -> &7{1} = &6{2}"
-    var command__test__try_match_nbt = "&a  - NBT: &f{0} -> &7{1} = &6{2}"
+    var command__test__try_match_nbt = "&a  - NBT: &f{0} -> &7{1} = &6{2} &7路径: {3}"
     var command__test__try_match_result = "&6匹配结束, 结果: &6{0}"
 
     var command__debug = "&aDebug模式: &b{0}"
