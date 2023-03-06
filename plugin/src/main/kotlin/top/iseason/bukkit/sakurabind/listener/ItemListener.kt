@@ -179,23 +179,25 @@ object ItemListener : Listener {
         if (Config.checkByPass(event.player)) return
         val player = event.player
         val item = event.item.itemStack
-        if (SakuraBindAPI.checkDenyBySetting(item, player, "item-deny.pickup")) {
+        val itemSetting = SakuraBindAPI.getItemSetting(item)
+        val owner = SakuraBindAPI.getOwner(item) ?: return
+        if (itemSetting.getBoolean("item-deny.pickup", owner.toString(), player)) {
             event.isCancelled = true
             event.item.pickupDelay = 10
+            if (itemSetting.getBoolean("item.send-back-on-pickup", owner.toString(), player)) {
+                val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
+                if (sendBackItem.isEmpty())
+                    event.item.remove()
+                else event.item.itemStack = sendBackItem.first()
+                MessageTool.denyMessageCoolDown(
+                    player,
+                    Lang.item__deny_pickup.formatBy(SakuraBindAPI.getOwnerName(owner)),
+                    ItemSettings.getSetting(item),
+                    item
+                )
+            }
         }
-        val owner = SakuraBindAPI.getOwner(item) ?: return
-        if (SakuraBindAPI.getItemSetting(item).getBoolean("item.send-back-on-pickup", owner.toString(), player)) {
-            val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
-            if (sendBackItem.isEmpty())
-                event.item.remove()
-            else event.item.itemStack = sendBackItem.first()
-            MessageTool.denyMessageCoolDown(
-                player,
-                Lang.item__deny_pickup.formatBy(SakuraBindAPI.getOwnerName(owner)),
-                ItemSettings.getSetting(item),
-                item
-            )
-        }
+
     }
 
     /**
@@ -495,7 +497,7 @@ object ItemListener : Listener {
     /**
      * 自动绑定, 捡起物品时绑定
      */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun autoBindPlayerPickupItemEvent(event: PlayerPickupItemEvent) {
         val player = event.player
         if (Config.checkByPass(player)) return
