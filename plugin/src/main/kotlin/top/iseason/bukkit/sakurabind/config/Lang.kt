@@ -1,33 +1,13 @@
 package top.iseason.bukkit.sakurabind.config
 
-import org.bukkit.configuration.ConfigurationSection
-import top.iseason.bukkittemplate.BukkitTemplate
-import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
-import top.iseason.bukkittemplate.debug.SimpleLogger
-import top.iseason.bukkittemplate.utils.bukkit.MessageUtils
 
 @Key
 @FilePath("lang.yml")
-object Lang : SimpleYAMLConfig() {
-    @Comment(
-        "",
-        "消息留空将不会显示，使用 '\\n' 或换行符 可以换行",
-        "支持 & 颜色符号，1.17以上支持16进制颜色代码，如 #66ccff",
-        "{0}、{1}、{2}、{3} 等格式为该消息独有的变量占位符",
-        "所有消息支持PlaceHolderAPI",
-        "以下是一些特殊消息, 大小写不敏感，可以通过 \\n 自由组合",
-        "以 [BoardCast] 开头将以广播的形式发送，支持BungeeCord",
-        "以 [Actionbar] 开头将发送ActionBar消息",
-        "以 [Command] 开头将以消息接收者的身份运行命令",
-        "以 [Console] 开头将以控制台的身份运行命令",
-        "以 [OP-Command] 开头将赋予消息接收者临时op运行命令 (慎用)"
-    )
-    var readme = ""
+object Lang : top.iseason.bukkittemplate.config.Lang() {
 
-    var prefix = "&a[&6${BukkitTemplate.getPlugin().description.name}&a] &f"
     var send_back_all = "&7你的遗失物品已全部放入你的背包"
     var send_back_inventory = "&7你的部分遗失物品已放入你的背包"
     var send_back_ender_chest = "&7你的部分遗失物品已放入你的末影箱"
@@ -129,8 +109,4 @@ object Lang : SimpleYAMLConfig() {
     var has_lost_item = "&a你有遗失的物品,请输入 &6'/sakurabind getLost' &a领取"
     var lost_item_send_when_online = "&a你有遗失的物品,请输入 &6'/sakurabind getLost' &a领取"
 
-    override fun onLoaded(section: ConfigurationSection) {
-        MessageUtils.defaultPrefix = prefix
-        SimpleLogger.prefix = prefix
-    }
 }

@@ -2,6 +2,11 @@
 
 package top.iseason.bukkittemplate.utils.bukkit
 
+import net.kyori.adventure.platform.bukkit.BukkitAudiences
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
+import net.kyori.adventure.title.Title
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Bukkit
@@ -10,7 +15,9 @@ import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import top.iseason.bukkittemplate.BukkitTemplate
+import top.iseason.bukkittemplate.DisableHook
 import top.iseason.bukkittemplate.debug.warn
+import top.iseason.bukkittemplate.dependency.DependencyDownloader
 import top.iseason.bukkittemplate.hook.BungeeCordHook
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.other.submit
@@ -22,12 +29,38 @@ import java.util.regex.Pattern
  * bukkit的消息相关工具
  */
 object MessageUtils {
+    private var miniMessageSupport = false
+    private var miniMessageLoaded = false
+    lateinit var audiences: BukkitAudiences
     private val HEX_PATTERN = Pattern.compile("#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})")
     private val hexColorSupport = try {
         net.md_5.bungee.api.ChatColor.of("#66ccff")
         true
     } catch (e: Throwable) {
         false
+    }
+
+    fun enableMiniMessage() {
+        if (miniMessageSupport) return
+        miniMessageSupport = true
+        if (miniMessageLoaded) return
+        val dd = DependencyDownloader()
+            .addRepository("https://maven.aliyun.com/repository/public")
+            .addRepository("https://repo.maven.apache.org/maven2/")
+        dd.dependencies = mutableMapOf(
+            "net.kyori:adventure-platform-bukkit:4.2.0" to 4,
+            "net.kyori:adventure-text-minimessage:4.12.0" to 1
+        )
+        dd.start(true)
+        audiences = BukkitAudiences.create(BukkitTemplate.getPlugin())
+        miniMessageLoaded = true
+        DisableHook.addTask {
+            audiences.close()
+        }
+    }
+
+    fun disableMiniMessage() {
+        miniMessageSupport = false
     }
 
 
@@ -46,6 +79,7 @@ object MessageUtils {
      * 例子: &a你好、#66ccff 你好、#6cf 你好
      */
     fun String.toColor(): String {
+        if (miniMessageSupport) return this
         if (!hexColorSupport) return ChatColor.translateAlternateColorCodes('&', this)
         val matcher: Matcher = HEX_PATTERN.matcher(this)
         // Increase buffer size by 32 like it is in bungee cord api. Use buffer because it is sync.
@@ -88,16 +122,24 @@ object MessageUtils {
             .forEach { m ->
                 //普通消息
                 if (!m.startsWith('[')) {
-                    sendMessage(PlaceHolderHook.setPlaceHolder("$prefix$m", this as? OfflinePlayer))
+                    sendMsg(PlaceHolderHook.setPlaceHolder("$prefix$m", this as? OfflinePlayer))
                     return@forEach
                 }
                 //特殊消息
-                if (m.startsWith("[boardcast]", true)) {
+                if (m.startsWith("[broadcast]", true)) {
                     broadcast(m.drop(11), prefix)
                     return@forEach
                 }
                 if (this is Player && m.startsWith("[actionbar]", true)) {
-                    sendActionBar("$prefix${m.drop(11)}".toColor())
+                    sendActionBar("$prefix${m.drop(11)}")
+                    return@forEach
+                }
+                if (this is Player && m.startsWith("[main-title]", true)) {
+                    sendMainTitle("$prefix${m.drop(12)}")
+                    return@forEach
+                }
+                if (this is Player && m.startsWith("[sub-title]", true)) {
+                    sendSubTitle("$prefix${m.drop(11)}")
                     return@forEach
                 }
                 if (m.startsWith("[command]", true) ||
@@ -137,6 +179,12 @@ object MessageUtils {
 
     }
 
+    private fun CommandSender.sendMsg(msg: String) {
+        if (miniMessageSupport)
+            audiences.sender(this).sendMessage(MiniMessage.miniMessage().deserialize(msg))
+        else sendMessage(msg)
+    }
+
     /**
      * 发送带颜色转换的消息
      */
@@ -164,9 +212,20 @@ object MessageUtils {
         if (message == null || message.toString().isEmpty()) return
         val finalMessage = PlaceHolderHook.setPlaceHolder("$prefix$message", null)
         if (BungeeCordHook.bungeeCordEnabled) {
-            BungeeCordHook.broadcast(finalMessage)
+            if (miniMessageSupport) {
+                val component = MiniMessage.miniMessage().deserialize(finalMessage)
+                val serialize = GsonComponentSerializer.gson().serialize(component)
+                BungeeCordHook.broadcastRaw(serialize)
+            } else {
+                BungeeCordHook.broadcast(finalMessage)
+            }
         } else {
-            Bukkit.broadcastMessage(finalMessage)
+            if (miniMessageSupport) {
+                val component = MiniMessage.miniMessage().deserialize(finalMessage)
+                audiences.all().sendMessage(component)
+            } else {
+                Bukkit.broadcastMessage(finalMessage)
+            }
         }
     }
 
@@ -211,14 +270,51 @@ object MessageUtils {
         return temp
     }
 
+    /**
+     * 发送 actionbar 消息
+     */
     fun Player.sendActionBar(message: String?, prefix: String = defaultPrefix) {
         if (message == null || message.toString().isEmpty()) return
         val finalMessage = PlaceHolderHook.setPlaceHolder("$prefix$message", this)
         try {
-            this.spigot().sendMessage(ChatMessageType.ACTION_BAR, *TextComponent.fromLegacyText(finalMessage))
+            if (miniMessageSupport) {
+                val component = MiniMessage.miniMessage().deserialize(finalMessage)
+                audiences.player(this).sendActionBar(component)
+            } else {
+                this.spigot()
+                    .sendMessage(ChatMessageType.ACTION_BAR, *TextComponent.fromLegacyText(finalMessage))
+            }
         } catch (e: Throwable) {
             e.printStackTrace()
             warn("该服务端版本不支持 ActionBar 消息!")
+        }
+    }
+
+    /**
+     * 发送 title 消息
+     */
+    fun Player.sendMainTitle(message: String?, prefix: String = defaultPrefix) {
+        if (message == null || message.toString().isEmpty()) return
+        val finalMessage = PlaceHolderHook.setPlaceHolder("$prefix$message", this)
+        if (miniMessageSupport) {
+            val component = MiniMessage.miniMessage().deserialize(finalMessage)
+            audiences.player(this).showTitle(Title.title(component, Component.empty()))
+        } else {
+            this.sendTitle(finalMessage, null)
+        }
+    }
+
+    /**
+     * 发送 subtitle 消息
+     */
+    fun Player.sendSubTitle(message: String?, prefix: String = defaultPrefix) {
+        if (message == null || message.toString().isEmpty()) return
+        val finalMessage = PlaceHolderHook.setPlaceHolder("$prefix$message", this)
+        if (miniMessageSupport) {
+            val component = MiniMessage.miniMessage().deserialize(finalMessage)
+            audiences.player(this).showTitle(Title.title(Component.empty(), component))
+        } else {
+            this.sendTitle(null, finalMessage)
         }
     }
 }

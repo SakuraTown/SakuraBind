@@ -19,25 +19,46 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
- * 依赖下载器
+ * 依赖下载器 仅支持 group:artifact:version 的格式
  */
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class DependencyDownloader {
-
+    /**
+     * 被加载到插件Classloader的依赖，默认是加载到 IsolatedClassLoader
+     */
+    public static final Set<String> assembly = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    /**
+     * 默认为plugin.yml中声明的依赖，覆盖子依赖中的相同依赖的不同版本
+     */
+    public static final Set<String> parallel = new HashSet<>();
+    /**
+     * 不下载重复的依赖,此为缓存
+     */
+    private static final Set<String> exists = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    /**
+     * 储存路径
+     */
     public static File parent = new File("libraries");
+    /**
+     * 下载源
+     */
     public List<String> repositories = new ArrayList<>();
-    public List<String> dependencies = new ArrayList<>();
-    public static Set<String> exists = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    /**
+     * 依赖 group:artifact:version to maxDepth
+     * maxDepth表示最大依赖解析层数
+     */
+    public Map<String, Integer> dependencies = new LinkedHashMap<>();
 
     /**
      * 下载依赖
      * 比如 org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10
      *
-     * @param dependency   依赖地址
-     * @param recursiveSub 是否下载子依赖
+     * @param dependency 依赖地址
+     * @param depth      依赖深度
+     * @param maxDepth   最大依赖深度
      * @return true 表示加载依赖成功
      */
-    public static boolean downloadDependency(String dependency, boolean recursiveSub, List<String> repositories) {
+    public static boolean downloadDependency(String dependency, int depth, int maxDepth, List<String> repositories) {
         String[] split = dependency.split(":");
         if (split.length != 3) {
             Bukkit.getLogger().warning("Invalid dependency " + dependency);
@@ -45,10 +66,9 @@ public class DependencyDownloader {
         }
         String groupId = split[0];
         String artifact = split[1];
-        String classId = groupId + "." + artifact;
-        if (exists.contains(classId)) return true;
+        String classId = groupId + ":" + artifact;
+        if (exists.contains(classId) || (depth > 1 && parallel.contains(classId))) return true;
         exists.add(classId);
-        Bukkit.getLogger().info("[" + BukkitTemplate.getPlugin().getName() + "] Loading library " + dependency);
         String version = split[2];
         String suffix = groupId.replace(".", "/") + "/" + artifact + "/" + version + "/";
         File saveLocation = new File(parent, suffix.replace("/", File.separator));
@@ -56,12 +76,11 @@ public class DependencyDownloader {
         String pomName = artifact + "-" + version + ".pom";
         File jarFile = new File(saveLocation, jarName);
         File pomFile = new File(saveLocation, pomName);
+        String type = "isolated";
         //已经存在
         if (jarFile.exists()) {
             try {
-                if (recursiveSub)
-                    ReflectionUtil.addURL(jarFile.toURI().toURL());
-                else ReflectionUtil.addSubURL(jarFile.toURI().toURL());
+                type = addUrl(classId, jarFile.toURI().toURL());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -75,7 +94,7 @@ public class DependencyDownloader {
                         jarFile.delete();
                         continue;
                     }
-                    ReflectionUtil.addURL(jarFile.toURI().toURL());
+                    type = addUrl(classId, jarFile.toURI().toURL());
                     downloaded = true;
                     break;
                 } catch (Exception e) {
@@ -84,7 +103,8 @@ public class DependencyDownloader {
             }
             if (!downloaded) return false;
         }
-        if (!recursiveSub) return true;
+        Bukkit.getLogger().info("[" + BukkitTemplate.getPlugin().getName() + "] Loaded library " + dependency + " " + type);
+        if (depth == maxDepth) return true;
 
         for (String repository : repositories) {
             try {
@@ -96,7 +116,7 @@ public class DependencyDownloader {
                 try {
                     XmlParser xmlDependency = new XmlParser(pomFile);
                     for (String subDependency : xmlDependency.getDependency()) {
-                        if (!downloadDependency(subDependency, false, repositories)) {
+                        if (!downloadDependency(subDependency, depth + 1, maxDepth, repositories)) {
                             Bukkit.getLogger().warning("Loading sub dependency" + subDependency + " error!");
                         }
                     }
@@ -108,6 +128,16 @@ public class DependencyDownloader {
             }
         }
         return true;
+    }
+
+    private static String addUrl(String classId, URL url) {
+        if (assembly.contains(classId)) {
+            ReflectionUtil.addSubURL(url);
+            return "assemble";
+        } else {
+            ReflectionUtil.addURL(url);
+            return "isolated";
+        }
     }
 
     /**
@@ -146,7 +176,7 @@ public class DependencyDownloader {
      *
      * @param url  文件链接
      * @param file 保存路径
-     * @return
+     * @return true if success
      */
     private static boolean download(URL url, File file) {
         HttpURLConnection connection;
@@ -227,35 +257,60 @@ public class DependencyDownloader {
         return this;
     }
 
+    /**
+     * 添加需要的依赖
+     *
+     * @param dependency 依赖, 将会下载依赖的子依赖(2层)
+     * @return 自身
+     */
     public DependencyDownloader addDependency(String dependency) {
-        dependencies.add(dependency);
+        dependencies.put(dependency, 2);
         return this;
     }
 
     /**
      * 下载所有积压的依赖
      *
-     * @return
+     * @return true if success
      */
-    public boolean setup() {
-//        for (String dependency : dependencies) {
-//            if (!downloadDependency(dependency, true, repositories)) {
-//                return false;
-//            }
-//        }
-//        return true;
-        AtomicBoolean failure = new AtomicBoolean(false);
-        dependencies.parallelStream().forEach(dependency -> {
-                    if (failure.get()) return;
-                    failure.set(!downloadDependency(dependency, true, repositories));
+    public boolean start(boolean parallel) {
+        if (parallel) {
+            AtomicBoolean failure = new AtomicBoolean(false);
+            dependencies.entrySet().parallelStream().forEach(entry -> {
+                        if (failure.get()) return;
+                        failure.set(!downloadDependency(entry.getKey(), entry.getValue()));
+                    }
+            );
+            dependencies.clear();
+            return !failure.get();
+        } else {
+            for (Map.Entry<String, Integer> entry : dependencies.entrySet()) {
+                if (!downloadDependency(entry.getKey(), entry.getValue())) {
+                    return false;
                 }
-        );
-        dependencies.clear();
-        return !failure.get();
+            }
+            return true;
+        }
     }
 
+    /**
+     * 直接下载并加载依赖
+     *
+     * @param dependency 依赖
+     * @param maxDepth   依赖解析层数
+     * @return true if success
+     */
+    public boolean downloadDependency(String dependency, int maxDepth) {
+        return downloadDependency(dependency, 1, maxDepth, repositories);
+    }
+
+    /**
+     * 直接下载并加载依赖以及依赖的子依赖
+     *
+     * @param dependency 依赖
+     * @return true if success
+     */
     public boolean downloadDependency(String dependency) {
-        if (BukkitTemplate.isOfflineLibInstalled()) return true;
-        return downloadDependency(dependency, true, repositories);
+        return downloadDependency(dependency, 1, 2, repositories);
     }
 }

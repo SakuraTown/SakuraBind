@@ -169,20 +169,20 @@ object DatabaseConfig : SimpleYAMLConfig() {
             }
             val config = when (database_type) {
                 "MySQL" -> HikariConfig(props).apply {
-                    dd.downloadDependency("mysql:mysql-connector-java:8.0.32")
+                    dd.downloadDependency("mysql:mysql-connector-java:8.0.32", 1)
                     jdbcUrl = "jdbc:mysql://$address/$database_name$params"
                     //可能兼容旧的mysql驱动
                     driverClassName = "com.mysql.jdbc.Driver"
                 }
 
                 "MariaDB" -> HikariConfig(props).apply {
-                    dd.downloadDependency("org.mariadb.jdbc:mariadb-java-client:3.1.1")
+                    dd.downloadDependency("org.mariadb.jdbc:mariadb-java-client:3.1.1", 1)
                     jdbcUrl = "jdbc:mariadb://$address/$database_name$params"
                     driverClassName = "org.mariadb.jdbc.Driver"
                 }
 
                 "SQLite" -> HikariConfig(props).apply {
-                    dd.downloadDependency("org.xerial:sqlite-jdbc:3.40.0.0")
+                    dd.downloadDependency("org.xerial:sqlite-jdbc:3.40.0.0", 1)
                     jdbcUrl = "jdbc:sqlite:$address$params"
                     driverClassName = "org.sqlite.JDBC"
                 }
@@ -194,19 +194,19 @@ object DatabaseConfig : SimpleYAMLConfig() {
 //                }
 
                 "PostgreSQL" -> HikariConfig(props).apply {
-                    dd.downloadDependency("com.impossibl.pgjdbc-ng:pgjdbc-ng:0.8.9")
+                    dd.downloadDependency("com.impossibl.pgjdbc-ng:pgjdbc-ng:0.8.9", 1)
                     jdbcUrl = "jdbc:pgsql://$address/$database_name$params"
                     driverClassName = "com.impossibl.postgres.jdbc.PGDriver"
                 }
 
                 "Oracle" -> HikariConfig(props).apply {
-                    dd.downloadDependency("com.oracle.database.jdbc:ojdbc8:21.8.0.0")
+                    dd.downloadDependency("com.oracle.database.jdbc:ojdbc8:21.8.0.0", 1)
                     jdbcUrl = "dbc:oracle:thin:@//$address/$database_name$params"
                     driverClassName = "oracle.jdbc.OracleDriver"
                 }
 
                 "SQLServer" -> HikariConfig(props).apply {
-                    dd.downloadDependency("com.microsoft.sqlserver:mssql-jdbc:11.2.3.jre8")
+                    dd.downloadDependency("com.microsoft.sqlserver:mssql-jdbc:11.2.3.jre8", 1)
                     jdbcUrl = "jdbc:sqlserver://$address;DatabaseName=$database_name$params"
                     driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
                 }

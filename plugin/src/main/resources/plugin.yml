@@ -7,7 +7,6 @@ softdepend:
   - SakuraMail
   - PlaceholderAPI
   - AuthMe
-  - IseasonOfflineLib
 
 runtime-libraries:
   # If not defined, it will be 'libraries'
@@ -16,14 +15,18 @@ runtime-libraries:
   repositories:
     - https://maven.aliyun.com/repository/public/
     - https://repo.maven.apache.org/maven2/
-
+  parallel: true
+  # ${kotlinVersion}
   libraries:
-    - org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}
-    - org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}
+    - org.jetbrains.kotlin:kotlin-stdlib:1.8.10
+    - org.jetbrains.kotlin:kotlin-reflect:1.8.10
     - org.jetbrains.exposed:exposed-core:${exposedVersion}
     - org.jetbrains.exposed:exposed-dao:${exposedVersion}
     - org.jetbrains.exposed:exposed-jdbc:${exposedVersion}
     - org.jetbrains.exposed:exposed-java-time:${exposedVersion}
-    - com.zaxxer:HikariCP:4.0.3
-    - org.glassfish.jaxb:jaxb-runtime:2.3.7
-    - org.ehcache:ehcache:3.10.8
+    - com.zaxxer:HikariCP:4.0.3,1
+    - org.glassfish.jaxb:jaxb-runtime:2.3.7,1
+    - org.ehcache:ehcache:3.10.8,1
+  assembly:
+    - org.apache.logging.log4j:log4j-api
+    - org.slf4j:slf4j-api

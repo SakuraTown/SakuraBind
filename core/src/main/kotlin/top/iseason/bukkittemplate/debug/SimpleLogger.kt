@@ -2,13 +2,13 @@ package top.iseason.bukkittemplate.debug
 
 import org.bukkit.Bukkit
 import top.iseason.bukkittemplate.BukkitTemplate
-import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
+import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 
 /**
  * 输出日志
  */
 fun info(message: Any?) {
-    Bukkit.getConsoleSender().sendMessage((SimpleLogger.prefix + message).toColor())
+    Bukkit.getConsoleSender().sendColorMessage(message, SimpleLogger.prefix)
 }
 
 /**

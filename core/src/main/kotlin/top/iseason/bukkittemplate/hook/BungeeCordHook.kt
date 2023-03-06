@@ -61,8 +61,12 @@ object BungeeCordHook {
     }
 
     fun broadcast(message: String) {
+        broadcast(message, "Message")
+    }
+
+    private fun broadcast(message: String, type: String) {
         val out = ByteStreams.newDataOutput()
-        out.writeUTF("Message")
+        out.writeUTF(type)
         out.writeUTF("ALL")
         out.writeUTF(message)
         try {
@@ -72,7 +76,9 @@ object BungeeCordHook {
             bungeeCordEnabled = false
             debug("BungeeCord mode was disabled!")
         }
-
     }
 
+    fun broadcastRaw(message: String) {
+        broadcast(message, "MessageRaw")
+    }
 }

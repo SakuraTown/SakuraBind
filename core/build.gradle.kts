@@ -13,8 +13,9 @@ dependencies {
 
     implementation("io.github.bananapuncher714:nbteditor:7.18.4")
     compileOnly("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT")
-    compileOnly("me.clip:placeholderapi:2.11.2") { isTransitive = false }
-
+    compileOnly("me.clip:placeholderapi:2.11.2")
+    compileOnly("net.kyori:adventure-text-minimessage:4.12.0")
+    compileOnly("net.kyori:adventure-platform-bukkit:4.2.0")
     dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.7.20")
 }
 tasks {

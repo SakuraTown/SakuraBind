@@ -17,7 +17,7 @@ import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
 import top.iseason.bukkit.sakurabind.listener.*
 import top.iseason.bukkit.sakurabind.task.DelaySender
 import top.iseason.bukkit.sakurabind.task.DropItemList
-import top.iseason.bukkittemplate.KotlinPlugin
+import top.iseason.bukkittemplate.BukkitPlugin
 import top.iseason.bukkittemplate.command.CommandHandler
 import top.iseason.bukkittemplate.command.CommandNode
 import top.iseason.bukkittemplate.config.DatabaseConfig
@@ -29,7 +29,7 @@ import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.register
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 
-object SakuraBind : KotlinPlugin() {
+object SakuraBind : BukkitPlugin {
 
     override fun onLoad() {
         Metrics(javaPlugin, 16968)

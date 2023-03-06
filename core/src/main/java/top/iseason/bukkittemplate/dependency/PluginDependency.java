@@ -6,6 +6,7 @@ import top.iseason.bukkittemplate.BukkitTemplate;
 
 import java.io.File;
 import java.io.InputStreamReader;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
@@ -37,7 +38,19 @@ public class PluginDependency {
                 dd.addRepository(repository);
             }
         }
-        dd.dependencies = libConfigs.getStringList("libraries");
-        return dd.setup();
+        LinkedHashMap<String, Integer> map = new LinkedHashMap<>();
+        for (String library : libConfigs.getStringList("libraries")) {
+            String[] split = library.split(",");
+            if (split.length == 1) {
+                map.put(library, 2);
+            } else if (split.length == 2) {
+                map.put(split[0], Integer.parseInt(split[1]));
+            }
+            String substring = library.substring(0, library.lastIndexOf(":"));
+            DependencyDownloader.parallel.add(substring);
+        }
+        dd.dependencies = map;
+        DependencyDownloader.assembly.addAll(libConfigs.getStringList("assembly"));
+        return dd.start(libConfigs.getBoolean("parallel", false));
     }
 }

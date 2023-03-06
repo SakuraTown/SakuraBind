@@ -5,12 +5,9 @@ plugins {
 
 buildscript {
     repositories {
-
         mavenCentral()
-//        google()
     }
     dependencies {
-//        classpath("com.android.tools.build:gradle:7.3.1")
         classpath("com.guardsquare:proguard-gradle:7.3.1")
     }
 }
@@ -46,8 +43,10 @@ subprojects {
     }
 
     dependencies {
+        val kotlinVersion: String by rootProject
+        compileOnly(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
         //基础库
-        compileOnly(kotlin("stdlib-jdk8"))
+        compileOnly(kotlin("stdlib"))
         // 数据库
         val exposedVersion: String by rootProject
         compileOnly("org.jetbrains.exposed:exposed-core:$exposedVersion")
@@ -78,4 +77,9 @@ repositories {
 dependencies {
     //基础库
     compileOnly(kotlin("stdlib"))
+}
+kotlin {
+    sourceSets.all {
+        languageSettings.languageVersion = "2.0"
+    }
 }
