@@ -44,7 +44,7 @@ object GlobalSettings : SimpleYAMLConfig() {
     var item__send_when_container_break = true
 
     @Key
-    @Comment("", "当捡到不属于你的绑定物品时是否送回原物主")
+    @Comment("", "当捡到不属于你的绑定物品时是否送回原物主, 前提是 item-deny.pickup 开启")
     var item__send_back_on_pickup = true
 
     @Key
