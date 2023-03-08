@@ -131,15 +131,15 @@ object MessageUtils {
                     return@forEach
                 }
                 if (this is Player && m.startsWith("[actionbar]", true)) {
-                    sendActionBar("$prefix${m.drop(11)}")
+                    sendActionBar(m.drop(11), prefix)
                     return@forEach
                 }
                 if (this is Player && m.startsWith("[main-title]", true)) {
-                    sendMainTitle("$prefix${m.drop(12)}")
+                    sendMainTitle(m.drop(12), prefix)
                     return@forEach
                 }
                 if (this is Player && m.startsWith("[sub-title]", true)) {
-                    sendSubTitle("$prefix${m.drop(11)}")
+                    sendSubTitle(m.drop(11), prefix)
                     return@forEach
                 }
                 if (m.startsWith("[command]", true) ||
@@ -300,7 +300,7 @@ object MessageUtils {
             val component = MiniMessage.miniMessage().deserialize(finalMessage)
             audiences.player(this).showTitle(Title.title(component, Component.empty()))
         } else {
-            this.sendTitle(finalMessage, null)
+            this.sendTitle(finalMessage, "")
         }
     }
 
@@ -314,7 +314,7 @@ object MessageUtils {
             val component = MiniMessage.miniMessage().deserialize(finalMessage)
             audiences.player(this).showTitle(Title.title(Component.empty(), component))
         } else {
-            this.sendTitle(null, finalMessage)
+            this.sendTitle("", finalMessage)
         }
     }
 }
