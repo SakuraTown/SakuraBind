@@ -176,13 +176,13 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 }
 
                 "MariaDB" -> HikariConfig(props).apply {
-                    dd.downloadDependency("org.mariadb.jdbc:mariadb-java-client:3.1.1", 1)
+                    dd.downloadDependency("org.mariadb.jdbc:mariadb-java-client:3.1.2", 1)
                     jdbcUrl = "jdbc:mariadb://$address/$database_name$params"
                     driverClassName = "org.mariadb.jdbc.Driver"
                 }
 
                 "SQLite" -> HikariConfig(props).apply {
-                    dd.downloadDependency("org.xerial:sqlite-jdbc:3.40.0.0", 1)
+                    dd.downloadDependency("org.xerial:sqlite-jdbc:3.41.0.0", 1)
                     jdbcUrl = "jdbc:sqlite:$address$params"
                     driverClassName = "org.sqlite.JDBC"
                 }
@@ -200,7 +200,7 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 }
 
                 "Oracle" -> HikariConfig(props).apply {
-                    dd.downloadDependency("com.oracle.database.jdbc:ojdbc8:21.8.0.0", 1)
+                    dd.downloadDependency("com.oracle.database.jdbc:ojdbc8:21.9.0.0", 1)
                     jdbcUrl = "dbc:oracle:thin:@//$address/$database_name$params"
                     driverClassName = "oracle.jdbc.OracleDriver"
                 }

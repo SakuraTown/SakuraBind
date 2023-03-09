@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  * XML文件依赖解析器
  */
 public class XmlParser {
-    private static final Pattern placeHolder = Pattern.compile("\\$\\{(.*)}");
+    public static final Pattern placeHolder = Pattern.compile("\\$\\{(.*)}");
 
     Document doc;
 
@@ -33,7 +33,7 @@ public class XmlParser {
     /**
      * 解析XML文件依赖,返回格式化的依赖
      */
-    public List<String> getDependency() {
+    public List<String> getDependencies() {
         List<String> list = new ArrayList<>();
         NodeList dependencies = doc.getElementsByTagName("dependencies");
         for (int n = 0; n < dependencies.getLength(); n++) {
@@ -63,16 +63,22 @@ public class XmlParser {
                         continue;
                     }
                 }
-                Matcher matcher = placeHolder.matcher(version);
-                if (matcher.find()) {
-                    String group = matcher.group(1);
-                    NodeList elementsByTagName = doc.getElementsByTagName(group);
-                    if (elementsByTagName.getLength() > 0)
-                        version = elementsByTagName.item(0).getTextContent();
+                // 无法处理 区间依赖
+                if (version.contains("[") || version.contains("(")) {
+                    list.add(groupId + ":" + artifactId + ":" + version);
+                } else {
+                    Matcher matcher = placeHolder.matcher(version);
+                    if (matcher.find()) {
+                        String group = matcher.group(1);
+                        NodeList elementsByTagName = doc.getElementsByTagName(group);
+                        if (elementsByTagName.getLength() > 0)
+                            version = elementsByTagName.item(0).getTextContent();
+                    }
+                    list.add(groupId + ":" + artifactId + ":" + version);
                 }
-                list.add(groupId + ":" + artifactId + ":" + version);
             }
         }
         return list;
     }
+
 }

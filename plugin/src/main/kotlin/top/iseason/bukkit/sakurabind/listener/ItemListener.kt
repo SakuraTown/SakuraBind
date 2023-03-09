@@ -556,6 +556,33 @@ object ItemListener : Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    fun autoBindPlayerItemDamageEvent(event: PlayerItemDamageEvent) {
+        val player = event.player
+        if (Config.checkByPass(player)) return
+        val item = event.item
+        val owner = SakuraBindAPI.getOwner(item)?.toString()
+        if (owner != null) {
+            val setting = ItemSettings.getSetting(item)
+            if (setting.getBoolean("auto-unbind.enable", owner, player) &&
+                (setting.getBoolean("auto-unbind.onUse", owner, player) ||
+                        NBTEditor.contains(item, Config.auto_bind_nbt))
+            ) {
+                SakuraBindAPI.unBind(item, BindType.USE_UNBIND_ITEM)
+                MessageTool.messageCoolDown(player, Lang.auto_unbind__onUse)
+            }
+        } else {
+            val setting = ItemSettings.getSetting(item, false)
+            if (setting.getBoolean("auto-bind.enable", null, player) &&
+                (setting.getBoolean("auto-bind.onUse", null, player) ||
+                        NBTEditor.contains(item, Config.auto_bind_nbt))
+            ) {
+                SakuraBindAPI.bind(item, player, type = BindType.USE_BIND_ITEM)
+                MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onUse, setting, item)
+            }
+        }
+    }
+
     /**
      * 处理掉落物的监听器
      */

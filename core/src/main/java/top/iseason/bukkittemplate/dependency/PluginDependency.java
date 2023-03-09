@@ -51,6 +51,8 @@ public class PluginDependency {
         }
         dd.dependencies = map;
         DependencyDownloader.assembly.addAll(libConfigs.getStringList("assembly"));
+        DependencyDownloader.exists.addAll(libConfigs.getStringList("excludes"));
+
         return dd.start(libConfigs.getBoolean("parallel", false));
     }
 }

@@ -10,6 +10,7 @@ import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkit.sakurabind.utils.MessageTool
+import top.iseason.bukkittemplate.debug.debug
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import java.util.*
@@ -17,7 +18,6 @@ import java.util.*
 class Scanner : BukkitRunnable() {
     private val sendBackMap = mutableMapOf<UUID, MutableList<ItemStack>>()
     override fun run() {
-
         Bukkit.getOnlinePlayers().forEach {
             if (!it.isOnline) return
             if (Config.checkByPass(it)) return@forEach
@@ -31,21 +31,21 @@ class Scanner : BukkitRunnable() {
                     val item = inventory.getItem(i) ?: continue
                     if (item.checkAir()) continue
                     val owner = SakuraBindAPI.getOwner(item)
+                    val ownerStr = owner.toString()
                     val setting = ItemSettings.getSetting(item, owner != null)
                     if (owner != null &&
-                        setting.getBoolean("auto-unbind.enable", owner.toString(), it)
+                        setting.getBoolean("auto-unbind.enable", ownerStr, it) &&
+                        setting.getBoolean("auto-unbind.onScanner", ownerStr, it)
                     ) {
                         SakuraBindAPI.unBind(item, BindType.SCANNER_UNBIND_ITEM)
                         MessageTool.messageCoolDown(it, Lang.auto_unbind__onScanner)
                         continue
                     }
                     if (setting.getBoolean(
-                            "scanner-send-back",
-                            owner.toString(),
-                            it
+                            "item.send_back_scanner", ownerStr, it
                         ) && owner != null && owner != it.uniqueId
                     ) {
-//                                info("找到一个违规物品${item.type} 属于 ${owner}")
+                        debug("找到 ${it.name} 违规物品${item.type} 属于 $owner")
                         sendBackMap.computeIfAbsent(owner) { mutableListOf() }.add(item)
                         inventory.setItem(i, null)
                         hasFound = true
@@ -53,7 +53,12 @@ class Scanner : BukkitRunnable() {
                     }
 //                            println("${item.type} ${setting.getBoolean("auto-bind.enable", null, it)}")
                     if (owner == null &&
-                        (setting.getBoolean("auto-bind.enable", null, it) || NBTEditor.contains(
+                        ((setting.getBoolean("auto-bind.enable", null, it) && setting.getBoolean(
+                            "auto-bind.onScanner",
+                            null,
+                            it
+                        ))
+                                || NBTEditor.contains(
                             item, Config.auto_bind_nbt
                         ))
                     ) {

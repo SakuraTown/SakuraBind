@@ -49,4 +49,7 @@ enum class BindType(var description: String) {
     BLOCK_TO_ITEM_UNBIND("方块转为物品解绑"),
     ENTITY_TO_BLOCK_BIND("实体转为方块绑定"),
     ENTITY_TO_BLOCK_UNBIND("实体转为方块解绑"),
+
+    USE_BIND_ITEM("丢弃物品绑定物品"),
+    USE_UNBIND_ITEM("丢弃物品解绑物品"),
 }

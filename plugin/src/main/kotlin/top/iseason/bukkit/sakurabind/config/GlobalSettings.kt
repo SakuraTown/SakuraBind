@@ -52,6 +52,10 @@ object GlobalSettings : SimpleYAMLConfig() {
     var item__send_back_delay = -1L
 
     @Key
+    @Comment("", "当扫描器扫描物品时如果发现物品不是该玩家的就返还物主")
+    var item__send_back_scanner = true
+
+    @Key
     @Comment("", "", "物品禁用设置")
     var item_deny: MemorySection? = null
 
@@ -260,6 +264,14 @@ object GlobalSettings : SimpleYAMLConfig() {
     var auto_bind__onDrop = false
 
     @Key
+    @Comment("", "使用物品消耗耐久时绑定(包括工具、武器、盔甲等有耐久的物品)")
+    var auto_bind__onUse = false
+
+    @Key
+    @Comment("", "扫描器扫描时绑定(在config.yml中配置扫描器)")
+    var auto_bind__onScanner = true
+
+    @Key
     @Comment("", "", "自动解绑设置(前提是已经绑定)")
     var auto_unbind: MemorySection? = null
 
@@ -280,7 +292,12 @@ object GlobalSettings : SimpleYAMLConfig() {
     var auto_unbind__onDrop = false
 
     @Key
-    @Comment("", "扫描玩家时如果发现不属于这个玩家的物品则送回去")
-    var scanner_send_back = true
+    @Comment("", "使用物品消耗耐久时解绑(包括工具、武器、盔甲等有耐久的物品)")
+    var auto_unbind__onUse = false
+
+    @Key
+    @Comment("", "扫描器扫描时解绑(在config.yml中配置扫描器)")
+    var auto_unbind__onScanner = false
+
 
 }

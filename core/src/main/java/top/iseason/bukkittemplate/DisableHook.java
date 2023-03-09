@@ -21,6 +21,7 @@ public final class DisableHook {
                 e.printStackTrace();
             }
         }
+        tasks.clear();
     }
 
     /**

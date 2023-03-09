@@ -30,3 +30,4 @@ runtime-libraries:
   assembly:
     - org.apache.logging.log4j:log4j-api
     - org.slf4j:slf4j-api
+  excludes:

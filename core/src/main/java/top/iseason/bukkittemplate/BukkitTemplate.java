@@ -1,5 +1,6 @@
 package top.iseason.bukkittemplate;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import top.iseason.bukkittemplate.dependency.PluginDependency;
 import top.iseason.bukkittemplate.loader.IsolatedClassLoader;
@@ -35,7 +36,7 @@ public class BukkitTemplate extends JavaPlugin {
         if (!PluginDependency.parsePluginYml()) {
             throw new RuntimeException("Loading dependencies error! please check your network!");
         }
-
+        Bukkit.getLogger().info("[" + BukkitTemplate.getPlugin().getName() + "] Loading libraries successfully");
         ReflectionUtil.addURL(BukkitTemplate.class.getProtectionDomain().getCodeSource().getLocation());
         isolatedClassLoader = new IsolatedClassLoader(
                 ReflectionUtil.getUrls(),
@@ -192,4 +193,5 @@ public class BukkitTemplate extends JavaPlugin {
             e.printStackTrace();
         }
     }
+
 }
