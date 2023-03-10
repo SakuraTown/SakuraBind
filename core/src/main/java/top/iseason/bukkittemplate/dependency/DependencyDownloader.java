@@ -55,9 +55,12 @@ public class DependencyDownloader {
      * 下载依赖
      * 比如 org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10
      *
-     * @param dependency 依赖地址
-     * @param depth      依赖深度
-     * @param maxDepth   最大依赖深度
+     * @param dependency   依赖地址
+     * @param depth        依赖深度
+     * @param maxDepth     最大依赖深度
+     * @param repositories maven仓库
+     * @param printCache   打印缓存，可为null
+     * @param isLast       是否为最后一个
      * @return true 表示加载依赖成功
      */
     public static boolean downloadDependency(String dependency,
@@ -95,7 +98,7 @@ public class DependencyDownloader {
         String type = "I";
         boolean success = false;
         //已经存在
-        if (jarFile.exists() && sha.exists() && checkSha(jarFile, sha)) {
+        if ((sha.exists() && checkSha(jarFile, sha)) || jarFile.exists()) {
             try {
                 type = addUrl(classId, jarFile.toURI().toURL());
                 success = true;
@@ -121,7 +124,10 @@ public class DependencyDownloader {
                     e.printStackTrace();
                 }
             }
-            if (!downloaded) type = "N";
+            if (!downloaded) {
+                type = "N";
+                exists.remove(classId);
+            }
         }
         if (printCache != null)
             printCache.add(printTree("[" + type + "] " + dependency, depth - 1, isLast));
@@ -161,15 +167,15 @@ public class DependencyDownloader {
         // 输出的前缀
         StringBuilder stringBuilder = new StringBuilder();
         if (level == 0) {
-            return stringBuilder.append(name).toString();
+            return stringBuilder.append(" ").append(name).toString();
         }
         // 按层次进行缩进
         for (int i = 0; i < level; i++) {
             if (i == level - 1) {
-                if (isLast) stringBuilder.append("└──");
-                else stringBuilder.append("├──");
+                if (isLast) stringBuilder.append("  └──");
+                else stringBuilder.append("  ├──");
             } else
-                stringBuilder.append("│  ");
+                stringBuilder.append("  │  ");
         }
         stringBuilder.append("  ").append(name);
         return stringBuilder.toString();
