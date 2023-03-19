@@ -5,17 +5,12 @@ import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
-import org.ehcache.UserManagedCache
-import org.ehcache.config.builders.ExpiryPolicyBuilder
-import org.ehcache.config.builders.UserManagedCacheBuilder
-import org.ehcache.impl.copy.IdentityCopier
 import top.iseason.bukkit.sakurabind.event.ItemMatchedEvent
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
 import top.iseason.bukkittemplate.debug.warn
-import java.time.Duration
 
 @FilePath("settings.yml")
 object ItemSettings : SimpleYAMLConfig() {
@@ -70,18 +65,18 @@ object ItemSettings : SimpleYAMLConfig() {
             set("block-deny.interact@", false)
         }
     }
-
-    val settingCache: UserManagedCache<Integer, BaseSetting> = UserManagedCacheBuilder
-        .newUserManagedCacheBuilder(Integer::class.java, BaseSetting::class.java)
-        .withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofSeconds(3)))
-        .withKeyCopier(IdentityCopier())
-        .withValueCopier(IdentityCopier())
-        .build(true)
+    // 真没想到 ItemStack的Hashcode 效率还不如直接从nbt读取
+//    val settingCache: UserManagedCache<ItemStack, BaseSetting> = UserManagedCacheBuilder
+//        .newUserManagedCacheBuilder(ItemStack::class.java, BaseSetting::class.java)
+//        .withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofSeconds(3)))
+//        .withKeyCopier(IdentityCopier())
+//        .withValueCopier(IdentityCopier())
+//        .build(true)
 
     private var settings = LinkedHashMap<String, ItemSetting>()
 
     override fun onLoaded(section: ConfigurationSection) {
-        settingCache.clear()
+//        settingCache.clear()
         nbtPath = if (nbt_cache_path.isBlank()) arrayOf("sakura_bind_setting_cache")
         else nbt_cache_path.split('.').toTypedArray()
         settings.clear()
@@ -102,35 +97,39 @@ object ItemSettings : SimpleYAMLConfig() {
      * 获取物品对应的设置,具有三级缓存
      */
     fun getSetting(item: ItemStack, setInCache: Boolean = true): BaseSetting {
-        //一级缓存
-//        println("物品地址: ${item.hashCode()} ${settingCache.containsKey(item.hashCode())}")
-        val hash = Integer(item.hashCode())
-        var setting: BaseSetting? = settingCache.get(hash)
-        if (setting != null) {
-            return setting
-        }
-        // 二级缓存
+        // 一级缓存, 由EhCache实现
+
+//        var setting: BaseSetting? = settingCache.get(item)
+        var setting: BaseSetting? = null
+//        // 存在缓存，立即返回
+//        if (setting != null) {
+//            return setting
+//        }
+        // 二级缓存,从NBT中读取设置的ID,再根据ID获取对应的对象
         val key = NBTEditor.getString(item, *nbtPath)
+        // 持久化的ID可能过期，先判断
         if (key != null)
             setting = settings[key]
+        // 存在缓存，立即返回
         if (setting != null) {
-            settingCache.put(hash, setting)
+//            settingCache.put(item, setting)
             return setting
         }
-        //匹配
+        // 物品匹配,顺序查找,找到了立即结束循环并加入缓存
         for ((_, s) in settings) {
             if (s.match(item)) {
                 val itemMatchedEvent = ItemMatchedEvent(item, s)
                 Bukkit.getPluginManager().callEvent(itemMatchedEvent)
                 setting = itemMatchedEvent.matchSetting ?: DefaultItemSetting
                 if (setInCache) item.itemMeta = NBTEditor.set(item, setting.keyPath, *nbtPath).itemMeta
-                break
+//                settingCache.put(item, setting)
+                return setting
             }
         }
-        if (setting == null && setInCache) item.itemMeta = NBTEditor.set(item, null, *nbtPath).itemMeta
-        setting = setting ?: DefaultItemSetting
-        settingCache.put(hash, setting)
-        return setting
+        //到这就没有合适的键了，但又有nbt，说明被删了，清除旧的缓存
+        if (key != null) item.itemMeta = NBTEditor.set(item, null, *nbtPath).itemMeta
+//        settingCache.put(item, DefaultItemSetting)
+        return DefaultItemSetting
     }
 
 

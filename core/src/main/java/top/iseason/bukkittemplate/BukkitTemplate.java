@@ -27,7 +27,6 @@ public class BukkitTemplate extends JavaPlugin {
     public static ClassLoader isolatedClassLoader;
     private static JavaPlugin plugin = null;
     private static Object bootStrap = null;
-
     /**
      * 构造方法，负责下载/添加依赖，并启动插件
      */
@@ -37,13 +36,12 @@ public class BukkitTemplate extends JavaPlugin {
             throw new RuntimeException("Loading dependencies error! please check your network!");
         }
         Bukkit.getLogger().info("[" + BukkitTemplate.getPlugin().getName() + "] Loading libraries successfully");
-        ReflectionUtil.addURL(BukkitTemplate.class.getProtectionDomain().getCodeSource().getLocation());
+        ReflectionUtil.addIsolatedURL(BukkitTemplate.class.getProtectionDomain().getCodeSource().getLocation());
         isolatedClassLoader = new IsolatedClassLoader(
                 ReflectionUtil.getUrls(),
                 BukkitTemplate.class.getClassLoader()
         );
-
-        ReflectionUtil.enable();
+        ReflectionUtil.init();
         loadInstance();
     }
 

@@ -181,7 +181,6 @@ object SakuraBind : BukkitPlugin {
             e.printStackTrace()
         }
         try {
-            ItemSettings.settingCache.close()
             BlockCache.tempBlockCache.close()
         } catch (e: Exception) {
             e.printStackTrace()

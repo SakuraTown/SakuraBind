@@ -96,6 +96,7 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     if (shrink != "true") {
         dontshrink()
     }
+
     allowaccessmodification() //优化时允许访问并修改有修饰符的类和类的成员
     dontusemixedcaseclassnames() // 混淆时不要大小写混合
     optimizationpasses(5)

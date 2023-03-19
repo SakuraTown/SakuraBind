@@ -9,7 +9,7 @@ import top.iseason.bukkittemplate.hook.PlaceHolderHook;
 /**
  * 插件启动代理类，由自定义 ClassLoader加载
  */
-public class PluginBootStrap {
+public final class PluginBootStrap {
     private BukkitPlugin bukkitPlugin;
     private JavaPlugin javaPlugin;
 
@@ -17,7 +17,7 @@ public class PluginBootStrap {
     }
 
     private void onLoad(Float ignore) {
-        ReflectionUtil.enable();
+//        ReflectionUtil.enable();
         // 加载阶段如果报错直接中断加载
         bukkitPlugin.onLoad();
     }

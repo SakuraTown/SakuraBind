@@ -100,7 +100,7 @@ open class ItemSetting(override val keyPath: String, section: ConfigurationSecti
                         Lang.command__test__try_match_name
                     else
                         Lang.command__test__try_match_name_strip
-                sender.sendColorMessage(message.formatBy(namePattern, item.getDisplayName(), matchName))
+                sender.sendColorMessage(message.formatBy(namePattern, item.getDisplayName() ?: "", matchName))
             }
             if (!matchName) return false
         }

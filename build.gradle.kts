@@ -8,7 +8,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.guardsquare:proguard-gradle:7.3.1")
+        classpath("com.guardsquare:proguard-gradle:7.3.2")
     }
 }
 subprojects {
@@ -77,9 +77,4 @@ repositories {
 dependencies {
     //基础库
     compileOnly(kotlin("stdlib"))
-}
-kotlin {
-    sourceSets.all {
-        languageSettings.languageVersion = "2.0"
-    }
 }

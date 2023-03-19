@@ -148,6 +148,8 @@ object DatabaseConfig : SimpleYAMLConfig() {
         isConnecting = true
         closeDB()
         runCatching {
+            val contextClassLoader = Thread.currentThread().contextClassLoader
+            Thread.currentThread().contextClassLoader = BukkitTemplate.isolatedClassLoader
             val dd = DependencyDownloader()
                 .addRepository("https://maven.aliyun.com/repository/public")
                 .addRepository("https://repo.maven.apache.org/maven2/")
@@ -182,6 +184,7 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 }
 
                 "SQLite" -> HikariConfig(props).apply {
+                    DependencyDownloader.assembly.add("org.xerial:sqlite-jdbc")
                     dd.downloadDependency("org.xerial:sqlite-jdbc:3.41.0.0", 1)
                     jdbcUrl = "jdbc:sqlite:$address$params"
                     driverClassName = "org.sqlite.JDBC"
@@ -231,6 +234,7 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 sqlLogger = MySqlLogger
             })
             isConnected = true
+            Thread.currentThread().contextClassLoader = contextClassLoader
             info("&a数据库链接成功: &6$database_type")
         }.getOrElse {
             isConnected = false

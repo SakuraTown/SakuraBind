@@ -12,57 +12,59 @@ import java.util.LinkedList;
 
 // 反射工具&ClassLoader注入器
 public class ReflectionUtil {
-    private static MethodHandle addUrlHandle;
-    private static Object ucp;
+    private static final MethodHandle addUrlHandleAssembly;
+    private static final Object assemblyUcp;
+    private static final Unsafe unsafe;
+    private static MethodHandle addUrlHandleIsolated;
     private static LinkedList<URL> urls = new LinkedList<>();
-    private static LinkedList<URL> subUrls = new LinkedList<>();
     private static boolean isInit = false;
-    private static Unsafe unsafe;
+    private static Object isolatedUcp;
 
-    /**
-     * 初始化反射模块
-     */
-    public static void enable() {
-        //通过反射获取ClassLoader addUrl 方法，因为涉及java17 无奈使用UnSafe方法
-        isInit = true;
+    static {
         try {
             Field f = Unsafe.class.getDeclaredField("theUnsafe");
             f.setAccessible(true);
             unsafe = (Unsafe) f.get(null);
             //将子依赖填入插件classloader
-            setUcpTarget(BukkitTemplate.class.getClassLoader());
-            for (URL subUrl : subUrls) {
-                addURL(subUrl);
-            }
-            setUcpTarget(BukkitTemplate.isolatedClassLoader);
+            Field ucpField = URLClassLoader.class.getDeclaredField("ucp");
+            assemblyUcp = unsafe.getObject(BukkitTemplate.class.getClassLoader(), unsafe.objectFieldOffset(ucpField));
+            Field lookupField = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+            MethodHandles.Lookup lookup = (MethodHandles.Lookup) unsafe.getObject(unsafe.staticFieldBase(lookupField), unsafe.staticFieldOffset(lookupField));
+            addUrlHandleAssembly = lookup.findVirtual(assemblyUcp.getClass(), "addURL", MethodType.methodType(void.class, URL.class));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        clear();
     }
 
-    public static void clear() {
+    /**
+     * 初始化反射模块
+     */
+    public static void init() {
+        //通过反射获取ClassLoader addUrl 方法，因为涉及java17 无奈使用UnSafe方法
+        if (isInit) return;
+        isInit = true;
         urls = null;
-        subUrls = null;
-    }
-
-    private static void setUcpTarget(ClassLoader classLoader) throws NoSuchFieldException, NoSuchMethodException, IllegalAccessException {
-        Field ucpField = URLClassLoader.class.getDeclaredField("ucp");
-        ucp = unsafe.getObject(classLoader, unsafe.objectFieldOffset(ucpField));
-        Field lookupField = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
-        MethodHandles.Lookup lookup = (MethodHandles.Lookup) unsafe.getObject(unsafe.staticFieldBase(lookupField), unsafe.staticFieldOffset(lookupField));
-        addUrlHandle = lookup.findVirtual(ucp.getClass(), "addURL", MethodType.methodType(void.class, URL.class));
+        try {
+            Field ucpField = URLClassLoader.class.getDeclaredField("ucp");
+            isolatedUcp = unsafe.getObject(BukkitTemplate.isolatedClassLoader, unsafe.objectFieldOffset(ucpField));
+            Field lookupField = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+            MethodHandles.Lookup lookup = (MethodHandles.Lookup) unsafe.getObject(unsafe.staticFieldBase(lookupField), unsafe.staticFieldOffset(lookupField));
+            addUrlHandleIsolated = lookup.findVirtual(isolatedUcp.getClass(), "addURL", MethodType.methodType(void.class, URL.class));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
      * 将URl添加进插件的ClassLoader
      */
-    public static synchronized void addURL(URL url) {
+    public static synchronized void addIsolatedURL(URL url) {
+        if (url == null) return;
         try {
             if (!isInit)
                 urls.add(url);
             else
-                addUrlHandle.invoke(ucp, url);
+                addUrlHandleIsolated.invoke(isolatedUcp, url);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -71,11 +73,10 @@ public class ReflectionUtil {
     /**
      * 将URl添加进插件的ClassLoader
      */
-    public static synchronized void addSubURL(URL url) {
+    public static synchronized void addAssemblyURL(URL url) {
         try {
-            if (!isInit)
-                subUrls.add(url);
-            else addUrlHandle.invoke(ucp, url);
+            if (!isInit) return;
+            addUrlHandleAssembly.invoke(assemblyUcp, url);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }

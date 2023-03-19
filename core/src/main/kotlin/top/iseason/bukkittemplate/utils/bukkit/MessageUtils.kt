@@ -21,6 +21,7 @@ import top.iseason.bukkittemplate.dependency.DependencyDownloader
 import top.iseason.bukkittemplate.hook.BungeeCordHook
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.other.submit
+import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -29,6 +30,10 @@ import java.util.regex.Pattern
  * bukkit的消息相关工具
  */
 object MessageUtils {
+    /**
+     * 消息处理队列，最后一个是发送消息给玩家的
+     */
+    val messageHandlers = LinkedList<MessageConsumer>()
     private var miniMessageSupport = false
     private var miniMessageLoaded = false
     lateinit var audiences: BukkitAudiences
@@ -38,6 +43,84 @@ object MessageUtils {
         true
     } catch (e: Throwable) {
         false
+    }
+
+    /**
+     * 初始化默认消息解析器
+     */
+    init {
+        //广播
+        messageHandlers.add { msg, _, prefix ->
+            if (msg.startsWith("[broadcast]", true)) {
+                broadcast(msg.drop(11), prefix)
+                return@add false
+            }
+            true
+        }
+        // actionbar
+        messageHandlers.add { msg, sender, prefix ->
+            if (sender is Player && msg.startsWith("[actionbar]", true)) {
+                sender.sendActionBar(msg.drop(11), prefix)
+                return@add false
+            }
+            true
+        }
+        //大标题
+        messageHandlers.add { msg, sender, prefix ->
+            if (sender is Player && msg.startsWith("[main-title]", true)) {
+                sender.sendMainTitle(msg.drop(12), prefix)
+                return@add false
+            }
+            true
+        }
+        //小标题
+        messageHandlers.add { msg, sender, prefix ->
+            if (sender is Player && msg.startsWith("[sub-title]", true)) {
+                sender.sendSubTitle(msg.drop(11), prefix)
+                return@add false
+            }
+            true
+        }
+        //命令
+        messageHandlers.add { msg, sender, _ ->
+            if (msg.startsWith("[command]", true) ||
+                msg.startsWith("[console]", true) ||
+                msg.startsWith("[op-command]", true)
+            ) {
+                val opCommand = msg.startsWith("[op-command]", true)
+                val command =
+                    PlaceHolderHook.setPlaceHolder(msg.drop(if (opCommand) 12 else 9), sender as? OfflinePlayer).trim()
+                val realSender = if (msg.startsWith("[console]", true)) Bukkit.getConsoleSender() else sender
+                val tempOP = opCommand && !realSender.isOp
+                if (Bukkit.isPrimaryThread()) {
+                    try {
+                        if (tempOP) realSender.isOp = true
+                        Bukkit.dispatchCommand(realSender, command)
+                    } catch (e: Throwable) {
+                        e.printStackTrace()
+                    } finally {
+                        if (tempOP) realSender.isOp = false
+                    }
+                } else {
+                    submit {
+                        try {
+                            if (tempOP) realSender.isOp = true
+                            Bukkit.dispatchCommand(realSender, command)
+                        } catch (e: Throwable) {
+                            e.printStackTrace()
+                        } finally {
+                            if (tempOP) realSender.isOp = false
+                        }
+                    }
+                }
+                return@add false
+            } else true
+        }
+        // 发送消息
+        messageHandlers.add { msg, sender, prefix ->
+            sender.sendMsg(PlaceHolderHook.setPlaceHolder("$prefix$msg", sender as? OfflinePlayer))
+            false
+        }
     }
 
     fun enableMiniMessage() {
@@ -116,69 +199,31 @@ object MessageUtils {
      * 发送带颜色转换的消息,不输出null与空string
      */
     fun CommandSender.sendColorMessage(message: Any?, prefix: String = defaultPrefix) {
-        val msg = message?.toString()
-        if (msg.isNullOrEmpty()) return
-        msg.split("\\n", "\n")
-            .forEach { m ->
-                //普通消息
-                if (!m.startsWith('[')) {
-                    sendMsg(PlaceHolderHook.setPlaceHolder("$prefix$m", this as? OfflinePlayer))
-                    return@forEach
-                }
-                //特殊消息
-                if (m.startsWith("[broadcast]", true)) {
-                    broadcast(m.drop(11), prefix)
-                    return@forEach
-                }
-                if (this is Player && m.startsWith("[actionbar]", true)) {
-                    sendActionBar(m.drop(11), prefix)
-                    return@forEach
-                }
-                if (this is Player && m.startsWith("[main-title]", true)) {
-                    sendMainTitle(m.drop(12), prefix)
-                    return@forEach
-                }
-                if (this is Player && m.startsWith("[sub-title]", true)) {
-                    sendSubTitle(m.drop(11), prefix)
-                    return@forEach
-                }
-                if (m.startsWith("[command]", true) ||
-                    m.startsWith("[console]", true) ||
-                    m.startsWith("[op-command]", true)
-                ) {
-                    val opCommand = m.startsWith("[op-command]", true)
-                    val size = if (opCommand) 12 else 9
-                    val command = PlaceHolderHook.setPlaceHolder(m.drop(size).trim(), this as? OfflinePlayer)
-                    val sender = if (m.startsWith("[console]", true)) Bukkit.getConsoleSender() else this
-                    val tempOP = opCommand && !sender.isOp
-                    if (Bukkit.isPrimaryThread()) {
-                        try {
-                            if (tempOP) sender.isOp = true
-                            Bukkit.dispatchCommand(sender, command)
-                        } catch (e: Throwable) {
-                            e.printStackTrace()
-                        } finally {
-                            if (tempOP) sender.isOp = false
-                        }
-                    } else {
-                        submit {
-                            try {
-                                if (tempOP) sender.isOp = true
-                                Bukkit.dispatchCommand(sender, command)
-                            } catch (e: Throwable) {
-                                e.printStackTrace()
-                            } finally {
-                                if (tempOP) sender.isOp = false
-                            }
-                        }
+        //格式化消息,处理papi
+        val messageList = if (message is Collection<*>) {
+            message.mapNotNull { it?.toString() }
+        } else if (message?.toString().isNullOrEmpty()) return
+        else message!!.toString().split("\n")
+        if (messageList.isEmpty()) return
+        //是否传递消息,为了引用传递
+        //每个消息都由消费者消费
+        for (msg in messageList) {
+            if (msg.isEmpty()) continue
+            for (messageHandler in messageHandlers) {
+                try {
+                    if (!messageHandler.onHandler(msg, this, prefix)) {
+                        break
                     }
-                    return@forEach
+                } catch (e: Throwable) {
+                    e.printStackTrace()
                 }
-
             }
-
+        }
     }
 
+    /**
+     * 发送MiniMessage或者普通消息
+     */
     private fun CommandSender.sendMsg(msg: String) {
         if (miniMessageSupport)
             audiences.sender(this).sendMessage(MiniMessage.miniMessage().deserialize(msg))
@@ -316,6 +361,20 @@ object MessageUtils {
         } else {
             this.sendTitle("", finalMessage)
         }
+    }
+
+    /**
+     * 消息消费者
+     */
+    fun interface MessageConsumer {
+        /**
+         * 处理消息
+         * @param msg 原始消息
+         * @param sender 接收发送者
+         * @param prefix 消息前缀
+         * @return 是否传递消息给其他消费者
+         */
+        fun onHandler(msg: String, sender: CommandSender, prefix: String): Boolean
     }
 }
 

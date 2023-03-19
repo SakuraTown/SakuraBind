@@ -1,6 +1,8 @@
 package top.iseason.bukkittemplate.loader;
 
 import top.iseason.bukkittemplate.BukkitTemplate;
+import top.iseason.bukkittemplate.ReflectionUtil;
+import top.iseason.bukkittemplate.dependency.DependencyDownloader;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -15,6 +17,8 @@ public class IsolatedClassLoader extends URLClassLoader {
     public static final Set<String> BLACK_LIST = new HashSet<String>() {{
         add(BukkitTemplate.class.getName());
         add(IsolatedClassLoader.class.getName());
+        add(DependencyDownloader.class.getName());
+        add(ReflectionUtil.class.getName());
     }};
 
     public IsolatedClassLoader(URL[] urls, ClassLoader parent) {
