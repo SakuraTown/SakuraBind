@@ -19,7 +19,7 @@ dependencies {
 
     // 本地依赖放在libs文件夹内
     compileOnly(fileTree("libs") { include("*.jar") })
-    implementation("io.github.bananapuncher714:nbteditor:7.18.4")
+//    implementation("io.github.bananapuncher714:nbteditor:7.18.5")
     implementation("org.bstats:bstats-bukkit:3.0.0")
     compileOnly("org.ehcache:ehcache:3.10.8") { isTransitive = false }
     compileOnly("me.clip:placeholderapi:2.11.2") { isTransitive = false }

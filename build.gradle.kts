@@ -49,6 +49,7 @@ subprojects {
         compileOnly(kotlin("stdlib"))
         // 数据库
         val exposedVersion: String by rootProject
+        implementation("io.github.bananapuncher714:nbteditor:7.18.5")
         compileOnly("org.jetbrains.exposed:exposed-core:$exposedVersion")
         compileOnly("org.jetbrains.exposed:exposed-dao:$exposedVersion")
         compileOnly("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")

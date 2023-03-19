@@ -11,7 +11,7 @@ repositories {
 }
 dependencies {
 
-    implementation("io.github.bananapuncher714:nbteditor:7.18.4")
+//    implementation("io.github.bananapuncher714:nbteditor:7.18.5")
     compileOnly("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.11.2")
     compileOnly("net.kyori:adventure-text-minimessage:4.12.0")
