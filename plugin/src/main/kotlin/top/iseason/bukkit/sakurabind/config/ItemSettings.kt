@@ -5,12 +5,17 @@ import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
+import org.ehcache.UserManagedCache
+import org.ehcache.config.builders.ExpiryPolicyBuilder
+import org.ehcache.config.builders.UserManagedCacheBuilder
+import org.ehcache.impl.copy.IdentityCopier
 import top.iseason.bukkit.sakurabind.event.ItemMatchedEvent
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
 import top.iseason.bukkittemplate.debug.warn
+import java.time.Duration
 
 @FilePath("settings.yml")
 object ItemSettings : SimpleYAMLConfig() {
@@ -65,18 +70,18 @@ object ItemSettings : SimpleYAMLConfig() {
             set("block-deny.interact@", false)
         }
     }
-    // 真没想到 ItemStack的Hashcode 效率还不如直接从nbt读取
-//    val settingCache: UserManagedCache<ItemStack, BaseSetting> = UserManagedCacheBuilder
-//        .newUserManagedCacheBuilder(ItemStack::class.java, BaseSetting::class.java)
-//        .withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofSeconds(3)))
-//        .withKeyCopier(IdentityCopier())
-//        .withValueCopier(IdentityCopier())
-//        .build(true)
+
+    val settingCache: UserManagedCache<ItemStack, BaseSetting> = UserManagedCacheBuilder
+        .newUserManagedCacheBuilder(ItemStack::class.java, BaseSetting::class.java)
+        .withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofSeconds(5)))
+        .withKeyCopier(IdentityCopier())
+        .withValueCopier(IdentityCopier())
+        .build(true)
 
     private var settings = LinkedHashMap<String, ItemSetting>()
 
     override fun onLoaded(section: ConfigurationSection) {
-//        settingCache.clear()
+        settingCache.clear()
         nbtPath = if (nbt_cache_path.isBlank()) arrayOf("sakura_bind_setting_cache")
         else nbt_cache_path.split('.').toTypedArray()
         settings.clear()
@@ -98,13 +103,12 @@ object ItemSettings : SimpleYAMLConfig() {
      */
     fun getSetting(item: ItemStack, setInCache: Boolean = true): BaseSetting {
         // 一级缓存, 由EhCache实现
-
-//        var setting: BaseSetting? = settingCache.get(item)
-        var setting: BaseSetting? = null
+        // 仅给未绑定物品添加一级缓存
+        var setting: BaseSetting? = if (setInCache) null else settingCache.get(item)
 //        // 存在缓存，立即返回
-//        if (setting != null) {
-//            return setting
-//        }
+        if (setting != null) {
+            return setting
+        }
         // 二级缓存,从NBT中读取设置的ID,再根据ID获取对应的对象
         val key = NBTEditor.getString(item, *nbtPath)
         // 持久化的ID可能过期，先判断
@@ -112,23 +116,21 @@ object ItemSettings : SimpleYAMLConfig() {
             setting = settings[key]
         // 存在缓存，立即返回
         if (setting != null) {
-//            settingCache.put(item, setting)
             return setting
         }
         // 物品匹配,顺序查找,找到了立即结束循环并加入缓存
-        for ((_, s) in settings) {
+        for (s in settings.values) {
             if (s.match(item)) {
                 val itemMatchedEvent = ItemMatchedEvent(item, s)
                 Bukkit.getPluginManager().callEvent(itemMatchedEvent)
                 setting = itemMatchedEvent.matchSetting ?: DefaultItemSetting
                 if (setInCache) item.itemMeta = NBTEditor.set(item, setting.keyPath, *nbtPath).itemMeta
-//                settingCache.put(item, setting)
+                else settingCache.put(item, setting)
                 return setting
             }
         }
         //到这就没有合适的键了，但又有nbt，说明被删了，清除旧的缓存
         if (key != null) item.itemMeta = NBTEditor.set(item, null, *nbtPath).itemMeta
-//        settingCache.put(item, DefaultItemSetting)
         return DefaultItemSetting
     }
 
