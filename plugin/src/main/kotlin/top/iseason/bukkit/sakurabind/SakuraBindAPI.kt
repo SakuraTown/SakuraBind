@@ -381,7 +381,7 @@ object SakuraBindAPI {
      */
     @JvmStatic
     fun getEntityOwner(entity: Entity): String? {
-        if (!isEntityEnable()) throw IllegalStateException("实体监听器未启用，请在config.yml中打开 'block-listener'")
+        if (!isEntityEnable()) throw IllegalStateException("实体监听器未启用，请在config.yml中打开 'entity-listener'")
         return EntityCache.getEntityInfo(entity)?.first
     }
 
@@ -392,7 +392,7 @@ object SakuraBindAPI {
      */
     @JvmStatic
     fun getEntitySetting(entity: Entity): BaseSetting? {
-        if (!isEntityEnable()) throw IllegalStateException("实体监听器未启用，请在config.yml中打开 'block-listener'")
+        if (!isEntityEnable()) throw IllegalStateException("实体监听器未启用，请在config.yml中打开 'entity-listener'")
         return EntityCache.getEntityInfo(entity)?.second
     }
 

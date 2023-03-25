@@ -42,6 +42,7 @@ object UnBindCommand : CommandNode(
             }
 
             "block" -> {
+                if (!SakuraBindAPI.isBlockEnable()) throw ParmaException("方块监听器未启用，请在config.yml中打开 'block-listener'")
                 val targetBlock = player.getTargetBlock(null, 5)
                 if (targetBlock == null || targetBlock.isEmpty) throw ParmaException("目标前方没有一个有效的方块")
                 if (SakuraBindAPI.getBlockOwner(targetBlock) == null) throw ParmaException(Lang.command__unbind_not_bind)
@@ -53,6 +54,7 @@ object UnBindCommand : CommandNode(
             }
 
             "entity" -> {
+                if (!SakuraBindAPI.isEntityEnable()) throw ParmaException("实体监听器未启用，请在config.yml中打开 'entity-listener'")
                 if (!NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_13)) {
                     throw ParmaException("实体绑定命令只在1.13或以上生效")
                 }

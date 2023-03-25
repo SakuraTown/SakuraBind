@@ -16,7 +16,7 @@ object Lang : top.iseason.bukkittemplate.config.Lang() {
     var entity_bind = "&7你前面的实体已绑定"
     var item_bind_all = "&7你的背包物品已绑定"
     var item_unbind_hand = "&7你手上的物品已解绑"
-    var block_unbind = "&7你手上的物品已解绑"
+    var block_unbind = "&7你前面的方块已解绑"
     var entity_unbind = "&7你手上的物品已解绑"
     var item_unbind_all = "&7你的背包物品已解绑"
     var entity_bind_on_spawner_egg = "&6你的生物已绑定!"

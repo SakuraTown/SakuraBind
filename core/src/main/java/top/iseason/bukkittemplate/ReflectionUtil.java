@@ -75,7 +75,6 @@ public class ReflectionUtil {
      */
     public static synchronized void addAssemblyURL(URL url) {
         try {
-            if (!isInit) return;
             addUrlHandleAssembly.invoke(assemblyUcp, url);
         } catch (Throwable e) {
             throw new RuntimeException(e);

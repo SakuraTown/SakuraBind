@@ -7,7 +7,6 @@ softdepend:
   - SakuraMail
   - PlaceholderAPI
   - AuthMe
-  - IseasonOfflineLib
 
 runtime-libraries:
   # If not defined, it will be 'libraries'

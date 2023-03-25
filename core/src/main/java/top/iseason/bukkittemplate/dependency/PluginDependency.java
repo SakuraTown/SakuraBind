@@ -2,14 +2,17 @@ package top.iseason.bukkittemplate.dependency;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 import top.iseason.bukkittemplate.BukkitTemplate;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.List;
-
-import static java.util.Objects.requireNonNull;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class PluginDependency {
 
@@ -17,7 +20,23 @@ public class PluginDependency {
      * 解析下载plugin.yml中的依赖
      */
     public static boolean parsePluginYml() {
-        YamlConfiguration yml = YamlConfiguration.loadConfiguration(new InputStreamReader(requireNonNull(BukkitTemplate.class.getClassLoader().getResourceAsStream("plugin.yml"), "Jar does not contain plugin.yml")));
+        YamlConfiguration yml = null;
+        // 为什么不用 classloader 的 getResource呢，因为某些sb系统或者服务端会乱改
+        try {
+            Method getFileMethod = JavaPlugin.class.getDeclaredMethod("getFile");
+            getFileMethod.setAccessible(true);
+            File file = (File) getFileMethod.invoke(BukkitTemplate.getPlugin());
+            try (JarFile jarFile = new JarFile(file)) {
+                JarEntry entry = jarFile.getJarEntry("plugin.yml");
+                InputStream resource = jarFile.getInputStream(entry);
+                yml = YamlConfiguration.loadConfiguration(new InputStreamReader(resource));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (yml == null) return true;
         ConfigurationSection libConfigs = yml.getConfigurationSection("runtime-libraries");
         if (libConfigs == null) return true;
         DependencyDownloader dd = new DependencyDownloader();
@@ -52,7 +71,6 @@ public class PluginDependency {
         dd.dependencies = map;
         DependencyDownloader.assembly.addAll(libConfigs.getStringList("assembly"));
         DependencyDownloader.exists.addAll(libConfigs.getStringList("excludes"));
-
         return dd.start(libConfigs.getBoolean("parallel", false));
     }
 }
