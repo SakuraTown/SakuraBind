@@ -42,7 +42,7 @@ class Scanner : BukkitRunnable() {
                         continue
                     }
                     if (setting.getBoolean(
-                            "item.send_back_scanner", ownerStr, it
+                            "item.send-back-scanner", ownerStr, it
                         ) && owner != null && owner != it.uniqueId
                     ) {
                         debug("找到 ${it.name} 违规物品${item.type} 属于 $owner")
