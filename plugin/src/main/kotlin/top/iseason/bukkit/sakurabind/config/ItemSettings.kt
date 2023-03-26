@@ -112,11 +112,11 @@ object ItemSettings : SimpleYAMLConfig() {
         // 二级缓存,从NBT中读取设置的ID,再根据ID获取对应的对象
         val key = NBTEditor.getString(item, *nbtPath)
         // 持久化的ID可能过期，先判断
-        if (key != null)
+        if (key != null && setInCache) {
+            // 存在缓存，立即返回
             setting = settings[key]
-        // 存在缓存，立即返回
-        if (setting != null) {
-            return setting
+            if (setting != null)
+                return setting
         }
         // 物品匹配,顺序查找,找到了立即结束循环并加入缓存
         for (s in settings.values) {
@@ -124,14 +124,16 @@ object ItemSettings : SimpleYAMLConfig() {
                 val itemMatchedEvent = ItemMatchedEvent(item, s)
                 Bukkit.getPluginManager().callEvent(itemMatchedEvent)
                 setting = itemMatchedEvent.matchSetting ?: DefaultItemSetting
-                if (setInCache) item.itemMeta = NBTEditor.set(item, setting.keyPath, *nbtPath).itemMeta
-                else settingCache.put(item, setting)
-                return setting
+                if (setInCache)
+                    item.itemMeta = NBTEditor.set(item, setting.keyPath, *nbtPath).itemMeta
+                else
+                    settingCache.put(item, setting)
+                break
             }
         }
         //到这就没有合适的键了，但又有nbt，说明被删了，清除旧的缓存
         if (key != null) item.itemMeta = NBTEditor.set(item, null, *nbtPath).itemMeta
-        return DefaultItemSetting
+        return setting ?: DefaultItemSetting
     }
 
 

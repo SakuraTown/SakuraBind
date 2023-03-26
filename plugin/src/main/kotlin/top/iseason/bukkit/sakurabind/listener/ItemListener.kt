@@ -179,8 +179,8 @@ object ItemListener : Listener {
         if (Config.checkByPass(event.player)) return
         val player = event.player
         val item = event.item.itemStack
-        val itemSetting = SakuraBindAPI.getItemSetting(item)
         val owner = SakuraBindAPI.getOwner(item) ?: return
+        val itemSetting = ItemSettings.getSetting(item)
         if (itemSetting.getBoolean("item-deny.pickup", owner.toString(), player)) {
             event.isCancelled = true
             event.item.pickupDelay = 10

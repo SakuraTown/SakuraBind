@@ -203,7 +203,7 @@ object SakuraBindAPI {
             temp.applyMeta { this.lore = newLore }
             temp = NBTEditor.set(temp, null, *Config.nbtPathLore)
         }
-        val setting = ItemSettings.getSetting(item, true) as ItemSetting
+        val setting = ItemSettings.getSetting(item) as ItemSetting
         // 有主人
         if (owner != null) {
             val player = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
@@ -326,7 +326,7 @@ object SakuraBindAPI {
      * @return 绑定设置
      */
     @JvmStatic
-    fun getItemSetting(item: ItemStack): BaseSetting {
+    fun getItemSetting(item: ItemStack, setInCache: Boolean = true): BaseSetting {
         return ItemSettings.getSetting(item)
     }
 
