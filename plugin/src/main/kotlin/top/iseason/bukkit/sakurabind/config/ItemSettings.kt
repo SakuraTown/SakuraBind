@@ -124,15 +124,13 @@ object ItemSettings : SimpleYAMLConfig() {
                 val itemMatchedEvent = ItemMatchedEvent(item, s)
                 Bukkit.getPluginManager().callEvent(itemMatchedEvent)
                 setting = itemMatchedEvent.matchSetting ?: DefaultItemSetting
-                if (setInCache)
-                    item.itemMeta = NBTEditor.set(item, setting.keyPath, *nbtPath).itemMeta
-                else
-                    settingCache.put(item, setting)
+                if (setInCache) item.itemMeta = NBTEditor.set(item, setting.keyPath, *nbtPath).itemMeta
                 break
             }
         }
         //到这就没有合适的键了，但又有nbt，说明被删了，清除旧的缓存
         if (key != null) item.itemMeta = NBTEditor.set(item, null, *nbtPath).itemMeta
+        if (!setInCache) settingCache.put(item, setting)
         return setting ?: DefaultItemSetting
     }
 

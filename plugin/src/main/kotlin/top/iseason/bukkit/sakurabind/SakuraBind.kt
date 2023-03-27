@@ -26,7 +26,7 @@ import top.iseason.bukkittemplate.debug.SimpleLogger
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
-import top.iseason.bukkittemplate.utils.bukkit.EventUtils.register
+import top.iseason.bukkittemplate.utils.bukkit.EventUtils.registerListener
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 
 object SakuraBind : BukkitPlugin {
@@ -96,30 +96,30 @@ object SakuraBind : BukkitPlugin {
      * 注册监听器
      */
     private fun initListeners() {
-        ItemListener.register()
+        ItemListener.registerListener()
         if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_9)) {
-            ItemListener194.register()
+            ItemListener194.registerListener()
         }
         if (AuthMeHook.hasHooked) {
-            LoginAuthMeListener.register()
+            LoginAuthMeListener.registerListener()
         } else {
-            LoginListener.register()
+            LoginListener.registerListener()
         }
         if (Config.block_listener) {
-            BlockListener.register()
+            BlockListener.registerListener()
             try {
                 BlockPhysicsEvent::class.java.getMethod("getSourceBlock")
-                BlockListener1132.register()
+                BlockListener1132.registerListener()
             } catch (_: Exception) {
             }
             info("&a已启用方块监听器!")
         }
         if (Config.entity_listener) {
             CacheManager.register(EntityCache)
-            EntityListener.register()
+            EntityListener.registerListener()
             info("&a已启用实体监听器!")
         }
-        SelectListener.register()
+        SelectListener.registerListener()
 //        UIListener.register()
     }
 
