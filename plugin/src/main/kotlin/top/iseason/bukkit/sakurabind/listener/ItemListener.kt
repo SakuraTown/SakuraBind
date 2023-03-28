@@ -25,6 +25,7 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
+import top.iseason.bukkit.sakurabind.command.CallbackCommand
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
@@ -180,6 +181,16 @@ object ItemListener : Listener {
         val player = event.player
         val item = event.item.itemStack
         val owner = SakuraBindAPI.getOwner(item) ?: return
+        if (CallbackCommand.isCallback(owner)) {
+            val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
+            if (sendBackItem.isEmpty())
+                event.item.remove()
+            else event.item.itemStack = sendBackItem.first()
+            event.isCancelled = true
+            event.item.pickupDelay = 10
+            player.sendColorMessage(Lang.command__callback)
+            return
+        }
         val itemSetting = ItemSettings.getSetting(item)
         if (itemSetting.getBoolean("item-deny.pickup", owner.toString(), player)) {
             event.isCancelled = true
@@ -197,7 +208,6 @@ object ItemListener : Listener {
                 )
             }
         }
-
     }
 
     /**
@@ -404,13 +414,14 @@ object ItemListener : Listener {
         if (item.isDead) return
         val itemStack = item.itemStack
         val owner = SakuraBindAPI.getOwner(itemStack) ?: return
-        if (!ItemSettings.getSetting(itemStack).getBoolean("item.send-when-lost", null, null)) {
-            return
+        if (CallbackCommand.isCallback(owner) ||
+            ItemSettings.getSetting(itemStack).getBoolean("item.send-when-lost", null, null)
+        ) {
+            val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(itemStack))
+            if (sendBackItem.isEmpty())
+                item.remove()
+            else item.itemStack = sendBackItem.first()
         }
-        val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(itemStack))
-        if (sendBackItem.isEmpty())
-            item.remove()
-        else item.itemStack = sendBackItem.first()
     }
 
     /**
@@ -421,7 +432,9 @@ object ItemListener : Listener {
         val item = event.entity
         val itemStack = item.itemStack
         val owner = SakuraBindAPI.getOwner(item.itemStack) ?: return
-        if (!ItemSettings.getSetting(itemStack).getBoolean("item.send-when-lost", null, null)) {
+        if (!CallbackCommand.isCallback(owner)
+            && !ItemSettings.getSetting(itemStack).getBoolean("item.send-when-lost", null, null)
+        ) {
             return
         }
         val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(itemStack))
@@ -534,11 +547,22 @@ object ItemListener : Listener {
         val player = event.player
         if (Config.checkByPass(player)) return
         val item = event.itemDrop.itemStack
-        val owner = SakuraBindAPI.getOwner(item)?.toString()
-        if (owner != null) {
+        val owner = SakuraBindAPI.getOwner(item)
+        //处理召回
+        if (CallbackCommand.isCallback(owner)) {
+            event.itemDrop.itemStack
+            val sendBackItem = SakuraBindAPI.sendBackItem(owner!!, listOf(item))
+            if (sendBackItem.isEmpty())
+                event.itemDrop.remove()
+            else event.itemDrop.itemStack = sendBackItem.first()
+            player.sendColorMessage(Lang.command__callback)
+            return
+        }
+        val ownerStr = owner?.toString()
+        if (ownerStr != null) {
             val setting = ItemSettings.getSetting(item)
-            if (setting.getBoolean("auto-unbind.enable", owner, player) &&
-                (setting.getBoolean("auto-unbind.onDrop", owner, player) ||
+            if (setting.getBoolean("auto-unbind.enable", ownerStr, player) &&
+                (setting.getBoolean("auto-unbind.onDrop", ownerStr, player) ||
                         NBTEditor.contains(item, Config.auto_bind_nbt))
             ) {
                 SakuraBindAPI.unBind(item, BindType.DROP_UNBIND_ITEM)
@@ -615,7 +639,9 @@ object ItemListener : Listener {
             val next = iterator.next()
             val owner = SakuraBindAPI.getOwner(next) ?: continue
             val setting = ItemSettings.getSetting(next)
-            if (!setting.getBoolean("item-deny.drop-on-death", owner.toString(), entity)) continue
+            if (!CallbackCommand.isCallback(owner)
+                && !setting.getBoolean("item-deny.drop-on-death", owner.toString(), entity)
+            ) continue
             iterator.remove()
             sendBackList.add(next)
         }

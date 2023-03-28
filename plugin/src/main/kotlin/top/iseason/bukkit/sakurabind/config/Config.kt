@@ -57,7 +57,7 @@ object Config : SimpleYAMLConfig() {
     @Key
     @Comment(
         "",
-        "定时扫描所有玩家背包(materials不为空才会开启), 此为扫描周期,单位tick，0表示关闭",
+        "定时扫描所有玩家背包, 此为扫描周期,单位tick，0表示关闭",
         "此项关闭将影响 scanner开头的设置"
     )
     var scanner_period = 60L

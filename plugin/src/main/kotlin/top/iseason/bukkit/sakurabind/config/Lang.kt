@@ -107,7 +107,9 @@ object Lang : top.iseason.bukkittemplate.config.Lang() {
     var command__test__try_match_ids = "&a  - ID: &f{0} -> &7{1} = &6{2}"
     var command__test__try_match_nbt = "&a  - NBT: &f{0} -> &7{1} = &6{2} &7路径: {3}"
     var command__test__try_match_result = "&6匹配结束, 结果: &6{0}"
-
+    var command__callback_on = "&a已开启物品召回模式，绑定您的物品将会陆续返回，再次输入命令关闭"
+    var command__callback_off = "&6已关闭物品召回模式!"
+    var command__callback = "&6该物品已被物主召回"
     var command__debug = "&aDebug模式: &b{0}"
     var has_lost_item = "&a你有遗失的物品,请输入 &6'/sakurabind getLost' &a领取"
     var lost_item_send_when_online = "&a你有遗失的物品,请输入 &6'/sakurabind getLost' &a领取"

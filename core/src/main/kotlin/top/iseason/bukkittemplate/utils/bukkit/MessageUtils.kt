@@ -131,8 +131,8 @@ object MessageUtils {
             .addRepository("https://maven.aliyun.com/repository/public")
             .addRepository("https://repo.maven.apache.org/maven2/")
         dd.dependencies = mutableMapOf(
-            "net.kyori:adventure-platform-bukkit:4.2.0" to 4,
-            "net.kyori:adventure-text-minimessage:4.12.0" to 1
+            "net.kyori:adventure-platform-bukkit:4.3.0" to 4,
+            "net.kyori:adventure-text-minimessage:4.13.0" to 1
         )
         dd.start(true)
         audiences = BukkitAudiences.create(BukkitTemplate.getPlugin())

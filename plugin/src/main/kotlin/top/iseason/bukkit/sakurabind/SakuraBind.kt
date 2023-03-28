@@ -18,6 +18,7 @@ import top.iseason.bukkit.sakurabind.listener.*
 import top.iseason.bukkit.sakurabind.task.DelaySender
 import top.iseason.bukkit.sakurabind.task.DropItemList
 import top.iseason.bukkittemplate.BukkitPlugin
+import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.command.CommandHandler
 import top.iseason.bukkittemplate.command.CommandNode
 import top.iseason.bukkittemplate.config.DatabaseConfig
@@ -36,6 +37,7 @@ object SakuraBind : BukkitPlugin {
     }
 
     override fun onEnable() {
+        BukkitTemplate.getPlugin().saveResource("placeholders.txt", true)
         SimpleLogger.prefix = "&a[&6${javaPlugin.description.name}&a]&r ".toColor()
         SimpleYAMLConfig.notifyMessage = "&6配置文件 &f%s &6已重载!"
         checkHooks()
@@ -160,6 +162,7 @@ object SakuraBind : BukkitPlugin {
             addSubNode(DebugCommand)
             addSubNode(OpenLostCommand)
             addSubNode(ReloadCommand)
+            addSubNode(CallbackCommand)
             addSubNode(TestCommand)
             TestCommand.addSubNode(TestMatchCommand)
             TestCommand.addSubNode(TestTryMatchCommand)

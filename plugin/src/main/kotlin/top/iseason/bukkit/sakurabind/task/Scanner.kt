@@ -5,6 +5,7 @@ import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
+import top.iseason.bukkit.sakurabind.command.CallbackCommand
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
@@ -41,12 +42,13 @@ class Scanner : BukkitRunnable() {
                         MessageTool.messageCoolDown(it, Lang.auto_unbind__onScanner)
                         continue
                     }
-                    if (setting.getBoolean(
-                            "item.send-back-scanner", ownerStr, it
-                        ) && owner != null && owner != it.uniqueId
+                    if (CallbackCommand.isCallback(owner) ||
+                        (setting.getBoolean("item.send-back-scanner", ownerStr, it)
+                                && owner != null && owner != it.uniqueId
+                                )
                     ) {
                         debug("找到 ${it.name} 违规物品${item.type} 属于 $owner")
-                        sendBackMap.computeIfAbsent(owner) { mutableListOf() }.add(item)
+                        sendBackMap.computeIfAbsent(owner!!) { mutableListOf() }.add(item)
                         inventory.setItem(i, null)
                         hasFound = true
                         continue
