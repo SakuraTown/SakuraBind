@@ -15,6 +15,7 @@ import top.iseason.bukkit.sakurabind.config.DefaultItemSetting.stripLoreColor
 import top.iseason.bukkit.sakurabind.event.*
 import top.iseason.bukkit.sakurabind.task.DelaySender
 import top.iseason.bukkit.sakurabind.utils.BindType
+import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.applyMeta
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
@@ -442,12 +443,10 @@ object SakuraBindAPI {
             }
             //全部返还
             if (release.isEmpty()) {
-                if (!EasyCoolDown.check(uuid, 1000))
-                    player.sendColorMessage(Lang.send_back_all)
+                MessageTool.messageCoolDown(player, Lang.send_back_all)
                 return release
             }
-            if (!EasyCoolDown.check(uuid, 1000))
-                player.sendColorMessage(Lang.send_back_inventory)
+            MessageTool.messageCoolDown(player, Lang.send_back_inventory)
         } else release = items.toMutableList()
 
         /**

@@ -162,7 +162,7 @@ object MessageUtils {
      * 例子: &a你好、#66ccff 你好、#6cf 你好
      */
     fun String.toColor(): String {
-        if (miniMessageSupport) return this
+//        if (miniMessageSupport) return this
         if (!hexColorSupport) return ChatColor.translateAlternateColorCodes('&', this)
         val matcher: Matcher = HEX_PATTERN.matcher(this)
         // Increase buffer size by 32 like it is in bungee cord api. Use buffer because it is sync.
@@ -226,7 +226,7 @@ object MessageUtils {
      */
     private fun CommandSender.sendMsg(msg: String) {
         if (miniMessageSupport)
-            audiences.sender(this).sendMessage(MiniMessage.miniMessage().deserialize(msg))
+            audiences.sender(this).sendMessage(MiniMessage.miniMessage().deserialize(msg.noColor()))
         else sendMessage(msg)
     }
 

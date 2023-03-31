@@ -3,7 +3,6 @@ package top.iseason.bukkit.sakurabind.listener
 import fr.xephi.authme.api.v3.AuthMeApi
 import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.entity.Item
 import org.bukkit.entity.ItemFrame
 import org.bukkit.entity.Player
@@ -157,18 +156,18 @@ object ItemListener : Listener {
         val player = event.player
         if (Config.checkByPass(player)) return
         val item = event.itemDrop.itemStack
-        val owner = SakuraBindAPI.getOwner(item)
+        val owner = SakuraBindAPI.getOwner(item) ?: return
         //处理召回
         if (CallbackCommand.isCallback(owner)) {
-            val sendBackItem = SakuraBindAPI.sendBackItem(owner!!, listOf(item))
-            if (sendBackItem.isEmpty())
-                event.itemDrop.itemStack = ItemStack(Material.AIR)
-            else event.itemDrop.itemStack = sendBackItem.first()
+            val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
+            if (sendBackItem.isEmpty()) {
+                DropItemList.putItem(event.itemDrop, owner, Int.MIN_VALUE)
+            } else event.itemDrop.itemStack = sendBackItem.first()
             MessageTool.messageCoolDown(player, Lang.command__callback)
             return
         }
         if (ItemSettings.getSetting(item).getBoolean("item-deny.drop", owner.toString(), player)) {
-            event.itemDrop.itemStack = ItemStack(Material.AIR)
+            DropItemList.putItem(event.itemDrop, owner, Int.MIN_VALUE)
             val openInventory = event.player.openInventory
             val cursor = openInventory.cursor
             val release = event.player.inventory.addItem(item)

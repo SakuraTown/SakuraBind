@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 object DropItemList : BukkitRunnable() {
     private val hasMinHeight = NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_17)
     private val entities = ConcurrentLinkedQueue<ItemSender>()
+
     fun putItem(item: Item, owner: UUID, delay: Int) {
         entities.add(ItemSender(item, owner, delay))
     }
@@ -30,6 +31,11 @@ object DropItemList : BukkitRunnable() {
             }
             val owner = sender.owner
             val delay = sender.delay
+            if (delay == Int.MIN_VALUE) {
+                item.remove()
+                iterator.remove()
+                continue
+            }
             if (delay < 0) {
                 val location = item.location
                 val minHeight = if (hasMinHeight && location.world != null) location.world!!.minHeight else 0

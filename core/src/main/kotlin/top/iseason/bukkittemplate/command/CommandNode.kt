@@ -69,7 +69,11 @@ open class CommandNode(
                     CommandHandler.addPermissions(parentPerm)
                 }
                 permission = Permission(str, default)
-                Bukkit.getPluginManager().addPermission(permission)
+                try {
+                    Bukkit.getPluginManager().addPermission(permission)
+                } catch (e: Exception) {
+                    permission = Bukkit.getPluginManager().getPermission(permission.name)!!
+                }
                 permission.addParent(parentPerm, true)
             }
         }
