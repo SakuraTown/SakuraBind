@@ -15,10 +15,8 @@ public class ReflectionUtil {
     private static final MethodHandle addUrlHandleAssembly;
     private static final Object assemblyUcp;
     private static final Unsafe unsafe;
-    private static MethodHandle addUrlHandleIsolated;
     private static LinkedList<URL> urls = new LinkedList<>();
     private static boolean isInit = false;
-    private static Object isolatedUcp;
 
     static {
         try {
@@ -44,15 +42,6 @@ public class ReflectionUtil {
         if (isInit) return;
         isInit = true;
         urls = null;
-        try {
-            Field ucpField = URLClassLoader.class.getDeclaredField("ucp");
-            isolatedUcp = unsafe.getObject(BukkitTemplate.isolatedClassLoader, unsafe.objectFieldOffset(ucpField));
-            Field lookupField = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
-            MethodHandles.Lookup lookup = (MethodHandles.Lookup) unsafe.getObject(unsafe.staticFieldBase(lookupField), unsafe.staticFieldOffset(lookupField));
-            addUrlHandleIsolated = lookup.findVirtual(isolatedUcp.getClass(), "addURL", MethodType.methodType(void.class, URL.class));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**
@@ -61,10 +50,8 @@ public class ReflectionUtil {
     public static synchronized void addIsolatedURL(URL url) {
         if (url == null) return;
         try {
-            if (!isInit)
-                urls.add(url);
-            else
-                addUrlHandleIsolated.invoke(isolatedUcp, url);
+            if (!isInit) urls.add(url);
+            else BukkitTemplate.isolatedClassLoader.addURL(url);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }

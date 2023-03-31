@@ -30,16 +30,10 @@ object DropItemList : BukkitRunnable() {
             }
             val owner = sender.owner
             val delay = sender.delay
-//            println(item.lastDamageCause?.cause)
-            //非自然死亡
-//            val location = item.location
-//            println(delay)
-//            println(location.y)
             if (delay < 0) {
                 val location = item.location
                 val minHeight = if (hasMinHeight && location.world != null) location.world!!.minHeight else 0
                 if (item.location.y < minHeight) {
-//                    println("void")
                     SakuraBindAPI.sendBackItem(owner, listOf(item.itemStack))
                     item.remove()
                     iterator.remove()

@@ -24,9 +24,10 @@ import java.util.jar.JarFile;
  */
 public class BukkitTemplate extends JavaPlugin {
 
-    public static ClassLoader isolatedClassLoader;
+    public static IsolatedClassLoader isolatedClassLoader;
     private static JavaPlugin plugin = null;
     private static Object bootStrap = null;
+
     /**
      * 构造方法，负责下载/添加依赖，并启动插件
      */

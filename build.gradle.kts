@@ -23,9 +23,13 @@ subprojects {
 //    阿里的服务器速度快一点
         maven {
             name = "aliyun"
-            url = uri("https://maven.aliyun.com/repository/public/")
+            url = uri("https://maven.aliyun.com/repository/public")
         }
-        google()
+        maven {
+            name = "aliyun-google"
+            url = uri("https://maven.aliyun.com/repository/google")
+        }
+//        google()
         mavenCentral()
         maven {
             name = "spigot"
@@ -39,6 +43,10 @@ subprojects {
             name = "CodeMC"
             url = uri("https://repo.codemc.org/repository/maven-public")
         }
+        maven {
+            name = "PlaceholderAPI"
+            url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+        }
         mavenLocal()
     }
 
@@ -49,7 +57,9 @@ subprojects {
         compileOnly(kotlin("stdlib"))
         // 数据库
         val exposedVersion: String by rootProject
-        implementation("io.github.bananapuncher714:nbteditor:7.18.5")
+        val nbtEditorVersion: String by rootProject
+        compileOnly("io.github.bananapuncher714:nbteditor:$nbtEditorVersion")
+        compileOnly("me.clip:placeholderapi:2.11.2")
         compileOnly("org.jetbrains.exposed:exposed-core:$exposedVersion")
         compileOnly("org.jetbrains.exposed:exposed-dao:$exposedVersion")
         compileOnly("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
@@ -64,6 +74,7 @@ subprojects {
             targetCompatibility = "1.8"
         }
     }
+
 }
 
 repositories {

@@ -77,7 +77,7 @@ object GlobalSettings : SimpleYAMLConfig() {
 
     @Key
     @Comment("", "禁止丢弃")
-    var item_deny__drop = true
+    var item_deny__drop = false
 
     @Key
     @Comment("", "禁止含有绑定物品的容器被玩家破坏")

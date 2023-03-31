@@ -42,13 +42,15 @@ class Scanner : BukkitRunnable() {
                         MessageTool.messageCoolDown(it, Lang.auto_unbind__onScanner)
                         continue
                     }
-                    if (CallbackCommand.isCallback(owner) ||
-                        (setting.getBoolean("item.send-back-scanner", ownerStr, it)
-                                && owner != null && owner != it.uniqueId
-                                )
+                    if (owner != null && owner != it.uniqueId &&
+                        (CallbackCommand.isCallback(owner) || setting.getBoolean(
+                            "item.send-back-scanner",
+                            ownerStr,
+                            it
+                        ))
                     ) {
                         debug("找到 ${it.name} 违规物品${item.type} 属于 $owner")
-                        sendBackMap.computeIfAbsent(owner!!) { mutableListOf() }.add(item)
+                        sendBackMap.computeIfAbsent(owner) { mutableListOf() }.add(item)
                         inventory.setItem(i, null)
                         hasFound = true
                         continue
