@@ -37,7 +37,6 @@ object SakuraBind : BukkitPlugin {
     }
 
     override fun onEnable() {
-
         BukkitTemplate.getPlugin().saveResource("placeholders.txt", true)
         SimpleLogger.prefix = "&a[&6${javaPlugin.description.name}&a]&r ".toColor()
         SimpleYAMLConfig.notifyMessage = "&6配置文件 &f%s &6已重载!"

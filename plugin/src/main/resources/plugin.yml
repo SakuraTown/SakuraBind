@@ -19,7 +19,7 @@ runtime-libraries:
   parallel: true
   # ${kotlinVersion}
   libraries:
-    - io.github.bananapuncher714:nbteditor:${nbtEditorVersion}
+#    - io.github.bananapuncher714:nbteditor:${nbtEditorVersion}
     - org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}
     - org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}
     - org.jetbrains.exposed:exposed-core:${exposedVersion}

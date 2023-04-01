@@ -1,5 +1,6 @@
 package top.iseason.bukkittemplate;
 
+import io.github.bananapuncher714.nbteditor.NBTEditor;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import top.iseason.bukkittemplate.dependency.PluginDependency;
@@ -40,10 +41,12 @@ public class BukkitTemplate extends JavaPlugin {
         ReflectionUtil.addIsolatedURL(BukkitTemplate.class.getProtectionDomain().getCodeSource().getLocation());
         isolatedClassLoader = new IsolatedClassLoader(
                 ReflectionUtil.getUrls(),
-                BukkitTemplate.class.getClassLoader()
+                this.getClassLoader()
         );
         ReflectionUtil.init();
         loadInstance();
+        //如果你使用 NBTEditor 又想支持 ArcLight 就取消注释
+        IsolatedClassLoader.addBlackList(NBTEditor.class);
     }
 
     /**

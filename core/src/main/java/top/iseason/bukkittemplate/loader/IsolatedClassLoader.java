@@ -6,8 +6,11 @@ import top.iseason.bukkittemplate.dependency.DependencyDownloader;
 
 import javax.management.loading.MLet;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 插件自定义的加载器，用于隔离依赖
@@ -19,8 +22,6 @@ public class IsolatedClassLoader extends MLet {
         add(IsolatedClassLoader.class.getName());
         add(DependencyDownloader.class.getName());
         add(ReflectionUtil.class.getName());
-//        add(NBTEditor.class.getName());
-//        add(NBTEditor.MinecraftVersion.class.getName());
     }};
 
     public IsolatedClassLoader(URL[] urls, ClassLoader parent) {
@@ -28,6 +29,7 @@ public class IsolatedClassLoader extends MLet {
     }
 
     public IsolatedClassLoader() {
+        super();
     }
 
     @Override
@@ -55,5 +57,11 @@ public class IsolatedClassLoader extends MLet {
             }
             return loadedClass;
         }
+    }
+
+    public static void addBlackList(Class<?> clazz) {
+        BLACK_LIST.add(clazz.getName());
+        List<String> subClasses = Arrays.stream(clazz.getDeclaredClasses()).map(Class::getName).collect(Collectors.toList());
+        BLACK_LIST.addAll(subClasses);
     }
 }
