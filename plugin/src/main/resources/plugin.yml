@@ -19,7 +19,6 @@ runtime-libraries:
   parallel: true
   # ${kotlinVersion}
   libraries:
-#    - io.github.bananapuncher714:nbteditor:${nbtEditorVersion}
     - org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}
     - org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}
     - org.jetbrains.exposed:exposed-core:${exposedVersion}
@@ -30,7 +29,6 @@ runtime-libraries:
     - org.glassfish.jaxb:jaxb-runtime:2.3.7,1
     - org.ehcache:ehcache:3.10.8,1
   assembly:
-    - io.github.bananapuncher714:nbteditor
     - org.apache.logging.log4j:log4j-api
     - org.slf4j:slf4j-api
   excludes:

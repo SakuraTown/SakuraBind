@@ -83,8 +83,7 @@ tasks {
                 "version" to project.version,
                 "author" to author,
                 "kotlinVersion" to getProperties("kotlinVersion"),
-                "exposedVersion" to getProperties("exposedVersion"),
-                "nbtEditorVersion" to getProperties("nbtEditorVersion")
+                "exposedVersion" to getProperties("exposedVersion")
             )
         }
     }
