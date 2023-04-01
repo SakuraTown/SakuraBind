@@ -15,7 +15,6 @@ runtime-libraries:
   repositories:
     - https://maven.aliyun.com/repository/public/
     - https://repo.maven.apache.org/maven2/
-    - https://repo.codemc.org/repository/maven-public
   parallel: true
   # ${kotlinVersion}
   libraries:
