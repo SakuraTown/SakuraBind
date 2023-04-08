@@ -3,6 +3,7 @@ package top.iseason.bukkit.sakurabind.hook
 import me.clip.placeholderapi.expansion.PlaceholderExpansion
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
+import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.select
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
@@ -33,7 +34,7 @@ object PlaceHolderExpansion : PlaceholderExpansion() {
         if (player == null) return null
         when (params.lowercase()) {
             "has_lost" -> {
-                val key = "${player.uniqueId}$params"
+                val key = "has_lost_${player.uniqueId}$params"
                 var result = papiCache[key]
                 if (result != null && coolDown.check(key, 3000)) {
                     return result
@@ -45,6 +46,23 @@ object PlaceHolderExpansion : PlaceholderExpansion() {
                             .iterator()
                     iterator.hasNext().toString()
                 }
+                papiCache[key] = result
+                return result
+            }
+
+            "lost_count" -> {
+                val key = "lost_count_${player.uniqueId}$params"
+                var result = papiCache[key]
+                if (result != null && coolDown.check(key, 1000)) {
+                    return result
+                }
+                if (!DatabaseConfig.isConnected) return null
+                result = dbTransaction {
+                    PlayerItems
+                        .slice(PlayerItems.id.count())
+                        .select { PlayerItems.uuid eq player.uniqueId }
+                        .firstOrNull()?.get(PlayerItems.id.count())?.toString()
+                } ?: "0"
                 papiCache[key] = result
                 return result
             }
