@@ -581,16 +581,15 @@ object ItemListener : Listener {
     }
 
     /**
-     * 自动绑定, 左右键绑定
+     * 自动绑定/解绑, 左右键绑定
      */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST)
     fun autoBindPlayerInteractEvent(event: PlayerInteractEvent) {
         val player = event.player
         val item = event.item ?: return
         if (Config.checkByPass(player)) return
         if (item.checkAir()) return
-        val owner = SakuraBindAPI.getOwner(item)
-        val ownerStr = owner?.toString()
+        val ownerStr = SakuraBindAPI.getOwner(item)?.toString()
         val action = event.action
         if (ownerStr != null) {
             val setting = ItemSettings.getSetting(item)
@@ -610,7 +609,7 @@ object ItemListener : Listener {
             }
         } else {
             val setting = ItemSettings.getSetting(item, false)
-            if (!setting.getBoolean("auto-bind.enable", ownerStr, player)) {
+            if (!setting.getBoolean("auto-bind.enable", null, player)) {
                 return
             }
             if ((action == Action.LEFT_CLICK_BLOCK || action == Action.LEFT_CLICK_AIR) &&
@@ -625,6 +624,70 @@ object ItemListener : Listener {
             ) {
                 SakuraBindAPI.bind(item, player, type = BindType.RIGHT_BIND_ITEM)
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onRight, setting, item)
+            }
+        }
+    }
+
+//    /**
+//     * 自动绑定/解绑, 右键实体
+//     */
+//    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+//    fun autoBindPlayerInteractAtEntityEvent(event: PlayerInteractAtEntityEvent) {
+//        val player = event.player
+//        val item = player.getHeldItem() ?: return
+//        if (Config.checkByPass(player)) return
+//        val ownerStr = SakuraBindAPI.getOwner(item)?.toString()
+//        if (ownerStr != null) {
+//            val setting = ItemSettings.getSetting(item)
+//            if (!setting.getBoolean("auto-unbind.enable", ownerStr, player)) {
+//                return
+//            }
+//            if ((setting.getBoolean("auto-unbind.onRight", ownerStr, player))) {
+//                SakuraBindAPI.unBind(item, BindType.RIGHT_UNBIND_ITEM)
+//                MessageTool.messageCoolDown(player, Lang.auto_unbind__onRight)
+//            }
+//        } else {
+//            val setting = ItemSettings.getSetting(item, false)
+//            if (!setting.getBoolean("auto-bind.enable", null, player)) {
+//                return
+//            }
+//            if ((setting.getBoolean("auto-bind.onRight", null, player) ||
+//                        NBTEditor.contains(item, Config.auto_bind_nbt))
+//            ) {
+//                SakuraBindAPI.bind(item, player, type = BindType.RIGHT_BIND_ITEM)
+//                MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onRight, setting, item)
+//            }
+//        }
+//    }
+
+    /**
+     * 自动绑定/解绑, 左键实体(其实是攻击动作，但是 PlayerInteractEvent 没有捕获)
+     */
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    fun autoBindEntityDamageByEntityEvent(event: EntityDamageByEntityEvent) {
+        val player = event.damager as? Player ?: return
+        val item = player.getHeldItem() ?: return
+        if (Config.checkByPass(player)) return
+        val ownerStr = SakuraBindAPI.getOwner(item)?.toString()
+        if (ownerStr != null) {
+            val setting = ItemSettings.getSetting(item)
+            if (!setting.getBoolean("auto-unbind.enable", ownerStr, player)) {
+                return
+            }
+            if ((setting.getBoolean("auto-unbind.onLeft", ownerStr, player))) {
+                SakuraBindAPI.unBind(item, BindType.LEFT_UNBIND_ITEM)
+                MessageTool.messageCoolDown(player, Lang.auto_unbind__onLeft)
+            }
+        } else {
+            val setting = ItemSettings.getSetting(item, false)
+            if (!setting.getBoolean("auto-bind.enable", null, player)) {
+                return
+            }
+            if ((setting.getBoolean("auto-bind.onLeft", null, player) ||
+                        NBTEditor.contains(item, Config.auto_bind_nbt))
+            ) {
+                SakuraBindAPI.bind(item, player, type = BindType.LEFT_BIND_ITEM)
+                MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onLeft, setting, item)
             }
         }
     }
