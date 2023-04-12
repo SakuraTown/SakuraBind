@@ -53,7 +53,7 @@ object ItemListener : Listener {
     /**
      * 互动检查
      */
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOW)
     fun onPlayerInteractEvent(event: PlayerInteractEvent) {
         if (Config.checkByPass(event.player)) return
         val action = event.action
@@ -583,7 +583,7 @@ object ItemListener : Listener {
     /**
      * 自动绑定, 左右键绑定
      */
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     fun autoBindPlayerInteractEvent(event: PlayerInteractEvent) {
         val player = event.player
         val item = event.item ?: return
