@@ -563,8 +563,7 @@ object ItemListener : Listener {
         if (ownerStr != null) {
             val setting = ItemSettings.getSetting(item)
             if (setting.getBoolean("auto-unbind.enable", ownerStr, player) &&
-                (setting.getBoolean("auto-unbind.onDrop", ownerStr, player) ||
-                        NBTEditor.contains(item, Config.auto_bind_nbt))
+                (setting.getBoolean("auto-unbind.onDrop", ownerStr, player))
             ) {
                 SakuraBindAPI.unBind(item, BindType.DROP_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onDrop)
@@ -577,6 +576,55 @@ object ItemListener : Listener {
             ) {
                 SakuraBindAPI.bind(item, player, type = BindType.DROP_BIND_ITEM)
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onDrop, setting, item)
+            }
+        }
+    }
+
+    /**
+     * 自动绑定, 左右键绑定
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    fun autoBindPlayerInteractEvent(event: PlayerInteractEvent) {
+        val player = event.player
+        val item = event.item ?: return
+        if (Config.checkByPass(player)) return
+        if (item.checkAir()) return
+        val owner = SakuraBindAPI.getOwner(item)
+        val ownerStr = owner?.toString()
+        val action = event.action
+        if (ownerStr != null) {
+            val setting = ItemSettings.getSetting(item)
+            if (!setting.getBoolean("auto-unbind.enable", ownerStr, player)) {
+                return
+            }
+            if ((action == Action.LEFT_CLICK_BLOCK || action == Action.LEFT_CLICK_AIR) &&
+                (setting.getBoolean("auto-unbind.onLeft", ownerStr, player))
+            ) {
+                SakuraBindAPI.unBind(item, BindType.LEFT_UNBIND_ITEM)
+                MessageTool.messageCoolDown(player, Lang.auto_unbind__onLeft)
+            } else if ((action == Action.RIGHT_CLICK_BLOCK || action == Action.RIGHT_CLICK_AIR) &&
+                (setting.getBoolean("auto-unbind.onRight", ownerStr, player))
+            ) {
+                SakuraBindAPI.unBind(item, BindType.RIGHT_UNBIND_ITEM)
+                MessageTool.messageCoolDown(player, Lang.auto_unbind__onRight)
+            }
+        } else {
+            val setting = ItemSettings.getSetting(item, false)
+            if (!setting.getBoolean("auto-bind.enable", ownerStr, player)) {
+                return
+            }
+            if ((action == Action.LEFT_CLICK_BLOCK || action == Action.LEFT_CLICK_AIR) &&
+                (setting.getBoolean("auto-bind.onLeft", null, player) ||
+                        NBTEditor.contains(item, Config.auto_bind_nbt))
+            ) {
+                SakuraBindAPI.bind(item, player, type = BindType.LEFT_BIND_ITEM)
+                MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onLeft, setting, item)
+            } else if ((action == Action.RIGHT_CLICK_BLOCK || action == Action.RIGHT_CLICK_AIR) &&
+                (setting.getBoolean("auto-bind.onRight", null, player) ||
+                        NBTEditor.contains(item, Config.auto_bind_nbt))
+            ) {
+                SakuraBindAPI.bind(item, player, type = BindType.RIGHT_BIND_ITEM)
+                MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onRight, setting, item)
             }
         }
     }

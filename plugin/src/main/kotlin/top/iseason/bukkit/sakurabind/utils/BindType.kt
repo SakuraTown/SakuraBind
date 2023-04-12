@@ -50,6 +50,13 @@ enum class BindType(var description: String) {
     ENTITY_TO_BLOCK_BIND("实体转为方块绑定"),
     ENTITY_TO_BLOCK_UNBIND("实体转为方块解绑"),
 
-    USE_BIND_ITEM("丢弃物品绑定物品"),
-    USE_UNBIND_ITEM("丢弃物品解绑物品"),
+    USE_BIND_ITEM("消耗耐久物品绑定物品"),
+    USE_UNBIND_ITEM("消耗耐久解绑物品"),
+
+    LEFT_BIND_ITEM("拿着物品左键绑定物品"),
+    LEFT_UNBIND_ITEM("拿着物品左键解绑物品"),
+
+    RIGHT_BIND_ITEM("拿着物品右键绑定物品"),
+    RIGHT_UNBIND_ITEM("拿着物品右键解绑物品")
+
 }

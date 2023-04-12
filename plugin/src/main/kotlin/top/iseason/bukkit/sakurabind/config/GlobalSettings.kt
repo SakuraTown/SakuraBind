@@ -268,6 +268,14 @@ object GlobalSettings : SimpleYAMLConfig() {
     var auto_bind__onUse = false
 
     @Key
+    @Comment("", "手拿物品左键时绑定")
+    var auto_bind__onLeft = false
+
+    @Key
+    @Comment("", "手拿物品右键时绑定")
+    var auto_bind__onRight = false
+
+    @Key
     @Comment("", "扫描器扫描时绑定(在config.yml中配置扫描器)")
     var auto_bind__onScanner = true
 
@@ -294,6 +302,14 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Key
     @Comment("", "使用物品消耗耐久时解绑(包括工具、武器、盔甲等有耐久的物品)")
     var auto_unbind__onUse = false
+
+    @Key
+    @Comment("", "手拿物品左键时解绑")
+    var auto_unbind__onLeft = false
+
+    @Key
+    @Comment("", "手拿物品右键时解绑")
+    var auto_unbind__onRight = false
 
     @Key
     @Comment("", "扫描器扫描时解绑(在config.yml中配置扫描器)")
