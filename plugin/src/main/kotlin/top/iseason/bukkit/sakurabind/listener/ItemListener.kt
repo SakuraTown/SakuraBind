@@ -628,38 +628,6 @@ object ItemListener : Listener {
         }
     }
 
-//    /**
-//     * 自动绑定/解绑, 右键实体
-//     */
-//    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-//    fun autoBindPlayerInteractAtEntityEvent(event: PlayerInteractAtEntityEvent) {
-//        val player = event.player
-//        val item = player.getHeldItem() ?: return
-//        if (Config.checkByPass(player)) return
-//        val ownerStr = SakuraBindAPI.getOwner(item)?.toString()
-//        if (ownerStr != null) {
-//            val setting = ItemSettings.getSetting(item)
-//            if (!setting.getBoolean("auto-unbind.enable", ownerStr, player)) {
-//                return
-//            }
-//            if ((setting.getBoolean("auto-unbind.onRight", ownerStr, player))) {
-//                SakuraBindAPI.unBind(item, BindType.RIGHT_UNBIND_ITEM)
-//                MessageTool.messageCoolDown(player, Lang.auto_unbind__onRight)
-//            }
-//        } else {
-//            val setting = ItemSettings.getSetting(item, false)
-//            if (!setting.getBoolean("auto-bind.enable", null, player)) {
-//                return
-//            }
-//            if ((setting.getBoolean("auto-bind.onRight", null, player) ||
-//                        NBTEditor.contains(item, Config.auto_bind_nbt))
-//            ) {
-//                SakuraBindAPI.bind(item, player, type = BindType.RIGHT_BIND_ITEM)
-//                MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onRight, setting, item)
-//            }
-//        }
-//    }
-
     /**
      * 自动绑定/解绑, 左键实体(其实是攻击动作，但是 PlayerInteractEvent 没有捕获)
      */
