@@ -1,7 +1,10 @@
 %sakurabind_has_lost% 判断玩家是否有遗失的物品，缓存3秒 返回 "true" 或 "false"
 
+%sakurabind_lost_count% 返回玩家暂存箱里的物品数量(一个格子为1)
+
 %sakurabind_hasbind_held% 判断玩家手持的物品是否绑定 绑定返回 "true" 无绑定返回 "false" 手上无物品返回 "null"
 
 %sakurabind_owner_uuid_held% 获取玩家手上物品的物主uuid 没有返回 "null"
 
 %sakurabind_owner_name_held% 获取玩家手上物品的物主名字 没有返回 "null"
+
