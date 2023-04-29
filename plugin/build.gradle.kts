@@ -75,7 +75,7 @@ tasks {
         filesMatching("plugin.yml") {
             // 删除注释,你可以返回null以删除整行，但是IDEA有bug会报错，故而返回了""
             filter {
-                if (it.trim().startsWith("#")) null else it
+                if (it.trim().startsWith("#")) "" else it
             }
             expand(
                 "main" to if (isObfuscated) obfuscatedMainClass else "$groupS.libs.core.BukkitTemplate",
