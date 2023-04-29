@@ -155,19 +155,28 @@ object ItemListener : Listener {
     fun onPlayerDropItemEvent(event: PlayerDropItemEvent) {
         val player = event.player
         if (Config.checkByPass(player)) return
-        val item = event.itemDrop.itemStack
+        val itemDrop = event.itemDrop
+        val item = itemDrop.itemStack
         val owner = SakuraBindAPI.getOwner(item) ?: return
         //处理召回
         if (CallbackCommand.isCallback(owner)) {
             val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
             if (sendBackItem.isEmpty()) {
-                DropItemList.putItem(event.itemDrop, owner, Int.MIN_VALUE)
-            } else event.itemDrop.itemStack = sendBackItem.first()
+                // 为了兼容尽可能多的mod服务端和游戏版本，
+                // 只能让它传送到玩家碰不到的地方，再在事件结束后删除
+                val location = itemDrop.location
+                location.y = -9999.0
+                itemDrop.teleport(location)
+                DropItemList.putItem(itemDrop, owner, Int.MIN_VALUE)
+            } else itemDrop.itemStack = sendBackItem.first()
             MessageTool.messageCoolDown(player, Lang.command__callback)
             return
         }
         if (ItemSettings.getSetting(item).getBoolean("item-deny.drop", owner.toString(), player)) {
-            DropItemList.putItem(event.itemDrop, owner, Int.MIN_VALUE)
+            val location = itemDrop.location
+            location.y = -9999.0
+            itemDrop.teleport(location)
+            DropItemList.putItem(itemDrop, owner, Int.MIN_VALUE)
             val openInventory = event.player.openInventory
             val cursor = openInventory.cursor
             val release = event.player.inventory.addItem(item)
