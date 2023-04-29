@@ -245,7 +245,6 @@ object ItemListener : Listener {
     fun onInventoryClickEvent2(event: InventoryClickEvent) {
         val whoClicked = event.whoClicked
         if (Config.checkByPass(whoClicked)) return
-
         val title = event.view.title
         var item: ItemStack?
         if (event.hotbarButton >= 0) {

@@ -6,7 +6,6 @@ import org.bukkit.inventory.ItemStack
 
 object DefaultItemSetting : ItemSetting("global-setting", YamlConfiguration().apply {
     set("match.material", ".*")
-    set("settings.a", "")
 }) {
     override fun match(item: ItemStack): Boolean {
         return true

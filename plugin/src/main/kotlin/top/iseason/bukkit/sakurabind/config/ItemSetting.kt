@@ -12,12 +12,10 @@ import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.getDisplayName
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.noColor
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
-import java.security.InvalidParameterException
 import java.util.regex.Pattern
 
 open class ItemSetting(override val keyPath: String, section: ConfigurationSection) : BaseSetting {
     private var namePattern: Pattern? = null
-
     //    private var nameWithoutColorPattern: Pattern? = null
     private var materialPattern: Pattern? = null
     private var materials: HashSet<Material>? = null
@@ -36,10 +34,7 @@ open class ItemSetting(override val keyPath: String, section: ConfigurationSecti
 
     init {
         val matcher =
-            section.getConfigurationSection("match") ?: throw InvalidParameterException("需要声明 'match' 选项")
-        if (matcher.getKeys(false).isEmpty()) {
-            throw InvalidParameterException("'match'选项不能为空!")
-        }
+            section.getConfigurationSection("match") ?: section.createSection("match")
         setting =
             section.getConfigurationSection("settings") ?: YamlConfiguration()
         var name = matcher.getString("name")

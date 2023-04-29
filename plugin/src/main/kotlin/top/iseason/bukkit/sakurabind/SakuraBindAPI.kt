@@ -193,8 +193,6 @@ object SakuraBindAPI {
     fun updateLore(item: ItemStack) {
         val itemMeta = item.itemMeta ?: return
         var oldLore = NBTEditor.getKeys(item, *Config.nbtPathLore)
-//        println(NBTEditor.getNBTCompound(item).toString())
-//        println(oldLore)
         val owner = getOwner(item)
         var temp = item
         //有旧的lore,先删除
