@@ -326,7 +326,7 @@ object SakuraBindAPI {
      */
     @JvmStatic
     fun getItemSetting(item: ItemStack, setInCache: Boolean = true): BaseSetting {
-        return ItemSettings.getSetting(item)
+        return ItemSettings.getSetting(item, setInCache)
     }
 
     /**
