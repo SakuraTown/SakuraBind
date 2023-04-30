@@ -375,8 +375,7 @@ public class RuntimeManager {
      */
     public boolean downloadADependencyAssembly(String dependency) {
         int i = dependency.lastIndexOf(':');
-        System.out.println(dependency.substring(0, i - 1));
-        assembly.add(dependency.substring(0, i - 1));
+        assembly.add(dependency.substring(0, i));
         return downloadDependency(dependency, 1, 1, repositories, null, false);
     }
 
