@@ -57,6 +57,7 @@ object SakuraBind : BukkitPlugin {
         initListeners()
         initTasks()
         info("&a插件已启用!")
+
     }
 
     /**
@@ -91,7 +92,7 @@ object SakuraBind : BukkitPlugin {
      * 开启任务
      */
     private fun initTasks() {
-        DropItemList.runTaskTimerAsynchronously(javaPlugin, 0, 1)
+        DropItemList.runTaskTimer(javaPlugin, 0, 1)
     }
 
     /**

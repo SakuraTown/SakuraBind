@@ -17,7 +17,6 @@ import org.bukkit.entity.Player
 import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.DisableHook
 import top.iseason.bukkittemplate.debug.warn
-import top.iseason.bukkittemplate.dependency.DependencyDownloader
 import top.iseason.bukkittemplate.hook.BungeeCordHook
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.other.submit
@@ -127,14 +126,12 @@ object MessageUtils {
         if (miniMessageSupport) return
         miniMessageSupport = true
         if (miniMessageLoaded) return
-        val dd = DependencyDownloader()
+        val dd = BukkitTemplate.getRuntimeManager()
             .addRepository("https://maven.aliyun.com/repository/public")
             .addRepository("https://repo.maven.apache.org/maven2/")
-        dd.dependencies = mutableMapOf(
-            "net.kyori:adventure-platform-bukkit:4.3.0" to 4,
-            "net.kyori:adventure-text-minimessage:4.13.0" to 1
-        )
-        dd.start(true)
+        dd.addDependency("net.kyori:adventure-platform-bukkit:4.3.0", 4)
+        dd.addDependency("net.kyori:adventure-text-minimessage:4.13.0", 1)
+        dd.downloadAll()
         audiences = BukkitAudiences.create(BukkitTemplate.getPlugin())
         miniMessageLoaded = true
         DisableHook.addTask {

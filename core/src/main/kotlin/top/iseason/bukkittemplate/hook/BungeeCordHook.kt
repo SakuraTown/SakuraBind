@@ -7,6 +7,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerLoginEvent
 import org.bukkit.plugin.messaging.PluginMessageListener
 import top.iseason.bukkittemplate.BukkitTemplate
+import top.iseason.bukkittemplate.DisableHook
 import top.iseason.bukkittemplate.debug.debug
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
@@ -30,13 +31,15 @@ object BungeeCordHook : Listener {
             bungeeCordEnabled = true
         }
 
-    @JvmStatic
-    fun onEnable() {
-        Bukkit.getMessenger().registerOutgoingPluginChannel(BukkitTemplate.getPlugin(), "BungeeCord")
-        registerListener(bcListener)
-        val player = Bukkit.getOnlinePlayers().firstOrNull()
-        if (player != null) check(player)
-        Bukkit.getPluginManager().registerEvents(this, BukkitTemplate.getPlugin())
+    init {
+        Bukkit.getScheduler().runTaskAsynchronously(BukkitTemplate.getPlugin(), Runnable {
+            Bukkit.getMessenger().registerOutgoingPluginChannel(BukkitTemplate.getPlugin(), "BungeeCord")
+            registerListener(bcListener)
+            val player = Bukkit.getOnlinePlayers().firstOrNull()
+            if (player != null) check(player)
+            Bukkit.getPluginManager().registerEvents(this, BukkitTemplate.getPlugin())
+        })
+        DisableHook.addTask(this::onDisable)
     }
 
     /**

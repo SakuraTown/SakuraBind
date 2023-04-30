@@ -61,19 +61,19 @@ object GlobalSettings : SimpleYAMLConfig() {
 
     @Key("item-deny.interact-left@")
     @Comment("", "手上拿着绑定物品时禁止左键交互")
-    var item_deny__interact_left = true
+    var item_deny__interact_left = false
 
     @Key("item-deny.interact-right@")
     @Comment("", "手上拿着绑定物品时禁止右键交互")
-    var item_deny__interact_right = true
+    var item_deny__interact_right = false
 
     @Key("item-deny.interact-entity@")
     @Comment("", "禁止实体交互(攻击或右键)")
-    var item_deny__interact_entity = true
+    var item_deny__interact_entity = false
 
     @Key("item-deny.armor-stand@")
     @Comment("", "禁止盔甲架交互")
-    var item_deny__armor_stand = true
+    var item_deny__armor_stand = false
 
     @Key
     @Comment("", "禁止丢弃")
@@ -85,43 +85,43 @@ object GlobalSettings : SimpleYAMLConfig() {
 
     @Key("item-deny.pickup@")
     @Comment("", "禁止捡起")
-    var item_deny__pickup = true
+    var item_deny__pickup = false
 
     @Key("item-deny.click@")
     @Comment("", "禁止拿走绑定物品")
-    var item_deny__click = true
+    var item_deny__click = false
 
     @Key
     @Comment("", "禁止铁砧(1.9以上)")
-    var item_deny__anvil = true
+    var item_deny__anvil = false
 
     @Key
     @Comment("", "禁止合成")
-    var item_deny__craft = true
+    var item_deny__craft = false
 
     @Key
     @Comment("", "禁止发射器射出")
-    var item_deny__dispense = true
+    var item_deny__dispense = false
 
     @Key
     @Comment("", "掉落物禁止被漏斗或漏斗矿车吸入")
-    var item_deny__hopper = true
+    var item_deny__hopper = false
 
     @Key
     @Comment("", "容器里的绑定物品不被漏斗或漏斗矿车吸走")
-    var item_deny__container_move = true
+    var item_deny__container_move = false
 
     @Key
     @Comment("", "禁止放入展示框")
-    var item_deny__item_frame = true
+    var item_deny__item_frame = false
 
     @Key
     @Comment("", "禁止弹射物射出(药水、箭、雪球等)")
-    var item_deny__throw = true
+    var item_deny__throw = false
 
     @Key
     @Comment("", "禁止消耗(吃)")
-    var item_deny__consume = true
+    var item_deny__consume = false
 
     @Key
     @Comment("", "手上拿着绑定物品时禁止输入一下匹配命令")
@@ -133,7 +133,7 @@ object GlobalSettings : SimpleYAMLConfig() {
 
     @Key
     @Comment("", "禁止绑定物品放入特定标题的容器里,为了防止各种操作绕过将同时也会禁止点击")
-    var item_deny__inventory = true
+    var item_deny__inventory = false
 
     @Key
     @Comment("", "禁止绑定物品放入特定标题的容器里,正则表达式")
@@ -148,7 +148,7 @@ object GlobalSettings : SimpleYAMLConfig() {
 
     @Key
     @Comment("", "禁止绑定物品死亡掉落(只在死亡不掉落游戏规则未开启时有效)")
-    var item_deny__drop_on_death = true
+    var item_deny__drop_on_death = false
 
     @Key
     @Comment("", "", "方块禁用设置", "由于监听方块物品需要较多的资源，如果不绑定方块物品关闭以节省性能")
@@ -156,31 +156,31 @@ object GlobalSettings : SimpleYAMLConfig() {
 
     @Key("block-deny.break@")
     @Comment("", "禁止方块物品被破坏")
-    var block_deny__break = true
+    var block_deny__break = false
 
     @Key("block-deny.place@")
     @Comment("", "禁止方块物品被放置")
-    var block_deny__place = true
+    var block_deny__place = false
 
     @Key("block-deny.interact@")
     @Comment("", "禁止方块物品被互动(左右键)")
-    var block_deny__interact = true
+    var block_deny__interact = false
 
     @Key
     @Comment("", "禁止方块物品被爆炸损坏")
-    var block_deny__explode = true
+    var block_deny__explode = false
 
     @Key
     @Comment("", "禁止方块物品被活塞推动/拉动. 建议禁止, 如果不禁止，被活塞推/拉动后的方块也会绑定(实验性功能)")
-    var block_deny__piston = true
+    var block_deny__piston = false
 
     @Key
     @Comment("", "禁止流水/岩浆破坏, 被岩浆破坏的物品将不会有掉落物,故而设置为false时将会把物品直接送回物主")
-    var block_deny__flow = true
+    var block_deny__flow = false
 
     @Key
     @Comment("", "禁止绑定的方块转化为实体，比如重力方块变成下落方块，tnt被点燃")
-    var block_deny__change_to_entity = true
+    var block_deny__change_to_entity = false
 
     @Key
     @Comment("", "", "实体设置")
@@ -192,15 +192,15 @@ object GlobalSettings : SimpleYAMLConfig() {
 
     @Key("entity.bind-drops")
     @Comment("", "绑定实体死亡掉落物也绑定")
-    var entity__bind_drops = true
+    var entity__bind_drops = false
 
     @Key("entity.hostility@")
     @Comment("", "是否对敌对目标")
-    var entity__hostility = true
+    var entity__hostility = false
 
     @Key("entity.defend")
     @Comment("", "是否守护非敌对目标(吸引仇恨)")
-    var entity__defend = true
+    var entity__defend = false
 
     @Key("entity.defend-distance")
     @Comment("", "绑定的实体对友好目标的守护距离")
@@ -208,7 +208,7 @@ object GlobalSettings : SimpleYAMLConfig() {
 
     @Key("entity.spawn-egg-check")
     @Comment("", "是否启用刷怪蛋检测, 启用之后绑定的刷怪蛋生成的生物会绑定")
-    var entity__spawn_egg_check = true
+    var entity__spawn_egg_check = false
 
     @Key
     @Comment("", "", "由绑定物品生成的实体的监听器", "一般指刷怪蛋")
@@ -220,7 +220,7 @@ object GlobalSettings : SimpleYAMLConfig() {
 
     @Key("entity-deny.damage-by-player@")
     @Comment("", "是否禁止该实体被玩家攻击掉血")
-    var entity_deny_damage_by_player = true
+    var entity_deny_damage_by_player = false
 
     @Key("entity-deny.damage")
     @Comment("", "是否禁止该实体受到任何伤害")
@@ -228,7 +228,7 @@ object GlobalSettings : SimpleYAMLConfig() {
 
     @Key("entity-deny.interact@")
     @Comment("", "是否禁止与该实体交互(右键)")
-    var entity_deny_interact = true
+    var entity_deny_interact = false
 
     @Key("entity-deny.ai")
     @Comment("", "是否禁用实体AI (1.9+)")

@@ -19,7 +19,6 @@ import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
 import top.iseason.bukkittemplate.debug.debug
 import top.iseason.bukkittemplate.debug.info
-import top.iseason.bukkittemplate.dependency.DependencyDownloader
 import java.io.File
 import java.util.*
 
@@ -148,9 +147,7 @@ object DatabaseConfig : SimpleYAMLConfig() {
         isConnecting = true
         closeDB()
         runCatching {
-            val contextClassLoader = Thread.currentThread().contextClassLoader
-            Thread.currentThread().contextClassLoader = BukkitTemplate.isolatedClassLoader
-            val dd = DependencyDownloader()
+            val runtimeManager = BukkitTemplate.getRuntimeManager()
                 .addRepository("https://maven.aliyun.com/repository/public")
                 .addRepository("https://repo.maven.apache.org/maven2/")
             val props = Properties().apply {
@@ -171,21 +168,20 @@ object DatabaseConfig : SimpleYAMLConfig() {
             }
             val config = when (database_type) {
                 "MySQL" -> HikariConfig(props).apply {
-                    dd.downloadDependency("mysql:mysql-connector-java:8.0.32", 1)
+                    runtimeManager.downloadADependencyAssembly("mysql:mysql-connector-java:8.0.32")
                     jdbcUrl = "jdbc:mysql://$address/$database_name$params"
                     //可能兼容旧的mysql驱动
                     driverClassName = "com.mysql.jdbc.Driver"
                 }
 
                 "MariaDB" -> HikariConfig(props).apply {
-                    dd.downloadDependency("org.mariadb.jdbc:mariadb-java-client:3.1.2", 1)
+                    runtimeManager.downloadADependencyAssembly("org.mariadb.jdbc:mariadb-java-client:3.1.2")
                     jdbcUrl = "jdbc:mariadb://$address/$database_name$params"
                     driverClassName = "org.mariadb.jdbc.Driver"
                 }
 
                 "SQLite" -> HikariConfig(props).apply {
-                    DependencyDownloader.assembly.add("org.xerial:sqlite-jdbc")
-                    dd.downloadDependency("org.xerial:sqlite-jdbc:3.41.0.0", 1)
+                    runtimeManager.downloadADependencyAssembly("org.xerial:sqlite-jdbc:3.41.0.0")
                     jdbcUrl = "jdbc:sqlite:$address$params"
                     driverClassName = "org.sqlite.JDBC"
                 }
@@ -197,19 +193,19 @@ object DatabaseConfig : SimpleYAMLConfig() {
 //                }
 
                 "PostgreSQL" -> HikariConfig(props).apply {
-                    dd.downloadDependency("com.impossibl.pgjdbc-ng:pgjdbc-ng:0.8.9", 1)
+                    runtimeManager.downloadADependencyAssembly("com.impossibl.pgjdbc-ng:pgjdbc-ng:0.8.9")
                     jdbcUrl = "jdbc:pgsql://$address/$database_name$params"
                     driverClassName = "com.impossibl.postgres.jdbc.PGDriver"
                 }
 
                 "Oracle" -> HikariConfig(props).apply {
-                    dd.downloadDependency("com.oracle.database.jdbc:ojdbc8:21.9.0.0", 1)
+                    runtimeManager.downloadADependencyAssembly("com.oracle.database.jdbc:ojdbc8:21.9.0.0")
                     jdbcUrl = "dbc:oracle:thin:@//$address/$database_name$params"
                     driverClassName = "oracle.jdbc.OracleDriver"
                 }
 
                 "SQLServer" -> HikariConfig(props).apply {
-                    dd.downloadDependency("com.microsoft.sqlserver:mssql-jdbc:11.2.3.jre8", 1)
+                    runtimeManager.downloadADependencyAssembly("com.microsoft.sqlserver:mssql-jdbc:11.2.3.jre8")
                     jdbcUrl = "jdbc:sqlserver://$address;DatabaseName=$database_name$params"
                     driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
                 }
@@ -234,7 +230,6 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 sqlLogger = MySqlLogger
             })
             isConnected = true
-            Thread.currentThread().contextClassLoader = contextClassLoader
             info("&a数据库链接成功: &6$database_type")
         }.getOrElse {
             isConnected = false
@@ -282,7 +277,7 @@ open class StringIdTable(name: String = "", columnName: String = "id") : IdTable
 
 abstract class StringEntity(id: EntityID<String>) : Entity<String>(id)
 
-abstract class StringEntityClass<out E : Entity<String>> constructor(
+abstract class StringEntityClass<out E : Entity<String>>(
     table: IdTable<String>,
     entityType: Class<E>? = null,
     entityCtor: ((EntityID<String>) -> E)? = null
