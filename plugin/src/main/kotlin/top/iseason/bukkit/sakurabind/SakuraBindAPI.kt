@@ -2,6 +2,7 @@ package top.iseason.bukkit.sakurabind
 
 import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Bukkit
+import org.bukkit.OfflinePlayer
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.entity.HumanEntity
@@ -315,8 +316,10 @@ object SakuraBindAPI {
      */
     @JvmStatic
     fun getOwnerName(uuid: UUID): String? {
-        val player = Bukkit.getPlayer(uuid) ?: Bukkit.getOfflinePlayer(uuid)
-        return if (player.hasPlayedBefore()) player.name else null
+        var player: OfflinePlayer? = Bukkit.getPlayer(uuid)
+        if (player != null) return player.name
+        else player = Bukkit.getOfflinePlayer(uuid)
+        return if (player.hasPlayedBefore()) player.name else uuid.toString()
     }
 
     /**

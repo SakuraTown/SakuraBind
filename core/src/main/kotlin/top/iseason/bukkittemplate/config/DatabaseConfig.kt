@@ -29,7 +29,11 @@ object DatabaseConfig : SimpleYAMLConfig() {
     @Comment("", "修改完配置保存时是否自动重连数据库")
     var autoReload = true
 
-    @Comment("", "数据库类型: 支持 MySQL、MariaDB、SQLite、Oracle、PostgreSQL、SQLServer")
+    @Comment(
+        "",
+        "数据库驱动类型: 支持 MySQL、MariaDB、SQLite、Oracle、PostgreSQL、SQLServer",
+        "如果你的 MySQL 总是连不上请将驱动类型改为 MariaDB，它支持连接到mysql"
+    )
     @Key
     var database_type = "SQLite"
 
@@ -41,7 +45,11 @@ object DatabaseConfig : SimpleYAMLConfig() {
     @Key
     var database_name = "database_${BukkitTemplate.getPlugin().name}"
 
-    @Comment("", "jdbcUrl 最后面的参数, 紧跟在database-name后面,请注意添加分隔符", "")
+    @Comment(
+        "",
+        "jdbcUrl 最后面的参数, 紧跟在database-name后面,请注意添加分隔符",
+        "如果你的mysql提示 ssl 有关的信息请添加: '?useSSL=false'"
+    )
     @Key
     var params = ""
 
@@ -168,20 +176,20 @@ object DatabaseConfig : SimpleYAMLConfig() {
             }
             val config = when (database_type) {
                 "MySQL" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependencyAssembly("mysql:mysql-connector-java:8.0.32")
+                    runtimeManager.downloadADependency("mysql:mysql-connector-java:8.0.30")
                     jdbcUrl = "jdbc:mysql://$address/$database_name$params"
                     //可能兼容旧的mysql驱动
                     driverClassName = "com.mysql.jdbc.Driver"
                 }
 
                 "MariaDB" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependencyAssembly("org.mariadb.jdbc:mariadb-java-client:3.1.2")
+                    runtimeManager.downloadADependency("org.mariadb.jdbc:mariadb-java-client:3.1.3")
                     jdbcUrl = "jdbc:mariadb://$address/$database_name$params"
                     driverClassName = "org.mariadb.jdbc.Driver"
                 }
 
                 "SQLite" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependencyAssembly("org.xerial:sqlite-jdbc:3.41.0.0")
+                    runtimeManager.downloadADependencyAssembly("org.xerial:sqlite-jdbc:3.41.2.0")
                     jdbcUrl = "jdbc:sqlite:$address$params"
                     driverClassName = "org.sqlite.JDBC"
                 }
@@ -193,19 +201,19 @@ object DatabaseConfig : SimpleYAMLConfig() {
 //                }
 
                 "PostgreSQL" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependencyAssembly("com.impossibl.pgjdbc-ng:pgjdbc-ng:0.8.9")
+                    runtimeManager.downloadADependency("com.impossibl.pgjdbc-ng:pgjdbc-ng:0.8.9")
                     jdbcUrl = "jdbc:pgsql://$address/$database_name$params"
                     driverClassName = "com.impossibl.postgres.jdbc.PGDriver"
                 }
 
                 "Oracle" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependencyAssembly("com.oracle.database.jdbc:ojdbc8:21.9.0.0")
+                    runtimeManager.downloadADependency("com.oracle.database.jdbc:ojdbc8:21.9.0.0")
                     jdbcUrl = "dbc:oracle:thin:@//$address/$database_name$params"
                     driverClassName = "oracle.jdbc.OracleDriver"
                 }
 
                 "SQLServer" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependencyAssembly("com.microsoft.sqlserver:mssql-jdbc:11.2.3.jre8")
+                    runtimeManager.downloadADependency("com.microsoft.sqlserver:mssql-jdbc:11.2.3.jre8")
                     jdbcUrl = "jdbc:sqlserver://$address;DatabaseName=$database_name$params"
                     driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
                 }
