@@ -1,8 +1,7 @@
 package top.iseason.bukkittemplate.runtime;
 
-import org.bukkit.Bukkit;
+
 import org.xml.sax.SAXException;
-import top.iseason.bukkittemplate.BukkitTemplate;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
@@ -14,6 +13,7 @@ import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -22,9 +22,8 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  * <p>依赖下载器 </p>
  * <p>仅支持 group:artifact:version 的格式</p>
  */
-
 public class RuntimeManager {
-
+    public static Logger logger = Logger.getLogger(RuntimeManager.class.getSimpleName());
     /**
      * 被加载到插件Classloader的依赖，默认是加载到 IsolatedClassLoader
      */
@@ -42,7 +41,6 @@ public class RuntimeManager {
      */
     private final Set<String> parallel = new HashSet<>();
     private final ClassAppender classAppender;
-    private final boolean isParallel;
     /**
      * 下载源
      */
@@ -52,6 +50,7 @@ public class RuntimeManager {
      * maxDepth表示最大依赖解析层数
      */
     public Map<String, Integer> dependencies;
+    private final boolean isParallel;
 
     public RuntimeManager(File parent, ClassAppender classAppender, List<String> repositories, List<String> dependencies, List<String> assembly, boolean isParallel) {
         this(parent, classAppender, repositories, new LinkedHashMap<>(), assembly, isParallel);
@@ -75,6 +74,16 @@ public class RuntimeManager {
         this.assembly.addAll(assembly);
         this.parallel.addAll(dependencies.keySet());
         this.isParallel = isParallel;
+    }
+
+    /**
+     * 检查依赖格式是否非法
+     *
+     * @param libraryName 依赖
+     * @return true 表示非法
+     */
+    public static boolean checkLibraryIllegal(String libraryName) {
+        return libraryName.split(":").length != 3 || XmlParser.placeHolder.matcher(libraryName).find() || libraryName.contains("[") || libraryName.contains("(");
     }
 
     /**
@@ -111,13 +120,94 @@ public class RuntimeManager {
     }
 
     /**
-     * 检查依赖格式是否非法
+     * 下載文件，超时5秒
      *
-     * @param libraryName 依赖
-     * @return true 表示非法
+     * @param url  文件链接
+     * @param file 保存路径
+     * @return true if success
      */
-    public static boolean checkLibraryIllegal(String libraryName) {
-        return libraryName.split(":").length != 3 || XmlParser.placeHolder.matcher(libraryName).find() || libraryName.contains("[") || libraryName.contains("(");
+    private static boolean download(URL url, File file) {
+        HttpURLConnection connection;
+        try {
+            connection = (HttpURLConnection) url.openConnection();
+            connection.addRequestProperty("User-Agent", "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_0) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11");
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        if (url.toString().endsWith(".jar"))
+            if (logger != null)
+                logger.info("Downloading " + url);
+        try (InputStream is = connection.getInputStream()) {
+            Files.copy(is, file.toPath(), REPLACE_EXISTING);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+
+    public static String printTree(String name, int level, boolean isLast) {
+        // 输出的前缀
+        StringBuilder stringBuilder = new StringBuilder();
+        if (level == 0) {
+            return stringBuilder.append(" ").append(name).toString();
+        }
+        // 按层次进行缩进
+        for (int i = 0; i < level; i++) {
+            if (i == level - 1) {
+                if (isLast) stringBuilder.append("  └──");
+                else stringBuilder.append("  ├──");
+            } else
+                stringBuilder.append("  │  ");
+        }
+        stringBuilder.append("  ").append(name);
+        return stringBuilder.toString();
+    }
+
+    /**
+     * 获取文件的sha1值。
+     */
+    static String sha1(File file) {
+        try (FileInputStream in = new FileInputStream(file)) {
+            MessageDigest digest = MessageDigest.getInstance("SHA-1");
+            byte[] buffer = new byte[1024 * 1024 * 10];
+            int len;
+            while ((len = in.read(buffer)) > 0) {
+                digest.update(buffer, 0, len);
+            }
+            StringBuilder sha1 = new StringBuilder(new BigInteger(1, digest.digest()).toString(16));
+            int length = 40 - sha1.length();
+            if (length > 0) {
+                for (int i = 0; i < length; i++) {
+                    sha1.insert(0, "0");
+                }
+            }
+            return sha1.toString();
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
+
+    /**
+     * 校验文件sha值
+     *
+     * @param file 待校验的文件
+     * @param sha  sha文件
+     * @return true 如果通过的话，反之false
+     */
+    static boolean checkSha(File file, File sha) {
+        try {
+            BufferedReader buffer = new BufferedReader(new FileReader(sha));
+            String shaStr = buffer.readLine();
+            buffer.close();
+            String s = sha1(file);
+            return Objects.equals(s, shaStr);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -144,8 +234,8 @@ public class RuntimeManager {
         if (checkLibraryIllegal(dependency)) {
             if (printCache != null)
                 printCache.add(printTree("[F] " + dependency, depth - 1, isLast));
-            else
-                Bukkit.getLogger().info("[" + BukkitTemplate.getPlugin().getName() + "]" + printTree("[F] " + dependency, depth - 1, isLast));
+            else if (logger != null)
+                logger.info(printTree("[F] " + dependency, depth - 1, isLast));
             return true;
         }
         String groupId = split[0];
@@ -200,8 +290,8 @@ public class RuntimeManager {
         }
         if (printCache != null)
             printCache.add(printTree("[" + type + "] " + dependency, depth - 1, isLast));
-        else
-            Bukkit.getLogger().info("[" + BukkitTemplate.getPlugin().getName() + "]" + printTree("[" + type + "] " + dependency, depth - 1, isLast));
+        else if (logger != null)
+            logger.info(printTree("[" + type + "] " + dependency, depth - 1, isLast));
         if (!success || depth == maxDepth) return true;
 
         for (String repository : repositories) {
@@ -223,32 +313,14 @@ public class RuntimeManager {
                     }
                     return true;
                 } catch (ParserConfigurationException | IOException | SAXException e) {
-                    Bukkit.getLogger().warning("Loading file " + pomFile + " error!");
+                    if (logger != null)
+                        logger.warning("Loading file " + pomFile + " error!");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return true;
-    }
-
-
-    public static String printTree(String name, int level, boolean isLast) {
-        // 输出的前缀
-        StringBuilder stringBuilder = new StringBuilder();
-        if (level == 0) {
-            return stringBuilder.append(" ").append(name).toString();
-        }
-        // 按层次进行缩进
-        for (int i = 0; i < level; i++) {
-            if (i == level - 1) {
-                if (isLast) stringBuilder.append("  └──");
-                else stringBuilder.append("  ├──");
-            } else
-                stringBuilder.append("  │  ");
-        }
-        stringBuilder.append("  ").append(name);
-        return stringBuilder.toString();
     }
 
     public void addExclude(String exclude) {
@@ -302,40 +374,6 @@ public class RuntimeManager {
         return this;
     }
 
-    public RuntimeManager addDependency(String dependency, int maxDepth) {
-        dependencies.put(dependency, maxDepth);
-        return this;
-    }
-
-    /**
-     * 下载所有未加载的依赖
-     *
-     * @return true if success
-     */
-    public boolean downloadAll() {
-        if (dependencies.isEmpty()) return true;
-        Bukkit.getLogger().info("[" + BukkitTemplate.getPlugin().getName() + "] Loading libraries...");
-        Bukkit.getLogger().info("Successful Flags: [I]=Loading Isolated [A]=Loading Assembly");
-        Bukkit.getLogger().info("Failure Flags: [E]=Loading Error [N]=NetWork Error [F]=Library Format Error");
-        AtomicBoolean failure = new AtomicBoolean(false);
-        Stream<Map.Entry<String, Integer>> stream =
-                isParallel ?
-                        dependencies.entrySet().parallelStream() :
-                        dependencies.entrySet().stream();
-        stream.forEach(entry -> {
-                    if (failure.get()) return;
-                    LinkedList<String> printList = new LinkedList<>();
-                    if (!downloadDependency(entry.getKey(), 1, entry.getValue(), repositories, printList, false)) {
-                        failure.set(true);
-                    }
-                    for (String s : printList) {
-                        Bukkit.getLogger().info(s);
-                    }
-                }
-        );
-        return !failure.get();
-    }
-
     /**
      * 直接下载并加载依赖
      *
@@ -355,6 +393,50 @@ public class RuntimeManager {
      */
     public boolean downloadDependency(String dependency) {
         return downloadDependency(dependency, 1, 2, repositories, null, false);
+    }
+
+    public RuntimeManager addDependency(String dependency, int maxDepth) {
+        dependencies.put(dependency, maxDepth);
+        return this;
+    }
+
+    /**
+     * 下载所有未加载的依赖
+     *
+     * @return true if success
+     */
+    public boolean downloadAll() {
+        if (dependencies.isEmpty()) return true;
+        if (logger != null) {
+            logger.info("Loading libraries...");
+            logger.info("Successful Flags: [I]=Loading Isolated [A]=Loading Assembly");
+            logger.info("Failure Flags: [E]=Loading Error [N]=NetWork Error [F]=Library Format Error");
+        }
+        AtomicBoolean failure = new AtomicBoolean(false);
+        Stream<Map.Entry<String, Integer>> stream =
+                isParallel ?
+                        dependencies.entrySet().parallelStream() :
+                        dependencies.entrySet().stream();
+        stream.forEach(entry -> {
+                    if (failure.get()) return;
+                    LinkedList<String> printList = new LinkedList<>();
+                    if (!downloadDependency(entry.getKey(), 1, entry.getValue(), repositories, printList, false)) {
+                        failure.set(true);
+                    }
+                    if (logger != null) {
+                        for (String s : printList) {
+                            logger.info(s);
+                        }
+                    }
+                }
+        );
+        boolean isFailure = failure.get();
+        if (logger != null) {
+            if (isFailure)
+                logger.warning("Loading libraries error.");
+            else logger.info("Loading libraries successfully.");
+        }
+        return !isFailure;
     }
 
     /**
@@ -377,77 +459,6 @@ public class RuntimeManager {
         int i = dependency.lastIndexOf(':');
         assembly.add(dependency.substring(0, i));
         return downloadDependency(dependency, 1, 1, repositories, null, false);
-    }
-
-    /**
-     * 下載文件，超时5秒
-     *
-     * @param url  文件链接
-     * @param file 保存路径
-     * @return true if success
-     */
-    private static boolean download(URL url, File file) {
-        HttpURLConnection connection;
-        try {
-            connection = (HttpURLConnection) url.openConnection();
-            connection.addRequestProperty("User-Agent", "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_0) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11");
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) return false;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-        if (url.toString().endsWith(".jar"))
-            Bukkit.getLogger().info("Downloading " + url);
-        try (InputStream is = connection.getInputStream()) {
-            Files.copy(is, file.toPath(), REPLACE_EXISTING);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 获取文件的sha1值。
-     */
-    static String sha1(File file) {
-        try (FileInputStream in = new FileInputStream(file)) {
-            MessageDigest digest = MessageDigest.getInstance("SHA-1");
-            byte[] buffer = new byte[1024 * 1024 * 10];
-            int len;
-            while ((len = in.read(buffer)) > 0) {
-                digest.update(buffer, 0, len);
-            }
-            StringBuilder sha1 = new StringBuilder(new BigInteger(1, digest.digest()).toString(16));
-            int length = 40 - sha1.length();
-            if (length > 0) {
-                for (int i = 0; i < length; i++) {
-                    sha1.insert(0, "0");
-                }
-            }
-            return sha1.toString();
-        } catch (Exception ignored) {
-        }
-        return null;
-    }
-
-    /**
-     * 校验文件sha值
-     *
-     * @param file 待校验的文件
-     * @param sha  sha文件
-     * @return true 如果通过的话，反之false
-     */
-    static boolean checkSha(File file, File sha) {
-        try {
-            BufferedReader buffer = new BufferedReader(new FileReader(sha));
-            String shaStr = buffer.readLine();
-            buffer.close();
-            String s = sha1(file);
-            return Objects.equals(s, shaStr);
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     public ClassAppender getClassAppender() {

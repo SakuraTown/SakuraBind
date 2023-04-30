@@ -12,7 +12,6 @@ import top.iseason.bukkittemplate.debug.debug
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
 
-
 object BungeeCordHook : Listener {
 
     private const val BUNGEE_CORD_CHANNEL = "BungeeCord"
