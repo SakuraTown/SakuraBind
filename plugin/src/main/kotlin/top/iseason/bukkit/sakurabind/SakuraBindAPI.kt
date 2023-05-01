@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.cache.BlockCache
 import top.iseason.bukkit.sakurabind.cache.EntityCache
 import top.iseason.bukkit.sakurabind.config.*
-import top.iseason.bukkit.sakurabind.config.DefaultItemSetting.stripLoreColor
+import top.iseason.bukkit.sakurabind.config.matcher.LoreMatcher
 import top.iseason.bukkit.sakurabind.event.*
 import top.iseason.bukkit.sakurabind.task.DelaySender
 import top.iseason.bukkit.sakurabind.utils.BindType
@@ -215,46 +215,54 @@ object SakuraBindAPI {
             }
 //            println(loreStr)
             //添加lore
+            setting.matchers.forEach { it.onBind(temp) }
+
             temp.applyMeta {
                 lore = if (hasLore()) {
                     val lore = LinkedList(lore!!)
                     var index = setting.getInt("item.lore-index")
-                    if (setting.removeLore && !setting.lorePatterns.isNullOrEmpty()) {
-                        val lorePatterns = setting.lorePatterns!!
-                        val patternIter = lorePatterns.iterator()
-                        var match = true
-                        var pattern = patternIter.next()
-                        val indexOfFirst = lore.indexOfFirst {
-                            pattern.matcher(if (stripLoreColor) it else it.noColor()).find()
-                        }
-                        //lore大小小于正则肯定不匹配
-                        if (lore.size < indexOfFirst + lorePatterns.size) {
-                            match = false
-                        } else {
-                            //除了第一个lore匹配其他的也得匹配
-                            for (i in (indexOfFirst + 1) until (indexOfFirst + lorePatterns.size)) {
-                                pattern = patternIter.next()
-                                val s = lore[i]
-                                if (!pattern.matcher(if (stripLoreColor) s else s.noColor()).find()) {
-                                    match = false
-                                    break
+                    // lore matcher start
+                    val loreMatcher = setting.matchers.firstOrNull { it is LoreMatcher } as? LoreMatcher
+                    if (loreMatcher != null) {
+                        if (loreMatcher.removeMatched && loreMatcher.lorePatterns.isNotEmpty()) {
+                            val lorePatterns = loreMatcher.lorePatterns
+                            val patternIter = lorePatterns.iterator()
+                            var match = true
+                            var pattern = patternIter.next()
+                            val indexOfFirst = lore.indexOfFirst {
+                                pattern.matcher(if (loreMatcher.stripLoreColor) it else it.noColor()).find()
+                            }
+                            //lore大小小于正则肯定不匹配
+                            if (lore.size < indexOfFirst + lorePatterns.size) {
+                                match = false
+                            } else {
+                                //除了第一个lore匹配其他的也得匹配
+                                for (i in (indexOfFirst + 1) until (indexOfFirst + lorePatterns.size)) {
+                                    pattern = patternIter.next()
+                                    val s = lore[i]
+                                    if (!pattern.matcher(if (loreMatcher.stripLoreColor) s else s.noColor()).find()) {
+                                        match = false
+                                        break
+                                    }
+                                }
+                            }
+                            if (match) {
+                                repeat(lorePatterns.size) {
+                                    lore.removeAt(indexOfFirst)
+                                }
+                                if (setting.getBoolean(
+                                        "item.lore-replace-matched",
+                                        owner.toString(),
+                                        player as? HumanEntity
+                                    )
+                                ) {
+                                    index = indexOfFirst
                                 }
                             }
                         }
-                        if (match) {
-                            repeat(lorePatterns.size) {
-                                lore.removeAt(indexOfFirst)
-                            }
-                            if (setting.getBoolean(
-                                    "item.lore-replace-matched",
-                                    owner.toString(),
-                                    player as? HumanEntity
-                                )
-                            ) {
-                                index = indexOfFirst
-                            }
-                        }
                     }
+                    // lore matcher end
+
                     if (index > lore.size - 1) {
                         lore.addAll(loreStr)
                     } else {

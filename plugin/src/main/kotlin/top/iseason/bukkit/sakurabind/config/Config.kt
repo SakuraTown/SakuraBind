@@ -14,7 +14,6 @@ import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
 import top.iseason.bukkittemplate.debug.info
-import java.util.*
 
 @FilePath("config.yml")
 object Config : SimpleYAMLConfig() {
@@ -69,6 +68,14 @@ object Config : SimpleYAMLConfig() {
     @Key
     @Comment("", "丢失物品返还玩家时如果玩家在线且背包满了优先进入玩家末影箱，末影箱满了再进入暂存箱")
     var ender_chest_cache = false
+
+    @Key
+    @Comment(
+        "", "启用配置权限检查, 在获取绑定设置前优先从权限中读取。",
+        "绑定全局设置权限 `sakurabind.settings.{键名}.true|false` 不支持`键名@`的形式",
+        "绑定设置权限 `sakurabind.setting.{设置名}.{键名}.true|false` 设置名是 `settings.yml` 匹配键,覆盖全局权限 不支持`键名@`"
+    )
+    var enable_setting_permission_check = true
 
     private var task: BukkitTask? = null
 
@@ -135,8 +142,7 @@ object Config : SimpleYAMLConfig() {
      * 检查是否不检查
      */
     fun checkByPass(player: HumanEntity): Boolean {
-        if (player.isOp || player.hasPermission("sakurabind.bypass.all")) return true
-        return false
+        return player.isOp || player.hasPermission("sakurabind.bypass.all")
     }
 
 }

@@ -4,6 +4,10 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven {
+        name = "MMOItems"
+        url = uri("https://nexus.phoenixdevt.fr/repository/maven-public/")
+    }
 }
 
 dependencies {
@@ -22,6 +26,12 @@ dependencies {
     compileOnly("org.ehcache:ehcache:3.10.8") { isTransitive = false }
     compileOnly("me.clip:placeholderapi:2.11.2") { isTransitive = false }
     compileOnly("fr.xephi:authme:5.6.0-SNAPSHOT") { isTransitive = false }
+
+    compileOnly("net.Indyuce:MMOItems-API:6.9.4-SNAPSHOT") { isTransitive = false }
+//    compileOnly("io.lumine:MythicLib-dist:1.5.2-SNAPSHOT") { isTransitive = false }
+    compileOnly("com.github.LoneDev6:api-itemsadder:3.4.1-r4") { isTransitive = false }
+    compileOnly("com.github.oraxen:oraxen:1.155.3") { isTransitive = false }
+
 }
 
 // 插件名称，请在gradle.properties 修改

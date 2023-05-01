@@ -7,6 +7,9 @@ softdepend:
   - SakuraMail
   - PlaceholderAPI
   - AuthMe
+  - MMOItems
+  - ItemsAdder
+  - Oraxen
 
 runtime-libraries:
   # If not defined, it will be 'libraries'

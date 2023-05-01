@@ -4,16 +4,15 @@ import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.HumanEntity
 import org.bukkit.inventory.ItemStack
 
-object DefaultItemSetting : ItemSetting("global-setting", YamlConfiguration().apply {
-    set("match.material", ".*")
-}) {
+object DefaultItemSetting : ItemSetting("global-setting", YamlConfiguration()) {
+
     override fun match(item: ItemStack): Boolean {
         return true
     }
 
     override fun getBoolean(key: String, owner: String?, player: HumanEntity?): Boolean {
         //权限检查
-        if (player != null) {
+        if (Config.enable_setting_permission_check && player != null) {
             if (player.hasPermission("sakurabind.settings.$key.true")) {
                 return true
             } else if (player.hasPermission("sakurabind.settings.$key.false")) {

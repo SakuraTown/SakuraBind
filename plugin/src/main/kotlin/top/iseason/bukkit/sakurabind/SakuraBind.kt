@@ -9,11 +9,10 @@ import top.iseason.bukkit.sakurabind.cache.EntityCache
 import top.iseason.bukkit.sakurabind.cache.FallingBlockCache
 import top.iseason.bukkit.sakurabind.command.*
 import top.iseason.bukkit.sakurabind.config.*
+import top.iseason.bukkit.sakurabind.config.matcher.MatcherManager
 import top.iseason.bukkit.sakurabind.dto.BindLogs
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
-import top.iseason.bukkit.sakurabind.hook.AuthMeHook
-import top.iseason.bukkit.sakurabind.hook.PlaceHolderExpansion
-import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
+import top.iseason.bukkit.sakurabind.hook.*
 import top.iseason.bukkit.sakurabind.listener.*
 import top.iseason.bukkit.sakurabind.task.DelaySender
 import top.iseason.bukkit.sakurabind.task.DropItemList
@@ -33,6 +32,7 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 object SakuraBind : BukkitPlugin {
 
     override fun onLoad() {
+        checkHooks()
         Metrics(javaPlugin, 16968)
     }
 
@@ -40,7 +40,6 @@ object SakuraBind : BukkitPlugin {
         BukkitTemplate.getPlugin().saveResource("placeholders.txt", true)
         SimpleLogger.prefix = "&a[&6${javaPlugin.description.name}&a]&r ".toColor()
         SimpleYAMLConfig.notifyMessage = "&6配置文件 &f%s &6已重载!"
-        checkHooks()
         try {
             initCommands()
         } catch (e: Exception) {
@@ -80,12 +79,19 @@ object SakuraBind : BukkitPlugin {
      * 检查插件钩子
      */
     private fun checkHooks() {
+        PlaceHolderHook.checkHooked()
+        if (PlaceHolderHook.hasHooked) PlaceHolderExpansion.register()
         SakuraMailHook.checkHooked()
         AuthMeHook.checkHooked()
-        if (PlaceHolderHook.hasHooked) {
-            PlaceHolderExpansion.register()
+        MMOItemsHook.checkHooked()
+        ItemsAdderHook.checkHooked()
+        OraxenHook.checkHooked()
+        if (MMOItemsHook.hasHooked) {
+            MatcherManager.addMatcher(MMOItemsMatcher())
+//            MMOItems.plugin.stats.register(SakuraBindStat)
         }
-
+        if (ItemsAdderHook.hasHooked) MatcherManager.addMatcher(ItemsAdderMatcher())
+        if (OraxenHook.hasHooked) MatcherManager.addMatcher(OraxenMatcher())
     }
 
     /**
