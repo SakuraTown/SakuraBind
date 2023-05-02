@@ -3,6 +3,7 @@ package top.iseason.bukkit.sakurabind.listener
 import fr.xephi.authme.api.v3.AuthMeApi
 import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.entity.Item
 import org.bukkit.entity.ItemFrame
 import org.bukkit.entity.Player
@@ -162,21 +163,13 @@ object ItemListener : Listener {
         if (CallbackCommand.isCallback(owner)) {
             val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
             if (sendBackItem.isEmpty()) {
-                // 为了兼容尽可能多的mod服务端和游戏版本，
-                // 只能让它传送到玩家碰不到的地方，再在事件结束后删除
-                val location = itemDrop.location
-                location.y = -9999.0
-                itemDrop.teleport(location)
-                DropItemList.putItem(itemDrop, owner, Int.MIN_VALUE)
+                DropItemList.syncRemove(itemDrop)
             } else itemDrop.itemStack = sendBackItem.first()
             MessageTool.messageCoolDown(player, Lang.command__callback)
             return
         }
         if (ItemSettings.getSetting(item).getBoolean("item-deny.drop", owner.toString(), player)) {
-            val location = itemDrop.location
-            location.y = -9999.0
-            itemDrop.teleport(location)
-            DropItemList.putItem(itemDrop, owner, Int.MIN_VALUE)
+            DropItemList.syncRemove(itemDrop)
             val openInventory = event.player.openInventory
             val cursor = openInventory.cursor
             val release = event.player.inventory.addItem(item)
@@ -432,14 +425,15 @@ object ItemListener : Listener {
         val item = event.entity as? Item ?: return
         if (item.isDead) return
         val itemStack = item.itemStack
-        val owner = SakuraBindAPI.getOwner(itemStack) ?: return
-        if (CallbackCommand.isCallback(owner) ||
-            ItemSettings.getSetting(itemStack).getBoolean("item.send-when-lost", null, null)
-        ) {
-            val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(itemStack))
-            if (sendBackItem.isEmpty())
-                item.remove()
-            else item.itemStack = sendBackItem.first()
+        if (!DatabaseConfig.isConnected && SakuraBindAPI.hasInnerBind(itemStack)) {
+            event.isCancelled = true
+            return
+        }
+        val filterItem = SakuraBindAPI.filterItem(itemStack) { it.getBoolean("item.send-when-lost", null, null) }
+        if (filterItem.isEmpty()) return
+        if (itemStack.type == Material.AIR) item.remove()
+        for ((uuid, bindItems) in filterItem) {
+            SakuraBindAPI.sendBackItem(uuid, bindItems)
         }
     }
 
@@ -450,17 +444,16 @@ object ItemListener : Listener {
     fun onItemDespawnEvent(event: ItemDespawnEvent) {
         val item = event.entity
         val itemStack = item.itemStack
-        val owner = SakuraBindAPI.getOwner(item.itemStack) ?: return
-        if (!CallbackCommand.isCallback(owner)
-            && !ItemSettings.getSetting(itemStack).getBoolean("item.send-when-lost", null, null)
-        ) {
+        if (!DatabaseConfig.isConnected && SakuraBindAPI.hasInnerBind(itemStack)) {
+            event.isCancelled = true
             return
         }
-        val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(itemStack))
-        if (sendBackItem.isEmpty())
-            item.remove()
-        else item.itemStack = sendBackItem.first()
-        item.remove()
+        val filterItem = SakuraBindAPI.filterItem(itemStack) { it.getBoolean("item.send-when-lost", null, null) }
+        if (filterItem.isEmpty()) return
+        if (itemStack.type == Material.AIR) item.remove()
+        for ((uuid, bindItems) in filterItem) {
+            SakuraBindAPI.sendBackItem(uuid, bindItems)
+        }
     }
 
     /**
@@ -702,16 +695,21 @@ object ItemListener : Listener {
     fun onItemSpawnEvent(event: ItemSpawnEvent) {
         val entity = event.entity
         val itemStack = entity.itemStack
-        val uuid = SakuraBindAPI.getOwner(itemStack) ?: return
-        val setting = ItemSettings.getSetting(itemStack)
-        val delay = setting.getLong("item.send-back-delay")
-        if (delay == 0L) {
-            val sendBackItem = SakuraBindAPI.sendBackItem(uuid, listOf(itemStack))
-            if (sendBackItem.isEmpty())
-                event.isCancelled = true
-            else event.entity.itemStack = sendBackItem.first()
-        } else
-            DropItemList.putItem(entity, uuid, delay.toInt())
+        // 处理即刻返还
+        for ((uuid, list) in SakuraBindAPI.filterItem(itemStack) { it.getInt("item.send-back-delay") == 0 }) {
+            SakuraBindAPI.sendBackItem(uuid, list)
+        }
+        if (itemStack.type != Material.AIR) entity.itemStack = itemStack
+        else {
+            event.isCancelled = true
+            return
+        }
+        val owner = SakuraBindAPI.getOwner(itemStack)
+        if (owner != null) {
+            DropItemList.putItem(entity, owner, SakuraBindAPI.getItemSetting(itemStack).getInt("item.send-back-delay"))
+        } else if (SakuraBindAPI.hasInnerBind(itemStack)) {
+            DropItemList.putInnerItem(entity)
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

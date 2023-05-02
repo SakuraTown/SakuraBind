@@ -73,10 +73,10 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
 
     companion object {
         private val map = ConcurrentHashMap<UUID, DelaySender>()
-
+        private val plugin = BukkitTemplate.getPlugin()
         fun sendItem(uuid: UUID, items: Collection<ItemStack>) {
             val delaySender = map.computeIfAbsent(uuid) {
-                DelaySender(uuid).apply { runTaskTimerAsynchronously(BukkitTemplate.getPlugin(), 20, 20) }
+                DelaySender(uuid).apply { runTaskTimerAsynchronously(plugin, 20, 20) }
             }
             delaySender.addItem(items)
         }

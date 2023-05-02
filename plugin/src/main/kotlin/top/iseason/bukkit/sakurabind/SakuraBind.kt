@@ -80,16 +80,13 @@ object SakuraBind : BukkitPlugin {
      */
     private fun checkHooks() {
         PlaceHolderHook.checkHooked()
-        if (PlaceHolderHook.hasHooked) PlaceHolderExpansion.register()
         SakuraMailHook.checkHooked()
         AuthMeHook.checkHooked()
         MMOItemsHook.checkHooked()
         ItemsAdderHook.checkHooked()
         OraxenHook.checkHooked()
-        if (MMOItemsHook.hasHooked) {
-            MatcherManager.addMatcher(MMOItemsMatcher())
-//            MMOItems.plugin.stats.register(SakuraBindStat)
-        }
+        if (PlaceHolderHook.hasHooked) PlaceHolderExpansion.register()
+        if (MMOItemsHook.hasHooked) MatcherManager.addMatcher(MMOItemsMatcher())
         if (ItemsAdderHook.hasHooked) MatcherManager.addMatcher(ItemsAdderMatcher())
         if (OraxenHook.hasHooked) MatcherManager.addMatcher(OraxenMatcher())
     }
@@ -98,7 +95,7 @@ object SakuraBind : BukkitPlugin {
      * 开启任务
      */
     private fun initTasks() {
-        DropItemList.runTaskTimer(javaPlugin, 0, 1)
+        DropItemList.runTaskTimerAsynchronously(javaPlugin, 0, 1)
     }
 
     /**
@@ -170,6 +167,7 @@ object SakuraBind : BukkitPlugin {
             addSubNode(OpenLostCommand)
             addSubNode(ReloadCommand)
             addSubNode(CallbackCommand)
+            addSubNode(SuperCallbackCommand)
             addSubNode(TestCommand)
             TestCommand.addSubNode(TestMatchCommand)
             TestCommand.addSubNode(TestTryMatchCommand)

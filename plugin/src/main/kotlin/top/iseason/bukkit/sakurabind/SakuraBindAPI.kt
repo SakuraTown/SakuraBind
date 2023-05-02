@@ -2,13 +2,17 @@ package top.iseason.bukkit.sakurabind
 
 import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.OfflinePlayer
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.BlockStateMeta
 import top.iseason.bukkit.sakurabind.cache.BlockCache
 import top.iseason.bukkit.sakurabind.cache.EntityCache
 import top.iseason.bukkit.sakurabind.config.*
@@ -26,6 +30,7 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 import top.iseason.bukkittemplate.utils.other.EasyCoolDown
 import java.util.*
+import java.util.function.Predicate
 
 /**
  * 绑定API
@@ -295,6 +300,26 @@ object SakuraBindAPI {
     }
 
     /**
+     * 物品及其容器内物品是否被绑定
+     * @param item 需要判断的物品
+     */
+    @JvmStatic
+    fun hasInnerBind(item: ItemStack): Boolean {
+        if (!item.hasItemMeta()) return false
+        if (getOwner(item) != null) return true
+        val itemMeta = item.itemMeta
+        if (itemMeta is BlockStateMeta && itemMeta.hasBlockState()) {
+            val blockState = itemMeta.blockState
+            if (blockState is InventoryHolder) {
+                for (itemStack in blockState.inventory) {
+                    if (itemStack != null && hasInnerBind(itemStack)) return true
+                }
+            }
+        }
+        return false
+    }
+
+    /**
      * 获取物品绑定的物主
      * @param item 目标物品
      */
@@ -439,7 +464,7 @@ object SakuraBindAPI {
      * 将物品送回物主，玩家在线优先进背包
      */
     @JvmStatic
-    fun sendBackItem(uuid: UUID, items: List<ItemStack>): List<ItemStack> {
+    fun sendBackItem(uuid: UUID, items: Collection<ItemStack>): List<ItemStack> {
         val player = Bukkit.getPlayer(uuid)
         //物主在线
         var release = mutableListOf<ItemStack>()
@@ -496,6 +521,78 @@ object SakuraBindAPI {
         val owner = getOwner(item!!) ?: return false
         return ItemSettings.getSetting(item)
             .getBoolean(key, owner.toString(), player)
+    }
+
+    /**
+     * 从容器中删除 某个UUID 的绑定物品
+     * @param inventory 容器
+     * @param uuid 绑定物品的物主，null表示所有绑定物品
+     * @param remove 是否删除源物品
+     * @param predicate 是否进行配置检查, null 不检查
+     * @return 物主uuid与一组绑定物品的映射或空气
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun filterInventory(
+        inventory: Inventory,
+        uuid: UUID? = null,
+        remove: Boolean = true,
+        predicate: Predicate<BaseSetting>? = null
+    ): Map<UUID, List<ItemStack>> {
+        val map = HashMap<UUID, MutableList<ItemStack>>()
+        for (i in 0 until inventory.size) {
+            val item = inventory.getItem(i)
+            if (item.checkAir()) continue
+            val filterItem = filterItem(item!!, uuid, remove, predicate)
+            if (filterItem.isEmpty()) continue
+            if (remove && item.type == Material.AIR) inventory.clear(i)
+            filterItem.forEach { (k, v) -> map.computeIfAbsent(k) { LinkedList() }.addAll(v) }
+        }
+        return map
+    }
+
+    /**
+     * 从物品中提取绑定物品, 如果这个物品符合条件将会被设置为空气
+     * @param item 物品
+     * @param uuid 绑定物品的物主，null表示任意绑定物品
+     * @param remove 是否删除源物品
+     * @param predicate 是否进行配置检查, null 不检查
+     * @return 物主uuid与一组绑定物品的映射或空气, 因为物品可能是容器
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun filterItem(
+        item: ItemStack,
+        uuid: UUID? = null,
+        remove: Boolean = true,
+        predicate: Predicate<BaseSetting>? = null
+    ): Map<UUID, List<ItemStack>> {
+        val owner = getOwner(item)
+        // 绑定物品判断
+        if (owner != null && (uuid == null || uuid == owner)) {
+            if (predicate != null && !predicate.test(getItemSetting(item))) return emptyMap()
+            val clone = if (remove) item.clone() else item
+            if (remove) item.type = Material.AIR
+            return mapOf((uuid ?: owner) to listOf(clone))
+        }
+        val itemMeta = item.itemMeta
+        if (itemMeta is BlockStateMeta && itemMeta.hasBlockState()) {
+            val blockState = itemMeta.blockState
+            if (blockState is InventoryHolder) {
+                val filterInventory = filterInventory(blockState.inventory, uuid, remove, predicate)
+                if (filterInventory.isEmpty()) return emptyMap()
+                for (value in filterInventory.values) {
+                    val copy = LinkedList(value)
+                    repeat(item.amount - 1) {
+                        (value as MutableList<ItemStack>).addAll(copy)
+                    }
+                }
+                itemMeta.blockState = blockState
+                item.itemMeta = itemMeta
+                return filterInventory
+            }
+        }
+        return emptyMap()
     }
 
     /**
