@@ -1,5 +1,6 @@
 package top.iseason.bukkit.sakurabind.command
 
+import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Item
@@ -50,20 +51,40 @@ object SuperCallbackCommand : CommandNode(
         val backpacksSize = linkedList.size
         if (!isSilent) sender.sendColorMessage(
             Lang.command__super_callback_backpacks.formatBy(
-                onlinePlayers.size,
+                onlinePlayers.size - 1,
                 backpacksSize,
                 backpackMills - startMills
             )
         )
-        // 搜索掉落物
+        // 同步获取所有 掉落物 和 方块实体
         val count = AtomicInteger(0)
-        val itemList = Bukkit.getWorlds()
+        val (drops, containers) = Bukkit.getScheduler().callSyncMethod(BukkitTemplate.getPlugin()) {
+            val drops = Bukkit.getWorlds()
+                .stream()
+                .flatMap { it.entities.stream() }
+                .filter { it is Item }
+                .collect(Collectors.toList())
+            val containers = Bukkit.getWorlds()
+                .stream()
+                .flatMap { world ->
+                    Arrays.stream(world.loadedChunks)
+                        .flatMap { chunk -> Arrays.stream(chunk.tileEntities) }
+                        .filter {
+                            if (it !is InventoryHolder) return@filter false
+                            // 防止被 proguard 优化成 Translatable 导致低版本无法使用, 所以强转
+                            if (NBTEditor.contains(it.block as Any, "LootTableSeed")) return@filter false
+                            true
+                        }
+                }.collect(Collectors.toList())
+            drops to containers
+        }.get()
+        val syncMills = System.currentTimeMillis()
+        if (!isSilent) sender.sendColorMessage(Lang.command__super_callback_sync.formatBy(syncMills - backpackMills))
+        val itemList = drops
             .parallelStream()
-            .flatMap { it.entities.stream() }
             .filter {
-                if (it !is Item) return@filter false
                 count.getAndIncrement()
-                val itemStack = it.itemStack
+                val itemStack = (it as Item).itemStack
                 val stacks = filterItem(itemStack, uniqueId)
                 if (stacks.isNotEmpty()) linkedList.addAll(stacks.flatMap { entry -> entry.value })
                 itemStack.type == Material.AIR
@@ -77,31 +98,20 @@ object SuperCallbackCommand : CommandNode(
             Lang.command__super_callback_drops.formatBy(
                 count.get(),
                 dropsSize - backpacksSize,
-                dropsMills - backpackMills
+                dropsMills - syncMills
             )
         )
-        // 同步获取所有 方块实体
-        val list = Bukkit.getScheduler().callSyncMethod(BukkitTemplate.getPlugin()) {
-            Bukkit.getWorlds()
-                .stream()
-                .flatMap { world ->
-                    Arrays.stream(world.loadedChunks)
-                        .flatMap { chunk -> Arrays.stream(chunk.tileEntities) }
-                        .filter { it is InventoryHolder }
-                }.collect(Collectors.toList())
-        }.get()
-        list.parallelStream()
+        containers.parallelStream()
             .forEach { state ->
                 val filterInventory = filterInventory((state as InventoryHolder).inventory, uniqueId)
                 if (filterInventory.isEmpty()) return@forEach
-                state.block
                 linkedList.addAll(filterInventory.flatMap { it.value })
             }
         val containersMills = System.currentTimeMillis()
         val containersSize = linkedList.size
         if (!isSilent) sender.sendColorMessage(
             Lang.command__super_callback_containers.formatBy(
-                list.size,
+                containers.size,
                 containersSize - dropsSize,
                 containersMills - dropsMills
             )
@@ -119,5 +129,6 @@ object SuperCallbackCommand : CommandNode(
         SakuraBindAPI.sendBackItem(uniqueId, linkedList)
         player.sendColorMessage(Lang.command__super_callback_player.formatBy(linkedList.size, sumOf))
     }
+
 
 }

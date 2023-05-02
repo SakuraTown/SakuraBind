@@ -119,6 +119,7 @@ object Lang : top.iseason.bukkittemplate.config.Lang() {
     var command__callback = "&6该物品已被物主召回"
     var command__super_callback_start = "&7开始搜索 &6{0} &7的物品..."
     var command__super_callback_backpacks = "&7已搜索 &6{0} &7个玩家背包, 找到目标: &a{1} &7个, 耗时: &b{2} &7ms"
+    var command__super_callback_sync = "&7已同步获取掉落物和容器数据, 耗时: &b{0} &7ms"
     var command__super_callback_drops = "&7已搜索 &6{0} &7个掉落物, 找到目标: &a{1} &7个, 耗时: &b{2} &7ms"
     var command__super_callback_containers = "&7已搜索 &6{0} &7个容器, 找到目标: &a{1} &7个, 耗时: &b{2} &7ms"
     var command__super_callback_end = "&a搜索结束, 已送回 &b{0} &a堆 共 &b{1} &a个物品, 耗时 {2} ms"

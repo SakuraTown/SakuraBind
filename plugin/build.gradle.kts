@@ -22,13 +22,12 @@ dependencies {
     // 本地依赖放在libs文件夹内
     compileOnly(fileTree("libs") { include("*.jar") })
     implementation("org.bstats:bstats-bukkit:3.0.1")
-    compileOnly("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT")
     compileOnly("org.ehcache:ehcache:3.10.8") { isTransitive = false }
+
     compileOnly("me.clip:placeholderapi:2.11.2") { isTransitive = false }
     compileOnly("fr.xephi:authme:5.6.0-SNAPSHOT") { isTransitive = false }
-
     compileOnly("net.Indyuce:MMOItems-API:6.9.4-SNAPSHOT") { isTransitive = false }
-//    compileOnly("io.lumine:MythicLib-dist:1.5.2-SNAPSHOT") { isTransitive = false }
     compileOnly("com.github.LoneDev6:api-itemsadder:3.4.1-r4") { isTransitive = false }
     compileOnly("com.github.oraxen:oraxen:1.155.3") { isTransitive = false }
 
@@ -114,7 +113,7 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     }
     allowaccessmodification() //优化时允许访问并修改有修饰符的类和类的成员
     dontusemixedcaseclassnames() // 混淆时不要大小写混合
-    optimizationpasses(5)
+    optimizationpasses(10)
     dontwarn()
     //添加运行环境
     val javaHome = System.getProperty("java.home")

@@ -102,10 +102,10 @@ object SakuraBind : BukkitPlugin {
      * 注册监听器
      */
     private fun initListeners() {
-        ItemListener.registerListener()
         if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_9)) {
             ItemListener194.registerListener()
         }
+        ItemListener.registerListener()
         if (AuthMeHook.hasHooked) {
             LoginAuthMeListener.registerListener()
         } else {
@@ -201,4 +201,5 @@ object SakuraBind : BukkitPlugin {
         }
         info("&a插件已注销")
     }
+
 }
