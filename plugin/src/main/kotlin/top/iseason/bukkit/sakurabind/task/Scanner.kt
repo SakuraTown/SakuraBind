@@ -19,61 +19,58 @@ import java.util.*
 class Scanner : BukkitRunnable() {
     private val sendBackMap = mutableMapOf<UUID, MutableList<ItemStack>>()
     override fun run() {
-        Bukkit.getOnlinePlayers().forEach {
-            if (!it.isOnline) return
-            if (Config.checkByPass(it)) return@forEach
-//                    info("正在检查 ${it.name} ${it.uniqueId} 的背包")
-//                    info("送回物品功能: $auto_bind__scanner_send_back")
+        Bukkit.getOnlinePlayers().forEach { player ->
+            if (!player.isOnline) return
+            if (Config.checkByPass(player)) return@forEach
             var hasFound = false
-            val inventory = it?.openInventory?.bottomInventory ?: return@forEach
+            val inventory = player?.openInventory?.bottomInventory ?: return@forEach
             try {
                 //为了兼容mod，获取到的格子数不一致
                 for (i in 0 until inventory.size) {
                     val item = inventory.getItem(i) ?: continue
                     if (item.checkAir()) continue
                     val owner = SakuraBindAPI.getOwner(item)
-                    val ownerStr = owner.toString()
+                    val ownerStr = owner?.toString()
                     val setting = ItemSettings.getSetting(item, owner != null)
                     if (owner != null &&
-                        setting.getBoolean("auto-unbind.enable", ownerStr, it) &&
-                        setting.getBoolean("auto-unbind.onScanner", ownerStr, it)
+                        setting.getBoolean("auto-unbind.enable", ownerStr, player) &&
+                        setting.getBoolean("auto-unbind.onScanner", ownerStr, player)
                     ) {
                         SakuraBindAPI.unBind(item, BindType.SCANNER_UNBIND_ITEM)
-                        MessageTool.messageCoolDown(it, Lang.auto_unbind__onScanner)
+                        MessageTool.messageCoolDown(player, Lang.auto_unbind__onScanner)
                         continue
                     }
-                    if (owner != null && owner != it.uniqueId &&
+                    if (owner != null && owner != player.uniqueId &&
                         (CallbackCommand.isCallback(owner) || setting.getBoolean(
                             "item.send-back-scanner",
                             ownerStr,
-                            it
+                            player
                         ))
                     ) {
-                        debug("找到 ${it.name} 违规物品${item.type} 属于 $owner")
+                        debug("${player.name} 的背包中存在绑定物品 ${item.type} 属于 $owner")
                         sendBackMap.computeIfAbsent(owner) { mutableListOf() }.add(item)
                         inventory.setItem(i, null)
                         hasFound = true
                         continue
                     }
-//                            println("${item.type} ${setting.getBoolean("auto-bind.enable", null, it)}")
                     if (owner == null &&
-                        ((setting.getBoolean("auto-bind.enable", null, it) && setting.getBoolean(
+                        ((setting.getBoolean("auto-bind.enable", null, player) && setting.getBoolean(
                             "auto-bind.onScanner",
                             null,
-                            it
+                            player
                         ))
                                 || NBTEditor.contains(
                             item, Config.auto_bind_nbt
                         ))
                     ) {
 //                                info("已绑定物品 ${item.type}")
-                        MessageTool.bindMessageCoolDown(it, Lang.auto_bind__onScanner, setting, item)
-                        SakuraBindAPI.bind(item, it, type = BindType.SCANNER_BIND_ITEM)
+                        MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onScanner, setting, item)
+                        SakuraBindAPI.bind(item, player, type = BindType.SCANNER_BIND_ITEM)
                     }
                 }
             } catch (_: Exception) {
             }
-            if (hasFound) it.sendColorMessage(Lang.scanner_item_send_back)
+            if (hasFound) player.sendColorMessage(Lang.scanner_item_send_back)
         }
         if (sendBackMap.isNotEmpty()) {
 //                    info("正在送回物品")

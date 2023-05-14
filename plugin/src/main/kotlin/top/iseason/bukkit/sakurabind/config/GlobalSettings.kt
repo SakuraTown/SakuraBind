@@ -315,5 +315,23 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Comment("", "扫描器扫描时解绑(在config.yml中配置扫描器)")
     var auto_unbind__onScanner = false
 
+    @Key
+    @Comment("", "", "当物品/方块/实体绑定后的动作")
+    var on_bind: MemorySection? = null
+
+    @Key
+    @Comment(
+        "", "物品绑定时发送消息给物主(支持lang.yml中的所有格式)",
+        "占位符: {0}表示物品的材质; {1}表示物品的自定义名称,没有返回空内容; {2}返回物品的数量"
+    )
+    var on_bind__item_msg = ArrayList<String>()
+
+    @Key
+    @Comment(
+        "",
+        "方块绑定时发送消息给物主(支持lang.yml中的所有格式)",
+        "占位符: {0}表示方块的材质; {1}表示方块的世界名称,没有返回空内容; {2}方块X坐标; {3}方块Y坐标; {4}方块Z坐标"
+    )
+    var on_bind__block_msg = ArrayList<String>()
 
 }

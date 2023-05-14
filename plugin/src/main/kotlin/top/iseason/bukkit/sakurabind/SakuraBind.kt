@@ -126,7 +126,7 @@ object SakuraBind : BukkitPlugin {
             info("&a已启用实体监听器!")
         }
         SelectListener.registerListener()
-//        UIListener.register()
+        BindActionListener.registerListener()
     }
 
     /**

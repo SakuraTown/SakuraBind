@@ -31,6 +31,7 @@ object CacheManager {
         builder = CacheManagerBuilder
             .persistence(dataFile)
             .builder(CacheManagerBuilder.newCacheManagerBuilder())
+            .withClassLoader(this.javaClass.classLoader)
     }
 
     private var lastTime = System.currentTimeMillis()

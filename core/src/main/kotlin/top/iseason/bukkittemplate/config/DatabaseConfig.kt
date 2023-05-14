@@ -195,8 +195,8 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 }
 
 //                "H2" -> HikariConfig().apply {
-//                    dd.downloadDependency("com.h2database:h2:2.1.214")
-//                    jdbcUrl = "jdbc:h2:$url/$dbName$params"
+//                    runtimeManager.downloadADependencyAssembly("com.h2database:h2:2.1.214")
+//                    jdbcUrl = "jdbc:h2:$address/$database_name$params"
 //                    driverClassName = "org.h2.Driver"
 //                }
 
