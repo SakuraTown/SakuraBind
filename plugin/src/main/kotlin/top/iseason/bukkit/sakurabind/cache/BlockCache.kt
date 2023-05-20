@@ -32,6 +32,7 @@ object BlockCache : BaseCache {
     val tempBlockCache: UserManagedCache<String, String> = UserManagedCacheBuilder
         .newUserManagedCacheBuilder(String::class.java, String::class.java)
         .withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofSeconds(1)))
+        .withDispatcherConcurrency(1)
         .withKeyCopier(IdentityCopier())
         .withValueCopier(IdentityCopier())
         .build(true)
@@ -45,7 +46,7 @@ object BlockCache : BaseCache {
                     .heap(100, EntryUnit.ENTRIES)
                     .offheap(10, MemoryUnit.MB)
                     .disk(500, MemoryUnit.MB, true)
-            )
+            ).withDispatcherConcurrency(1)
                 .withExpiry(ExpiryPolicyBuilder.noExpiration())
 //                .withService(OffHeapDiskStoreConfiguration(2))
                 .build()

@@ -7,9 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
 import org.ehcache.UserManagedCache
 import org.ehcache.config.builders.ExpiryPolicyBuilder
-import org.ehcache.config.builders.ResourcePoolsBuilder
 import org.ehcache.config.builders.UserManagedCacheBuilder
-import org.ehcache.config.units.MemoryUnit
 import org.ehcache.impl.copy.IdentityCopier
 import top.iseason.bukkit.sakurabind.event.ItemMatchedEvent
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
@@ -95,10 +93,10 @@ object ItemSettings : SimpleYAMLConfig() {
     val settingCache: UserManagedCache<ItemStack, BaseSetting> = UserManagedCacheBuilder
         .newUserManagedCacheBuilder(ItemStack::class.java, BaseSetting::class.java)
         .identifier("SakuraBind-Setting-Cache")
-        .withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofSeconds(5)))
-        .withKeyCopier(IdentityCopier())
-        .withValueCopier(IdentityCopier())
-        .withResourcePools(ResourcePoolsBuilder.newResourcePoolsBuilder().heap(10, MemoryUnit.MB))
+        .withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofSeconds(3)))
+        .withKeyCopier(IdentityCopier.identityCopier())
+        .withValueCopier(IdentityCopier.identityCopier())
+        .withDispatcherConcurrency(2)
         .build(true)
 
     private var settings = LinkedHashMap<String, ItemSetting>()

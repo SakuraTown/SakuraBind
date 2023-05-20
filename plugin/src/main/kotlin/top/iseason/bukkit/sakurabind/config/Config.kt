@@ -62,6 +62,13 @@ object Config : SimpleYAMLConfig() {
     var scanner_period = 60L
 
     @Key
+    @Comment(
+        "",
+        "同步扫描(主线程)，某些情况下异步扫描可能会由于主线程卡顿而错误绑定物品, 开启将有效避免.",
+    )
+    var scanner_sync = false
+
+    @Key
     @Comment("", "玩家禁用消息的冷却时间, 单位毫秒")
     var message_coolDown = 1000L
 
@@ -104,11 +111,11 @@ object Config : SimpleYAMLConfig() {
     var temp_chest_purge_on_quit = false
 
     @Key
-    @Comment("", "当主线程卡顿时可能会导致放下的方块丢失绑定, 重启生效")
+    @Comment("", "当主线程卡住时可能会导致放下的方块丢失绑定, 重启生效")
     var thread_dump_protection: MemorySection? = null
 
     @Key
-    @Comment("", "是否启用")
+    @Comment("", "是否启用主线程卡顿监控")
     var thread_dump_protection__enable = false
 
     @Key
@@ -132,10 +139,14 @@ object Config : SimpleYAMLConfig() {
             SystemMailsYml.getMailYml(mailId) ?: info("&c邮件&7 $mailId &c不存在!")
         }
         task?.cancel()
-        if (scanner_period > 0L && (DatabaseConfig.isConnected || (SakuraMailHook.hasHooked && sakuraMail_hook))) {
-            info("&a定时扫描任务已启动,周期: $scanner_period tick")
-            task = Scanner().runTaskTimerAsynchronously(BukkitTemplate.getPlugin(), scanner_period, scanner_period)
-        } else task = null
+        task =
+            if (scanner_period > 0L && (DatabaseConfig.isConnected || (SakuraMailHook.hasHooked && sakuraMail_hook))) {
+                info("&a定时扫描任务已启动,周期: $scanner_period tick")
+                if (scanner_sync)
+                    Scanner().runTaskTimer(BukkitTemplate.getPlugin(), scanner_period, scanner_period)
+                else
+                    Scanner().runTaskTimerAsynchronously(BukkitTemplate.getPlugin(), scanner_period, scanner_period)
+            } else null
     }
 
     /**
