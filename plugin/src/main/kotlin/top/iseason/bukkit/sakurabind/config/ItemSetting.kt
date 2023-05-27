@@ -8,8 +8,9 @@ import top.iseason.bukkit.sakurabind.config.matcher.BaseMatcher
 import top.iseason.bukkit.sakurabind.config.matcher.MatcherManager
 
 open class ItemSetting(override val keyPath: String, section: ConfigurationSection) : BaseSetting {
-    val matchers: List<BaseMatcher>
+
     private var setting: ConfigurationSection
+    override val matchers: List<BaseMatcher>
 
     init {
         val matcherSection = section.getConfigurationSection("match") ?: section.createSection("match")

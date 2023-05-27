@@ -1,21 +1,18 @@
 package top.iseason.bukkit.sakurabind.config
 
+import com.google.common.cache.CacheBuilder
 import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
-import org.ehcache.UserManagedCache
-import org.ehcache.config.builders.ExpiryPolicyBuilder
-import org.ehcache.config.builders.UserManagedCacheBuilder
-import org.ehcache.impl.copy.IdentityCopier
 import top.iseason.bukkit.sakurabind.event.ItemMatchedEvent
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
 import top.iseason.bukkittemplate.debug.warn
-import java.time.Duration
+import java.util.concurrent.TimeUnit
 
 @FilePath("settings.yml")
 object ItemSettings : SimpleYAMLConfig() {
@@ -90,19 +87,23 @@ object ItemSettings : SimpleYAMLConfig() {
         }
     }
 
-    val settingCache: UserManagedCache<ItemStack, BaseSetting> = UserManagedCacheBuilder
-        .newUserManagedCacheBuilder(ItemStack::class.java, BaseSetting::class.java)
-        .identifier("SakuraBind-Setting-Cache")
-        .withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofSeconds(3)))
-        .withKeyCopier(IdentityCopier.identityCopier())
-        .withValueCopier(IdentityCopier.identityCopier())
-        .withDispatcherConcurrency(2)
-        .build(true)
+//    val settingCache: UserManagedCache<ItemStack, BaseSetting> = UserManagedCacheBuilder
+//        .newUserManagedCacheBuilder(ItemStack::class.java, BaseSetting::class.java)
+//        .identifier("SakuraBind-Setting-Cache")
+//        .withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofSeconds(3)))
+//        .withKeyCopier(IdentityCopier.identityCopier())
+//        .withValueCopier(IdentityCopier.identityCopier())
+//        .withDispatcherConcurrency(2)
+//        .build(true)
 
-    private var settings = LinkedHashMap<String, ItemSetting>()
+    private val settingCache2 = CacheBuilder.newBuilder()
+        .expireAfterAccess(3, TimeUnit.SECONDS)
+        .build<ItemStack, BaseSetting>()
+
+    private var settings = LinkedHashMap<String, BaseSetting>()
 
     override fun onLoaded(section: ConfigurationSection) {
-        settingCache.clear()
+        settingCache2.cleanUp()
         nbtPath = if (nbt_cache_path.isBlank()) arrayOf("sakura_bind_setting_cache")
         else nbt_cache_path.split('.').toTypedArray()
         settings.clear()
@@ -125,7 +126,7 @@ object ItemSettings : SimpleYAMLConfig() {
     fun getSetting(item: ItemStack, setInCache: Boolean = true): BaseSetting {
         // 一级缓存, 由EhCache实现
         // 仅给未绑定物品添加一级缓存
-        var setting: BaseSetting? = if (setInCache) null else settingCache.get(item)
+        var setting: BaseSetting? = if (setInCache) null else settingCache2.getIfPresent(item)
 //        // 存在缓存，立即返回
         if (setting != null) {
             return setting
@@ -151,10 +152,14 @@ object ItemSettings : SimpleYAMLConfig() {
         }
         //到这就没有合适的键了，但又有nbt，说明被删了，清除旧的缓存
         if (key != null) item.itemMeta = NBTEditor.set(item, null, *nbtPath).itemMeta
-        if (!setInCache) settingCache.put(item, setting)
-        return setting ?: DefaultItemSetting
+        val s = setting ?: DefaultItemSetting
+        if (!setInCache) settingCache2.put(item, s)
+        return s
     }
 
+    fun setSettingCache(item: ItemStack, setting: BaseSetting) {
+        item.itemMeta = NBTEditor.set(item, setting.keyPath, *nbtPath).itemMeta
+    }
 
     fun getMatchedSetting(item: ItemStack): BaseSetting {
         for ((_, s) in settings) {
@@ -167,5 +172,12 @@ object ItemSettings : SimpleYAMLConfig() {
 
     fun getSetting(key: String?) = settings[key ?: "global-setting"] ?: DefaultItemSetting
 
+    fun getSettingNullable(key: String) = settings[key]
+
     fun getSettingKeys() = settings.keys
+
+    fun putSetting(key: String, setting: BaseSetting) {
+        settings[key] = setting
+    }
+
 }

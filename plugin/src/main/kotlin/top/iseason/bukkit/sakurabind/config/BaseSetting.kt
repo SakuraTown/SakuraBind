@@ -3,6 +3,7 @@ package top.iseason.bukkit.sakurabind.config
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.HumanEntity
 import org.bukkit.inventory.ItemStack
+import top.iseason.bukkit.sakurabind.config.matcher.BaseMatcher
 
 /**
  * 绑定物品设置
@@ -12,7 +13,7 @@ interface BaseSetting {
      * 设置的配置路径
      */
     val keyPath: String
-
+    val matchers: List<BaseMatcher>
     /**
      * 匹配物品
      * @param item 待匹配的物品

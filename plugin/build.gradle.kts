@@ -135,6 +135,7 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     if (isObfuscated) keep(allowObf, "class $obfuscatedMainClass {}")
     else keep("class $groupS.libs.core.BukkitTemplate {}")
     keep("class kotlin.Metadata {}")
+    keep("class top.iseason.bukkit.sakurabind.SakuraBindAPI {*;}")
     keep(allowObf, "class $groupS.libs.core.PluginBootStrap {*;}")
     keep(allowObf, "class * implements $groupS.libs.core.BukkitPlugin {*;}")
     keepclassmembers("class * extends $groupS.libs.core.config.SimpleYAMLConfig {*;}")

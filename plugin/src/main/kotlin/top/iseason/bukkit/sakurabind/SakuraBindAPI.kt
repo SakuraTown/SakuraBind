@@ -42,6 +42,8 @@ object SakuraBindAPI {
      * @param item 需要绑定的物品
      * @param player 绑定的玩家
      * @param showLore 是否显示lore
+     * @param type 绑定的类型
+     * @param setting 绑定的设置
      */
     @JvmStatic
     @JvmOverloads
@@ -49,24 +51,30 @@ object SakuraBindAPI {
         item: ItemStack,
         player: Player,
         showLore: Boolean = true,
-        type: BindType = BindType.API_BIND_ITEM
-    ) = bind(item, player.uniqueId, showLore, type)
+        type: BindType = BindType.API_BIND_ITEM,
+        setting: BaseSetting? = null
+    ) = bind(item, player.uniqueId, showLore, type, setting)
 
     /**
      * 将物品绑定UUID
      * @param item 绑定的物品
      * @param uuid 绑定的uuid
      * @param showLore 是否显示lore
+     * @param type 绑定的类型
+     * @param setting 绑定的设置
      */
     @JvmStatic
     @JvmOverloads
-    fun bind(item: ItemStack, uuid: UUID, showLore: Boolean = true, type: BindType) {
-        val itemBindEvent = ItemBindEvent(item, ItemSettings.getSetting(item), uuid, type)
+    fun bind(item: ItemStack, uuid: UUID, showLore: Boolean = true, type: BindType, setting: BaseSetting? = null) {
+        if (setting != null) {
+            setSettingCache(item, setting)
+        }
+        val itemBindEvent = ItemBindEvent(item, setting ?: ItemSettings.getSetting(item), uuid, type)
         Bukkit.getPluginManager().callEvent(itemBindEvent)
         if (itemBindEvent.isCancelled) return
         val set = NBTEditor.set(item, itemBindEvent.owner.toString(), *Config.nbtPathUuid) ?: return
         item.itemMeta = set.itemMeta
-        if (showLore) updateLore(item)
+        if (showLore) updateLore(item, itemBindEvent.setting)
         BindLogger.log(
             itemBindEvent.owner,
             itemBindEvent.bindType,
@@ -88,7 +96,7 @@ object SakuraBindAPI {
         var set = NBTEditor.set(item, null, *Config.nbtPathUuid)
         set = NBTEditor.set(set, null, *ItemSettings.nbtPath)
         item.itemMeta = set.itemMeta
-        updateLore(item)
+        updateLore(item, itemUnBIndEvent.setting)
         BindLogger.log(
             itemUnBIndEvent.owner,
             itemUnBIndEvent.bindType,
@@ -196,7 +204,7 @@ object SakuraBindAPI {
      * 更新绑定物品的lore
      */
     @JvmStatic
-    fun updateLore(item: ItemStack) {
+    fun updateLore(item: ItemStack, basesSetting: BaseSetting? = null) {
         val itemMeta = item.itemMeta ?: return
         var oldLore = NBTEditor.getKeys(item, *Config.nbtPathLore)
         val owner = getOwner(item)
@@ -208,7 +216,7 @@ object SakuraBindAPI {
             temp.applyMeta { this.lore = newLore }
             temp = NBTEditor.set(temp, null, *Config.nbtPathLore)
         }
-        val setting = ItemSettings.getSetting(item) as ItemSetting
+        val setting = basesSetting ?: ItemSettings.getSetting(item)
         // 有主人
         if (owner != null) {
             val player = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
@@ -382,7 +390,7 @@ object SakuraBindAPI {
      * @return 方块绑定信息
      */
     @JvmStatic
-    fun getBlockInfo(block: Block): Pair<String, ItemSetting>? {
+    fun getBlockInfo(block: Block): Pair<String, BaseSetting>? {
         if (!isBlockEnable()) throw IllegalStateException("方块监听器未启用，请在config.yml中打开 'block-listener'")
         return BlockCache.getBlockInfo(block)
     }
@@ -404,7 +412,7 @@ object SakuraBindAPI {
      * @return 实体的绑定信息
      */
     @JvmStatic
-    fun getEntityInfo(entity: Entity): Pair<String, ItemSetting>? {
+    fun getEntityInfo(entity: Entity): Pair<String, BaseSetting>? {
         if (!isEntityEnable()) throw IllegalStateException("实体监听器未启用，请在config.yml中打开 'block-listener'")
         return EntityCache.getEntityInfo(entity)
     }
@@ -606,5 +614,29 @@ object SakuraBindAPI {
      */
     @JvmStatic
     fun isEntityEnable() = Config.entity_listener
+
+    /**
+     * 添加物品配置
+     */
+    @JvmStatic
+    fun putSetting(key: String, setting: BaseSetting) {
+        ItemSettings.putSetting(key, setting)
+    }
+
+    /**
+     * 由Key 获取某个物品设置
+     */
+    @JvmStatic
+    fun getSetting(key: String): BaseSetting? {
+        return ItemSettings.getSettingNullable(key)
+    }
+
+    /**
+     * 将物品的配置缓存设置为某个配置
+     */
+    @JvmStatic
+    fun setSettingCache(item: ItemStack, setting: BaseSetting) {
+        return ItemSettings.setSettingCache(item, setting)
+    }
 
 }

@@ -11,7 +11,7 @@ import org.ehcache.config.builders.*
 import org.ehcache.config.units.EntryUnit
 import org.ehcache.config.units.MemoryUnit
 import org.ehcache.impl.copy.IdentityCopier
-import top.iseason.bukkit.sakurabind.config.ItemSetting
+import top.iseason.bukkit.sakurabind.config.BaseSetting
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.cuckoofilter.CuckooFilter
 import top.iseason.bukkittemplate.BukkitTemplate
@@ -116,21 +116,21 @@ object BlockCache : BaseCache {
     /**
      * 获取方块绑定的信息
      */
-    fun getBlockInfo(block: Block): Pair<String, ItemSetting>? {
+    fun getBlockInfo(block: Block): Pair<String, BaseSetting>? {
 //        if (SakuraBindAPI.isTileEntity(block)) {
 //            return SakuraBindAPI.getTileOwner(block)
 //        }
         return getBlockInfo(blockToString(block))
     }
 
-    fun getBlockInfo(block: BlockState): Pair<String, ItemSetting>? {
+    fun getBlockInfo(block: BlockState): Pair<String, BaseSetting>? {
         return getBlockInfo(CacheManager.locationToString(block.location))
     }
 
     /**
      * 获取方块绑定的玩家
      */
-    fun getBlockInfo(str: String): Pair<String, ItemSetting>? {
+    fun getBlockInfo(str: String): Pair<String, BaseSetting>? {
         //使用布谷鸟过滤防止缓存穿透
 //        val nanoTime = System.nanoTime()
         if (!blockFilter.contains(str)) return null

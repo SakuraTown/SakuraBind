@@ -11,7 +11,7 @@ import org.ehcache.config.builders.ExpiryPolicyBuilder
 import org.ehcache.config.builders.ResourcePoolsBuilder
 import org.ehcache.config.units.EntryUnit
 import org.ehcache.config.units.MemoryUnit
-import top.iseason.bukkit.sakurabind.config.ItemSetting
+import top.iseason.bukkit.sakurabind.config.BaseSetting
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.cuckoofilter.CuckooFilter
 import top.iseason.bukkittemplate.BukkitTemplate
@@ -54,7 +54,7 @@ object EntityCache : BaseCache {
         }
     }
 
-    fun getEntityInfo(entity: Entity): Pair<String, ItemSetting>? {
+    fun getEntityInfo(entity: Entity): Pair<String, BaseSetting>? {
         //使用布谷鸟过滤防止缓存穿透
         val uuid = entity.uniqueId.toString()
         if (!entityFilter.contains(uuid)) return null
