@@ -7,18 +7,28 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerLoginEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
+import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.hook.PlayerDataSQLHook
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.other.WeakCoolDown
+import top.iseason.bukkittemplate.utils.other.submit
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 object SelectListener : Listener {
     val selecting = ConcurrentHashMap<Player, Any>()
     private val coolDown = WeakCoolDown<Player>()
+
+    /**
+     * 登录之后的一段时间内不检查
+     */
+    val noScanning: MutableSet<UUID> = ConcurrentHashMap.newKeySet()
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPlayerInteractEvent(event: PlayerInteractEvent) {
@@ -82,5 +92,19 @@ object SelectListener : Listener {
     @EventHandler
     fun onPlayerQuit(event: PlayerQuitEvent) {
         selecting.remove(event.player)
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    fun onPlayerLoginEvent(event: PlayerLoginEvent) {
+        val uniqueId = event.player.uniqueId
+        if (PlayerDataSQLHook.hasHooked) {
+            noScanning.add(uniqueId)
+            return
+        }
+        if (Config.scanner_period <= 0) return
+        noScanning.add(uniqueId)
+        submit(async = true, delay = Config.scanner_period * 2) {
+            noScanning.remove(uniqueId)
+        }
     }
 }

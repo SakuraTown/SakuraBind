@@ -10,6 +10,7 @@ softdepend:
   - MMOItems
   - ItemsAdder
   - Oraxen
+  - PlayerDataSQL
 
 runtime-libraries:
   # If not defined, it will be 'libraries'

@@ -74,7 +74,6 @@ subprojects {
             targetCompatibility = "1.8"
         }
     }
-
 }
 
 repositories {

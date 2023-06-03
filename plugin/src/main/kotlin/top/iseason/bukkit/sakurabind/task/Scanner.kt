@@ -9,6 +9,7 @@ import top.iseason.bukkit.sakurabind.command.CallbackCommand
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.listener.SelectListener
 import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.debug.debug
@@ -24,7 +25,10 @@ class Scanner : BukkitRunnable() {
             val onlinePlayers = Bukkit.getOnlinePlayers()
             debug("开始扫描玩家背包,共 ${onlinePlayers.size} 人")
             onlinePlayers.stream()
-                .filter { it.isOnline && !Config.checkByPass(it) }
+                .filter {
+                    it.isOnline && !Config.checkByPass(it) &&
+                            !SelectListener.noScanning.contains(it.uniqueId)
+                }
                 .forEach { player ->
                     var hasFound = false
                     val inventory = player?.openInventory?.bottomInventory ?: return@forEach
