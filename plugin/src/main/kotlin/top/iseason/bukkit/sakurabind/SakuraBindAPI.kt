@@ -219,8 +219,8 @@ object SakuraBindAPI {
         val setting = basesSetting ?: ItemSettings.getSetting(item)
         // 有主人
         if (owner != null) {
-            val player = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
-            val loreStr = setting.getStringList("item.lore").map { str ->
+            var player = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
+            var loreStr = setting.getStringList("item.lore").map { str ->
                 var t = str
                 t = t.replace("%player%", player.name!!)
                 t = PlaceHolderHook.setPlaceHolder(t, player)
@@ -243,10 +243,11 @@ object SakuraBindAPI {
                             var match = true
                             var pattern = patternIter.next()
                             val indexOfFirst = lore.indexOfFirst {
-                                pattern.matcher(if (loreMatcher.stripLoreColor) it else it.noColor()).find()
+                                val matcher = pattern.matcher(if (loreMatcher.stripLoreColor) it.noColor() else it)
+                                matcher.find()
                             }
                             //lore大小小于正则肯定不匹配
-                            if (lore.size < indexOfFirst + lorePatterns.size) {
+                            if (indexOfFirst < 0 || lore.size < indexOfFirst + lorePatterns.size) {
                                 match = false
                             } else {
                                 //除了第一个lore匹配其他的也得匹配

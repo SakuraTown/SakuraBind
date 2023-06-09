@@ -83,11 +83,11 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Comment("", "禁止含有绑定物品的容器被玩家破坏")
     var item_deny__container_break = false
 
-    @Key()
+    @Key
     @Comment("", "禁止捡起")
     var item_deny__pickup = false
 
-    @Key()
+    @Key("item-deny.click@")
     @Comment("", "禁止拿走绑定物品")
     var item_deny__click = false
 
