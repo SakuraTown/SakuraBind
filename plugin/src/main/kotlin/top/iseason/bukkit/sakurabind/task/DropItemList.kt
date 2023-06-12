@@ -44,7 +44,7 @@ object DropItemList : BukkitRunnable() {
         // 为了兼容尽可能多的mod服务端和游戏版本
         // 只能让它传送到玩家碰不到的地方，再在事件结束后删除
         val location = item.location
-        location.y = -9999.0
+        location.y = Int.MIN_VALUE.toDouble()
         item.teleport(location)
         removed.add(item)
     }
@@ -80,7 +80,7 @@ object DropItemList : BukkitRunnable() {
             // 检查掉虚空
             val location = item.location
             val minHeight = if (hasMinHeight && location.world != null) location.world!!.minHeight else 0
-            if (location.y < minHeight) {
+            if (location.y < minHeight && location.y > Int.MIN_VALUE) {
                 sender.sendBack()
                 iterator.remove()
                 continue
