@@ -149,6 +149,7 @@ object ItemListener : Listener {
     }
 
 
+
     /**
      * 不能丢
      */
@@ -694,6 +695,9 @@ object ItemListener : Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onItemSpawnEvent(event: ItemSpawnEvent) {
         val entity = event.entity
+        if (DropItemList.cleanRemoving(entity)) {
+            return
+        }
         val itemStack = entity.itemStack
         // 处理即刻返还
         for ((uuid, list) in SakuraBindAPI.filterItem(itemStack) { it.getInt("item.send-back-delay") == 0 }) {

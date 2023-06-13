@@ -12,12 +12,14 @@ import org.bukkit.scheduler.BukkitRunnable
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkittemplate.BukkitTemplate
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 
 object DropItemList : BukkitRunnable() {
     private val hasMinHeight = NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_17)
     private val entities = ConcurrentLinkedQueue<ItemSender>()
     private val removed = ConcurrentLinkedQueue<Entity>()
+    private val isRemoving = ConcurrentHashMap.newKeySet<Entity>()
 
     init {
         Collections.synchronizedList(LinkedList<ItemSender>())
@@ -41,6 +43,7 @@ object DropItemList : BukkitRunnable() {
      */
     fun syncRemove(item: Entity) {
         if (item.isDead) return
+        isRemoving.add(item)
         // 为了兼容尽可能多的mod服务端和游戏版本
         // 只能让它传送到玩家碰不到的地方，再在事件结束后删除
         val location = item.location
@@ -48,6 +51,9 @@ object DropItemList : BukkitRunnable() {
         item.teleport(location)
         removed.add(item)
     }
+
+    fun isRemoving(entity: Entity) = isRemoving.contains(entity)
+    fun cleanRemoving(entity: Entity) = isRemoving.remove(entity)
 
     fun putItem(item: Item, owner: UUID, delay: Int) {
         entities.add(ItemSender(item, owner, delay))
@@ -71,6 +77,7 @@ object DropItemList : BukkitRunnable() {
             val sender = iterator.next()
             val item = sender.item
             val dead = item.isDead
+            val location = item.location
             if (dead) {
                 iterator.remove()
                 continue
@@ -78,9 +85,8 @@ object DropItemList : BukkitRunnable() {
             sender.owner
             val delay = sender.delay
             // 检查掉虚空
-            val location = item.location
             val minHeight = if (hasMinHeight && location.world != null) location.world!!.minHeight else 0
-            if (location.y < minHeight && location.y > Int.MIN_VALUE) {
+            if (location.y < minHeight) {
                 sender.sendBack()
                 iterator.remove()
                 continue
