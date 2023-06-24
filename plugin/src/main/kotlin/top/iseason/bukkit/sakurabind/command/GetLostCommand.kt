@@ -34,7 +34,8 @@ object GetLostCommand : CommandNode(
         dbTransaction {
             while (true) {
                 val items =
-                    PlayerItem.find { PlayerItems.uuid eq player.uniqueId }.limit(10, (page * 10).toLong())
+                    PlayerItem.find { PlayerItems.uuid eq player.uniqueId }
+                        .limit(10, (page * 10).toLong())
                         .toList()
                 if (items.isEmpty()) break
                 for (item in items) {

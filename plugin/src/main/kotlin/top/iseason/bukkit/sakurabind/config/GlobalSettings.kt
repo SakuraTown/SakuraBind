@@ -28,7 +28,7 @@ object GlobalSettings : SimpleYAMLConfig() {
     var item__lore = listOf("&a灵魂绑定: &6%player%")
 
     @Key
-    @Comment("", "显示的lore位置")
+    @Comment("", "显示的lore位置, 设置足够大可以放在最后面，-2表示倒数第3行 ")
     var item__lore_index = 0
 
     @Key
@@ -89,7 +89,7 @@ object GlobalSettings : SimpleYAMLConfig() {
 
     @Key("item-deny.click@")
     @Comment("", "禁止拿走绑定物品")
-    var item_deny__click = false
+    var item_deny__click = true
 
     @Key
     @Comment("", "禁止铁砧(1.9以上)")
@@ -97,7 +97,7 @@ object GlobalSettings : SimpleYAMLConfig() {
 
     @Key
     @Comment("", "禁止合成")
-    var item_deny__craft = false
+    var item_deny__craft = true
 
     @Key
     @Comment("", "禁止发射器射出")

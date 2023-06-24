@@ -149,7 +149,6 @@ object ItemListener : Listener {
     }
 
 
-
     /**
      * 不能丢
      */
@@ -312,11 +311,13 @@ object ItemListener : Listener {
         val inventory = event.inventory
         if (inventory.result == null) return
         val player = event.view.player
+        if (Config.checkByPass(player)) return
         for (matrix in inventory.matrix) {
-            if (!SakuraBindAPI.checkDenyBySetting(matrix, player, "item-deny.craft")) continue
-            inventory.result = null
-            MessageTool.denyMessageCoolDown(player, Lang.item__deny_craft, ItemSettings.getSetting(matrix), matrix)
-            break
+            if (SakuraBindAPI.checkDenyBySetting(matrix, player, "item-deny.craft")) {
+                inventory.result = null
+                MessageTool.denyMessageCoolDown(player, Lang.item__deny_craft, ItemSettings.getSetting(matrix), matrix)
+                break
+            }
         }
     }
 

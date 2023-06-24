@@ -2,15 +2,16 @@ package top.iseason.bukkit.sakurabind.config
 
 import org.bukkit.command.CommandSender
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.HumanEntity
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.config.matcher.BaseMatcher
 import top.iseason.bukkit.sakurabind.config.matcher.MatcherManager
 
-open class ItemSetting(override val keyPath: String, section: ConfigurationSection) : BaseSetting {
+open class ItemSetting(override val keyPath: String, protected val section: ConfigurationSection) : BaseSetting {
 
-    private var setting: ConfigurationSection
-    override val matchers: List<BaseMatcher>
+    var setting: ConfigurationSection
+    final override val matchers: List<BaseMatcher>
 
     init {
         val matcherSection = section.getConfigurationSection("match") ?: section.createSection("match")
@@ -73,6 +74,14 @@ open class ItemSetting(override val keyPath: String, section: ConfigurationSecti
                 GlobalSettings.config.getBoolean("$key@")
         }
         return GlobalSettings.config.getBoolean(key)
+    }
+
+    override fun clone(): BaseSetting {
+        val yamlConfiguration = YamlConfiguration()
+        yamlConfiguration.set("clone", section)
+        val reader = yamlConfiguration.saveToString().reader()
+        val newSection = YamlConfiguration.loadConfiguration(reader).getConfigurationSection("clone")!!
+        return ItemSetting(keyPath, newSection)
     }
 
 }

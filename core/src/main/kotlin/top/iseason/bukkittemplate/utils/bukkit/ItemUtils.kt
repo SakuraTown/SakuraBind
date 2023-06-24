@@ -26,6 +26,7 @@ import org.bukkit.material.SpawnEgg
 import org.bukkit.potion.*
 import org.bukkit.util.io.BukkitObjectInputStream
 import org.bukkit.util.io.BukkitObjectOutputStream
+import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -791,7 +792,11 @@ object ItemUtils {
             BukkitObjectInputStream(it1).use {
                 val size = it.readInt()
                 for (i in 0 until size) {
-                    mutableListOf.add(it.readObject() as ItemStack)
+                    try {
+                        mutableListOf.add(it.readObject() as ItemStack)
+                    } catch (_: Exception) {
+                        warn("Item deserialization failure, illegal server version or mod id!")
+                    }
                 }
             }
             return mutableListOf

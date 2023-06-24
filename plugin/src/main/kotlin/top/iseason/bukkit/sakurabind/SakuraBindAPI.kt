@@ -31,6 +31,7 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 import top.iseason.bukkittemplate.utils.other.EasyCoolDown
 import java.util.*
 import java.util.function.Predicate
+import kotlin.math.max
 
 /**
  * 绑定API
@@ -276,12 +277,11 @@ object SakuraBindAPI {
                         }
                     }
                     // lore matcher end
-
                     if (index > lore.size - 1) {
                         lore.addAll(loreStr)
-                    } else {
-                        lore.addAll(index, loreStr)
-                    }
+                    } else if (index < 0) {
+                        lore.addAll(max(lore.size - index, 0), loreStr)
+                    } else lore.addAll(index, loreStr)
                     lore
                 } else loreStr
             }

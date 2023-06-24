@@ -32,4 +32,12 @@ object DefaultItemSetting : ItemSetting("global-setting", YamlConfiguration()) {
         }
         return GlobalSettings.config.getBoolean(key)
     }
+
+    override fun clone(): BaseSetting {
+        val yamlConfiguration = YamlConfiguration()
+        yamlConfiguration.set("clone", section)
+        val reader = yamlConfiguration.saveToString().reader()
+        val newSection = YamlConfiguration.loadConfiguration(reader).getConfigurationSection("clone")!!
+        return ItemSetting(keyPath, newSection)
+    }
 }

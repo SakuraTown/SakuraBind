@@ -42,4 +42,6 @@ interface BaseSetting {
      * @return true 表示禁止操作,false 表示允许操作
      */
     fun getBoolean(key: String, owner: String?, player: HumanEntity?): Boolean
+
+    fun clone(): BaseSetting
 }
