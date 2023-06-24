@@ -11,7 +11,7 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessages
 
 object BindActionListener : org.bukkit.event.Listener {
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onItemBindEvent(event: ItemBindEvent) {
         val setting = event.setting
         val stringList = setting.getStringList("on-bind.item-msg")
@@ -19,12 +19,13 @@ object BindActionListener : org.bukkit.event.Listener {
         val item = event.item
         val type = item.type
         val amount = item.amount
+        val subId = item.data?.data ?: 0.toByte()
         val displayName = item.getDisplayName() ?: ""
-        val map = stringList.map { it.formatBy(type, displayName, amount) }
+        val map = stringList.map { it.formatBy(type, displayName, amount, item.type.id, subId) }
         (Bukkit.getPlayer(event.owner) ?: Bukkit.getConsoleSender()).sendColorMessages(map)
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockBindEvent(event: BlockBindEvent) {
         val setting = event.setting
         val stringList = setting.getStringList("on-bind.block-msg")
@@ -35,7 +36,8 @@ object BindActionListener : org.bukkit.event.Listener {
         val x = block.x
         val y = block.y
         val z = block.z
-        val map = stringList.map { it.formatBy(type, world, x, y, z) }
+
+        val map = stringList.map { it.formatBy(type, world, x, y, z, block.data) }
         (Bukkit.getPlayer(event.owner) ?: Bukkit.getConsoleSender()).sendColorMessages(map)
     }
 }
