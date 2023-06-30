@@ -59,6 +59,8 @@ object ItemSettings : SimpleYAMLConfig() {
     @Comment(
         "",
         "为提高性能，匹配过一次的物品在绑定之后将会把匹配到的设置键存入物品NBT，此为NBT的路径(由tag路径开始) '.' 为路径分隔符",
+        "注意，缓存会导致不同配置的nbt不一致，以至于不同配置的相同物品无法堆叠",
+        "留空不使用缓存"
     )
     var nbt_cache_path: String = "sakura_bind_setting_cache"
     var nbtPath: Array<String> = arrayOf("sakura_bind_setting_cache")
@@ -97,22 +99,24 @@ object ItemSettings : SimpleYAMLConfig() {
 //        .build(true)
 
     private val settingCache2 = CacheBuilder.newBuilder()
-        .expireAfterAccess(3, TimeUnit.SECONDS)
+        .expireAfterAccess(2, TimeUnit.SECONDS)
+        .expireAfterWrite(6, TimeUnit.SECONDS)
         .build<ItemStack, BaseSetting>()
 
     private var settings = LinkedHashMap<String, BaseSetting>()
 
     override fun onLoaded(section: ConfigurationSection) {
         settingCache2.cleanUp()
-        nbtPath = if (nbt_cache_path.isBlank()) arrayOf("sakura_bind_setting_cache")
-        else nbt_cache_path.split('.').toTypedArray()
+        nbtPath = if (nbt_cache_path.isBlank()) {
+            emptyArray()
+        } else nbt_cache_path.split('.').toTypedArray()
         settings.clear()
         matchers.getKeys(false).forEach {
             val s = matchers.getConfigurationSection(it)!!
             try {
                 settings[it] = ItemSetting(it, s)
             } catch (e: Exception) {
-                warn("配置 ${it} 格式错误，请检查!")
+                warn("配置 $it 格式错误，请检查!")
             }
         }
         settings["global-setting"] = DefaultItemSetting
@@ -126,13 +130,13 @@ object ItemSettings : SimpleYAMLConfig() {
     fun getSetting(item: ItemStack, setInCache: Boolean = true): BaseSetting {
         // 一级缓存, 由EhCache实现
         // 仅给未绑定物品添加一级缓存
-        var setting: BaseSetting? = if (setInCache) null else settingCache2.getIfPresent(item)
+        var setting: BaseSetting? = if (setInCache && nbtPath.isNotEmpty()) null else settingCache2.getIfPresent(item)
 //        // 存在缓存，立即返回
         if (setting != null) {
             return setting
         }
         // 二级缓存,从NBT中读取设置的ID,再根据ID获取对应的对象
-        val key = NBTEditor.getString(item, *nbtPath)
+        val key = if (nbtPath.isNotEmpty()) NBTEditor.getString(item, *nbtPath) else null
         // 持久化的ID可能过期，先判断
         if (key != null && setInCache) {
             // 存在缓存，立即返回
@@ -146,7 +150,8 @@ object ItemSettings : SimpleYAMLConfig() {
                 val itemMatchedEvent = ItemMatchedEvent(item, s)
                 Bukkit.getPluginManager().callEvent(itemMatchedEvent)
                 setting = itemMatchedEvent.matchSetting ?: DefaultItemSetting
-                if (setInCache) item.itemMeta = NBTEditor.set(item, setting.keyPath, *nbtPath).itemMeta
+                if (setInCache && nbtPath.isNotEmpty()) item.itemMeta =
+                    NBTEditor.set(item, setting.keyPath, *nbtPath).itemMeta
                 break
             }
         }
@@ -158,6 +163,7 @@ object ItemSettings : SimpleYAMLConfig() {
     }
 
     fun setSettingCache(item: ItemStack, setting: BaseSetting) {
+        if (nbtPath.isEmpty()) return
         item.itemMeta = NBTEditor.set(item, setting.keyPath, *nbtPath).itemMeta
     }
 

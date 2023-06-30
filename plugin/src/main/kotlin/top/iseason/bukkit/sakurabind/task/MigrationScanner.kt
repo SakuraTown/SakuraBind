@@ -21,7 +21,8 @@ class MigrationScanner : BukkitRunnable() {
 
     private val cache: Cache<ItemStack, Any> = CacheBuilder
         .newBuilder()
-        .expireAfterAccess(10, TimeUnit.SECONDS)
+        .expireAfterAccess(Config.data_migration__period * 60, TimeUnit.SECONDS)
+        .expireAfterWrite(10, TimeUnit.SECONDS)
         .build()
 
     override fun run() {
@@ -43,7 +44,7 @@ class MigrationScanner : BukkitRunnable() {
                     }
                     val (player, start) = pair
                     if (Config.data_migration__dont_bind) continue
-                    var setting = Config.dataMigrationSetting ?: ItemSettings.getSetting(item)
+                    var setting = Config.dataMigrationSetting ?: ItemSettings.getSetting(item, false)
                     val uuid =
                         if (Config.data_migration__is_uuid) runCatching { UUID.fromString(player) }.getOrNull() else {
                             val offlinePlayer = Bukkit.getPlayer(player) ?: Bukkit.getOfflinePlayer(player)

@@ -43,12 +43,11 @@ object BlockCache : BaseCache {
             CacheConfigurationBuilder.newCacheConfigurationBuilder(
                 String::class.java, String::class.java,
                 ResourcePoolsBuilder.newResourcePoolsBuilder()
-                    .heap(100, EntryUnit.ENTRIES)
+                    .heap(500, EntryUnit.ENTRIES)
                     .offheap(10, MemoryUnit.MB)
                     .disk(500, MemoryUnit.MB, true)
             ).withDispatcherConcurrency(1)
                 .withExpiry(ExpiryPolicyBuilder.noExpiration())
-//                .withService(OffHeapDiskStoreConfiguration(2))
                 .build()
         )
     }

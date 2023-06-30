@@ -12,6 +12,7 @@ softdepend:
   - Oraxen
   - PlayerDataSQL
 
+
 runtime-libraries:
   # If not defined, it will be 'libraries'
   # when start with @Plugin: will start with plugin data folder

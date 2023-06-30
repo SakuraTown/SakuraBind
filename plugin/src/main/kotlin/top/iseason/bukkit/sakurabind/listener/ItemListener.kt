@@ -192,27 +192,26 @@ object ItemListener : Listener {
     fun onPlayerPickupItemEvent(event: PlayerPickupItemEvent) {
         if (Config.checkByPass(event.player)) return
         val player = event.player
+        val itemEntity = event.item
         val item = event.item.itemStack
         val owner = SakuraBindAPI.getOwner(item) ?: return
         if (owner == player.uniqueId && CallbackCommand.isCallback(owner)) {
             val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
-            if (sendBackItem.isEmpty())
-                event.item.remove()
-            else event.item.itemStack = sendBackItem.first()
+            if (sendBackItem.isEmpty()) itemEntity.remove()
+            else itemEntity.itemStack = sendBackItem.first()
             event.isCancelled = true
-            event.item.pickupDelay = 10
+            itemEntity.pickupDelay = 10
             player.sendColorMessage(Lang.command__callback)
             return
         }
         val itemSetting = ItemSettings.getSetting(item)
         if (itemSetting.getBoolean("item-deny.pickup", owner.toString(), player)) {
             event.isCancelled = true
-            event.item.pickupDelay = 10
+            itemEntity.pickupDelay = 10
             if (itemSetting.getBoolean("item.send-back-on-pickup", owner.toString(), player)) {
                 val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
-                if (sendBackItem.isEmpty())
-                    event.item.remove()
-                else event.item.itemStack = sendBackItem.first()
+                if (sendBackItem.isEmpty()) itemEntity.remove()
+                else itemEntity.itemStack = sendBackItem.first()
                 MessageTool.denyMessageCoolDown(
                     player,
                     Lang.item__deny_pickup.formatBy(SakuraBindAPI.getOwnerName(owner)),

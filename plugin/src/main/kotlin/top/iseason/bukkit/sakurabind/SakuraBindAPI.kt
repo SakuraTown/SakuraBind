@@ -67,15 +67,15 @@ object SakuraBindAPI {
     @JvmStatic
     @JvmOverloads
     fun bind(item: ItemStack, uuid: UUID, showLore: Boolean = true, type: BindType, setting: BaseSetting? = null) {
-        if (setting != null) {
-            setSettingCache(item, setting)
-        }
-        val itemBindEvent = ItemBindEvent(item, setting ?: ItemSettings.getSetting(item), uuid, type)
+        val realSet = setting ?: ItemSettings.getSetting(item)
+        if (setting != null) setSettingCache(item, setting)
+        val itemBindEvent = ItemBindEvent(item, realSet, uuid, type)
         Bukkit.getPluginManager().callEvent(itemBindEvent)
         if (itemBindEvent.isCancelled) return
         val set = NBTEditor.set(item, itemBindEvent.owner.toString(), *Config.nbtPathUuid) ?: return
         item.itemMeta = set.itemMeta
         if (showLore) updateLore(item, itemBindEvent.setting)
+        if (realSet != itemBindEvent.setting) setSettingCache(item, itemBindEvent.setting)
         BindLogger.log(
             itemBindEvent.owner,
             itemBindEvent.bindType,
@@ -95,7 +95,8 @@ object SakuraBindAPI {
         Bukkit.getPluginManager().callEvent(itemUnBIndEvent)
         if (itemUnBIndEvent.isCancelled) return
         var set = NBTEditor.set(item, null, *Config.nbtPathUuid)
-        set = NBTEditor.set(set, null, *ItemSettings.nbtPath)
+        if (ItemSettings.nbtPath.isNotEmpty())
+            set = NBTEditor.set(set, null, *ItemSettings.nbtPath)
         item.itemMeta = set.itemMeta
         updateLore(item, itemUnBIndEvent.setting)
         BindLogger.log(

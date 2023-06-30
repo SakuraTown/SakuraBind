@@ -176,7 +176,6 @@ object Config : SimpleYAMLConfig() {
     var data_migration__setting = ""
     var dataMigrationSetting: BaseSetting? = null
 
-
     private var dataMigrationTask: BukkitTask? = null
     override fun onLoaded(section: ConfigurationSection) {
         nbtPathUuid = nbt_path_uuid.split('.').toTypedArray()
