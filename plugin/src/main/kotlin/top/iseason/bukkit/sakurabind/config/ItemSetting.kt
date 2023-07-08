@@ -24,6 +24,7 @@ open class ItemSetting(override val keyPath: String, protected val section: Conf
     }
 
     override fun match(item: ItemStack, sender: CommandSender?): Boolean {
+        if (matchers.isEmpty()) return false
         if (sender == null) return matchers.all { it.tryMatch(item) }
         else matchers.forEach { it.onDebug(item, sender) }
         return matchers.all { it.tryMatch(item) }
