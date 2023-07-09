@@ -34,6 +34,7 @@ import top.iseason.bukkit.sakurabind.dto.PlayerItem
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkit.sakurabind.hook.AuthMeHook
 import top.iseason.bukkit.sakurabind.task.DropItemList
+import top.iseason.bukkit.sakurabind.task.EntityRemoveQueue
 import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkit.sakurabind.utils.PlayerTool
@@ -163,13 +164,13 @@ object ItemListener : Listener {
         if (CallbackCommand.isCallback(owner)) {
             val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
             if (sendBackItem.isEmpty()) {
-                DropItemList.syncRemove(itemDrop)
+                EntityRemoveQueue.syncRemove(itemDrop)
             } else itemDrop.itemStack = sendBackItem.first()
             MessageTool.messageCoolDown(player, Lang.command__callback)
             return
         }
         if (ItemSettings.getSetting(item).getBoolean("item-deny.drop", owner.toString(), player)) {
-            DropItemList.syncRemove(itemDrop)
+            EntityRemoveQueue.syncRemove(itemDrop)
             val openInventory = event.player.openInventory
             val cursor = openInventory.cursor
             val release = event.player.inventory.addItem(item)
@@ -695,10 +696,15 @@ object ItemListener : Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onItemSpawnEvent(event: ItemSpawnEvent) {
         val entity = event.entity
-        if (DropItemList.cleanRemoving(entity)) {
+        if (EntityRemoveQueue.isRemoved(entity)) {
             return
         }
         val itemStack = entity.itemStack
+        // 某些mod物品
+        if (entity.location.y <= Short.MIN_VALUE.toDouble()) {
+            event.isCancelled = true
+            return
+        }
         // 处理即刻返还
         for ((uuid, list) in SakuraBindAPI.filterItem(itemStack) { it.getInt("item.send-back-delay") == 0 }) {
             SakuraBindAPI.sendBackItem(uuid, list)

@@ -16,6 +16,7 @@ import top.iseason.bukkit.sakurabind.hook.*
 import top.iseason.bukkit.sakurabind.listener.*
 import top.iseason.bukkit.sakurabind.task.DelaySender
 import top.iseason.bukkit.sakurabind.task.DropItemList
+import top.iseason.bukkit.sakurabind.task.EntityRemoveQueue
 import top.iseason.bukkittemplate.BukkitPlugin
 import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.command.CommandHandler
@@ -56,7 +57,6 @@ object SakuraBind : BukkitPlugin {
         initListeners()
         initTasks()
         info("&a插件已启用!")
-
     }
 
     /**
@@ -98,6 +98,7 @@ object SakuraBind : BukkitPlugin {
      */
     private fun initTasks() {
         DropItemList.runTaskTimerAsynchronously(javaPlugin, 0, 1)
+        EntityRemoveQueue.runTaskTimer(javaPlugin, 0, 1)
     }
 
     /**
