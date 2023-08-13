@@ -15,14 +15,12 @@ import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.getDisplayName
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 class MigrationScanner : BukkitRunnable() {
 
-    private val cache: Cache<ItemStack, Any> = CacheBuilder
-        .newBuilder()
-        .expireAfterAccess(Config.data_migration__period * 60, TimeUnit.SECONDS)
-        .expireAfterWrite(10, TimeUnit.SECONDS)
+    val cache: Cache<ItemStack, Any> = CacheBuilder.newBuilder()
+        .recordStats()
+        .maximumSize(Config.setting_cache_size)
         .build()
 
     override fun run() {
@@ -42,16 +40,28 @@ class MigrationScanner : BukkitRunnable() {
                         cache.put(item, true)
                         continue
                     }
-                    val (player, start) = pair
+                    val (playerStr, start) = pair
+                    val player = playerStr.trim()
                     if (Config.data_migration__dont_bind) continue
                     var setting = Config.dataMigrationSetting ?: ItemSettings.getSetting(item, false)
                     val uuid =
-                        if (Config.data_migration__is_uuid) runCatching { UUID.fromString(player) }.getOrNull() else {
-                            val offlinePlayer = Bukkit.getPlayer(player) ?: Bukkit.getOfflinePlayer(player)
-                            if (offlinePlayer.hasPlayedBefore()) offlinePlayer.uniqueId else null
+                        if (Config.data_migration__is_uuid) {
+                            runCatching { UUID.fromString(player) }.getOrNull()
+                        } else {
+                            val oPlayer = Bukkit.getPlayerExact(player)
+                            if (oPlayer != null) {
+                                oPlayer.uniqueId
+                            } else {
+                                val offlinePlayer = Bukkit.getOfflinePlayer(player)
+                                if (Config.data_migration__force_bind) {
+                                    warn("数据迁移功能在 ${onlinePlayer.name} 身上检测到物品 ${item.getDisplayName() ?: item.type} 的lore里存在玩家名:$player，但它不是一个有效的玩家名字或者uuid, 已强制绑定至 UUID: ${offlinePlayer.uniqueId}")
+                                    offlinePlayer.uniqueId
+                                } else if (offlinePlayer.hasPlayedBefore()) offlinePlayer.uniqueId
+                                else null
+                            }
                         }
                     if (uuid == null) {
-                        warn("数据迁移功能在 ${onlinePlayer.name} 身上检测到了lore绑定信息 $player ，但它不是一个有效的玩家名字或者uuid, 已忽略")
+                        warn("数据迁移功能在 ${onlinePlayer.name} 身上检测到物品 ${item.getDisplayName() ?: item.type} 的lore里存在玩家名:$player，但它不是一个有效的玩家名字或者uuid, 已忽略")
                         continue
                     }
                     // 兼容位置选择

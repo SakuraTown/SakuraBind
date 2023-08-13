@@ -31,19 +31,19 @@ object DatabaseConfig : SimpleYAMLConfig() {
 
     @Comment(
         "",
-        "数据库驱动类型: 支持 MySQL、MariaDB、SQLite、Oracle、PostgreSQL、SQLServer",
+        "数据库驱动类型: 支持 MySQL、MariaDB、H2、SQLite、Oracle、PostgreSQL、SQLServer",
         "如果你的 MySQL 总是连不上请将驱动类型改为 MariaDB，它支持连接到mysql"
     )
     @Key
-    var database_type = "SQLite"
+    var database_type = "H2"
 
     @Comment("", "数据库地址")
     @Key
-    var address = File(BukkitTemplate.getPlugin().dataFolder, "database.db").absoluteFile.toString()
+    var address = File(BukkitTemplate.getPlugin().dataFolder, "database").absoluteFile.toString()
 
     @Comment("", "数据库名")
     @Key
-    var database_name = "database_${BukkitTemplate.getPlugin().name}"
+    var database_name = "database_${BukkitTemplate.getPlugin().name.lowercase()}"
 
     @Comment(
         "",
@@ -194,11 +194,11 @@ object DatabaseConfig : SimpleYAMLConfig() {
                     driverClassName = "org.sqlite.JDBC"
                 }
 
-//                "H2" -> HikariConfig().apply {
-//                    runtimeManager.downloadADependencyAssembly("com.h2database:h2:2.1.214")
-//                    jdbcUrl = "jdbc:h2:$address/$database_name$params"
-//                    driverClassName = "org.h2.Driver"
-//                }
+                "H2" -> HikariConfig().apply {
+                    runtimeManager.downloadADependency("com.h2database:h2:2.2.220")
+                    jdbcUrl = "jdbc:h2:$address/$database_name$params"
+                    driverClassName = "org.h2.Driver"
+                }
 
                 "PostgreSQL" -> HikariConfig(props).apply {
                     runtimeManager.downloadADependency("com.impossibl.pgjdbc-ng:pgjdbc-ng:0.8.9")

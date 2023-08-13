@@ -11,6 +11,8 @@ softdepend:
   - ItemsAdder
   - Oraxen
   - PlayerDataSQL
+  - GermPlugin
+  - BanItem
 
 
 runtime-libraries:

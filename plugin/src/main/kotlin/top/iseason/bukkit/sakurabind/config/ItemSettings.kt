@@ -12,7 +12,6 @@ import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
 import top.iseason.bukkittemplate.debug.warn
-import java.util.concurrent.TimeUnit
 
 @FilePath("settings.yml")
 object ItemSettings : SimpleYAMLConfig() {
@@ -64,7 +63,7 @@ object ItemSettings : SimpleYAMLConfig() {
     )
     var nbt_cache_path: String = "sakura_bind_setting_cache"
     var nbtPath: Array<String> = arrayOf("sakura_bind_setting_cache")
-
+    var isCacheInNbt = true
     @Key
     @Comment(
         "",
@@ -99,18 +98,23 @@ object ItemSettings : SimpleYAMLConfig() {
 //        .build(true)
 
     private val settingCache2 = CacheBuilder.newBuilder()
-        .expireAfterAccess(2, TimeUnit.SECONDS)
-        .expireAfterWrite(6, TimeUnit.SECONDS)
+        .maximumSize(Config.setting_cache_size)
+        .weakValues()
+        .recordStats()
         .build<ItemStack, BaseSetting>()
+
+    fun getCacheStats() = settingCache2.stats()
 
     private var settings = LinkedHashMap<String, BaseSetting>()
 
     override fun onLoaded(section: ConfigurationSection) {
+        settings.clear()
+        settingCache2.invalidateAll()
         settingCache2.cleanUp()
         nbtPath = if (nbt_cache_path.isBlank()) {
             emptyArray()
         } else nbt_cache_path.split('.').toTypedArray()
-        settings.clear()
+        isCacheInNbt = nbtPath.isNotEmpty()
         matchers.getKeys(false).forEach {
             val s = matchers.getConfigurationSection(it)!!
             try {
@@ -130,19 +134,18 @@ object ItemSettings : SimpleYAMLConfig() {
     fun getSetting(item: ItemStack, setInCache: Boolean = true): BaseSetting {
         // 一级缓存, 由EhCache实现
         // 仅给未绑定物品添加一级缓存
-        var setting: BaseSetting? = if (setInCache && nbtPath.isNotEmpty()) null else settingCache2.getIfPresent(item)
+        var setting: BaseSetting? = if (setInCache && isCacheInNbt) null else settingCache2.getIfPresent(item)
 //        // 存在缓存，立即返回
         if (setting != null) {
             return setting
         }
         // 二级缓存,从NBT中读取设置的ID,再根据ID获取对应的对象
-        val key = if (nbtPath.isNotEmpty()) NBTEditor.getString(item, *nbtPath) else null
+        val key = if (isCacheInNbt) NBTEditor.getString(item, *nbtPath) else null
         // 持久化的ID可能过期，先判断
         if (key != null && setInCache) {
             // 存在缓存，立即返回
             setting = settings[key]
-            if (setting != null)
-                return setting
+            if (setting != null) return setting
         }
         // 物品匹配,顺序查找,找到了立即结束循环并加入缓存
         for (s in settings.values) {
@@ -150,7 +153,7 @@ object ItemSettings : SimpleYAMLConfig() {
                 val itemMatchedEvent = ItemMatchedEvent(item, s)
                 Bukkit.getPluginManager().callEvent(itemMatchedEvent)
                 setting = itemMatchedEvent.matchSetting ?: DefaultItemSetting
-                if (setInCache && nbtPath.isNotEmpty()) item.itemMeta =
+                if (setInCache && isCacheInNbt) item.itemMeta =
                     NBTEditor.set(item, setting.keyPath, *nbtPath).itemMeta
                 break
             }

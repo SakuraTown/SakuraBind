@@ -1,13 +1,11 @@
 plugins {
     kotlin("jvm")
-    id("org.jetbrains.dokka") version "1.8.10"
+    id("org.jetbrains.dokka") version "1.8.20"
 }
 
 group = "top.iseason.bukkittemplate"
 
-val exposedVersion: String by rootProject
 repositories {
-
 }
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT")
@@ -31,5 +29,8 @@ tasks {
                 moduleName.set("BukkitTemplate")
             }
         }
+    }
+    compileKotlin {
+        kotlinOptions.jvmTarget = "1.8"
     }
 }

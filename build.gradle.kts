@@ -8,7 +8,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.guardsquare:proguard-gradle:7.3.2")
+        classpath("com.guardsquare:proguard-gradle:7.4.0-beta01")
     }
 }
 subprojects {
@@ -59,11 +59,23 @@ subprojects {
         val exposedVersion: String by rootProject
         val nbtEditorVersion: String by rootProject
         implementation("io.github.bananapuncher714:nbteditor:$nbtEditorVersion")
-        compileOnly("me.clip:placeholderapi:2.11.2")
-        compileOnly("org.jetbrains.exposed:exposed-core:$exposedVersion")
-        compileOnly("org.jetbrains.exposed:exposed-dao:$exposedVersion")
-        compileOnly("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
-        compileOnly("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
+        compileOnly("me.clip:placeholderapi:2.11.3")
+        compileOnly("org.jetbrains.exposed:exposed-core:$exposedVersion") {
+            isTransitive = false
+            targetConfiguration = "runtime"
+        }
+        compileOnly("org.jetbrains.exposed:exposed-dao:$exposedVersion") {
+            isTransitive = false
+            targetConfiguration = "runtime"
+        }
+        compileOnly("org.jetbrains.exposed:exposed-jdbc:$exposedVersion") {
+            isTransitive = false
+            targetConfiguration = "runtime"
+        }
+        compileOnly("org.jetbrains.exposed:exposed-java-time:$exposedVersion") {
+            isTransitive = false
+            targetConfiguration = "runtime"
+        }
         compileOnly("com.zaxxer:HikariCP:4.0.3")
     }
 
@@ -74,6 +86,7 @@ subprojects {
             targetCompatibility = "1.8"
         }
     }
+
 }
 
 repositories {

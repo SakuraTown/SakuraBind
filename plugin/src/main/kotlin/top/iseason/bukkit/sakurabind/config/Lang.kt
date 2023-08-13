@@ -125,6 +125,8 @@ object Lang : top.iseason.bukkittemplate.config.Lang() {
     var command__super_callback_end = "&a搜索结束, 已送回 &b{0} &a堆 共 &b{1} &a个物品, 耗时 {2} ms"
     var command__super_callback_player = "&a管理员为你找回了所有 &b{0} &a堆 共 &b{1} &a个绑定物品"
     var command__debug = "&aDebug模式: &b{0}"
+    var command__debug_player_open = "&a已为开启玩家 {0} 的动作检查"
+    var command__debug_player_close = "&a已关闭玩家 {0} 的动作检查"
     var has_lost_item = "&a你有遗失的物品,请输入 &6'/sakurabind getLost' &a领取"
     var lost_item_send_when_online = "&a你有遗失的物品,请输入 &6'/sakurabind getLost' &a领取"
 

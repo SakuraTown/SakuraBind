@@ -1,8 +1,10 @@
 package top.iseason.bukkit.sakurabind.config
 
+import com.google.common.cache.Cache
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.MemorySection
 import org.bukkit.entity.HumanEntity
+import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitTask
 import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
 import top.iseason.bukkit.sakurabind.task.MigrationScanner
@@ -63,13 +65,6 @@ object Config : SimpleYAMLConfig() {
         "此项关闭将影响 scanner开头的设置"
     )
     var scanner_period = 60L
-//
-//    @Key
-//    @Comment(
-//        "",
-//        "同步扫描(主线程)，某些情况下异步扫描可能会由于主线程卡顿而错误绑定物品, 开启将有效避免.",
-//    )
-//    var scanner_sync = false
 
     @Key
     @Comment("", "玩家禁用消息的冷却时间, 单位毫秒")
@@ -134,6 +129,10 @@ object Config : SimpleYAMLConfig() {
     var thread_dump_protection__stop_server = false
 
     @Key
+    @Comment("", "物品读取设置的缓存个数,建议值是 玩家背包格子数量*玩家数量")
+    var setting_cache_size = 2000L
+
+    @Key
     @Comment(
         "",
         "数据迁移设置, 从其他lore类型的绑定插件中读取数据重新绑定",
@@ -164,6 +163,10 @@ object Config : SimpleYAMLConfig() {
     var data_migration__is_uuid = false
 
     @Key
+    @Comment("", "如果检测不到这个玩家的数据, 强行将物品绑定至该名称对应的UUID里")
+    var data_migration__force_bind = false
+
+    @Key
     @Comment("", "删除匹配到的lore")
     var data_migration__remove_lore = true
 
@@ -177,6 +180,11 @@ object Config : SimpleYAMLConfig() {
     var dataMigrationSetting: BaseSetting? = null
 
     private var dataMigrationTask: BukkitTask? = null
+
+    private var dataMigrationCache: Cache<ItemStack, Any>? = null
+
+    fun getDataMigrationCacheStat() = dataMigrationCache?.stats()
+
     override fun onLoaded(section: ConfigurationSection) {
         nbtPathUuid = nbt_path_uuid.split('.').toTypedArray()
         nbtPathLore = nbt_path_lore.split('.').toTypedArray()
@@ -188,6 +196,7 @@ object Config : SimpleYAMLConfig() {
         task = null
         dataMigrationTask?.cancel()
         dataMigrationTask = null
+        dataMigrationCache = null
         if (scanner_period > 0L && (DatabaseConfig.isConnected || (SakuraMailHook.hasHooked && sakuraMail_hook))) {
             info("&a定时扫描任务已启动,周期: $scanner_period tick")
             task = Scanner().runTaskTimer(BukkitTemplate.getPlugin(), scanner_period, scanner_period)
@@ -195,11 +204,13 @@ object Config : SimpleYAMLConfig() {
         if (data_migration__enable) {
             dataMigrationLore = data_migration__lore.map { Pattern.compile(it) }
             info("&a数据迁移扫描任务已启动,周期: $data_migration__period tick")
-            dataMigrationTask = MigrationScanner().runTaskTimerAsynchronously(
+            val migrationScanner = MigrationScanner()
+            dataMigrationTask = migrationScanner.runTaskTimerAsynchronously(
                 BukkitTemplate.getPlugin(),
                 data_migration__period,
                 data_migration__period
             )
+            dataMigrationCache = migrationScanner.cache
             dataMigrationSetting =
                 if (data_migration__setting.isNotBlank()) ItemSettings.getSettingNullable(data_migration__setting) else null
             dataMigrationSetting

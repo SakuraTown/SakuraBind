@@ -221,8 +221,8 @@ object SakuraBindAPI {
         val setting = basesSetting ?: ItemSettings.getSetting(item)
         // 有主人
         if (owner != null) {
-            var player = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
-            var loreStr = setting.getStringList("item.lore").map { str ->
+            val player = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
+            val loreStr = setting.getStringList("item.lore").map { str ->
                 var t = str
                 t = t.replace("%player%", player.name!!)
                 t = PlaceHolderHook.setPlaceHolder(t, player)
@@ -362,7 +362,7 @@ object SakuraBindAPI {
         var player: OfflinePlayer? = Bukkit.getPlayer(uuid)
         if (player != null) return player.name
         else player = Bukkit.getOfflinePlayer(uuid)
-        return if (player.hasPlayedBefore()) player.name else uuid.toString()
+        return player.name
     }
 
     /**
@@ -465,7 +465,6 @@ object SakuraBindAPI {
     fun getBindLore(item: ItemStack): List<String>? {
         val owner = getOwner(item) ?: return null
         val player = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
-        if (!player.hasPlayedBefore()) return null
         return ItemSettings.getSetting(item).getStringList("lore")
             .map { it.replace("%player%", player.name!!).toColor() }
     }

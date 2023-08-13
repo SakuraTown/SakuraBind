@@ -30,6 +30,7 @@ object SelectListener : Listener {
      */
     val noScanning: MutableSet<UUID> = ConcurrentHashMap.newKeySet()
 
+
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPlayerInteractEvent(event: PlayerInteractEvent) {
         val player = event.player
@@ -94,11 +95,14 @@ object SelectListener : Listener {
         selecting.remove(event.player)
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW)
     fun onPlayerLoginEvent(event: PlayerLoginEvent) {
         val uniqueId = event.player.uniqueId
         if (PlayerDataSQLHook.hasHooked) {
             noScanning.add(uniqueId)
+            submit(async = true, delay = 100L) {  //超时5秒
+                noScanning.remove(uniqueId)
+            }
             return
         }
         if (Config.scanner_period <= 0) return

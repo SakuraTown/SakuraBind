@@ -3,6 +3,8 @@ package top.iseason.bukkit.sakurabind.config
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.HumanEntity
 import org.bukkit.inventory.ItemStack
+import top.iseason.bukkit.sakurabind.command.DebugCommand
+import top.iseason.bukkittemplate.debug.info
 
 object DefaultItemSetting : ItemSetting("global-setting", YamlConfiguration()) {
 
@@ -12,25 +14,34 @@ object DefaultItemSetting : ItemSetting("global-setting", YamlConfiguration()) {
 
     override fun getBoolean(key: String, owner: String?, player: HumanEntity?): Boolean {
         //权限检查
-        if (Config.enable_setting_permission_check && player != null) {
-            if (player.hasPermission("sakurabind.settings.$key.true")) {
-                return true
-            } else if (player.hasPermission("sakurabind.settings.$key.false")) {
-                return false
+        val result = run {
+            if (Config.enable_setting_permission_check && player != null) {
+                if (player.hasPermission("sakurabind.setting.$keyPath.$key.true")) {
+                    return@run true
+                } else if (player.hasPermission("sakurabind.setting.$keyPath.$key.false")) {
+                    return@run false
+                } else if (player.hasPermission("sakurabind.settings.$key.true")) {
+                    return@run true
+                } else if (player.hasPermission("sakurabind.settings.$key.false")) {
+                    return@run false
+                }
             }
+            var isOwner = false
+            if (owner != null) {
+                isOwner =
+                    (owner == player?.uniqueId.toString()) || player?.hasPermission("sakurabind.bypass.$owner") == true
+            }
+            val globalConfig = GlobalSettings.config
+            if (globalConfig.contains("$key@")) {
+                return@run if (isOwner) !globalConfig.getBoolean("$key@")
+                else globalConfig.getBoolean("$key@")
+            }
+            return@run globalConfig.getBoolean(key)
         }
-        var isOwner = false
-        if (owner != null) {
-            isOwner =
-                (owner == player?.uniqueId.toString()) || player?.hasPermission("sakurabind.bypass.$owner") == true
+        if (player != null && DebugCommand.debugPlayer.contains(player.uniqueId)) {
+            info("检查玩家 ${player.name} 配置: $keyPath 配置键: $key 结果: $result")
         }
-        if (GlobalSettings.config.contains("$key@")) {
-            return if (isOwner)
-                !GlobalSettings.config.getBoolean("$key@")
-            else
-                GlobalSettings.config.getBoolean("$key@")
-        }
-        return GlobalSettings.config.getBoolean(key)
+        return result
     }
 
     override fun clone(): BaseSetting {

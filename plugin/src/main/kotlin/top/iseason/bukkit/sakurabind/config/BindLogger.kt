@@ -93,8 +93,8 @@ object BindLogger : SimpleYAMLConfig() {
     var format = "物主: {0} 行为: {1} 配置: {2} 信息: {3}"
 
     @Key
-    @Comment("", "物品显示格式, 替换logger.format的 {3}", "占位符分别为 类型、名字、数量")
-    var format_item = "物品 {0} {1} x {2}"
+    @Comment("", "物品显示格式, 替换logger.format的 {3}", "占位符分别为 类型、名字、数量、子ID")
+    var format_item = "物品 {0}{4} {1} x {2}"
 
     @Key
     @Comment("", "方块显示格式, 替换logger.format的 {3}", "占位符分别为 类型、位置")
@@ -143,7 +143,8 @@ object BindLogger : SimpleYAMLConfig() {
         val name = if (item.hasItemMeta() && item.itemMeta!!.hasDisplayName()) {
             item.itemMeta!!.displayName
         } else ""
-        val attach = format_item.formatBy(item.type, name, item.amount)
+        val subId = item.data?.data ?: 0
+        val attach = format_item.formatBy(item.type, name, item.amount, if (subId > 0) subId else null)
         log(owner, type, setting, attach)
     }
 

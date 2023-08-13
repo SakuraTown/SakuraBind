@@ -33,11 +33,11 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 object SakuraBind : BukkitPlugin {
 
     override fun onLoad() {
-        checkHooks()
         Metrics(javaPlugin, 16968)
     }
 
     override fun onEnable() {
+        checkHooks()
         BukkitTemplate.getPlugin().saveResource("placeholders.txt", true)
         SimpleLogger.prefix = "&a[&6${javaPlugin.description.name}&a]&r ".toColor()
         SimpleYAMLConfig.notifyMessage = "&6配置文件 &f%s &6已重载!"
@@ -86,6 +86,8 @@ object SakuraBind : BukkitPlugin {
         ItemsAdderHook.checkHooked()
         OraxenHook.checkHooked()
         PlayerDataSQLHook.checkHooked()
+        BanItemHook.checkHooked()
+        GermHook.checkHooked()
         if (PlaceHolderHook.hasHooked) PlaceHolderExpansion.register()
         if (MMOItemsHook.hasHooked) MatcherManager.addMatcher(MMOItemsMatcher())
         if (ItemsAdderHook.hasHooked) MatcherManager.addMatcher(ItemsAdderMatcher())
@@ -174,6 +176,7 @@ object SakuraBind : BukkitPlugin {
             addSubNode(TestCommand)
             TestCommand.addSubNode(TestMatchCommand)
             TestCommand.addSubNode(TestTryMatchCommand)
+            TestCommand.addSubNode(TestCacheCommand)
         }
         CommandHandler.register(RootCommand)
         CommandHandler.updateCommands()

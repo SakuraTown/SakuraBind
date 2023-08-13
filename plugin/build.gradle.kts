@@ -58,14 +58,22 @@ val obfuscatedMainClass =
     } else "a"
 val isObfuscated = obfuscated == "true"
 val shrink: String by rootProject
-val defaultFile = File("../build", "${rootProject.name}-${rootProject.version}.jar")
-val output: File =
-    if (isObfuscated)
-        File(jarOutputFile, "${rootProject.name}-${rootProject.version}-obfuscated.jar").absoluteFile
+val jarFile = File(jarOutputFile)
+val defaultFile = File(rootDir, "build${File.separatorChar}${rootProject.name}-${rootProject.version}.jar")
+val outputPrefix: String =
+    if (jarFile.isRooted)
+        "$jarOutputFile${File.separatorChar}${rootProject.name}-${rootProject.version}"
     else
-        File(jarOutputFile, "${rootProject.name}-${rootProject.version}.jar").absoluteFile
+        File(rootDir, "${jarOutputFile}${File.separatorChar}${rootProject.name}-${rootProject.version}").absolutePath
+val output: String =
+    if (isObfuscated) {
+        "$outputPrefix-obfuscated.jar"
+    } else {
+        "$outputPrefix.jar"
+    }
 
 tasks {
+
     shadowJar {
         if (isObfuscated) {
             relocate("top.iseason.bukkittemplate.BukkitTemplate", obfuscatedMainClass)
@@ -81,6 +89,8 @@ tasks {
         kotlinOptions.jvmTarget = "1.8"
     }
     processResources {
+        val kotVer = getProperties("kotlinVersion")
+        val exposedVer = getProperties("exposedVersion")
         filesMatching("plugin.yml") {
             // 删除注释,你可以返回null以删除整行，但是IDEA有bug会报错，故而返回了""
             filter {
@@ -91,8 +101,8 @@ tasks {
                 "name" to pluginName,
                 "version" to project.version,
                 "author" to author,
-                "kotlinVersion" to getProperties("kotlinVersion"),
-                "exposedVersion" to getProperties("exposedVersion")
+                "kotlinVersion" to kotVer,
+                "exposedVersion" to exposedVer
             )
         }
     }

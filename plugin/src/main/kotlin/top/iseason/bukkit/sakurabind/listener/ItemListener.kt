@@ -700,7 +700,7 @@ object ItemListener : Listener {
             return
         }
         val itemStack = entity.itemStack
-        // 某些mod物品
+        // 某些mod物品tp时会变成2个的奇怪bug catserver 1.12.2
         if (entity.location.y <= Short.MIN_VALUE.toDouble()) {
             event.isCancelled = true
             return
