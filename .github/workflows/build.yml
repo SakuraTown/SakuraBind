@@ -18,7 +18,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: 17
-        distribution: zulu
+        distribution: temurin
     - name: Cache .gradle/wrapper
       uses: actions/cache@v3
       with:
@@ -30,7 +30,9 @@ jobs:
       run: chmod +x gradlew
       
     - name: Build with Gradle
-      run: ./gradlew clean build -s
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: clean build
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
