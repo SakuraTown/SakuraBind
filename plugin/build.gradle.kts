@@ -85,8 +85,10 @@ tasks {
     build {
         dependsOn("buildPlugin")
     }
-    compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8)
+        }
     }
     processResources {
         val kotVer = getProperties("kotlinVersion")

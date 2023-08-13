@@ -163,7 +163,12 @@ object Config : SimpleYAMLConfig() {
     var data_migration__is_uuid = false
 
     @Key
-    @Comment("", "如果检测不到这个玩家的数据, 强行将物品绑定至该名称对应的UUID里")
+    @Comment(
+        "",
+        "如果检测不到这个玩家的数据, 强行绑定物品",
+        "如果安装了AuthMe将尝试通过AuthMe获取UUID",
+        "如果没有则使用该名字对应的离线UUID",
+    )
     var data_migration__force_bind = false
 
     @Key

@@ -10,6 +10,7 @@ buildscript {
     dependencies {
         classpath("com.guardsquare:proguard-gradle:7.4.0-beta01")
     }
+
 }
 subprojects {
     group = rootProject.group
@@ -77,6 +78,7 @@ subprojects {
             sourceCompatibility = "1.8"
             targetCompatibility = "1.8"
         }
+
     }
 
 }

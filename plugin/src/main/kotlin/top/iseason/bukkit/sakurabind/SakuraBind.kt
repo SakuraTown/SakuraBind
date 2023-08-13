@@ -29,6 +29,7 @@ import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.registerListener
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
+import java.util.*
 
 object SakuraBind : BukkitPlugin {
 
@@ -56,6 +57,7 @@ object SakuraBind : BukkitPlugin {
         initCaches()
         initListeners()
         initTasks()
+
         info("&a插件已启用!")
     }
 

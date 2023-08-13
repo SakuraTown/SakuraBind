@@ -23,14 +23,16 @@ tasks {
     build {
         dependsOn(named("shadowJar"))
     }
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8)
+        }
+    }
     dokkaHtml.configure {
         dokkaSourceSets {
             named("main") {
                 moduleName.set("BukkitTemplate")
             }
         }
-    }
-    compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
     }
 }

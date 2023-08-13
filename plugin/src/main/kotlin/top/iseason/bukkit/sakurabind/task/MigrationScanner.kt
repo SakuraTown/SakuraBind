@@ -2,6 +2,7 @@ package top.iseason.bukkit.sakurabind.task
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
+import fr.xephi.authme.api.v3.AuthMeApi
 import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
@@ -9,12 +10,15 @@ import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSetting
 import top.iseason.bukkit.sakurabind.config.ItemSettings
+import top.iseason.bukkit.sakurabind.hook.AuthMeHook
 import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkittemplate.debug.debug
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.getDisplayName
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
+
 
 class MigrationScanner : BukkitRunnable() {
 
@@ -24,6 +28,7 @@ class MigrationScanner : BukkitRunnable() {
         .build()
 
     override fun run() {
+
         for (onlinePlayer in Bukkit.getOnlinePlayers()) {
             var index = 0
             val openInventory = onlinePlayer.openInventory
@@ -53,11 +58,14 @@ class MigrationScanner : BukkitRunnable() {
                                 oPlayer.uniqueId
                             } else {
                                 val offlinePlayer = Bukkit.getOfflinePlayer(player)
-                                if (Config.data_migration__force_bind) {
+                                if (offlinePlayer.hasPlayedBefore()) offlinePlayer.uniqueId
+                                else if (Config.data_migration__force_bind) {
                                     warn("数据迁移功能在 ${onlinePlayer.name} 身上检测到物品 ${item.getDisplayName() ?: item.type} 的lore里存在玩家名:$player，但它不是一个有效的玩家名字或者uuid, 已强制绑定至 UUID: ${offlinePlayer.uniqueId}")
-                                    offlinePlayer.uniqueId
-                                } else if (offlinePlayer.hasPlayedBefore()) offlinePlayer.uniqueId
-                                else null
+                                    val forceUid = if (AuthMeHook.hasHooked) {
+                                        AuthMeApi.getInstance().getPlayerInfo(player).getOrNull()?.uuid?.getOrNull()
+                                    } else null
+                                    forceUid ?: offlinePlayer.uniqueId
+                                } else null
                             }
                         }
                     if (uuid == null) {
