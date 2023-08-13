@@ -60,11 +60,12 @@ class MigrationScanner : BukkitRunnable() {
                                 val offlinePlayer = Bukkit.getOfflinePlayer(player)
                                 if (offlinePlayer.hasPlayedBefore()) offlinePlayer.uniqueId
                                 else if (Config.data_migration__force_bind) {
-                                    warn("数据迁移功能在 ${onlinePlayer.name} 身上检测到物品 ${item.getDisplayName() ?: item.type} 的lore里存在玩家名:$player，但它不是一个有效的玩家名字或者uuid, 已强制绑定至 UUID: ${offlinePlayer.uniqueId}")
-                                    val forceUid = if (AuthMeHook.hasHooked) {
+                                    var forceUid = if (AuthMeHook.hasHooked) {
                                         AuthMeApi.getInstance().getPlayerInfo(player).getOrNull()?.uuid?.getOrNull()
                                     } else null
-                                    forceUid ?: offlinePlayer.uniqueId
+                                    forceUid = forceUid ?: offlinePlayer.uniqueId
+                                    warn("数据迁移功能在 ${onlinePlayer.name} 身上检测到物品 ${item.getDisplayName() ?: item.type} 的lore里存在玩家名:$player，但它不是一个有效的玩家名字或者uuid, 已强制绑定至 UUID: $forceUid")
+                                    forceUid
                                 } else null
                             }
                         }
