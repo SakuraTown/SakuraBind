@@ -22,7 +22,7 @@ dependencies {
     // 本地依赖放在libs文件夹内
     compileOnly(fileTree("libs") { include("*.jar") })
     implementation("org.bstats:bstats-bukkit:3.0.1")
-    compileOnly("org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT")
+//    compileOnly("org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT")
     compileOnly("org.ehcache:ehcache:3.10.8") { isTransitive = false }
 
     compileOnly("me.clip:placeholderapi:2.11.2") { isTransitive = false }

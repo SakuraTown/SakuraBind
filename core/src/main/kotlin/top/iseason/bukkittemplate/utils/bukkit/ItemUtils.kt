@@ -244,7 +244,7 @@ object ItemUtils {
                 is BlockStateMeta -> {
                     val blockState = blockState
                     if (blockState is CreatureSpawner) {
-                        yaml["spawner"] = blockState.spawnedType.name
+                        yaml["spawner"] = blockState.spawnedType?.name
                     } else if (blockState is InventoryHolder) {
                         if (allowNested) {
                             val createSection = yaml.createSection("inventory")

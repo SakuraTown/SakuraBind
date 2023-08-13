@@ -52,30 +52,22 @@ subprojects {
 
     dependencies {
         val kotlinVersion: String by rootProject
-        compileOnly(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
-        //基础库
-        compileOnly(kotlin("stdlib"))
-        // 数据库
         val exposedVersion: String by rootProject
         val nbtEditorVersion: String by rootProject
+        //基础库
+        compileOnly(kotlin("stdlib"))
+        compileOnly(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
+        // Spigot
+        compileOnly("org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT")
+        // NBT
         implementation("io.github.bananapuncher714:nbteditor:$nbtEditorVersion")
+        // papi
         compileOnly("me.clip:placeholderapi:2.11.3")
-        compileOnly("org.jetbrains.exposed:exposed-core:$exposedVersion") {
-            isTransitive = false
-            targetConfiguration = "compile"
-        }
-        compileOnly("org.jetbrains.exposed:exposed-dao:$exposedVersion") {
-            isTransitive = false
-            targetConfiguration = "compile"
-        }
-        compileOnly("org.jetbrains.exposed:exposed-jdbc:$exposedVersion") {
-            isTransitive = false
-            targetConfiguration = "compile"
-        }
-        compileOnly("org.jetbrains.exposed:exposed-java-time:$exposedVersion") {
-            isTransitive = false
-            targetConfiguration = "compile"
-        }
+        // 数据库
+        compileOnly("org.jetbrains.exposed", "exposed-core", exposedVersion, "compile")
+        compileOnly("org.jetbrains.exposed", "exposed-dao", exposedVersion, "compile")
+        compileOnly("org.jetbrains.exposed", "exposed-jdbc", exposedVersion, "compile")
+        compileOnly("org.jetbrains.exposed", "exposed-java-time", exposedVersion, "compile")
         compileOnly("com.zaxxer:HikariCP:4.0.3")
     }
 
