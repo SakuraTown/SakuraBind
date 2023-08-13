@@ -62,19 +62,19 @@ subprojects {
         compileOnly("me.clip:placeholderapi:2.11.3")
         compileOnly("org.jetbrains.exposed:exposed-core:$exposedVersion") {
             isTransitive = false
-            targetConfiguration = "runtime"
+            targetConfiguration = "compile"
         }
         compileOnly("org.jetbrains.exposed:exposed-dao:$exposedVersion") {
             isTransitive = false
-            targetConfiguration = "runtime"
+            targetConfiguration = "compile"
         }
         compileOnly("org.jetbrains.exposed:exposed-jdbc:$exposedVersion") {
             isTransitive = false
-            targetConfiguration = "runtime"
+            targetConfiguration = "compile"
         }
         compileOnly("org.jetbrains.exposed:exposed-java-time:$exposedVersion") {
             isTransitive = false
-            targetConfiguration = "runtime"
+            targetConfiguration = "compile"
         }
         compileOnly("com.zaxxer:HikariCP:4.0.3")
     }
