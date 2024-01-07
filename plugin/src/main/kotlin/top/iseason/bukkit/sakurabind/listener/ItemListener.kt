@@ -249,11 +249,15 @@ object ItemListener : Listener {
         if (Config.checkByPass(whoClicked)) return
         val title = event.view.title
         var item: ItemStack?
-        if (event.hotbarButton >= 0) {
-            item = whoClicked.inventory.getItem(event.hotbarButton)
+        if (event.click.name == "SWAP_OFFHAND") {
+            item = whoClicked.inventory.itemInOffHand
         } else {
-            item = event.currentItem
-            if (item == null || item.checkAir()) item = event.cursor
+            if (event.hotbarButton >= 0) {
+                item = whoClicked.inventory.getItem(event.hotbarButton)
+            } else {
+                item = event.currentItem
+                if (item == null || item.checkAir()) item = event.cursor
+            }
         }
         if (item == null || item.checkAir()) return
         val owner = SakuraBindAPI.getOwner(item) ?: return
