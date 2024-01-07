@@ -264,11 +264,11 @@ object GlobalSettings : SimpleYAMLConfig() {
 
     @Key
     @Comment("", "点击物品时绑定")
-    var auto_bind__onClick = true
+    var auto_bind__onClick = false
 
     @Key
     @Comment("", "捡起物品时绑定")
-    var auto_bind__onPickup = true
+    var auto_bind__onPickup = false
 
     @Key
     @Comment("", "丢弃物品时绑定")
@@ -288,11 +288,11 @@ object GlobalSettings : SimpleYAMLConfig() {
 
     @Key
     @Comment("", "装备物品穿戴时绑定(仅限Paper及其下游服务端核心)")
-    var auto_bind__onEquipWear = true
+    var auto_bind__onEquipWear = false
 
     @Key
     @Comment("", "扫描器扫描时绑定(在config.yml中配置扫描器)")
-    var auto_bind__onScanner = true
+    var auto_bind__onScanner = false
 
     @Key
     @Comment("", "", "自动解绑设置(前提是已经绑定)")
@@ -333,6 +333,13 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Key
     @Comment("", "扫描器扫描时解绑(在config.yml中配置扫描器)")
     var auto_unbind__onScanner = false
+
+    @Key
+    @Comment(
+        "", "",
+        "一些额外的功能"
+    )
+    var module: MemorySection? = null
 
     @Key
     @Comment(
