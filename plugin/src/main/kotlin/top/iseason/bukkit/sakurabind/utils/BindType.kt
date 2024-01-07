@@ -60,5 +60,8 @@ enum class BindType(var description: String) {
     RIGHT_UNBIND_ITEM("拿着物品右键解绑物品"),
 
     MIGRATION_FROM_LORE_ITEM("从其他插件lore迁移"),
-    MIGRATION_FROM_NBT_ITEM("从其他插件NBT迁移")
+    MIGRATION_FROM_NBT_ITEM("从其他插件NBT迁移"),
+
+    EQUIP_BIND_ITEM("装备物品时绑定"),
+    EQUIP_UNBIND_ITEM("装备物品时解绑")
 }

@@ -101,7 +101,7 @@ object SuperCallbackCommand : CommandNode(
                 dropsMills - syncMills
             )
         )
-        containers.parallelStream()
+        containers
             .forEach { state ->
                 val filterInventory = filterInventory((state as InventoryHolder).inventory, uniqueId)
                 if (filterInventory.isEmpty()) return@forEach

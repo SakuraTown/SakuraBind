@@ -2,6 +2,7 @@ package top.iseason.bukkit.sakurabind
 
 import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.OfflinePlayer
 import org.bukkit.block.Block
@@ -14,6 +15,8 @@ import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BlockStateMeta
 import top.iseason.bukkit.sakurabind.cache.BlockCache
+import top.iseason.bukkit.sakurabind.cache.BlockInfo
+import top.iseason.bukkit.sakurabind.cache.CacheManager
 import top.iseason.bukkit.sakurabind.cache.EntityCache
 import top.iseason.bukkit.sakurabind.config.*
 import top.iseason.bukkit.sakurabind.config.matcher.LoreMatcher
@@ -30,6 +33,7 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 import top.iseason.bukkittemplate.utils.other.EasyCoolDown
 import java.util.*
+import java.util.function.BiPredicate
 import java.util.function.Predicate
 import kotlin.math.max
 
@@ -38,6 +42,7 @@ import kotlin.math.max
  */
 @Suppress("UNUSED")
 object SakuraBindAPI {
+
     /**
      * 将物品绑定玩家
      * @param item 需要绑定的物品
@@ -53,8 +58,27 @@ object SakuraBindAPI {
         player: Player,
         showLore: Boolean = true,
         type: BindType = BindType.API_BIND_ITEM,
-        setting: BaseSetting? = null
-    ) = bind(item, player.uniqueId, showLore, type, setting)
+        setting: BaseSetting? = null,
+        silent: Boolean = false
+    ) = bind(item, player.uniqueId, showLore, type, setting, silent)
+
+    /**
+     * 物品从方块掉落物绑定
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun bind(
+        item: ItemStack,
+        blockInfo: BlockInfo,
+        type: BindType = BindType.BLOCK_TO_ITEM_BIND,
+        showLore: Boolean = true,
+        silent: Boolean = false
+    ) {
+        val event = ItemBindFromBlockEvent(item, blockInfo, BindType.BLOCK_TO_ITEM_BIND)
+        if (!silent) Bukkit.getPluginManager().callEvent(event)
+        if (event.isCancelled) return
+        return bind(item, event.owner, showLore, event.bindType, event.setting, silent)
+    }
 
     /**
      * 将物品绑定UUID
@@ -66,13 +90,24 @@ object SakuraBindAPI {
      */
     @JvmStatic
     @JvmOverloads
-    fun bind(item: ItemStack, uuid: UUID, showLore: Boolean = true, type: BindType, setting: BaseSetting? = null) {
+    fun bind(
+        item: ItemStack,
+        uuid: UUID,
+        showLore: Boolean = true,
+        type: BindType,
+        setting: BaseSetting? = null,
+        silent: Boolean = false
+    ) {
         val realSet = setting ?: ItemSettings.getSetting(item)
         if (setting != null) setSettingCache(item, setting)
         val itemBindEvent = ItemBindEvent(item, realSet, uuid, type)
-        Bukkit.getPluginManager().callEvent(itemBindEvent)
+        if (!silent) Bukkit.getPluginManager().callEvent(itemBindEvent)
         if (itemBindEvent.isCancelled) return
-        val set = NBTEditor.set(item, itemBindEvent.owner.toString(), *Config.nbtPathUuid) ?: return
+        val set = NBTEditor.set(itemBindEvent.item, itemBindEvent.owner.toString(), *Config.nbtPathUuid) ?: return
+        if (item.type != set.type) {
+            item.type = set.type
+        }
+        if (!set.hasItemMeta()) return
         item.itemMeta = set.itemMeta
         if (showLore) updateLore(item, itemBindEvent.setting)
         if (realSet != itemBindEvent.setting) setSettingCache(item, itemBindEvent.setting)
@@ -89,10 +124,10 @@ object SakuraBindAPI {
      * @param item 解绑的物品
      */
     @JvmStatic
-    fun unBind(item: ItemStack, type: BindType = BindType.API_UNBIND_ITEM) {
+    fun unBind(item: ItemStack, type: BindType = BindType.API_UNBIND_ITEM, silent: Boolean = false) {
         val owner = getOwner(item) ?: return
         val itemUnBIndEvent = ItemUnBIndEvent(item, owner, ItemSettings.getSetting(item), type)
-        Bukkit.getPluginManager().callEvent(itemUnBIndEvent)
+        if (!silent) Bukkit.getPluginManager().callEvent(itemUnBIndEvent)
         if (itemUnBIndEvent.isCancelled) return
         var set = NBTEditor.set(item, null, *Config.nbtPathUuid)
         if (ItemSettings.nbtPath.isNotEmpty())
@@ -107,17 +142,48 @@ object SakuraBindAPI {
         )
     }
 
+    /**
+     * 物品放下变成方块
+     */
+    @JvmStatic
+    fun bindBlock(
+        player: Player,
+        handItem: ItemStack,
+        block: Block,
+        uuid: UUID,
+        setting: BaseSetting,
+        isMultiPlace: Boolean,
+        silent: Boolean = false
+    ) {
+        val event =
+            BlockBindFromItemEvent(block, setting, uuid, BindType.ITEM_TO_BLOCK_BIND, handItem, player, isMultiPlace)
+        if (!silent) Bukkit.getPluginManager().callEvent(event)
+        bindBlock(event.block, event.owner, event.setting, event.bindType, event.extraData, silent)
+    }
 
     /**
      * 绑定方块
      */
     @JvmStatic
-    fun bindBlock(block: Block, uuid: UUID, setting: BaseSetting, type: BindType = BindType.API_BIND_BLOCK) {
+    fun bindBlock(
+        block: Block,
+        uuid: UUID,
+        setting: BaseSetting,
+        type: BindType = BindType.API_BIND_BLOCK,
+        extraData: List<String>? = null,
+        silent: Boolean = false
+    ) {
         if (!isBlockEnable()) return
         val blockBindEvent = BlockBindEvent(block, setting, uuid, type)
-        Bukkit.getPluginManager().callEvent(blockBindEvent)
+        blockBindEvent.extraData = extraData
+        if (!silent) Bukkit.getPluginManager().callEvent(blockBindEvent)
         if (blockBindEvent.isCancelled) return
-        BlockCache.addBlock(block, blockBindEvent.owner, blockBindEvent.setting.keyPath)
+        BlockCache.addBlock(
+            block,
+            blockBindEvent.owner,
+            blockBindEvent.setting.keyPath,
+            blockBindEvent.extraData
+        )
         BindLogger.log(
             blockBindEvent.owner,
             blockBindEvent.bindType,
@@ -131,11 +197,11 @@ object SakuraBindAPI {
      * 解绑方块
      */
     @JvmStatic
-    fun unbindBlock(block: Block, type: BindType = BindType.API_UNBIND_BLOCK) {
+    fun unbindBlock(block: Block, type: BindType = BindType.API_UNBIND_BLOCK, silent: Boolean = false) {
         if (!isBlockEnable()) return
         val blockOwner = BlockCache.getBlockInfo(block) ?: return
-        val blockUnBindEvent = BlockUnBindEvent(block, blockOwner.second, UUID.fromString(blockOwner.first), type)
-        Bukkit.getPluginManager().callEvent(blockUnBindEvent)
+        val blockUnBindEvent = BlockUnBindEvent(block, blockOwner.setting, blockOwner.ownerUUID, type)
+        if (!silent) Bukkit.getPluginManager().callEvent(blockUnBindEvent)
         if (blockUnBindEvent.isCancelled) return
         BlockCache.removeBlock(block)
         BindLogger.log(
@@ -151,11 +217,17 @@ object SakuraBindAPI {
      * 绑定实体
      */
     @JvmStatic
-    fun bindEntity(entity: Entity, player: Player, setting: BaseSetting, type: BindType = BindType.API_BIND_ENTITY) {
+    fun bindEntity(
+        entity: Entity,
+        player: Player,
+        setting: BaseSetting,
+        type: BindType = BindType.API_BIND_ENTITY,
+        silent: Boolean = false
+    ) {
         if (!isEntityEnable()) return
         val uniqueId = player.uniqueId
         val entityBindEvent = EntityBindEvent(entity, setting, uniqueId, type)
-        Bukkit.getPluginManager().callEvent(entityBindEvent)
+        if (!silent) Bukkit.getPluginManager().callEvent(entityBindEvent)
         if (entityBindEvent.isCancelled) return
         val toString = entityBindEvent.owner.toString()
         EntityCache.addEntity(entity, toString, entityBindEvent.setting.keyPath)
@@ -187,11 +259,11 @@ object SakuraBindAPI {
      * 解绑实体
      */
     @JvmStatic
-    fun unbindEntity(entity: Entity, type: BindType = BindType.API_UNBIND_ENTITY) {
+    fun unbindEntity(entity: Entity, type: BindType = BindType.API_UNBIND_ENTITY, silent: Boolean = false) {
         if (!isEntityEnable()) return
         val entityOwner = EntityCache.getEntityInfo(entity) ?: return
         val entityUnBindEvent = EntityUnBindEvent(entity, entityOwner.second, UUID.fromString(entityOwner.first), type)
-        Bukkit.getPluginManager().callEvent(entityUnBindEvent)
+        if (!silent) Bukkit.getPluginManager().callEvent(entityUnBindEvent)
         if (entityUnBindEvent.isCancelled) return
         EntityCache.removeEntity(entity)
         BindLogger.log(
@@ -310,6 +382,29 @@ object SakuraBindAPI {
     }
 
     /**
+     * 实体是否被绑定
+     * @param entity 需要判断的实体
+     */
+    @JvmStatic
+    fun hasBind(entity: Entity): Boolean {
+        return getEntityInfo(entity) != null
+    }
+
+    /**
+     * 方块坐标是否被绑定
+     * @param location 需要判断的坐标
+     */
+    @JvmStatic
+    fun hasBind(location: Location): Boolean {
+        return BlockCache.getBlockInfo(CacheManager.locationToString(location)) != null
+    }
+
+    @JvmStatic
+    fun hasBind(block: Block): Boolean {
+        return getBlockInfo(block) != null
+    }
+
+    /**
      * 物品及其容器内物品是否被绑定
      * @param item 需要判断的物品
      */
@@ -383,7 +478,7 @@ object SakuraBindAPI {
     @JvmStatic
     fun getBlockOwner(block: Block): String? {
         if (!isBlockEnable()) throw IllegalStateException("方块监听器未启用，请在config.yml中打开 'block-listener'")
-        return BlockCache.getBlockInfo(block)?.first
+        return BlockCache.getBlockInfo(block)?.owner
     }
 
     /**
@@ -392,7 +487,7 @@ object SakuraBindAPI {
      * @return 方块绑定信息
      */
     @JvmStatic
-    fun getBlockInfo(block: Block): Pair<String, BaseSetting>? {
+    fun getBlockInfo(block: Block): BlockInfo? {
         if (!isBlockEnable()) throw IllegalStateException("方块监听器未启用，请在config.yml中打开 'block-listener'")
         return BlockCache.getBlockInfo(block)
     }
@@ -405,7 +500,7 @@ object SakuraBindAPI {
     @JvmStatic
     fun getBlockSetting(block: Block): BaseSetting? {
         if (!isBlockEnable()) throw IllegalStateException("方块监听器未启用，请在config.yml中打开 'block-listener'")
-        return BlockCache.getBlockInfo(block)?.second
+        return BlockCache.getBlockInfo(block)?.setting
     }
 
     /**
@@ -469,11 +564,13 @@ object SakuraBindAPI {
             .map { it.replace("%player%", player.name!!).toColor() }
     }
 
+
     /**
      * 将物品送回物主，玩家在线优先进背包
      */
     @JvmStatic
-    fun sendBackItem(uuid: UUID, items: Collection<ItemStack>): List<ItemStack> {
+    @JvmOverloads
+    fun sendBackItem(uuid: UUID, items: Collection<ItemStack>, notify: Boolean = true): List<ItemStack> {
         val player = Bukkit.getPlayer(uuid)
         //物主在线
         var release = mutableListOf<ItemStack>()
@@ -486,10 +583,12 @@ object SakuraBindAPI {
             }
             //全部返还
             if (release.isEmpty()) {
-                MessageTool.messageCoolDown(player, Lang.send_back_all)
+                if (notify)
+                    MessageTool.messageCoolDown(player, Lang.send_back_all)
                 return release
             }
-            MessageTool.messageCoolDown(player, Lang.send_back_inventory)
+            if (notify)
+                MessageTool.messageCoolDown(player, Lang.send_back_inventory)
         } else release = items.toMutableList()
 
         /**
@@ -504,7 +603,7 @@ object SakuraBindAPI {
                     release2.addAll(addItem.values)
                 }
             }
-            if (release.size != release2.size && !EasyCoolDown.check(uuid, 1000))
+            if (notify && release.size != release2.size && !EasyCoolDown.check(uuid, 1000))
                 player.sendColorMessage(Lang.send_back_ender_chest)
             release = release2
         }
@@ -547,14 +646,59 @@ object SakuraBindAPI {
         uuid: UUID? = null,
         remove: Boolean = true,
         predicate: Predicate<BaseSetting>? = null
+    ): Map<UUID, List<ItemStack>> =
+        filterInventory(inventory, remove) filterInventory2@{ uid, itm ->
+            if (!(uuid == null || uuid == uid)) return@filterInventory2 false
+            if (predicate != null && !predicate.test(getItemSetting(itm))) return@filterInventory2 false
+            true
+        }
+
+    @JvmStatic
+    @JvmOverloads
+    fun filterInventory(
+        inventory: Inventory,
+        remove: Boolean = true,
+        deep: Boolean = false,
+        predicate: BiPredicate<UUID, ItemStack>
     ): Map<UUID, List<ItemStack>> {
         val map = HashMap<UUID, MutableList<ItemStack>>()
         for (i in 0 until inventory.size) {
-            val item = inventory.getItem(i)
+            val item = inventory.getItem(i) ?: continue
             if (item.checkAir()) continue
-            val filterItem = filterItem(item!!, uuid, remove, predicate)
+            val filterItem = filterItem(item, remove, deep, predicate)
             if (filterItem.isEmpty()) continue
-            if (remove && item.type == Material.AIR) inventory.clear(i)
+            if (remove && item.type == Material.AIR) inventory.setItem(i, null)
+            filterItem.forEach { (k, v) -> map.computeIfAbsent(k) { LinkedList() }.addAll(v) }
+        }
+        return map
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun filterItems(
+        items: Iterable<ItemStack>,
+        remove: Boolean = true,
+        deep: Boolean = false,
+        predicate: BiPredicate<UUID, ItemStack>
+    ): Map<UUID, List<ItemStack>> {
+        return filterItems(items.iterator(), remove, deep, predicate)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun filterItems(
+        iterator: Iterator<ItemStack>,
+        remove: Boolean = true,
+        deep: Boolean = false,
+        predicate: BiPredicate<UUID, ItemStack>
+    ): Map<UUID, List<ItemStack>> {
+        val map = HashMap<UUID, MutableList<ItemStack>>()
+        while (iterator.hasNext()) {
+            val item = iterator.next()
+            if (item.checkAir()) continue
+            val filterItem = filterItem(item, remove, deep, predicate)
+            if (filterItem.isEmpty()) continue
+            if (remove && item.type == Material.AIR && iterator is MutableIterator) iterator.remove()
             filterItem.forEach { (k, v) -> map.computeIfAbsent(k) { LinkedList() }.addAll(v) }
         }
         return map
@@ -574,26 +718,53 @@ object SakuraBindAPI {
         item: ItemStack,
         uuid: UUID? = null,
         remove: Boolean = true,
+        deep: Boolean = false,
         predicate: Predicate<BaseSetting>? = null
+    ): Map<UUID, List<ItemStack>> =
+        filterItem(item, remove, deep) filterItem2@{ uid, itm ->
+            if (!(uuid == null || uuid == uid)) return@filterItem2 false
+            if (predicate != null && !predicate.test(getItemSetting(itm))) return@filterItem2 false
+            true
+        }
+
+    /**
+     * 搜索符合条件的绑定物品
+     */
+    @JvmStatic
+    fun filterItem(
+        item: ItemStack,
+        remove: Boolean,
+        deep: Boolean,
+        predicate: BiPredicate<UUID, ItemStack>
     ): Map<UUID, List<ItemStack>> {
+        if (!item.hasItemMeta()) return emptyMap()
         val owner = getOwner(item)
-        // 绑定物品判断
-        if (owner != null && (uuid == null || uuid == owner)) {
-            if (predicate != null && !predicate.test(getItemSetting(item))) return emptyMap()
+        val mutableMapOf = mutableMapOf<UUID, MutableList<ItemStack>>()
+        if (owner != null) {
+            if (!predicate.test(owner, item)) return emptyMap()
             val clone = if (remove) item.clone() else item
             if (remove) item.type = Material.AIR
-            return mapOf((uuid ?: owner) to listOf(clone))
+            if (!deep) return mapOf(owner to listOf(clone))
+            mutableMapOf[owner] = mutableListOf(clone)
         }
         val itemMeta = item.itemMeta
         if (itemMeta is BlockStateMeta && itemMeta.hasBlockState()) {
             val blockState = itemMeta.blockState
             if (blockState is InventoryHolder) {
-                val filterInventory = filterInventory(blockState.inventory, uuid, remove, predicate)
-                if (filterInventory.isEmpty()) return emptyMap()
-                for (value in filterInventory.values) {
-                    val copy = LinkedList(value)
-                    repeat(item.amount - 1) {
-                        (value as MutableList<ItemStack>).addAll(copy)
+                val filterInventory = filterInventory(blockState.inventory, remove, deep, predicate)
+                if (filterInventory.isEmpty()) return mutableMapOf
+                // 一般容器类物品数量不会超过1
+//                for (value in filterInventory.values) {
+//                    val copy = LinkedList(value)
+//                    repeat(item.amount - 1) {
+//                        (value as MutableList<ItemStack>).addAll(copy)
+//                    }
+//                }
+                for ((uuid, items) in filterInventory) {
+                    val itemsList = if (items is MutableList) items else items.toMutableList()
+                    mutableMapOf.merge(uuid, itemsList) { old, list ->
+                        old.addAll(list)
+                        old
                     }
                 }
                 itemMeta.blockState = blockState
@@ -601,7 +772,7 @@ object SakuraBindAPI {
                 return filterInventory
             }
         }
-        return emptyMap()
+        return mutableMapOf
     }
 
     /**

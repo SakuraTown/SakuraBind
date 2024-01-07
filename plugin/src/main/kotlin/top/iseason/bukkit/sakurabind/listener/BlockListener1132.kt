@@ -14,8 +14,8 @@ object BlockListener1132 : Listener {
     fun onBlockPhysicsEvent(event: BlockPhysicsEvent) {
         val sourceBlock = event.sourceBlock
         if (!sourceBlock.isEmpty) return
-        val owner = SakuraBindAPI.getBlockInfo(sourceBlock)?.first ?: return
+        val blockInfo = SakuraBindAPI.getBlockInfo(sourceBlock) ?: return
         SakuraBindAPI.unbindBlock(sourceBlock, type = BindType.BLOCK_TO_ITEM_UNBIND)
-        BlockCache.addBlockTemp(BlockCache.blockToString(sourceBlock), owner)
+        BlockCache.addBlockTemp(BlockCache.blockToString(sourceBlock), blockInfo)
     }
 }

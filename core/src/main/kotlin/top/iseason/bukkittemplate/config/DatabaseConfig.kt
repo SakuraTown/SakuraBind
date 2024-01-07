@@ -12,6 +12,7 @@ import org.jetbrains.exposed.sql.statements.StatementContext
 import org.jetbrains.exposed.sql.statements.expandArgs
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.transactions.transactionManager
 import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.DisableHook
 import top.iseason.bukkittemplate.config.annotations.Comment
@@ -176,26 +177,26 @@ object DatabaseConfig : SimpleYAMLConfig() {
             }
             val config = when (database_type) {
                 "MySQL" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependency("mysql:mysql-connector-java:8.0.30")
+                    runtimeManager.downloadADependency("mysql:mysql-connector-java:8.0.33")
                     jdbcUrl = "jdbc:mysql://$address/$database_name$params"
                     //可能兼容旧的mysql驱动
                     driverClassName = "com.mysql.jdbc.Driver"
                 }
 
                 "MariaDB" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependency("org.mariadb.jdbc:mariadb-java-client:3.1.3")
+                    runtimeManager.downloadADependency("org.mariadb.jdbc:mariadb-java-client:3.3.2")
                     jdbcUrl = "jdbc:mariadb://$address/$database_name$params"
                     driverClassName = "org.mariadb.jdbc.Driver"
                 }
 
                 "SQLite" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependencyAssembly("org.xerial:sqlite-jdbc:3.41.2.0")
+                    runtimeManager.downloadADependencyAssembly("org.xerial:sqlite-jdbc:3.44.1.0")
                     jdbcUrl = "jdbc:sqlite:$address$params"
                     driverClassName = "org.sqlite.JDBC"
                 }
 
                 "H2" -> HikariConfig().apply {
-                    runtimeManager.downloadADependency("com.h2database:h2:2.2.220")
+                    runtimeManager.downloadADependency("com.h2database:h2:2.2.224")
                     jdbcUrl = "jdbc:h2:$address/$database_name$params"
                     driverClassName = "org.h2.Driver"
                 }
@@ -207,13 +208,13 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 }
 
                 "Oracle" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependency("com.oracle.database.jdbc:ojdbc8:21.9.0.0")
+                    runtimeManager.downloadADependency("com.oracle.database.jdbc:ojdbc8:23.2.0.0")
                     jdbcUrl = "dbc:oracle:thin:@//$address/$database_name$params"
                     driverClassName = "oracle.jdbc.OracleDriver"
                 }
 
                 "SQLServer" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependency("com.microsoft.sqlserver:mssql-jdbc:11.2.3.jre8")
+                    runtimeManager.downloadADependency("com.microsoft.sqlserver:mssql-jdbc:12.4.2.jre8")
                     jdbcUrl = "jdbc:sqlserver://$address;DatabaseName=$database_name$params"
                     driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
                 }
@@ -267,7 +268,7 @@ object DatabaseConfig : SimpleYAMLConfig() {
         this.tables = tables
         runCatching {
             dbTransaction {
-                SchemaUtils.createMissingTablesAndColumns(*tables)
+                SchemaUtils.createMissingTablesAndColumns(tables = tables, inBatch = false, withLogs = false)
 //                SchemaUtils.create(*tables)
             }
         }.getOrElse { it.printStackTrace() }
@@ -300,5 +301,12 @@ object MySqlLogger : SqlLogger {
 /**
  * 使用本插件数据库的事务
  */
-fun <T> dbTransaction(statement: Transaction.() -> T) =
-    transaction(DatabaseConfig.connection, statement)
+fun <T> dbTransaction(readOnly: Boolean = false, statement: Transaction.() -> T): T {
+    val db = DatabaseConfig.connection
+    return transaction(
+        db.transactionManager.defaultIsolationLevel,
+        readOnly,
+        db,
+        statement
+    )
+}

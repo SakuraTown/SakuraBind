@@ -14,6 +14,7 @@ interface BaseSetting {
      */
     val keyPath: String
     val matchers: List<BaseMatcher>
+
     /**
      * 匹配物品
      * @param item 待匹配的物品
@@ -28,10 +29,17 @@ interface BaseSetting {
      * @return true 匹配成功, false 匹配失败
      */
     fun match(item: ItemStack, sender: CommandSender?): Boolean
+
     fun getString(key: String): String
+
     fun getStringList(key: String): List<String>
+
+    fun getIntList(key: String): List<Int>
+
     fun getInt(key: String): Int
+
     fun getLong(key: String): Long
+
     fun getDouble(key: String): Double
 
     /**

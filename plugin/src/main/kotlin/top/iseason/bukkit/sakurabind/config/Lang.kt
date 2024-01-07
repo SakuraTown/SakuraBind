@@ -25,7 +25,10 @@ object Lang : top.iseason.bukkittemplate.config.Lang() {
     var item__deny_drop = "&6该物品不能丢出!"
     var item__deny_pickup = "&6该物品属于 &a{0},&6已归还"
     var item__deny_itemFrame = "&6该物品禁止放入展示框!"
-    var item__deny_interact = "&6该物品禁止交互!"
+    var item__deny_interact_left = "&6该物品禁止交互!"
+    var item__deny_interact_right = "&6该物品禁止交互!"
+    var item__deny_left_click_at_bind_block = "&6该物品禁止右键交互绑定方块!"
+    var item__deny_right_click_at_bind_block = "&6该物品禁止右键交互绑定方块!"
     var item__deny_armor_stand_set = "&6该物品禁止放入盔甲架!"
     var item__deny_armor_stand_get = "&6该物品禁止从盔甲架取出!"
     var item__deny_entity_interact = "&6该物品禁止与实体交互!"
@@ -44,6 +47,7 @@ object Lang : top.iseason.bukkittemplate.config.Lang() {
     var auto_bind__onUse = "&a此物品已绑定你的灵魂!"
     var auto_bind__onLeft = "&a此物品已绑定你的灵魂!"
     var auto_bind__onRight = "&a此物品已绑定你的灵魂!"
+    var auto_bind__onEquiped = "&a你刚刚装备的物品已绑定"
 
     var auto_unbind__onClick = "&6此物品已解除绑定!"
     var auto_unbind__onPickup = "&6此物品已解除绑定!"
@@ -52,6 +56,7 @@ object Lang : top.iseason.bukkittemplate.config.Lang() {
     var auto_unbind__onUse = "&6此物品已解除绑定!"
     var auto_unbind__onLeft = "&6此物品已解除绑定!"
     var auto_unbind__onRight = "&6此物品已解除绑定!"
+    var auto_unbind__onEquiped = "&6你刚刚装备的物品已解绑"
 
     var block__deny_break = "&6你不能破坏这个方块,这个方块属于 &b{0}"
     var block__deny_place = "&6你不能放置这个方块，此物物品已绑定"

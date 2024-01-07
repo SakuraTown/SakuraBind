@@ -182,6 +182,8 @@ object Config : SimpleYAMLConfig() {
     @Key
     @Comment("", "匹配到的设置,留空或者填写错误都会使用常规匹配")
     var data_migration__setting = ""
+
+
     var dataMigrationSetting: BaseSetting? = null
 
     private var dataMigrationTask: BukkitTask? = null
@@ -193,7 +195,6 @@ object Config : SimpleYAMLConfig() {
     override fun onLoaded(section: ConfigurationSection) {
         nbtPathUuid = nbt_path_uuid.split('.').toTypedArray()
         nbtPathLore = nbt_path_lore.split('.').toTypedArray()
-
         if (SakuraMailHook.hasHooked && mailId.isNotBlank()) {
             SystemMailsYml.getMailYml(mailId) ?: info("&c邮件&7 $mailId &c不存在!")
         }
@@ -220,8 +221,8 @@ object Config : SimpleYAMLConfig() {
                 if (data_migration__setting.isNotBlank()) ItemSettings.getSettingNullable(data_migration__setting) else null
             dataMigrationSetting
                 ?: warn("config.yml 中 data-migration.setting  $data_migration__setting 不是一个有效的配置,将通过匹配器匹配")
-
         }
+
     }
 
     /**

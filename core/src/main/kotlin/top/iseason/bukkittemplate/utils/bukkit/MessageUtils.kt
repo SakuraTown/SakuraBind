@@ -64,6 +64,14 @@ object MessageUtils {
             }
             true
         }
+        messageHandlers.add { msg, sender, prefix ->
+            if (sender is Player && msg.startsWith("[title]", true)) {
+                val drop = msg.drop(7).split("\\n")
+                sender.sendCustomTitle(drop.getOrNull(0), drop.getOrNull(1), prefix)
+                return@add false
+            }
+            true
+        }
         //大标题
         messageHandlers.add { msg, sender, prefix ->
             if (sender is Player && msg.startsWith("[main-title]", true)) {
@@ -357,6 +365,24 @@ object MessageUtils {
             audiences.player(this).showTitle(Title.title(Component.empty(), component))
         } else {
             this.sendTitle("", finalMessage)
+        }
+    }
+
+    /**
+     * 发送标题消息
+     */
+    fun Player.sendCustomTitle(main: String?, sub: String?, prefix: String = defaultPrefix) {
+        if (main.isNullOrEmpty() && sub.isNullOrEmpty()) return
+        val mainColor = if (main.isNullOrEmpty()) null else PlaceHolderHook.setPlaceHolder("$prefix$main", this)
+        val subColor = if (sub.isNullOrEmpty()) null else PlaceHolderHook.setPlaceHolder("$prefix$sub", this)
+        if (miniMessageSupport) {
+            val mainComponent =
+                if (mainColor != null) MiniMessage.miniMessage().deserialize(mainColor) else Component.empty()
+            val subComponent =
+                if (subColor != null) MiniMessage.miniMessage().deserialize(subColor) else Component.empty()
+            audiences.player(this).showTitle(Title.title(mainComponent, subComponent))
+        } else {
+            this.sendTitle(mainColor, subColor)
         }
     }
 

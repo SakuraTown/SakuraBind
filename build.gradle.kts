@@ -8,7 +8,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.guardsquare:proguard-gradle:7.4.0-beta01")
+        classpath("com.guardsquare:proguard-gradle:7.4.1")
     }
 
 }
@@ -22,6 +22,7 @@ subprojects {
     }
     repositories {
 //    阿里的服务器速度快一点
+        mavenCentral()
         maven {
             name = "aliyun"
             url = uri("https://maven.aliyun.com/repository/public")
@@ -31,7 +32,7 @@ subprojects {
             url = uri("https://maven.aliyun.com/repository/google")
         }
 //        google()
-        mavenCentral()
+
         maven {
             name = "spigot"
             url = uri("https://hub.spigotmc.org/nexus/content/repositories/public/")
@@ -39,6 +40,10 @@ subprojects {
         maven {
             name = "jitpack"
             url = uri("https://jitpack.io")
+        }
+        maven {
+            name = "papermc"
+            url = uri("https://repo.papermc.io/repository/maven-public/")
         }
         maven {
             name = "CodeMC"
@@ -59,16 +64,20 @@ subprojects {
         compileOnly(kotlin("stdlib"))
         compileOnly(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
         // Spigot
-        compileOnly("org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT")
+        compileOnly("org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT")
+        compileOnly("io.papermc.paper", "paper-api", "1.20.4-R0.1-SNAPSHOT", "compile") {
+            isTransitive = false
+            exclude("org.bukkit")
+        }
         // NBT
         implementation("io.github.bananapuncher714:nbteditor:$nbtEditorVersion")
         // papi
         compileOnly("me.clip:placeholderapi:2.11.3")
         // 数据库
-        compileOnly("org.jetbrains.exposed", "exposed-core", exposedVersion, "compile")
-        compileOnly("org.jetbrains.exposed", "exposed-dao", exposedVersion, "compile")
-        compileOnly("org.jetbrains.exposed", "exposed-jdbc", exposedVersion, "compile")
-        compileOnly("org.jetbrains.exposed", "exposed-java-time", exposedVersion, "compile")
+        compileOnly("org.jetbrains.exposed", "exposed-core", exposedVersion) { isTransitive = false }
+        compileOnly("org.jetbrains.exposed", "exposed-dao", exposedVersion) { isTransitive = false }
+        compileOnly("org.jetbrains.exposed", "exposed-jdbc", exposedVersion) { isTransitive = false }
+        compileOnly("org.jetbrains.exposed", "exposed-java-time", exposedVersion) { isTransitive = false }
         compileOnly("com.zaxxer:HikariCP:4.0.3")
     }
 

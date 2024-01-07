@@ -42,6 +42,12 @@ open class ItemSetting(override val keyPath: String, protected val section: Conf
         else GlobalSettings.config.getStringList(key)
     }
 
+    override fun getIntList(key: String): List<Int> {
+        return if (setting.contains(key))
+            setting.getIntegerList(key)
+        else GlobalSettings.config.getIntegerList(key)
+    }
+
     override fun getInt(key: String): Int = setting.getInt(key, GlobalSettings.config.getInt(key))
 
     override fun getLong(key: String): Long = setting.getLong(key, GlobalSettings.config.getLong(key))

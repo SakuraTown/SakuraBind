@@ -22,7 +22,7 @@ runtime-libraries:
   repositories:
     - https://maven.aliyun.com/repository/public/
     - https://repo.maven.apache.org/maven2/
-  parallel: true
+  parallel: false
   # ${kotlinVersion}
   libraries:
     - org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}
@@ -32,7 +32,7 @@ runtime-libraries:
     - org.jetbrains.exposed:exposed-jdbc:${exposedVersion}
     - org.jetbrains.exposed:exposed-java-time:${exposedVersion}
     - com.zaxxer:HikariCP:4.0.3,1
-    - org.glassfish.jaxb:jaxb-runtime:2.3.7,1
+    - org.glassfish.jaxb:jaxb-runtime:2.3.8,1
     - org.ehcache:ehcache:3.10.8,1
   assembly:
     - org.apache.logging.log4j:log4j-api

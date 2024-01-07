@@ -14,32 +14,31 @@ import java.util.concurrent.ConcurrentLinkedQueue
 
 object DropItemList : BukkitRunnable() {
     private val hasMinHeight = NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_17)
-    private val entities = ConcurrentLinkedQueue<ItemSender>()
+    val drops = ConcurrentLinkedQueue<ItemSender>()
 
     fun putItem(item: Item, owner: UUID, delay: Int) {
-        entities.add(ItemSender(item, owner, delay))
+        drops.add(ItemSender(item, owner, delay))
     }
 
     fun putInnerItem(item: Item) {
         for ((uuid, items) in SakuraBindAPI.filterItem(item.itemStack, remove = false)) {
             for (itemStack in items) {
                 val delay = SakuraBindAPI.getItemSetting(itemStack).getInt("item.send-back-delay")
-                entities.add(InnerItemSender(item, itemStack, uuid, delay))
+                drops.add(InnerItemSender(item, itemStack, uuid, delay))
             }
         }
     }
 
     override fun run() {
-        if (entities.isEmpty()) {
+        if (drops.isEmpty()) {
             return
         }
-        val iterator = entities.iterator()
+        val iterator = drops.iterator()
         while (iterator.hasNext()) {
             val sender = iterator.next()
             val item = sender.item
-            val dead = item.isDead
             val location = item.location
-            if (dead) {
+            if (item.isDead || sender.markAsRemoved) {
                 iterator.remove()
                 continue
             }
@@ -67,7 +66,7 @@ object DropItemList : BukkitRunnable() {
     override fun cancel() {
 //        println("cancel")
         val hashMap = HashMap<UUID, MutableList<ItemStack>>()
-        entities.forEach {
+        drops.forEach {
             val item = it.item
             if (item.isDead) return@forEach
             hashMap.computeIfAbsent(it.owner) { mutableListOf() }.add(item.itemStack)
@@ -76,9 +75,18 @@ object DropItemList : BukkitRunnable() {
         hashMap.forEach { (uuid, items) -> SakuraBindAPI.sendBackItem(uuid, items) }
     }
 
-    private open class ItemSender(val item: Item, val owner: UUID, var delay: Int) {
+    open class ItemSender(val item: Item, val owner: UUID, var delay: Int) {
+
+        var markAsRemoved = false
+
         open fun sendBack() {
             SakuraBindAPI.sendBackItem(owner, listOf(item.itemStack))
+            item.remove()
+        }
+
+        open fun remove() {
+            if (item.isDead) return
+            markAsRemoved = true
             syncRemove(item)
         }
     }
@@ -90,10 +98,17 @@ object DropItemList : BukkitRunnable() {
         owner: UUID,
         delay: Int
     ) : ItemSender(item, owner, delay) {
+
         override fun sendBack() {
             SakuraBindAPI.sendBackItem(owner, listOf(itemStack))
+            remove()
+        }
+
+        override fun remove() {
+            markAsRemoved = true
             val rawStack = item.itemStack
             val itemMeta = rawStack.itemMeta as BlockStateMeta
+            if (!itemMeta.hasBlockState()) return
             val inventoryHolder = itemMeta.blockState as InventoryHolder
             inventoryHolder.inventory.remove(itemStack)
             itemMeta.blockState = inventoryHolder as BlockState

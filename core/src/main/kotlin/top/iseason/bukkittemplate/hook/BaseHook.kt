@@ -27,7 +27,7 @@ abstract class BaseHook(val pluginName: String) {
     /**
      * 检查软依赖是否存在
      */
-    fun checkHooked() {
+    open fun checkHooked() {
         plugin = Bukkit.getPluginManager().getPlugin(pluginName)
         if (plugin != null)
             info("&a检测到兼容插件: &6$pluginName")

@@ -12,8 +12,10 @@ import top.iseason.bukkit.sakurabind.config.*
 import top.iseason.bukkit.sakurabind.config.matcher.MatcherManager
 import top.iseason.bukkit.sakurabind.dto.BindLogs
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
+import top.iseason.bukkit.sakurabind.dto.UniqueLogs
 import top.iseason.bukkit.sakurabind.hook.*
 import top.iseason.bukkit.sakurabind.listener.*
+import top.iseason.bukkit.sakurabind.module.UniqueItem
 import top.iseason.bukkit.sakurabind.task.DelaySender
 import top.iseason.bukkit.sakurabind.task.DropItemList
 import top.iseason.bukkit.sakurabind.task.EntityRemoveQueue
@@ -66,14 +68,15 @@ object SakuraBind : BukkitPlugin {
      */
     @Throws(Exception::class)
     fun initConfig() {
-        info("&6配置初始化中......")
+        info("&6配置初始化中...")
         GlobalSettings.load(false)
         Lang.load(false)
         ItemSettings.load(false)
         DatabaseConfig.load(false)
-        DatabaseConfig.initTables(PlayerItems, BindLogs)
+        DatabaseConfig.initTables(PlayerItems, BindLogs, UniqueLogs)
         Config.load(false)
         BindLogger.load(false)
+        UniqueItemConfig.load(false)
         info("&a配置初始化完毕!")
     }
 
@@ -91,7 +94,10 @@ object SakuraBind : BukkitPlugin {
         BanItemHook.checkHooked()
         GermHook.checkHooked()
         if (PlaceHolderHook.hasHooked) PlaceHolderExpansion.register()
-        if (MMOItemsHook.hasHooked) MatcherManager.addMatcher(MMOItemsMatcher())
+        if (MMOItemsHook.hasHooked) {
+            MatcherManager.addMatcher(MMOItemsMatcher())
+            MMOItemsHook.registerListener()
+        }
         if (ItemsAdderHook.hasHooked) MatcherManager.addMatcher(ItemsAdderMatcher())
         if (OraxenHook.hasHooked) MatcherManager.addMatcher(OraxenMatcher())
         if (PlayerDataSQLHook.hasHooked) PlayerDataSQLHook.registerListener()
@@ -134,6 +140,13 @@ object SakuraBind : BukkitPlugin {
         }
         SelectListener.registerListener()
         BindActionListener.registerListener()
+        if (UniqueItemConfig.enable) {
+            UniqueItem.registerListener()
+        }
+        if (PaperListener.isPaper()) {
+            info("&a当前为 Paper 或下游服务端,已开启装备穿戴检测功能")
+            PaperListener.registerListener()
+        }
     }
 
     /**
@@ -196,12 +209,12 @@ object SakuraBind : BukkitPlugin {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        try {
-            BlockCache.tempBlockCache.close()
-//            ItemSettings.settingCache2.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+//        try {
+////            BlockCache.tempBlockCache.close()
+////            ItemSettings.settingCache2.close()
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
         try {
             CacheManager.save()
         } catch (e: Exception) {

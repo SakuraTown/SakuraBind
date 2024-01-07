@@ -71,7 +71,7 @@ open class SimpleYAMLConfig(
     /**
      * 本配置类的所有项
      */
-    private val keys = buildList {
+    private val keys: List<ConfigKey> = mutableListOf<ConfigKey>().apply {
         //当前类是否标注了 @Key
         val isAllKey = this@SimpleYAMLConfig.javaClass.getAnnotation(Key::class.java) != null
         var superClass: Class<*>? = this@SimpleYAMLConfig::class.java

@@ -23,12 +23,10 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 import top.iseason.bukkittemplate.utils.other.runAsync
 import java.io.File
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.logging.FileHandler
-import java.util.logging.Formatter
-import java.util.logging.LogRecord
 import java.util.logging.Logger
+import java.util.logging.SimpleFormatter
 
 @FilePath("logger.yml")
 object BindLogger : SimpleYAMLConfig() {
@@ -43,7 +41,7 @@ object BindLogger : SimpleYAMLConfig() {
 
     @Key
     @Comment("", "将绑定信息输出到控制台")
-    var console = false
+    var console = true
 
     @Key
     @Comment("", "将绑定信息输出到数据库中，可跨服")
@@ -51,11 +49,11 @@ object BindLogger : SimpleYAMLConfig() {
 
     @Key
     @Comment("", "将绑定信息输出到独立的文件中")
-    var file = true
+    var file = false
 
     @Key
     @Comment("", "独立的文件的位置,修改需重启生效")
-    var file_path = File(BukkitTemplate.getPlugin().dataFolder, "log${File.separatorChar}bind-log").toString()
+    var file_path = File(BukkitTemplate.getPlugin().dataFolder, "log${File.separatorChar}bind-log-%g-%u.log").toString()
 
     @Key
     @Comment("", "独立的文件的最大数量，每个1M,修改需重启生效")
@@ -94,7 +92,7 @@ object BindLogger : SimpleYAMLConfig() {
 
     @Key
     @Comment("", "物品显示格式, 替换logger.format的 {3}", "占位符分别为 类型、名字、数量、子ID")
-    var format_item = "物品 {0}{4} {1} x {2}"
+    var format_item = "物品 {0}{3} {1} x {2}"
 
     @Key
     @Comment("", "方块显示格式, 替换logger.format的 {3}", "占位符分别为 类型、位置")
@@ -104,7 +102,15 @@ object BindLogger : SimpleYAMLConfig() {
     @Comment("", "实体显示格式, 替换logger.format的 {3}", "占位符分别为 类型、名字、UUID、位置")
     var format_entity = "实体: {0} {1} {2} {3} {4}"
 
-    private val file_logger = Logger.getLogger("SakuraBind-FileLogger").apply { useParentHandlers = false }
+    private val file_logger = Logger.getLogger("SakuraBind-FileLogger")
+        .apply {
+            useParentHandlers = false
+            File(file_path).parentFile.mkdirs()
+            val handler = FileHandler(file_path, 1024000, file_max_count, true)
+            handler.formatter = SimpleFormatter()
+            handler.encoding = "UTF-8"
+            addHandler(handler)
+        }
 
     init {
         DisableHook.addTask {
@@ -112,15 +118,6 @@ object BindLogger : SimpleYAMLConfig() {
         }
     }
 
-    private object FileFormatter : Formatter() {
-        private val format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
-        override fun format(record: LogRecord?): String {
-            record ?: return ""
-            return "[${LocalDateTime.now().format(format)}] ${record.message}\n"
-        }
-    }
-
-    private var fileHandler: FileHandler? = null
     override fun onLoaded(section: ConfigurationSection) {
         bind_type_description.getValues(false).forEach { (t, u) ->
             try {
@@ -129,13 +126,6 @@ object BindLogger : SimpleYAMLConfig() {
                 warn("$t 不是有效的类型!")
             }
         }
-        if (!enable) return
-        File(file_path).parentFile.mkdirs()
-        file_logger.handlers.forEach { it.close() }
-        file_logger.removeHandler(fileHandler)
-        fileHandler = FileHandler(file_path, 1024000, file_max_count, true)
-        fileHandler!!.formatter = FileFormatter
-        file_logger.addHandler(fileHandler)
     }
 
     fun log(owner: UUID, type: BindType, setting: BaseSetting, item: ItemStack) {
@@ -144,7 +134,7 @@ object BindLogger : SimpleYAMLConfig() {
             item.itemMeta!!.displayName
         } else ""
         val subId = item.data?.data ?: 0
-        val attach = format_item.formatBy(item.type, name, item.amount, if (subId > 0) subId else null)
+        val attach = format_item.formatBy(item.type, name, item.amount, if (subId > 0) subId else "")
         log(owner, type, setting, attach)
     }
 

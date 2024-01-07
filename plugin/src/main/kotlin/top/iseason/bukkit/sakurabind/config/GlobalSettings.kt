@@ -67,6 +67,14 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Comment("", "手上拿着绑定物品时禁止右键交互")
     var item_deny__interact_right = true
 
+    @Key
+    @Comment("", "手上拿着绑定物品时禁止左键交互绑定方块, 需要开启方块监听器")
+    var item_deny__left_click_at_bind_block = false
+
+    @Key
+    @Comment("", "手上拿着绑定物品时禁止右键交互交互绑定方块, 需要开启方块监听器")
+    var item_deny__right_click_at_bind_block = false
+
     @Key("item-deny.interact-entity@")
     @Comment("", "禁止实体交互(攻击或右键)")
     var item_deny__interact_entity = true
@@ -183,6 +191,10 @@ object GlobalSettings : SimpleYAMLConfig() {
     var block_deny__change_to_entity = false
 
     @Key
+    @Comment("", "方块类的绑定物品放置时禁止绑定放置的方块")
+    var block_deny__bind_from_item = false
+
+    @Key
     @Comment("", "", "实体设置")
     var entity: MemorySection? = null
 
@@ -198,15 +210,15 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Comment("", "是否对敌对目标")
     var entity__hostility = true
 
-    @Key()
+    @Key
     @Comment("", "是否守护非敌对目标(吸引仇恨)")
     var entity__defend = false
 
-    @Key()
+    @Key
     @Comment("", "绑定的实体对友好目标的守护距离")
     var entity__defend_distance = 10.0
 
-    @Key()
+    @Key
     @Comment("", "是否启用刷怪蛋检测, 启用之后绑定的刷怪蛋生成的生物会绑定")
     var entity__spawn_egg_check = false
 
@@ -214,7 +226,7 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Comment("", "", "由绑定物品生成的实体的监听器", "一般指刷怪蛋")
     var entity_deny: MemorySection? = null
 
-    @Key()
+    @Key
     @Comment("", "是否禁止该实体被除了玩家之外的实体攻击掉血")
     var entity_deny_damage_by_entity = false
 
@@ -222,7 +234,7 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Comment("", "是否禁止该实体被玩家攻击掉血")
     var entity_deny_damage_by_player = true
 
-    @Key()
+    @Key
     @Comment("", "是否禁止该实体受到任何伤害")
     var entity_deny_damage = false
 
@@ -230,18 +242,17 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Comment("", "是否禁止与该实体交互(右键)")
     var entity_deny_interact = true
 
-    @Key()
+    @Key
     @Comment("", "是否禁用实体AI (1.9+)")
     var entity_deny_ai = false
 
-    @Key()
+    @Key
     @Comment("", "是否禁用实体重力 (1.10+)")
     var entity_deny_gravity = false
 
-    @Key()
+    @Key
     @Comment("", "禁止绑定实体死亡掉落物")
     var entity_deny_drops = false
-
 
     @Key
     @Comment("", "", "自动绑定设置")
@@ -274,6 +285,10 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Key
     @Comment("", "手拿物品右键时绑定")
     var auto_bind__onRight = false
+
+    @Key
+    @Comment("", "装备物品穿戴时绑定(仅限Paper及其下游服务端核心)")
+    var auto_bind__onEquipWear = true
 
     @Key
     @Comment("", "扫描器扫描时绑定(在config.yml中配置扫描器)")
@@ -312,8 +327,20 @@ object GlobalSettings : SimpleYAMLConfig() {
     var auto_unbind__onRight = false
 
     @Key
+    @Comment("", "装备物品穿戴时解绑(仅限Paper及其下游服务端核心)")
+    var auto_unbind__onEquipWear = false
+
+    @Key
     @Comment("", "扫描器扫描时解绑(在config.yml中配置扫描器)")
     var auto_unbind__onScanner = false
+
+    @Key
+    @Comment(
+        "", "唯一物品, 物品防刷功能。请先在 modules/unique-item.yml 中 打开 enable 才有效",
+        "在物品第一次绑定时记录其数量和生成一个唯一的UUID，并检查所有玩家的物品栏、所有世界掉落物、方块中的数量, 超过的将会删除",
+        "此处指定相同UUID的最大堆叠数，-1关闭功能，0会在绑定时立刻删除这个物品"
+    )
+    var module__unique_item = -1
 
     @Key
     @Comment("", "", "当物品/方块/实体绑定后的动作")

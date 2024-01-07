@@ -64,7 +64,7 @@ object ItemListener : Listener {
                 event.isCancelled = true
                 MessageTool.denyMessageCoolDown(
                     event.player,
-                    Lang.item__deny_interact,
+                    Lang.item__deny_interact_left,
                     ItemSettings.getSetting(event.item!!),
                     event.item
                 )
@@ -74,7 +74,7 @@ object ItemListener : Listener {
                 event.isCancelled = true
                 MessageTool.denyMessageCoolDown(
                     event.player,
-                    Lang.item__deny_interact,
+                    Lang.item__deny_interact_right,
                     ItemSettings.getSetting(event.item!!),
                     event.item
                 )
@@ -717,9 +717,7 @@ object ItemListener : Listener {
         val owner = SakuraBindAPI.getOwner(itemStack)
         if (owner != null) {
             DropItemList.putItem(entity, owner, SakuraBindAPI.getItemSetting(itemStack).getInt("item.send-back-delay"))
-        } else if (SakuraBindAPI.hasInnerBind(itemStack)) {
-            DropItemList.putInnerItem(entity)
-        }
+        } else DropItemList.putInnerItem(entity)
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

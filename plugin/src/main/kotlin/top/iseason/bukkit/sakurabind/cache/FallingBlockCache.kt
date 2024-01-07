@@ -1,5 +1,6 @@
 package top.iseason.bukkit.sakurabind.cache
 
+import com.google.common.cache.CacheBuilder
 import com.google.common.hash.Funnels
 import org.bukkit.entity.Entity
 import org.ehcache.Cache
@@ -11,8 +12,6 @@ import org.ehcache.config.builders.ExpiryPolicyBuilder
 import org.ehcache.config.builders.ResourcePoolsBuilder
 import org.ehcache.config.units.EntryUnit
 import org.ehcache.config.units.MemoryUnit
-import top.iseason.bukkit.sakurabind.config.BaseSetting
-import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.cuckoofilter.CuckooFilter
 import top.iseason.bukkittemplate.BukkitTemplate
 import java.io.File
@@ -25,6 +24,11 @@ object FallingBlockCache : BaseCache {
         Funnels.stringFunnel(StandardCharsets.UTF_8), 10240, 0.03
     )
     else filterFile.inputStream().use { CuckooFilter.readFrom(it, Funnels.stringFunnel(StandardCharsets.UTF_8)) }
+    private val tempCache = CacheBuilder.newBuilder()
+        .concurrencyLevel(2)
+        .maximumSize(30)
+        .softValues()
+        .build<String, BlockInfo>()
 
     override fun setCache(builder: CacheManagerBuilder<PersistentCacheManager>): CacheManagerBuilder<PersistentCacheManager> {
         return builder.withCache(
@@ -54,33 +58,27 @@ object FallingBlockCache : BaseCache {
         }
     }
 
-    fun getEntityOwner(entity: Entity): Pair<String, BaseSetting>? {
+    fun getFallingInfo(entity: Entity): BlockInfo? {
         //使用布谷鸟过滤防止缓存穿透
 //        val nanoTime = System.nanoTime()
         val uuid = entity.uniqueId.toString()
         if (!fallingBlockFilter.contains(uuid)) return null
-//        println("mightContain cost ${System.nanoTime() - nanoTime}")
-        val get = fallingBlockCache.get(uuid) ?: return null
-        val split = get.split(',')
-        return split[0] to ItemSettings.getSetting(split.getOrNull(1))
+        return tempCache.get(uuid) {
+            val value = fallingBlockCache.get(uuid) ?: return@get null
+            BlockInfo.deserialize(value)
+        }
 //        return cache.get(str)
     }
 
-    fun addEntity(entity: Entity, owner: String, setting: String?) {
-        val value = if (setting != null && setting != "global-setting")
-            "$owner,$setting"
-        else owner
-        addEntity(entity, value)
-    }
-
-    private fun addEntity(entity: Entity, value: String) {
+    fun addFalling(entity: Entity, blockInfo: BlockInfo) {
         val uuid = entity.uniqueId.toString()
-        fallingBlockCache.put(uuid, value)
+        fallingBlockCache.put(uuid, blockInfo.serialize())
         fallingBlockFilter.add(uuid)
     }
 
     fun removeEntity(entity: Entity) {
         val uuid = entity.uniqueId.toString()
+        tempCache.invalidate(uuid)
         fallingBlockCache.remove(uuid)
         fallingBlockFilter.remove(uuid)
     }

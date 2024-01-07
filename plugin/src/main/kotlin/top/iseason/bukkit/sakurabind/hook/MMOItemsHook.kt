@@ -1,15 +1,27 @@
 package top.iseason.bukkit.sakurabind.hook
 
 import net.Indyuce.mmoitems.MMOItems
+import net.Indyuce.mmoitems.api.event.ItemBuildEvent
 import org.bukkit.command.CommandSender
+import org.bukkit.event.EventHandler
 import org.bukkit.inventory.ItemStack
+import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.config.matcher.BaseMatcher
 import top.iseason.bukkittemplate.hook.BaseHook
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 
-object MMOItemsHook : BaseHook("MMOItems") {
+object MMOItemsHook : BaseHook("MMOItems"), org.bukkit.event.Listener {
+
+    @EventHandler
+    fun onItemBuild(event: ItemBuildEvent) {
+        val itemStack = event.itemStack
+        if (!SakuraBindAPI.hasBind(itemStack)) {
+            return
+        }
+        SakuraBindAPI.updateLore(itemStack)
+    }
 
     fun isMMOItemsItem(item: ItemStack): Boolean {
         if (!hasHooked) return false
