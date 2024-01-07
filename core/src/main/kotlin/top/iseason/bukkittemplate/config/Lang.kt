@@ -22,7 +22,6 @@ open class Lang(
         "以 [Broadcast] 开头将以广播的形式发送，支持BungeeCord",
         "以 [Actionbar] 开头将发送ActionBar消息",
         "以 [Title] 开头将发送标题消息,格式为 大标题\\n小标题",
-        "以 [Sub-Title] 开头将发送小标题消息",
         "以 [Command] 开头将以消息接收者的身份运行命令",
         "以 [Console] 开头将以控制台的身份运行命令",
         "以 [OP-Command] 开头将赋予消息接收者临时op运行命令 (慎用)"
