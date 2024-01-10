@@ -54,9 +54,9 @@ object EventUtils {
         action: E.() -> Unit
     ): FakeEventListener {
         val fakeEventListener = FakeEventListener { _, event ->
-            runCatching {
+            if (clazz.isAssignableFrom(event.javaClass)) {
                 action.invoke(event as E)
-            }.getOrElse { it.printStackTrace() }
+            }
         }
         Bukkit.getPluginManager()
             .registerEvent(
