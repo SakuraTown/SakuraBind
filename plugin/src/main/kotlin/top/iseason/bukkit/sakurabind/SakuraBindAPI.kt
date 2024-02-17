@@ -36,6 +36,7 @@ import java.util.*
 import java.util.function.BiPredicate
 import java.util.function.Predicate
 import kotlin.math.max
+import kotlin.math.min
 
 /**
  * 绑定API
@@ -283,9 +284,11 @@ object SakuraBindAPI {
         var oldLore = NBTEditor.getKeys(item, *Config.nbtPathLore)
         val owner = getOwner(item)
         var temp = item
+        var oldLoreIndex = 0
         //有旧的lore,先删除
         if (oldLore != null && itemMeta.hasLore()) {
             oldLore = oldLore.map { it.substring(0, it.length - 2) }
+            oldLoreIndex = itemMeta.lore!!.indexOf(oldLore.first())
             val newLore = itemMeta.lore!!.apply { removeAll(oldLore) }
             temp.applyMeta { this.lore = newLore }
             temp = NBTEditor.set(temp, null, *Config.nbtPathLore)
@@ -366,6 +369,21 @@ object SakuraBindAPI {
                     compound.set("", "$s$index")
                 }
                 temp = NBTEditor.set(temp, compound, *Config.nbtPathLore)
+            }
+        } else {
+            val unBindLore = setting.getStringList("item-unbind.lore")
+            val tempMeta = temp.itemMeta
+            if (tempMeta != null && unBindLore.isNotEmpty()) {
+                if (!setting.getBoolean("item-unbind.lore-replace-matched", null, null)) {
+                    oldLoreIndex = setting.getInt("item-unbind.lore-index")
+                }
+                val lore = if (tempMeta.hasLore()) tempMeta.lore!! else mutableListOf<String>()
+                val size = lore.size
+                oldLoreIndex = if (oldLoreIndex < 0) max(0, size - oldLoreIndex) else min(size, oldLoreIndex)
+                val newLore = unBindLore.map { PlaceHolderHook.setPlaceHolder(it, null) }
+                lore.addAll(oldLoreIndex, newLore)
+                tempMeta.lore = lore
+                temp.itemMeta = tempMeta
             }
         }
         item.itemMeta = temp.itemMeta

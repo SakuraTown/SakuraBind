@@ -56,6 +56,22 @@ object GlobalSettings : SimpleYAMLConfig() {
     var item__send_back_scanner = true
 
     @Key
+    @Comment("", "", "物品解绑设置")
+    var item_unbind: MemorySection? = null
+
+    @Key
+    @Comment("", "解绑之后添加lore,留空不添加")
+    var item_unbind__lore = emptyList<String>()
+
+    @Key
+    @Comment("", "解绑之后添加lore的位置,设置足够大可以放在最后面，-2表示倒数第3行 ")
+    var item_unbind__lore_index = 0
+
+    @Key
+    @Comment("", "解绑之后添加lore替换绑定lore, 此项覆盖item-unbind.lore-index")
+    var item_unbind__lore_replace_matched = false
+
+    @Key
     @Comment("", "", "物品禁用设置")
     var item_deny: MemorySection? = null
 

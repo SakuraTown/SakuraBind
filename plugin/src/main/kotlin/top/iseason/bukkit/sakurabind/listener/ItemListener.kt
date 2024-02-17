@@ -709,19 +709,28 @@ object ItemListener : Listener {
             event.isCancelled = true
             return
         }
-        // 处理即刻返还
-        for ((uuid, list) in SakuraBindAPI.filterItem(itemStack) { it.getInt("item.send-back-delay") == 0 }) {
-            SakuraBindAPI.sendBackItem(uuid, list)
-        }
-        if (itemStack.type != Material.AIR) entity.itemStack = itemStack
-        else {
-            event.isCancelled = true
-            return
-        }
+//        // 处理即刻返还
+//        for ((uuid, list) in SakuraBindAPI.filterItem(itemStack) { it.getInt("item.send-back-delay") == 0 }) {
+//            SakuraBindAPI.sendBackItem(uuid, list)
+//        }
+//        if (itemStack.type != Material.AIR) {
+//            entity.itemStack = itemStack
+//        } else {
+//            event.isCancelled = true
+//            return
+//        }
         val owner = SakuraBindAPI.getOwner(itemStack)
         if (owner != null) {
-            DropItemList.putItem(entity, owner, SakuraBindAPI.getItemSetting(itemStack).getInt("item.send-back-delay"))
-        } else DropItemList.putInnerItem(entity)
+            val delay = SakuraBindAPI.getItemSetting(itemStack).getInt("item.send-back-delay")
+            if (delay == 0) {
+                SakuraBindAPI.sendBackItem(owner, listOf(itemStack))
+                event.isCancelled = true
+            } else if (delay > 0) {
+                DropItemList.putItem(entity, owner, delay)
+            }
+        } else {
+            DropItemList.putInnerItem(entity)
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

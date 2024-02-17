@@ -24,7 +24,11 @@ object DropItemList : BukkitRunnable() {
         for ((uuid, items) in SakuraBindAPI.filterItem(item.itemStack, remove = false)) {
             for (itemStack in items) {
                 val delay = SakuraBindAPI.getItemSetting(itemStack).getInt("item.send-back-delay")
-                drops.add(InnerItemSender(item, itemStack, uuid, delay))
+                if (delay == 0) {
+                    InnerItemSender(item, itemStack, uuid, delay).sendBack()
+                } else if (delay > 0) {
+                    drops.add(InnerItemSender(item, itemStack, uuid, delay))
+                }
             }
         }
     }
@@ -81,7 +85,7 @@ object DropItemList : BukkitRunnable() {
 
         open fun sendBack() {
             SakuraBindAPI.sendBackItem(owner, listOf(item.itemStack))
-            item.remove()
+            syncRemove(item)
         }
 
         open fun remove() {
