@@ -725,7 +725,7 @@ object ItemListener : Listener {
             if (delay == 0) {
                 SakuraBindAPI.sendBackItem(owner, listOf(itemStack))
                 event.isCancelled = true
-            } else if (delay > 0) {
+            } else {
                 DropItemList.putItem(entity, owner, delay)
             }
         } else {

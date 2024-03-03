@@ -22,6 +22,7 @@ import top.iseason.bukkit.sakurabind.config.BaseSetting
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.task.EntityRemoveQueue
 import top.iseason.bukkit.sakurabind.task.FallingList
 import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkit.sakurabind.utils.MessageTool
@@ -282,6 +283,9 @@ object BlockListener : Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onItemSpawnEvent(event: ItemSpawnEvent) {
         val entity = event.entity
+        if (EntityRemoveQueue.isRemoved(entity)) {
+            return
+        }
         val itemStack = entity.itemStack
         // 处理下落方块变成掉落物
         kotlin.run {

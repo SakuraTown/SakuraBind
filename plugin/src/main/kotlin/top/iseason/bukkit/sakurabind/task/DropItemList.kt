@@ -26,7 +26,7 @@ object DropItemList : BukkitRunnable() {
                 val delay = SakuraBindAPI.getItemSetting(itemStack).getInt("item.send-back-delay")
                 if (delay == 0) {
                     InnerItemSender(item, itemStack, uuid, delay).sendBack()
-                } else if (delay > 0) {
+                } else {
                     drops.add(InnerItemSender(item, itemStack, uuid, delay))
                 }
             }
