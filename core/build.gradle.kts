@@ -7,6 +7,7 @@ group = "top.iseason.bukkittemplate"
 
 val exposedVersion: String by rootProject
 repositories {
+    mavenCentral()
     maven {
         name = "MMOItems"
         url = uri("https://nexus.phoenixdevt.fr/repository/maven-public/")
