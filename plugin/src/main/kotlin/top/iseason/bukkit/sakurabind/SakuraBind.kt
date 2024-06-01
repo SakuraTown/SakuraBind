@@ -76,10 +76,11 @@ object SakuraBind : BukkitPlugin {
         ItemSettings.load(false)
         BasePicker.init()
         Config.load(false)
-        if (Config.send_back_database) {
-            DatabaseConfig.load(false)
+        DatabaseConfig.load(false)
+        if (Config.send_back_database)
             DatabaseConfig.initTables(PlayerItems, BindLogs, UniqueLogs)
-        }
+        else
+            DatabaseConfig.initTables(BindLogs, UniqueLogs)
         BindLogger.load(false)
         UniqueItemConfig.load(false)
         BindItemConfig.load(false)
