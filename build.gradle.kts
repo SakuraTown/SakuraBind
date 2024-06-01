@@ -52,7 +52,9 @@ subprojects {
         //基础库
         compileOnly(kotlin("stdlib"))
         compileOnly("org.spigotmc", "spigot-api", "1.20.3-R0.1-SNAPSHOT", "compile")
-        compileOnly("io.papermc.paper", "paper-api", "1.20.3-R0.1-SNAPSHOT", "runtime") {
+        compileOnly(
+            "io.papermc.paper", "paper-api", "1.20.3-R0.1-SNAPSHOT", "compile"
+        ) {
             isTransitive = false
             exclude("org.bukkit")
         }
@@ -60,10 +62,10 @@ subprojects {
         implementation("io.github.bananapuncher714:nbteditor:$nbtEditorVersion")
 
         // 数据库
-        compileOnly("org.jetbrains.exposed", "exposed-core", exposedVersion, "compile")
-        compileOnly("org.jetbrains.exposed", "exposed-dao", exposedVersion, "compile")
-        compileOnly("org.jetbrains.exposed", "exposed-jdbc", exposedVersion, "compile")
-        compileOnly("org.jetbrains.exposed", "exposed-java-time", exposedVersion, "compile")
+        compileOnly("org.jetbrains.exposed", "exposed-core", exposedVersion)
+        compileOnly("org.jetbrains.exposed", "exposed-dao", exposedVersion)
+        compileOnly("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
+        compileOnly("org.jetbrains.exposed", "exposed-java-time", exposedVersion)
 
         compileOnly("com.zaxxer:HikariCP:4.0.3")
     }
