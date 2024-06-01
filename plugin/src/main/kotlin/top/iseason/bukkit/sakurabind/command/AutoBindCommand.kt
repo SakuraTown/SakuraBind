@@ -19,14 +19,18 @@ object AutoBindCommand : CommandNode(
     default = PermissionDefault.OP,
     isPlayerOnly = true,
     async = true,
-    params = listOf(Param("[nbt]", suggestRuntime = { listOf(Config.auto_bind_nbt) }))
+    params = listOf(
+        Param("[nbt]", suggestRuntime = { listOf(Config.auto_bind_nbt) }),
+        Param("[value]"),
+    )
 ) {
     override var onExecute: CommandNodeExecutor? = CommandNodeExecutor { params, sender ->
         val player = sender as Player
         val nbt = params.nextOrNull<String>() ?: Config.auto_bind_nbt
+        val value = params.nextOrNull<String>() ?: ""
         val heldItem = player.getHeldItem() ?: throw ParmaException("请拿着物品")
         val autoBindNbt = nbt.split('.').toTypedArray()
-        heldItem.itemMeta = NBTEditor.set(heldItem, "", *autoBindNbt)!!.itemMeta
+        heldItem.itemMeta = NBTEditor.set(heldItem, value, *autoBindNbt)!!.itemMeta
         player.updateInventory()
         if (!params.hasParma("-silent"))
             player.sendColorMessage(Lang.command__autoBind.formatBy(Config.auto_bind_nbt))

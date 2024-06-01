@@ -7,6 +7,7 @@ import org.bukkit.entity.HumanEntity
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitTask
 import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
+import top.iseason.bukkit.sakurabind.pickers.BasePicker
 import top.iseason.bukkit.sakurabind.task.MigrationScanner
 import top.iseason.bukkit.sakurabind.task.Scanner
 import top.iseason.bukkit.sakuramail.config.SystemMailsYml
@@ -71,8 +72,18 @@ object Config : SimpleYAMLConfig() {
     var message_coolDown = 1000L
 
     @Key
-    @Comment("", "丢失物品返还玩家时如果玩家在线且背包满了优先进入玩家末影箱，末影箱满了再进入暂存箱")
-    var ender_chest_cache = false
+    @Comment("", "是否开启暂存箱功能, 使用插件自带数据库功能进行物品存储，关闭时会禁用数据库功能, 重启生效")
+    var send_back_database = true
+
+    @Key
+    @Comment(
+        "",
+        "丢失物品返还顺序, 满了才下一个顺序",
+        "player: 玩家背包",
+        "ender-chest: 末影箱",
+        "database: 插件自带暂存箱",
+    )
+    var send_back_queue = listOf("player", "ender-chest", "database")
 
     @Key
     @Comment(
@@ -223,6 +234,16 @@ object Config : SimpleYAMLConfig() {
                 ?: warn("config.yml 中 data-migration.setting  $data_migration__setting 不是一个有效的配置,将通过匹配器匹配")
         }
 
+        BasePicker.configPickers.clear()
+        val allPickers = BasePicker.allPickers
+        for (pickerName in send_back_queue) {
+            val basePicker = allPickers[pickerName.lowercase()]
+            if (basePicker == null) {
+                warn("config.yml 中 send-back-queue 的  $pickerName 不是一个有效的配置， 已忽略")
+                continue
+            }
+            BasePicker.configPickers.add(basePicker)
+        }
     }
 
     /**

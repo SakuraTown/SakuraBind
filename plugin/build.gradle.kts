@@ -1,7 +1,13 @@
 plugins {
     kotlin("jvm")
+    id("com.github.johnrengelman.shadow")
 }
 
+buildscript {
+    dependencies {
+        classpath("com.guardsquare:proguard-gradle:7.5.0")
+    }
+}
 repositories {
     mavenCentral()
     maven {
@@ -11,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    // 依赖core模块
+// 依赖core模块
     api(project(":core"))
 //    反射库
 //    compileOnly(kotlin("reflect"))
@@ -19,12 +25,11 @@ dependencies {
 //    协程库
 //    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2")
 
-    // 本地依赖放在libs文件夹内
+// 本地依赖放在libs文件夹内
+    implementation("org.bstats:bstats-bukkit:3.0.2")
     compileOnly(fileTree("libs") { include("*.jar") })
-    implementation("org.bstats:bstats-bukkit:3.0.1")
-//    compileOnly("org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT")
-    compileOnly("org.ehcache:ehcache:3.10.8") { isTransitive = false }
 
+    compileOnly("org.ehcache:ehcache:3.10.8") { isTransitive = false }
     compileOnly("me.clip:placeholderapi:2.11.2") { isTransitive = false }
     compileOnly("fr.xephi:authme:5.6.0-SNAPSHOT") { isTransitive = false }
     compileOnly("net.Indyuce:MMOItems-API:6.9.4-SNAPSHOT") { isTransitive = false }
@@ -47,6 +52,7 @@ val version: String by rootProject
 // shadowJar 版本 ，请在gradle.properties 修改
 val shadowJar: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar by tasks
 // exposed 数据库框架版本，请在gradle.properties 修改
+val exposedVersion: String by rootProject
 val obfuscated: String by rootProject
 val obfuscatedDictionary: String by rootProject
 val obfuscationDictionaryFile: File? = if (obfuscatedDictionary.isEmpty()) null
@@ -58,21 +64,26 @@ val obfuscatedMainClass =
     } else "a"
 val isObfuscated = obfuscated == "true"
 val shrink: String by rootProject
-val jarFile = File(jarOutputFile)
-val defaultFile = File(rootDir, "build${File.separatorChar}${rootProject.name}-${rootProject.version}.jar")
-val outputPrefix: String =
-    if (jarFile.isRooted)
-        "$jarOutputFile${File.separatorChar}${rootProject.name}-${rootProject.version}"
+val defaultFile = File("../build", "${rootProject.name}-${rootProject.version}.jar")
+val formatJarOutput = jarOutputFile.replace("\${root}", rootProject.projectDir.absolutePath)
+val output: File =
+    if (isObfuscated)
+        File(formatJarOutput, "${rootProject.name}-${rootProject.version}-obfuscated.jar").absoluteFile
     else
-        File(rootDir, "${jarOutputFile}${File.separatorChar}${rootProject.name}-${rootProject.version}").absolutePath
-val output: String =
-    if (isObfuscated) {
-        "$outputPrefix-obfuscated.jar"
-    } else {
-        "$outputPrefix.jar"
-    }
+        File(formatJarOutput, "${rootProject.name}-${rootProject.version}.jar").absoluteFile
 
 tasks {
+    compileJava {
+        options.encoding = "UTF-8"
+    }
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(8))
+        }
+    }
+    kotlin {
+        jvmToolchain(8)
+    }
 
     shadowJar {
         if (isObfuscated) {
@@ -85,26 +96,20 @@ tasks {
     build {
         dependsOn("buildPlugin")
     }
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8)
-        }
-    }
     processResources {
-        val kotVer = getProperties("kotlinVersion")
-        val exposedVer = getProperties("exposedVersion")
         filesMatching("plugin.yml") {
             // 删除注释,你可以返回null以删除整行，但是IDEA有bug会报错，故而返回了""
             filter {
-                if (it.trim().startsWith("#")) "" else it
+                if (it.trim().startsWith("#")) null else it
             }
             expand(
                 "main" to if (isObfuscated) obfuscatedMainClass else "$groupS.libs.core.BukkitTemplate",
                 "name" to pluginName,
                 "version" to project.version,
                 "author" to author,
-                "kotlinVersion" to kotVer,
-                "exposedVersion" to exposedVer
+                "kotlinVersion" to getProperties("kotlinVersion"),
+                "exposedVersion" to getProperties("exposedVersion"),
+                "nbtEditorVersion" to getProperties("nbtEditorVersion")
             )
         }
     }
@@ -125,7 +130,7 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     }
     allowaccessmodification() //优化时允许访问并修改有修饰符的类和类的成员
     dontusemixedcaseclassnames() // 混淆时不要大小写混合
-    optimizationpasses(10)
+    optimizationpasses(5)
     dontwarn()
     //添加运行环境
     val javaHome = System.getProperty("java.home")
@@ -147,8 +152,6 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     if (isObfuscated) keep(allowObf, "class $obfuscatedMainClass {}")
     else keep("class $groupS.libs.core.BukkitTemplate {}")
     keep("class kotlin.Metadata {}")
-    keep("class top.iseason.bukkit.sakurabind.SakuraBindAPI {*;}")
-    keep(allowObf, "class $groupS.libs.core.PluginBootStrap {*;}")
     keep(allowObf, "class * implements $groupS.libs.core.BukkitPlugin {*;}")
     keepclassmembers("class * extends $groupS.libs.core.config.SimpleYAMLConfig {*;}")
     keepclassmembers("class * implements $groupS.libs.core.ui.container.BaseUI {*;}")

@@ -15,7 +15,9 @@ import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkit.sakurabind.dto.UniqueLogs
 import top.iseason.bukkit.sakurabind.hook.*
 import top.iseason.bukkit.sakurabind.listener.*
+import top.iseason.bukkit.sakurabind.module.BindItem
 import top.iseason.bukkit.sakurabind.module.UniqueItem
+import top.iseason.bukkit.sakurabind.pickers.BasePicker
 import top.iseason.bukkit.sakurabind.task.DelaySender
 import top.iseason.bukkit.sakurabind.task.DropItemList
 import top.iseason.bukkit.sakurabind.task.EntityRemoveQueue
@@ -72,11 +74,15 @@ object SakuraBind : BukkitPlugin {
         GlobalSettings.load(false)
         Lang.load(false)
         ItemSettings.load(false)
-        DatabaseConfig.load(false)
-        DatabaseConfig.initTables(PlayerItems, BindLogs, UniqueLogs)
+        BasePicker.init()
         Config.load(false)
+        if (Config.send_back_database) {
+            DatabaseConfig.load(false)
+            DatabaseConfig.initTables(PlayerItems, BindLogs, UniqueLogs)
+        }
         BindLogger.load(false)
         UniqueItemConfig.load(false)
+        BindItemConfig.load(false)
         info("&a配置初始化完毕!")
     }
 
@@ -142,6 +148,9 @@ object SakuraBind : BukkitPlugin {
         BindActionListener.registerListener()
         if (UniqueItemConfig.enable) {
             UniqueItem.registerListener()
+        }
+        if (BindItemConfig.enable) {
+            BindItem.registerListener()
         }
         if (PaperListener.isPaper()) {
             info("&a当前为 Paper 或下游服务端,已开启装备穿戴检测功能")

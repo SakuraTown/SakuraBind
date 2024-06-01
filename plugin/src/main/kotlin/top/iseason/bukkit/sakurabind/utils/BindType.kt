@@ -63,5 +63,7 @@ enum class BindType(var description: String) {
     MIGRATION_FROM_NBT_ITEM("从其他插件NBT迁移"),
 
     EQUIP_BIND_ITEM("装备物品时绑定"),
-    EQUIP_UNBIND_ITEM("装备物品时解绑")
+    EQUIP_UNBIND_ITEM("装备物品时解绑"),
+    BIND_ITEM_BIND_ITEM("绑定物品功能-绑定物品"),
+    BIND_ITEM_UNBIND_ITEM("绑定物品功能-解绑物品")
 }

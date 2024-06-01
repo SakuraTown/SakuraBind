@@ -4,7 +4,6 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.jetbrains.exposed.sql.count
-import org.jetbrains.exposed.sql.select
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkittemplate.BukkitTemplate
@@ -42,7 +41,7 @@ object PlaceHolderExpansion : PlaceholderExpansion() {
                 if (!DatabaseConfig.isConnected) return null
                 result = dbTransaction {
                     val iterator =
-                        PlayerItems.slice(PlayerItems.id).select { PlayerItems.uuid eq player.uniqueId }.limit(1)
+                        PlayerItems.select(PlayerItems.id).where { PlayerItems.uuid eq player.uniqueId }.limit(1)
                             .iterator()
                     iterator.hasNext().toString()
                 }
@@ -59,8 +58,8 @@ object PlaceHolderExpansion : PlaceholderExpansion() {
                 if (!DatabaseConfig.isConnected) return null
                 result = dbTransaction {
                     PlayerItems
-                        .slice(PlayerItems.id.count())
-                        .select { PlayerItems.uuid eq player.uniqueId }
+                        .select(PlayerItems.id.count())
+                        .where { PlayerItems.uuid eq player.uniqueId }
                         .firstOrNull()?.get(PlayerItems.id.count())?.toString()
                 } ?: "0"
                 papiCache[key] = result

@@ -23,7 +23,6 @@ import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.command.CallbackCommand
@@ -772,7 +771,7 @@ object ItemListener : Listener {
             if (!player.isOnline) return@submit
             val hasItem = dbTransaction {
                 val iterator =
-                    PlayerItems.slice(PlayerItems.id).select { PlayerItems.uuid eq player.uniqueId }.limit(1)
+                    PlayerItems.select(PlayerItems.id).where { PlayerItems.uuid eq player.uniqueId }.limit(1)
                         .iterator()
                 iterator.hasNext()
             }

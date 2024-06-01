@@ -18,20 +18,20 @@ import top.iseason.bukkit.sakurabind.cache.BlockCache
 import top.iseason.bukkit.sakurabind.cache.BlockInfo
 import top.iseason.bukkit.sakurabind.cache.CacheManager
 import top.iseason.bukkit.sakurabind.cache.EntityCache
-import top.iseason.bukkit.sakurabind.config.*
+import top.iseason.bukkit.sakurabind.config.BaseSetting
+import top.iseason.bukkit.sakurabind.config.BindLogger
+import top.iseason.bukkit.sakurabind.config.Config
+import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.matcher.LoreMatcher
 import top.iseason.bukkit.sakurabind.event.*
-import top.iseason.bukkit.sakurabind.task.DelaySender
+import top.iseason.bukkit.sakurabind.pickers.BasePicker
 import top.iseason.bukkit.sakurabind.utils.BindType
-import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.applyMeta
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.noColor
-import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
-import top.iseason.bukkittemplate.utils.other.EasyCoolDown
 import java.util.*
 import java.util.function.BiPredicate
 import java.util.function.Predicate
@@ -75,7 +75,7 @@ object SakuraBindAPI {
         showLore: Boolean = true,
         silent: Boolean = false
     ) {
-        val event = ItemBindFromBlockEvent(item, blockInfo, BindType.BLOCK_TO_ITEM_BIND)
+        val event = ItemBindFromBlockEvent(item, blockInfo, type)
         if (!silent) Bukkit.getPluginManager().callEvent(event)
         if (event.isCancelled) return
         return bind(item, event.owner, showLore, event.bindType, event.setting, silent)
@@ -362,14 +362,12 @@ object SakuraBindAPI {
                 } else loreStr
             }
             //记录历史
-            if (player.hasPlayedBefore()) {
-                val compound = NBTEditor.getEmptyNBTCompound()
-                for ((i, s) in loreStr.withIndex()) {
-                    val index = if (i < 10) "0$i" else i.toString()
-                    compound.set("", "$s$index")
-                }
-                temp = NBTEditor.set(temp, compound, *Config.nbtPathLore)
+            val compound = NBTEditor.getEmptyNBTCompound()
+            for ((i, s) in loreStr.withIndex()) {
+                val index = if (i < 10) "0$i" else i.toString()
+                compound.set("", "$s$index")
             }
+            temp = NBTEditor.set(temp, compound, *Config.nbtPathLore)
         } else {
             val unBindLore = setting.getStringList("item-unbind.lore")
             val tempMeta = temp.itemMeta
@@ -588,49 +586,8 @@ object SakuraBindAPI {
      */
     @JvmStatic
     @JvmOverloads
-    fun sendBackItem(uuid: UUID, items: Collection<ItemStack>, notify: Boolean = true): List<ItemStack> {
-        val player = Bukkit.getPlayer(uuid)
-        //物主在线
-        var release = mutableListOf<ItemStack>()
-        if (player != null && player.isOnline) {
-            for (itemStack in items) {
-                val addItem = player.inventory.addItem(itemStack)
-                if (addItem.isNotEmpty()) {
-                    release.addAll(addItem.values)
-                }
-            }
-            //全部返还
-            if (release.isEmpty()) {
-                if (notify)
-                    MessageTool.messageCoolDown(player, Lang.send_back_all)
-                return release
-            }
-            if (notify)
-                MessageTool.messageCoolDown(player, Lang.send_back_inventory)
-        } else release = items.toMutableList()
-
-        /**
-         * 开启末影箱缓存下，背包已满但末影箱有空间
-         */
-        if (player != null && Config.ender_chest_cache && release.isNotEmpty()) {
-            val release2 = mutableListOf<ItemStack>()
-            val enderChest = player.enderChest
-            for (itemStack in release) {
-                val addItem = enderChest.addItem(itemStack)
-                if (addItem.isNotEmpty()) {
-                    release2.addAll(addItem.values)
-                }
-            }
-            if (notify && release.size != release2.size && !EasyCoolDown.check(uuid, 1000))
-                player.sendColorMessage(Lang.send_back_ender_chest)
-            release = release2
-        }
-
-        // 延迟发送队列
-        if (release.isNotEmpty()) {
-            DelaySender.sendItem(uuid, release)
-        }
-        return emptyList()
+    fun sendBackItem(uuid: UUID, items: Collection<ItemStack>, notify: Boolean = true): Array<ItemStack> {
+        return BasePicker.pickup(uuid, items.toTypedArray(), notify)
     }
 
 

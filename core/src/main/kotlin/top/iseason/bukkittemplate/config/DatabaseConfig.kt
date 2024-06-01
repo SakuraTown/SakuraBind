@@ -190,7 +190,7 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 }
 
                 "SQLite" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependencyAssembly("org.xerial:sqlite-jdbc:3.44.1.0")
+                    runtimeManager.downloadADependencyAssembly("org.xerial:sqlite-jdbc:3.46.0.0")
                     jdbcUrl = "jdbc:sqlite:$address$params"
                     driverClassName = "org.sqlite.JDBC"
                 }

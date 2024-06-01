@@ -90,7 +90,7 @@ object ParamSuggestCache {
     /**
      * 建议物品材质名
      */
-    val materialTypes = Material.values().map {
+    val materialTypes = Material.entries.map {
         it.name.lowercase()
     }
 

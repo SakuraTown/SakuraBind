@@ -4,11 +4,13 @@ import org.bukkit.Bukkit
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.entity.HumanEntity
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.config.BaseSetting
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.event.AutoBindMessageEvent
 import top.iseason.bukkit.sakurabind.event.PlayerDenyMessageEvent
+import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.other.EasyCoolDown
 
@@ -55,5 +57,9 @@ object MessageTool {
     ) {
         if (!EasyCoolDown.check(player.uniqueId.toString() + message, Config.message_coolDown))
             player.sendColorMessage(message)
+    }
+
+    fun sendNormal(player: Player, message: String) {
+        player.sendColorMessage(PlaceHolderHook.setPlaceHolder(message, player))
     }
 }

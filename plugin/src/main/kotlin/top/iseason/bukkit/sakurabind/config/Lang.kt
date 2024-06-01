@@ -8,9 +8,18 @@ import top.iseason.bukkittemplate.config.annotations.Key
 @FilePath("lang.yml")
 object Lang : top.iseason.bukkittemplate.config.Lang() {
 
-    var send_back_all = "&7你的遗失物品已全部放入你的背包"
-    var send_back_inventory = "&7你的部分遗失物品已放入你的背包"
-    var send_back_ender_chest = "&7你的部分遗失物品已放入你的末影箱"
+
+    @Comment("", "物品送回消息, 占位符 {0} 是送回的物品数量")
+    var send_back = ""
+    var send_back__player_all = "&7你的{0}个遗失物品已全部放入你的&a背包"
+    var send_back__player_half = "&7你的{0}个遗失物品放入你的&a背包"
+
+    var send_back__ender_chest_all = "&7你的{0}个遗失物品已全部放入你的&a末影箱"
+    var send_back__ender_chest_half = "&7你的{0}个遗失物品已放入你的&a末影箱"
+
+    var send_back__database_all = "&7你的{0}个遗失物品已全部放入你的&a暂存箱"
+
+
     var item_bind_hand = "&7你手上的物品已绑定"
     var block_bind = "&7你前面的方块已绑定"
     var entity_bind = "&7你前面的实体已绑定"
@@ -134,5 +143,12 @@ object Lang : top.iseason.bukkittemplate.config.Lang() {
     var command__debug_player_close = "&a已关闭玩家 {0} 的动作检查"
     var has_lost_item = "&a你有遗失的物品,请输入 &6'/sakurabind getLost' &a领取"
     var lost_item_send_when_online = "&a你有遗失的物品,请输入 &6'/sakurabind getLost' &a领取"
+
+    var bind_item__not_owner = "&6你不是这个物品的主人, 无法解绑"
+    var bind_item__unbind_failure = "&6解绑失败"
+    var bind_item__unbind_success = "&a解绑成功"
+    var bind_item__bind_failure = "&6绑定失败"
+    var bind_item__bind_success = "&a绑定成功"
+    var bind_item__no_amount = "&6物品数量不足"
 
 }
