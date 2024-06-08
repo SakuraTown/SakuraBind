@@ -33,7 +33,6 @@ import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.registerListener
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
-import java.util.*
 
 object SakuraBind : BukkitPlugin {
 
@@ -85,6 +84,7 @@ object SakuraBind : BukkitPlugin {
         UniqueItemConfig.load(false)
         BindItemConfig.load(false)
         info("&a配置初始化完毕!")
+        Config.setupScanner()
     }
 
     /**
@@ -199,9 +199,10 @@ object SakuraBind : BukkitPlugin {
             addSubNode(CallbackCommand)
             addSubNode(SuperCallbackCommand)
             addSubNode(TestCommand)
-            TestCommand.addSubNode(TestMatchCommand)
-            TestCommand.addSubNode(TestTryMatchCommand)
-            TestCommand.addSubNode(TestCacheCommand)
+            addSubNode(NBTCommand)
+            addSubNode(TestMatchCommand)
+            addSubNode(TestTryMatchCommand)
+            addSubNode(TestCacheCommand)
         }
         CommandHandler.register(RootCommand)
         CommandHandler.updateCommands()

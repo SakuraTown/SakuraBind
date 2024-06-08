@@ -209,15 +209,11 @@ object Config : SimpleYAMLConfig() {
         if (SakuraMailHook.hasHooked && mailId.isNotBlank()) {
             SystemMailsYml.getMailYml(mailId) ?: info("&c邮件&7 $mailId &c不存在!")
         }
-        task?.cancel()
-        task = null
+
         dataMigrationTask?.cancel()
         dataMigrationTask = null
         dataMigrationCache = null
-        if (scanner_period > 0L && (DatabaseConfig.isConnected || (SakuraMailHook.hasHooked && sakuraMail_hook))) {
-            info("&a定时扫描任务已启动,周期: $scanner_period tick")
-            task = Scanner().runTaskTimer(BukkitTemplate.getPlugin(), scanner_period, scanner_period)
-        }
+        setupScanner()
         if (data_migration__enable) {
             dataMigrationLore = data_migration__lore.map { Pattern.compile(it) }
             info("&a数据迁移扫描任务已启动,周期: $data_migration__period tick")
@@ -243,6 +239,15 @@ object Config : SimpleYAMLConfig() {
                 continue
             }
             BasePicker.configPickers.add(basePicker)
+        }
+    }
+
+    fun setupScanner() {
+        task?.cancel()
+        task = null
+        if (scanner_period > 0L && (DatabaseConfig.isConnected || (SakuraMailHook.hasHooked && sakuraMail_hook))) {
+            info("&a定时扫描任务已启动,周期: $scanner_period tick")
+            task = Scanner().runTaskTimer(BukkitTemplate.getPlugin(), scanner_period, scanner_period)
         }
     }
 
