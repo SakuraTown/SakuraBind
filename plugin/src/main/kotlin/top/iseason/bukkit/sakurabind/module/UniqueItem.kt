@@ -67,7 +67,7 @@ object UniqueItem : org.bukkit.event.Listener {
             for (player in Bukkit.getOnlinePlayers()) {
                 if (!player.isOnline || SelectListener.noScanning.contains(player.uniqueId)) continue
                 UniqueFilter.player = player
-                val openInventory = player.openInventory
+                val openInventory = player.openInventory ?: continue
                 val cursor = player.itemOnCursor
                 if (!cursor.checkAir()) {
                     CursorRemover.setPlayer(player)

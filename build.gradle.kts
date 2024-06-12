@@ -11,6 +11,7 @@ subprojects {
         plugin<JavaLibraryPlugin>()
     }
     repositories {
+        mavenCentral()
         maven {
             name = "aliyun"
             url = uri("https://maven.aliyun.com/repository/public")
@@ -20,7 +21,6 @@ subprojects {
             url = uri("https://maven.aliyun.com/repository/google")
         }
 //        google()
-        mavenCentral()
         maven {
             name = "spigot"
             url = uri("https://hub.spigotmc.org/nexus/content/repositories/public/")

@@ -43,7 +43,6 @@ import kotlin.math.min
  */
 @Suppress("UNUSED")
 object SakuraBindAPI {
-
     /**
      * 将物品绑定玩家
      * @param item 需要绑定的物品
@@ -125,6 +124,7 @@ object SakuraBindAPI {
      * @param item 解绑的物品
      */
     @JvmStatic
+    @JvmOverloads
     fun unBind(item: ItemStack, type: BindType = BindType.API_UNBIND_ITEM, silent: Boolean = false) {
         val owner = getOwner(item) ?: return
         val itemUnBIndEvent = ItemUnBIndEvent(item, owner, ItemSettings.getSetting(item), type)
@@ -147,6 +147,7 @@ object SakuraBindAPI {
      * 物品放下变成方块
      */
     @JvmStatic
+    @JvmOverloads
     fun bindBlock(
         player: Player,
         handItem: ItemStack,
@@ -166,6 +167,7 @@ object SakuraBindAPI {
      * 绑定方块
      */
     @JvmStatic
+    @JvmOverloads
     fun bindBlock(
         block: Block,
         uuid: UUID,
@@ -198,6 +200,7 @@ object SakuraBindAPI {
      * 解绑方块
      */
     @JvmStatic
+    @JvmOverloads
     fun unbindBlock(block: Block, type: BindType = BindType.API_UNBIND_BLOCK, silent: Boolean = false) {
         if (!isBlockEnable()) return
         val blockOwner = BlockCache.getBlockInfo(block) ?: return
@@ -218,6 +221,7 @@ object SakuraBindAPI {
      * 绑定实体
      */
     @JvmStatic
+    @JvmOverloads
     fun bindEntity(
         entity: Entity,
         player: Player,
@@ -260,6 +264,7 @@ object SakuraBindAPI {
      * 解绑实体
      */
     @JvmStatic
+    @JvmOverloads
     fun unbindEntity(entity: Entity, type: BindType = BindType.API_UNBIND_ENTITY, silent: Boolean = false) {
         if (!isEntityEnable()) return
         val entityOwner = EntityCache.getEntityInfo(entity) ?: return
@@ -279,6 +284,7 @@ object SakuraBindAPI {
      * 更新绑定物品的lore
      */
     @JvmStatic
+    @JvmOverloads
     fun updateLore(item: ItemStack, basesSetting: BaseSetting? = null) {
         val itemMeta = item.itemMeta ?: return
         var oldLore = NBTEditor.getKeys(item, *Config.nbtPathLore)
@@ -303,7 +309,6 @@ object SakuraBindAPI {
                 t = PlaceHolderHook.setPlaceHolder(t, player)
                 t
             }
-//            println(loreStr)
             //添加lore
             setting.matchers.forEach { it.onBind(temp) }
 
@@ -466,7 +471,7 @@ object SakuraBindAPI {
     /**
      * 获取某个uuid的玩家名字
      * @param uuid
-     * @return 玩家名字，没有则返回nmull
+     * @return 玩家名字，没有则返回null
      */
     @JvmStatic
     fun getOwnerName(uuid: UUID): String? {
@@ -482,9 +487,9 @@ object SakuraBindAPI {
      * @return 绑定设置
      */
     @JvmStatic
-    fun getItemSetting(item: ItemStack, setInCache: Boolean = true): BaseSetting {
-        return ItemSettings.getSetting(item, setInCache)
-    }
+    @JvmOverloads
+    fun getItemSetting(item: ItemStack, setInCache: Boolean = true): BaseSetting =
+        ItemSettings.getSetting(item, setInCache)
 
     /**
      * 获取方块的拥有者

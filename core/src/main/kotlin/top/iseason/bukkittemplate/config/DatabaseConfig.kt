@@ -268,8 +268,8 @@ object DatabaseConfig : SimpleYAMLConfig() {
         this.tables = tables
         runCatching {
             dbTransaction {
-                SchemaUtils.createMissingTablesAndColumns(tables = tables, inBatch = false, withLogs = false)
-//                SchemaUtils.create(*tables)
+                SchemaUtils.create(*tables)
+//                SchemaUtils.createMissingTablesAndColumns(tables = tables, inBatch = false, withLogs = false)
             }
         }.getOrElse { it.printStackTrace() }
     }

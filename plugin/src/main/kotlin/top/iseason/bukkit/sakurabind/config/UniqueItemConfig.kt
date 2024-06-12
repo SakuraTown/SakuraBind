@@ -134,7 +134,7 @@ object UniqueItemConfig : SimpleYAMLConfig() {
         uniqueItemNbt = unique_nbt_path.split('.').toTypedArray()
         scanner?.cancel()
         scanner = null
-        if (scanner_period > 0L)
+        if (enable && scanner_period > 0L)
             scanner = UniqueItem.Scanner()
                 .runTaskTimerAsynchronously(BukkitTemplate.getPlugin(), scanner_period, scanner_period)
     }
