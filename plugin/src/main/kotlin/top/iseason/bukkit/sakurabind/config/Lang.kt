@@ -151,4 +151,8 @@ object Lang : top.iseason.bukkittemplate.config.Lang() {
     var bind_item__bind_success = "&a绑定成功"
     var bind_item__no_amount = "&6物品数量不足"
 
+    var addons__mcmmo_salvage = "&6该物品无法分解"
+    var addons__mcmmo_repair = "&6该物品无法修复"
+    var addons__mcmmo_disarm = "&6该物品无法缴械"
+
 }

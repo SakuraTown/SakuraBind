@@ -13,6 +13,7 @@ softdepend:
   - PlayerDataSQL
   - GermPlugin
   - BanItem
+  - mcMMO
 
 
 runtime-libraries:

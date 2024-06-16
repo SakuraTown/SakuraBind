@@ -6,6 +6,7 @@ import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
 
+@Suppress("UNUSED")
 @FilePath("global-setting.yml")
 object GlobalSettings : SimpleYAMLConfig() {
 
@@ -385,5 +386,21 @@ object GlobalSettings : SimpleYAMLConfig() {
         "{5} 方块id"
     )
     var on_bind__block_msg = ArrayList<String>()
+
+    @Key
+    @Comment("", "插件兼容性控制")
+    var addons: MemorySection? = null
+
+    @Key
+    @Comment("", "禁止 mcMMO 分解绑定物品")
+    var addons__mcmmo_salvage = false
+
+    @Key
+    @Comment("", "禁止 mcMMO 修复绑定物品")
+    var addons__mcmmo_repair = false
+
+    @Key
+    @Comment("", "禁止 绑定物品 被 mcMMO 技能缴械")
+    var addons__mcmmo_disarm = false
 
 }

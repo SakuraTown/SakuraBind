@@ -13,6 +13,7 @@ import org.ehcache.config.builders.ExpiryPolicyBuilder
 import org.ehcache.config.builders.ResourcePoolsBuilder
 import org.ehcache.config.units.EntryUnit
 import org.ehcache.config.units.MemoryUnit
+import top.iseason.bukkit.sakurabind.config.DefaultItemSetting
 import top.iseason.bukkit.sakurabind.cuckoofilter.CuckooFilter
 import top.iseason.bukkittemplate.BukkitTemplate
 import java.io.File
@@ -39,7 +40,7 @@ object BlockCache : BaseCache {
 
     private val tempBlockCache2 = CacheBuilder.newBuilder()
         .concurrencyLevel(2)
-        .maximumSize(500)
+        .expireAfterAccess(500L, TimeUnit.MILLISECONDS)
         .softValues()
         .build<String, BlockInfo>()
 
@@ -47,6 +48,8 @@ object BlockCache : BaseCache {
         .concurrencyLevel(2)
         .expireAfterWrite(500L, TimeUnit.MILLISECONDS)
         .build<String, BlockInfo>()
+
+    private val emptyInfo = BlockInfo("empty", DefaultItemSetting)
 
     override fun setCache(builder: CacheManagerBuilder<PersistentCacheManager>): CacheManagerBuilder<PersistentCacheManager> {
         return builder.withCache(
@@ -150,10 +153,15 @@ object BlockCache : BaseCache {
 //        val nanoTime = System.nanoTime()
         if (!blockFilter.contains(key)) return null
 //        println("mightContain cost ${System.nanoTime() - nanoTime}")
-        return tempBlockCache2.get(key) {
-            val value = blockCache.get(key) ?: return@get null
-            BlockInfo.deserialize(value)
+        val info = tempBlockCache2.get(key) {
+            val value = blockCache.get(key) ?: return@get emptyInfo
+            try {
+                BlockInfo.deserialize(value)
+            } catch (_: Exception) {
+                emptyInfo
+            }
         }
+        return if (info === emptyInfo) null else info
 
 //        val value = blockCache.get(key) ?: return null
 //

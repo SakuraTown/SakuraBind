@@ -100,6 +100,7 @@ object SakuraBind : BukkitPlugin {
         PlayerDataSQLHook.checkHooked()
         BanItemHook.checkHooked()
         GermHook.checkHooked()
+        McMMoHook.checkHooked()
         if (PlaceHolderHook.hasHooked) PlaceHolderExpansion.register()
         if (MMOItemsHook.hasHooked) {
             MatcherManager.addMatcher(MMOItemsMatcher())
@@ -108,6 +109,7 @@ object SakuraBind : BukkitPlugin {
         if (ItemsAdderHook.hasHooked) MatcherManager.addMatcher(ItemsAdderMatcher())
         if (OraxenHook.hasHooked) MatcherManager.addMatcher(OraxenMatcher())
         if (PlayerDataSQLHook.hasHooked) PlayerDataSQLHook.registerListener()
+        if (McMMoHook.hasHooked) McMMoHook.registerListener()
     }
 
     /**
@@ -233,5 +235,4 @@ object SakuraBind : BukkitPlugin {
         }
         info("&a插件已注销.")
     }
-
 }
