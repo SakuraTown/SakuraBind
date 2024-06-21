@@ -14,6 +14,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockDispenseEvent
 import org.bukkit.event.entity.*
+import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryMoveItemEvent
 import org.bukkit.event.inventory.InventoryPickupItemEvent
@@ -21,6 +22,7 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.*
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.PlayerInventory
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
@@ -495,12 +497,23 @@ object ItemListener : Listener {
     /**
      * 自动绑定, 点击时绑定
      */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun autoBindInventoryClickEvent(event: InventoryClickEvent) {
         val player = event.whoClicked
         if (Config.checkByPass(player)) return
-        val item = event.currentItem ?: return
-        if (item.checkAir()) return
+        var item: ItemStack? = event.currentItem
+
+        if (item.checkAir() && (event.action == InventoryAction.HOTBAR_SWAP || event.action == InventoryAction.HOTBAR_MOVE_AND_READD)) {
+            val bottomInventory = event.view.bottomInventory
+            if (event.hotbarButton == -1) {
+                val playerInventory = bottomInventory as PlayerInventory
+                item = playerInventory.getItem(playerInventory.size - 1)
+            } else {
+                item = bottomInventory.getItem(event.hotbarButton)
+            }
+        }
+
+        if (item == null || item.checkAir()) return
         val owner = SakuraBindAPI.getOwner(item)?.toString()
         if (owner != null) {
             val setting = ItemSettings.getSetting(item)

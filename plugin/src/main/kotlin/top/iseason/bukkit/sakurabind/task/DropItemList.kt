@@ -42,11 +42,10 @@ object DropItemList : BukkitRunnable() {
             val sender = iterator.next()
             val item = sender.item
             val location = item.location
-            if (item.isDead || sender.markAsRemoved) {
+            if (item.isDead || sender.markAsRemoved || !item.isValid) {
                 iterator.remove()
                 continue
             }
-            sender.owner
             val delay = sender.delay
             // 检查掉虚空
             val minHeight = if (hasMinHeight && location.world != null) location.world!!.minHeight else 0
