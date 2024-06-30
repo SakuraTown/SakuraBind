@@ -51,9 +51,9 @@ subprojects {
         compileOnly(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
         //基础库
         compileOnly(kotlin("stdlib"))
-        compileOnly("org.spigotmc", "spigot-api", "1.20.3-R0.1-SNAPSHOT", "compile")
+        compileOnly("org.spigotmc", "spigot-api", "1.20.2-R0.1-SNAPSHOT", "compile")
         compileOnly(
-            "io.papermc.paper", "paper-api", "1.20.3-R0.1-SNAPSHOT", "compile"
+            "io.papermc.paper", "paper-api", "1.20.2-R0.1-SNAPSHOT", "compile"
         ) {
             isTransitive = false
             exclude("org.bukkit")
