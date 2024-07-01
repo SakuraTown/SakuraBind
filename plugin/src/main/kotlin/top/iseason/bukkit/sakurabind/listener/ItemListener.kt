@@ -734,13 +734,7 @@ object ItemListener : Listener {
         val owner = SakuraBindAPI.getOwner(itemStack)
         if (owner != null) {
             val delay = SakuraBindAPI.getItemSetting(itemStack).getInt("item.send-back-delay")
-            if (delay == 0) {
-                if (entity.isDead || !entity.isValid) return
-                SakuraBindAPI.sendBackItem(owner, listOf(itemStack))
-                event.isCancelled = true
-            } else {
-                DropItemList.putItem(entity, owner, delay)
-            }
+            DropItemList.putItem(entity, owner, delay)
         } else {
             DropItemList.putInnerItem(entity)
         }

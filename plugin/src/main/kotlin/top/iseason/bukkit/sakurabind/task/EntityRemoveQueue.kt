@@ -16,6 +16,7 @@ object EntityRemoveQueue : BukkitRunnable() {
      */
     fun syncRemove(item: Entity) {
         if (item.isDead) return
+        if (isRemoving.contains(item)) return
         // 为了兼容尽可能多的mod服务端和游戏版本
         // 只能让它传送到玩家碰不到的地方，再在事件结束后删除
         val location = item.location
@@ -25,6 +26,15 @@ object EntityRemoveQueue : BukkitRunnable() {
         else
             item.teleport(location)
         isRemoving.add(item)
+    }
+
+    fun hide(item: Entity) {
+        val location = item.location
+        location.y = Short.MAX_VALUE.toDouble()
+        if (asyncTpMethod != null)
+            asyncTpMethod.invoke(item, location)
+        else
+            item.teleport(location)
     }
 
     /**

@@ -17,6 +17,7 @@ object DropItemList : BukkitRunnable() {
     val drops = ConcurrentLinkedQueue<ItemSender>()
 
     fun putItem(item: Item, owner: UUID, delay: Int) {
+        if (delay == 0) EntityRemoveQueue.hide(item)
         drops.add(ItemSender(item, owner, delay))
     }
 
