@@ -21,14 +21,14 @@ object PaperListener : Listener {
         try {
             Class.forName("com.destroystokyo.paper.event.player.PlayerArmorChangeEvent")
             true
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
 
     @EventHandler(ignoreCancelled = true)
     fun onArmorChange(event: PlayerArmorChangeEvent) {
         val item = event.newItem
-        if (item.checkAir()) return
+        if (item == null || item.checkAir()) return
         if (Config.checkByPass(event.player)) return
         val owner = SakuraBindAPI.getOwner(item)?.toString()
         val player = event.player

@@ -16,14 +16,12 @@ package top.iseason.bukkit.sakurabind.cuckoofilter;
 
 import com.google.common.hash.Funnel;
 import com.google.common.math.LongMath;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Collection;
 
-import static top.iseason.bukkit.sakurabind.cuckoofilter.Preconditions.checkArgument;
-import static top.iseason.bukkit.sakurabind.cuckoofilter.Preconditions.checkNotNull;
 
 /**
  * A Bloom filter for instances of {@code E} that implements the {@link ProbabilisticFilter}
@@ -50,6 +48,7 @@ import static top.iseason.bukkit.sakurabind.cuckoofilter.Preconditions.checkNotN
  * @see <a target="guavadoc" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/hash/BloomFilter.html">com.google.common.hash.BloomFilter</a>
  * @see ProbabilisticFilter
  */
+@SuppressWarnings("UnstableApiUsage")
 public final class BloomFilter<E> implements ProbabilisticFilter<E>, Serializable {
     private final Funnel<E> funnel;
     private final long capacity;
@@ -57,13 +56,8 @@ public final class BloomFilter<E> implements ProbabilisticFilter<E>, Serializabl
     private com.google.common.hash.BloomFilter<E> delegate;
     private long size;
 
-    private BloomFilter(com.google.common.hash.BloomFilter<E> delegate, Funnel<E> funnel, long capacity, double fpp, long size) {
+    private BloomFilter(@NotNull com.google.common.hash.BloomFilter<E> delegate, @NotNull Funnel<E> funnel, long capacity, double fpp, long size) {
         super();
-        checkNotNull(delegate);
-        checkNotNull(funnel);
-        checkArgument(capacity >= 0, "capacity must be positive");
-        checkArgument(fpp >= 0.0 && fpp < 1.0, "fpp must be positive 0.0 <= fpp < 1.0");
-        checkArgument(size >= 0, "size must be positive");
         this.delegate = delegate;
         this.funnel = funnel;
         this.capacity = capacity;
@@ -93,7 +87,7 @@ public final class BloomFilter<E> implements ProbabilisticFilter<E>, Serializabl
      * int, double)">com.google.common.hash.BloomFilter#create(com.google.common.hash.Funnel, int,
      * double)</a>
      */
-    @CheckReturnValue
+
     public static <T> BloomFilter<T> create(Funnel<T> funnel, long capacity, double fpp) {
         return new BloomFilter<T>(
                 com.google.common.hash.BloomFilter.create(funnel, capacity, fpp),
@@ -121,7 +115,7 @@ public final class BloomFilter<E> implements ProbabilisticFilter<E>, Serializabl
      * @see <a target="guavadoc" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/hash/BloomFilter.html#create(com.google.common.hash.Funnel,
      * int)">com.google.common.hash.BloomFilter#create(com.google.common.hash.Funnel, int)</a> </a>
      */
-    @CheckReturnValue
+
     public static <T> BloomFilter<T> create(Funnel<T> funnel, long capacity) {
         return new BloomFilter<T>(
                 com.google.common.hash.BloomFilter.create(funnel, capacity, 0.03D),
@@ -149,8 +143,7 @@ public final class BloomFilter<E> implements ProbabilisticFilter<E>, Serializabl
      * @see #addAll(ProbabilisticFilter)
      * @see <a target="guavadoc" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/hash/BloomFilter.html#put(T)">com.google.common.hash.BloomFilter#put(T)</a>
      */
-    public boolean add(E e) {
-        checkNotNull(e);
+    public boolean add(@NotNull E e) {
         delegate.put(e);
         size = LongMath.checkedAdd(size, 1L);
         return true;
@@ -170,16 +163,7 @@ public final class BloomFilter<E> implements ProbabilisticFilter<E>, Serializabl
      * @see #addAll(Collection)
      * @see #contains(Object)
      */
-    public boolean addAll(ProbabilisticFilter<E> f) {
-        checkNotNull(f);
-        checkArgument(this != f, "Cannot combine a " + this.getClass().getSimpleName() +
-                " with itself.");
-        checkArgument(f instanceof BloomFilter, "Cannot combine a " +
-                this.getClass().getSimpleName() + " with a " + f.getClass().getSimpleName());
-        checkArgument(this.isCompatible(f), "Cannot combine incompatible filters. " +
-                this.getClass().getSimpleName() + " instances must have equivalent funnels; the same " +
-                "strategy; and the same number of buckets, entries per bucket, and bits per entry.");
-
+    public boolean addAll(@NotNull ProbabilisticFilter<E> f) {
         delegate.putAll(((BloomFilter<E>) f).delegate);
         size = LongMath.checkedAdd(size, f.sizeLong());
         return true;
@@ -199,10 +183,8 @@ public final class BloomFilter<E> implements ProbabilisticFilter<E>, Serializabl
      * @see #addAll(ProbabilisticFilter)
      * @see #contains(Object)
      */
-    public boolean addAll(Collection<? extends E> c) {
-        checkNotNull(c);
-        for (E e : c) {
-            checkNotNull(c);
+    public boolean addAll(@NotNull Collection<? extends E> c) {
+        for (@NotNull E e : c) {
             add(e);
         }
         return true;
@@ -259,8 +241,8 @@ public final class BloomFilter<E> implements ProbabilisticFilter<E>, Serializabl
      * @see #removeAll(ProbabilisticFilter)
      * @see <a target="guavadoc" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/hash/BloomFilter.html#isCompatible(com.google.common.hash.BloomFilter)">com.google.common.hash.BloomFilter#isCompatible(com.google.common.hash.BloomFilter)</a>
      */
-    public boolean isCompatible(ProbabilisticFilter<E> f) {
-        checkNotNull(f);
+    public boolean isCompatible(@NotNull ProbabilisticFilter<E> f) {
+
         return (f instanceof BloomFilter) &&
                 this.delegate.isCompatible(((BloomFilter<E>) f).delegate);
     }
@@ -278,10 +260,9 @@ public final class BloomFilter<E> implements ProbabilisticFilter<E>, Serializabl
      * @see #contains(Object)
      * @see #containsAll(ProbabilisticFilter)
      */
-    public boolean containsAll(Collection<? extends E> c) {
-        checkNotNull(c);
-        for (E e : c) {
-            checkNotNull(e);
+    public boolean containsAll(@NotNull Collection<? extends E> c) {
+
+        for (@NotNull E e : c) {
             if (!contains(e)) return false;
         }
         return true;

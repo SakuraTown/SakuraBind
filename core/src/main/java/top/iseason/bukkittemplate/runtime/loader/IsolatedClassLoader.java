@@ -30,6 +30,12 @@ public class IsolatedClassLoader extends MLet {
         super();
     }
 
+    public static void addBlackList(Class<?> clazz) {
+        BLACK_LIST.add(clazz.getName());
+        List<String> subClasses = Arrays.stream(clazz.getDeclaredClasses()).map(Class::getName).collect(Collectors.toList());
+        BLACK_LIST.addAll(subClasses);
+    }
+
     @Override
     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         synchronized (getClassLoadingLock(name)) {
@@ -60,11 +66,5 @@ public class IsolatedClassLoader extends MLet {
     @Override
     public void addURL(URL url) {
         super.addURL(url);
-    }
-
-    public static void addBlackList(Class<?> clazz) {
-        BLACK_LIST.add(clazz.getName());
-        List<String> subClasses = Arrays.stream(clazz.getDeclaredClasses()).map(Class::getName).collect(Collectors.toList());
-        BLACK_LIST.addAll(subClasses);
     }
 }

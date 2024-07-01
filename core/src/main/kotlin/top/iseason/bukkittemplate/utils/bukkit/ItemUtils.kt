@@ -14,7 +14,6 @@ import org.bukkit.block.CreatureSpawner
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.enchantments.Enchantment
-import org.bukkit.entity.Axolotl
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.entity.TropicalFish
@@ -406,12 +405,6 @@ object ItemUtils {
             json.remove("LodestoneDimension")
             json.remove("LodestonePos")
         }
-        if (NBTEditor.getMinecraftVersion()
-                .greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_17) && this is AxolotlBucketMeta
-        ) {
-            if (hasVariant()) yaml["variant"] = variant.toString()
-            json.remove("Variant")
-        }
         json.remove("display")
         //写入数据
         if (json.isNotEmpty()) {
@@ -484,8 +477,8 @@ object ItemUtils {
                                 runCatching { PotionType.valueOf(split[0].uppercase()) }.getOrElse { return@also }
                             basePotionData = PotionData(
                                 type,
-                                split.getOrNull(1)?.toBoolean() ?: false,
-                                split.getOrNull(2)?.toBoolean() ?: false
+                                split.getOrNull(1)?.toBoolean() == true,
+                                split.getOrNull(2)?.toBoolean() == true
                             )
                         }
                         section.getStringList("effects").forEach { ef ->
@@ -567,7 +560,7 @@ object ItemUtils {
 
                 is MapMeta -> {
                     val mapSection = section.getConfigurationSection("map")
-                    isScaling = mapSection?.getBoolean("scaling") ?: false
+                    isScaling = mapSection?.getBoolean("scaling") == true
                     if (mapSection != null && NBTEditor.getMinecraftVersion()
                             .greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_11)
                     ) {
@@ -683,18 +676,6 @@ object ItemUtils {
                 if (lodestoneSection != null) {
                     isLodestoneTracked = lodestoneSection.getBoolean("tracked")
                     lodestoneSection.getString("lodestone")?.let { lodestone = fromLocationString(it) }
-                }
-
-            }
-            if (NBTEditor.getMinecraftVersion()
-                    .greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_17) && this is AxolotlBucketMeta
-            ) {
-                val variantStr = section.getString("variant")
-                if (variantStr != null) {
-                    val variantE: Axolotl.Variant =
-                        Enums.getIfPresent(Axolotl.Variant::class.java, variantStr.uppercase())
-                            .or(Axolotl.Variant.BLUE)
-                    variant = variantE
                 }
 
             }

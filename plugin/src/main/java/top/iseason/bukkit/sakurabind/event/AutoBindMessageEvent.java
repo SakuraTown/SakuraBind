@@ -11,9 +11,9 @@ import top.iseason.bukkit.sakurabind.config.BaseSetting;
 public class AutoBindMessageEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private final ItemStack item;
-    private boolean isCancelled = false;
     private final HumanEntity player;
     private final BaseSetting setting;
+    private boolean isCancelled = false;
     /**
      * 提示的消息
      */

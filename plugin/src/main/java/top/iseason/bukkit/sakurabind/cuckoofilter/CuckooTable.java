@@ -23,7 +23,6 @@ import java.math.RoundingMode;
 import java.util.Arrays;
 
 import static java.lang.Math.pow;
-import static top.iseason.bukkit.sakurabind.cuckoofilter.Preconditions.checkArgument;
 
 class CuckooTable {
     static final int EMPTY_ENTRY = 0x00;
@@ -59,10 +58,6 @@ class CuckooTable {
     }
 
     public static int calculateDataLength(long numBuckets, int numEntriesPerBucket, int numBitsPerEntry) {
-        checkArgument(numBuckets > 0, "numBuckets (%s) must be > 0", numBuckets);
-        checkArgument(numEntriesPerBucket > 0, "numEntriesPerBucket (%s) must be > 0",
-                numEntriesPerBucket);
-        checkArgument(numBitsPerEntry > 0, "numBitsPerEntry (%s) must be > 0", numBitsPerEntry);
 
         return Ints.checkedCast(LongMath.divide(
                 LongMath.checkedMultiply(numBuckets,

@@ -398,6 +398,5 @@ PlayerDenyMessageEvent 玩家被禁用某种行为时触发
 
 其他常用的API在 SakuraBindAPI 类中，源代码有注释
 
-
 ![](https://bstats.org/signatures/bukkit/SakuraBind.svg)
 

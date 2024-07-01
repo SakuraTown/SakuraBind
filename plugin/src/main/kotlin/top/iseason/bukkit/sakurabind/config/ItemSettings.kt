@@ -64,6 +64,7 @@ object ItemSettings : SimpleYAMLConfig() {
     var nbt_cache_path: String = "sakura_bind_setting_cache"
     var nbtPath: Array<String> = arrayOf("sakura_bind_setting_cache")
     var isCacheInNbt = true
+
     @Key
     @Comment(
         "",

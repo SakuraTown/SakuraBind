@@ -15,12 +15,12 @@ public class RuntimeBuilder {
     }
 
     public static class Builder {
+        private final List<String> assemblyDependencies = new LinkedList<>();
+        private final List<String> excludeDependencies = new LinkedList<>();
         private ClassLoader classLoader;
         private File storagePath = new File("libraries");
         private List<String> repositories = new LinkedList<>();
         private List<String> dependencies = new LinkedList<>();
-        private final List<String> assemblyDependencies = new LinkedList<>();
-        private final List<String> excludeDependencies = new LinkedList<>();
         private boolean isParallel = false;
         private Logger logger = Logger.getLogger(RuntimeManager.class.getSimpleName());
 

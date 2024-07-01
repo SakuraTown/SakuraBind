@@ -41,6 +41,7 @@ public class RuntimeManager {
      */
     private final Set<String> parallel = new HashSet<>();
     private final ClassAppender classAppender;
+    private final boolean isParallel;
     /**
      * 下载源
      */
@@ -50,7 +51,6 @@ public class RuntimeManager {
      * maxDepth表示最大依赖解析层数
      */
     public Map<String, Integer> dependencies;
-    private final boolean isParallel;
 
     public RuntimeManager(File parent, ClassAppender classAppender, List<String> repositories, List<String> dependencies, List<String> assembly, boolean isParallel) {
         this(parent, classAppender, repositories, new LinkedHashMap<>(), assembly, isParallel);

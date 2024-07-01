@@ -22,7 +22,6 @@ import com.google.common.hash.Hashing;
 import java.util.Random;
 
 import static com.google.common.math.LongMath.mod;
-import static top.iseason.bukkit.sakurabind.cuckoofilter.Preconditions.checkArgument;
 
 /**
  * Cuckoo Filter strategy employing Murmur3 32-bit hashes and parity-based altIndex calculation.
@@ -50,8 +49,6 @@ class CuckooStrategyMurmurBealDupras32 extends AbstractCuckooStrategy implements
      * @return first non-zero f-bit value from hash as an int, or 1 if no non-zero value is found
      */
     public static int fingerprint(int hash, int f) {
-        checkArgument(f > 0, "f must be greater than zero");
-        checkArgument(f <= Integer.SIZE, "f must be less than " + Integer.SIZE);
         int mask = (0x80000000 >> (f - 1)) >>> (Integer.SIZE - f);
 
         for (int bit = 0; (bit + f) <= Integer.SIZE; bit += f) {
@@ -198,8 +195,6 @@ class CuckooStrategyMurmurBealDupras32 extends AbstractCuckooStrategy implements
      */
     @Override
     public long altIndex(long index, int fingerprint, long m) {
-        checkArgument(0L <= index, "index must be a positive!");
-        checkArgument((0L <= m) && (0L == (m & 0x1L)), "m must be a positive even number!");
         return mod(protectedSum(index, parsign(index) * odd(hash(fingerprint)), m), m);
     }
 
