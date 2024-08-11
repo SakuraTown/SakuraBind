@@ -49,7 +49,7 @@ object BindItem : org.bukkit.event.Listener {
                     cursor.subtract(1)
             }
             if (!RandomUtils.checkPercentage(BindItemConfig.unbindChance)) {
-                SakuraBindAPI.unBind(currentItem, type = BindType.BIND_ITEM_BIND_ITEM)
+                SakuraBindAPI.unBind(currentItem, type = BindType.BIND_ITEM_UNBIND_ITEM)
                 MessageTool.messageCoolDown(event.whoClicked, Lang.bind_item__unbind_success)
             } else {
                 MessageTool.messageCoolDown(event.whoClicked, Lang.bind_item__unbind_failure)

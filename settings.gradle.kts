@@ -8,7 +8,7 @@ pluginManagement {
     val shadowJarVersion: String by settings
     plugins {
         kotlin("jvm") version kotlinVersion
-        id("com.github.johnrengelman.shadow") version shadowJarVersion
+        id("com.gradleup.shadow") version shadowJarVersion
     }
 }
 include("core", "plugin")

@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm")
-    id("com.github.johnrengelman.shadow")
+    id("com.gradleup.shadow")
 }
 
 buildscript {
@@ -68,7 +68,7 @@ val obfuscatedMainClass =
     } else "a"
 val isObfuscated = obfuscated == "true"
 val shrink: String by rootProject
-val defaultFile = File("../build", "${rootProject.name}-${rootProject.version}.jar")
+//val defaultFile = File("../build", "${rootProject.name}-${rootProject.version}.jar")
 val formatJarOutput = jarOutputFile.replace("\${root}", rootProject.projectDir.absolutePath)
 val output: File =
     if (isObfuscated)
@@ -80,11 +80,11 @@ tasks {
     compileJava {
         options.encoding = "UTF-8"
     }
-    java {
-        toolchain {
-            languageVersion.set(JavaLanguageVersion.of(8))
-        }
-    }
+//    java {
+//        toolchain {
+//            languageVersion.set(JavaLanguageVersion.of(8))
+//        }
+//    }
     kotlin {
         jvmToolchain(8)
     }

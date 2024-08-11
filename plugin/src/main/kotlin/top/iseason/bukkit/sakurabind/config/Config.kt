@@ -132,6 +132,10 @@ object Config : SimpleYAMLConfig() {
     var thread_dump_protection__timeout = 50
 
     @Key
+    @Comment("", "插件加载之后多少秒开始检查主线程卡顿")
+    var thread_dump_protection__delay = 30
+
+    @Key
     @Comment("", "当主线程卡顿时, 注销插件")
     var thread_dump_protection__disable_plugin = false
 

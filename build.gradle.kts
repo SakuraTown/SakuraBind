@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm")
-    id("com.github.johnrengelman.shadow")
+    id("com.gradleup.shadow")
 }
 
 subprojects {
@@ -11,7 +11,6 @@ subprojects {
         plugin<JavaLibraryPlugin>()
     }
     repositories {
-        mavenCentral()
         maven {
             name = "aliyun"
             url = uri("https://maven.aliyun.com/repository/public")
@@ -20,6 +19,7 @@ subprojects {
             name = "aliyun-google"
             url = uri("https://maven.aliyun.com/repository/google")
         }
+        mavenCentral()
 //        google()
         maven {
             name = "spigot"
@@ -47,7 +47,6 @@ subprojects {
         val kotlinVersion: String by rootProject
         val exposedVersion: String by rootProject
         val nbtEditorVersion: String by rootProject
-
         compileOnly(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
         //基础库
         compileOnly(kotlin("stdlib"))

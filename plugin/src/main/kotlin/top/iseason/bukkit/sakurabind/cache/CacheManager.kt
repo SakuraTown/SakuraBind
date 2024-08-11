@@ -33,7 +33,8 @@ object CacheManager {
             .withClassLoader(this.javaClass.classLoader)
     }
 
-    private var lastTime = System.currentTimeMillis()
+    @Volatile
+    private var lastTime = 0L
     private val timeout = Config.thread_dump_protection__timeout * 1000
     private var pluginDisabled = false
 
@@ -70,8 +71,8 @@ object CacheManager {
         }
         watchDog = Thread {
             while (!pluginDisabled) {
-                if (System.currentTimeMillis() - lastTime > timeout) {
-                    println("[SakuraBind] detect server has not response over $timeout seconds")
+                if (lastTime != 0L && System.currentTimeMillis() - lastTime > timeout) {
+                    println("[SakuraBind] detect server has not response over $timeout millis")
                     if (cacheManager?.status != Status.UNINITIALIZED) {
                         cacheManager?.close()
                         println("[SakuraBind] saved cache data!")
@@ -84,12 +85,15 @@ object CacheManager {
                     }
                     break
                 }
-                sleep(3000)
+                try {
+                    sleep(1000)
+                } catch (_: InterruptedException) {
+                }
             }
         }
         //容灾
         Runtime.getRuntime().addShutdownHook(hook)
-        submit(period = 20) {
+        submit(delay = Config.thread_dump_protection__delay * 20L, period = 20) {
             lastTime = System.currentTimeMillis()
         }
         watchDog!!.isDaemon = true
@@ -101,11 +105,13 @@ object CacheManager {
 
     @Throws(Exception::class)
     fun save() {
+        pluginDisabled = true
         for (baseCache in cacheManagerList) {
             baseCache.onSave()
         }
-        cacheManager?.close()
-        pluginDisabled = true
+        if (cacheManager?.status != Status.UNINITIALIZED) {
+            cacheManager?.close()
+        }
         try {
             watchDog?.interrupt()
             if (hook != null)

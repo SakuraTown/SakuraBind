@@ -197,7 +197,7 @@ object ItemListener : Listener {
         val itemEntity = event.item
         val item = event.item.itemStack
         val owner = SakuraBindAPI.getOwner(item) ?: return
-        if (owner == player.uniqueId && CallbackCommand.isCallback(owner)) {
+        if (owner != player.uniqueId && CallbackCommand.isCallback(owner)) {
             val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
             if (sendBackItem.isEmpty()) itemEntity.remove()
             else itemEntity.itemStack = sendBackItem.first()
@@ -227,7 +227,7 @@ object ItemListener : Listener {
     /**
      * 物品点击检查，只检查点击上面的物品栏
      */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onInventoryClickEvent(event: InventoryClickEvent) {
         val player = event.whoClicked as? Player ?: return
         if (Config.checkByPass(player)) return
@@ -244,7 +244,7 @@ object ItemListener : Listener {
     /**
      * 上面的物品栏标题符合规则时禁止点击(放入)
      */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     fun onInventoryClickEvent2(event: InventoryClickEvent) {
         val whoClicked = event.whoClicked
         if (Config.checkByPass(whoClicked)) return
@@ -497,7 +497,7 @@ object ItemListener : Listener {
     /**
      * 自动绑定, 点击时绑定
      */
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     fun autoBindInventoryClickEvent(event: InventoryClickEvent) {
         val player = event.whoClicked
         if (Config.checkByPass(player)) return
