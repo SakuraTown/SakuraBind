@@ -26,6 +26,7 @@ import top.iseason.bukkit.sakurabind.config.matcher.LoreMatcher
 import top.iseason.bukkit.sakurabind.event.*
 import top.iseason.bukkit.sakurabind.pickers.BasePicker
 import top.iseason.bukkit.sakurabind.utils.BindType
+import top.iseason.bukkit.sakurabind.utils.NBTUtils
 import top.iseason.bukkit.sakurabind.utils.removeList
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.applyMeta
@@ -289,11 +290,11 @@ object SakuraBindAPI {
     @JvmOverloads
     fun updateLore(item: ItemStack, basesSetting: BaseSetting? = null) {
         val itemMeta = item.itemMeta ?: return
-        var oldLore = NBTEditor.getKeys(item, *Config.nbtPathLore)
         val owner = getOwner(item)
         var temp = item
         var oldLoreIndex = 0
         //有旧的lore,先删除
+        var oldLore = NBTUtils.getKeys(item, *Config.nbtPathLore)
         if (!oldLore.isNullOrEmpty()) {
             if (itemMeta.hasLore()) {
                 var (oi, newLore) = removeList(itemMeta.lore!!, oldLore) { raw, str ->
@@ -338,41 +339,6 @@ object SakuraBindAPI {
                             ) {
                                 index = ri
                             }
-//                            val lorePatterns = loreMatcher.lorePatterns
-//                            val patternIter = lorePatterns.iterator()
-//                            var match = true
-//                            var pattern = patternIter.next()
-//                            val indexOfFirst = lore.indexOfFirst {
-//                                val matcher = pattern.matcher(if (loreMatcher.stripLoreColor) it.noColor() else it)
-//                                matcher.find()
-//                            }
-//                            //lore大小小于正则肯定不匹配
-//                            if (indexOfFirst < 0 || lore.size < indexOfFirst + lorePatterns.size) {
-//                                match = false
-//                            } else {
-//                                //除了第一个lore匹配其他的也得匹配
-//                                for (i in (indexOfFirst + 1) until (indexOfFirst + lorePatterns.size)) {
-//                                    pattern = patternIter.next()
-//                                    val s = lore[i]
-//                                    if (!pattern.matcher(if (loreMatcher.stripLoreColor) s else s.noColor()).find()) {
-//                                        match = false
-//                                        break
-//                                    }
-//                                }
-//                            }
-//                            if (match) {
-//                                repeat(lorePatterns.size) {
-//                                    lore.removeAt(indexOfFirst)
-//                                }
-//                                if (setting.getBoolean(
-//                                        "item.lore-replace-matched",
-//                                        owner.toString(),
-//                                        player as? HumanEntity
-//                                    )
-//                                ) {
-//                                    index = indexOfFirst
-//                                }
-//                            }
                         }
                     }
                     // lore matcher end

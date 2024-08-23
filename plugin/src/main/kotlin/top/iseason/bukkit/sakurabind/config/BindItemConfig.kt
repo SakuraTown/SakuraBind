@@ -1,5 +1,6 @@
 package top.iseason.bukkit.sakurabind.config
 
+import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.MemorySection
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
@@ -35,7 +36,7 @@ object BindItemConfig : SimpleYAMLConfig() {
     @Key("bind.nbt")
     @Comment("", "识别配置的NBT路径,'.'为分隔符")
     var bindNbt = "sakura_bind_bind-item"
-    var bindPath = arrayOf("sakura_bind_bind-item")
+    var bindPath = arrayOf<Any>("sakura_bind_bind-item")
         private set
 
     @Key("bind.chance")
@@ -49,7 +50,7 @@ object BindItemConfig : SimpleYAMLConfig() {
     @Key("unbind.nbt")
     @Comment("", "识别配置的NBT路径,'.'为分隔符")
     var unbindNbt = "sakura_bind_unbind-item"
-    var unBindPath = arrayOf("sakura_bind_unbind-item")
+    var unBindPath = arrayOf<Any>("sakura_bind_unbind-item")
         private set
 
     @Key("unbind.chance")
@@ -61,7 +62,19 @@ object BindItemConfig : SimpleYAMLConfig() {
     var syncAmount = true
 
     override fun onLoaded(section: ConfigurationSection) {
-        bindPath = bindNbt.split('.').toTypedArray()
+        if (NBTEditor.getMinecraftVersion().ordinal > NBTEditor.MinecraftVersion.v1_20_R4.ordinal) {
+            var list1 = ArrayList<Any>()
+            list1.add(NBTEditor.CUSTOM_DATA)
+            list1.addAll(bindNbt.split('.'))
+            bindPath = list1.toTypedArray()
+            var list2 = ArrayList<Any>()
+            list2.add(NBTEditor.CUSTOM_DATA)
+            list2.addAll(unbindNbt.split('.'))
+            unBindPath = list1.toTypedArray()
+        } else {
+            bindPath = bindNbt.split('.').toTypedArray()
+            unBindPath = unbindNbt.split('.').toTypedArray()
+        }
     }
 
 

@@ -7,6 +7,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Item
 import org.bukkit.entity.ItemFrame
 import org.bukkit.entity.Player
+import org.bukkit.entity.ThrowableProjectile
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -44,7 +45,6 @@ import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toByteArray
-import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.other.EasyCoolDown
 import top.iseason.bukkittemplate.utils.other.runAsync
@@ -187,42 +187,6 @@ object ItemListener : Listener {
         }
     }
 
-    /**
-     * 不能捡起
-     */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun onPlayerPickupItemEvent(event: PlayerPickupItemEvent) {
-        if (Config.checkByPass(event.player)) return
-        val player = event.player
-        val itemEntity = event.item
-        val item = event.item.itemStack
-        val owner = SakuraBindAPI.getOwner(item) ?: return
-        if (owner != player.uniqueId && CallbackCommand.isCallback(owner)) {
-            val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
-            if (sendBackItem.isEmpty()) itemEntity.remove()
-            else itemEntity.itemStack = sendBackItem.first()
-            event.isCancelled = true
-            itemEntity.pickupDelay = 10
-            player.sendColorMessage(Lang.command__callback)
-            return
-        }
-        val itemSetting = ItemSettings.getSetting(item)
-        if (itemSetting.getBoolean("item-deny.pickup", owner.toString(), player)) {
-            event.isCancelled = true
-            itemEntity.pickupDelay = 10
-            if (itemSetting.getBoolean("item.send-back-on-pickup", owner.toString(), player)) {
-                val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
-                if (sendBackItem.isEmpty()) itemEntity.remove()
-                else itemEntity.itemStack = sendBackItem.first()
-                MessageTool.denyMessageCoolDown(
-                    player,
-                    Lang.item__deny_pickup.formatBy(SakuraBindAPI.getOwnerName(owner)),
-                    ItemSettings.getSetting(item),
-                    item
-                )
-            }
-        }
-    }
 
     /**
      * 物品点击检查，只检查点击上面的物品栏
@@ -358,27 +322,21 @@ object ItemListener : Listener {
         val entity = event.entity
         val player = entity.shooter as? Player ?: return
         if (Config.checkByPass(player)) return
-        val heldItem = player.getHeldItem() ?: return
-        if (SakuraBindAPI.checkDenyBySetting(heldItem, player, "item-deny.throw")) {
+        val throwable = entity as? ThrowableProjectile ?: return
+        val item = throwable.item
+        val owner = SakuraBindAPI.getOwner(item) ?: return
+        val setting = ItemSettings.getSetting(item)
+        if (setting.getBoolean("item-deny.throw", owner.toString(), player)) {
             event.isCancelled = true
             MessageTool.denyMessageCoolDown(
                 player,
                 Lang.item__deny_throw,
-                ItemSettings.getSetting(heldItem),
-                heldItem
+                ItemSettings.getSetting(item),
+                item
             )
         } else {
-            val offHandItem = PlayerTool.getOffHandItem(player)
-            if (offHandItem.checkAir()) return
-            if (SakuraBindAPI.checkDenyBySetting(offHandItem, player, "item-deny.throw")) {
-                event.isCancelled = true
-                MessageTool.denyMessageCoolDown(
-                    player,
-                    Lang.item__deny_throw,
-                    ItemSettings.getSetting(offHandItem!!),
-                    offHandItem
-                )
-            }
+            val delay = setting.getInt("item.send-back-delay")
+            DropItemList.putThrowableItem(entity, owner, delay)
         }
     }
 
@@ -519,7 +477,7 @@ object ItemListener : Listener {
             val setting = ItemSettings.getSetting(item)
             if (setting.getBoolean("auto-unbind.enable", owner, player) &&
                 (setting.getBoolean("auto-unbind.onClick", owner, player) ||
-                        NBTEditor.contains(item, Config.auto_bind_nbt))
+                        NBTEditor.contains(item, *Config.autoBindNbt))
             ) {
                 SakuraBindAPI.unBind(item, BindType.CLICK_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onClick)
@@ -528,7 +486,7 @@ object ItemListener : Listener {
             val setting = ItemSettings.getSetting(item, false)
             if (setting.getBoolean("auto-bind.enable", null, player) &&
                 (setting.getBoolean("auto-bind.onClick", null, player) ||
-                        NBTEditor.contains(item, Config.auto_bind_nbt))
+                        NBTEditor.contains(item, *Config.autoBindNbt))
             ) {
                 SakuraBindAPI.bind(item, player as Player, type = BindType.CLICK_BIND_ITEM)
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onClick, setting, item)
@@ -537,37 +495,6 @@ object ItemListener : Listener {
     }
 
 
-    /**
-     * 自动绑定, 捡起物品时绑定
-     */
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun autoBindPlayerPickupItemEvent(event: PlayerPickupItemEvent) {
-        val player = event.player
-        if (Config.checkByPass(player)) return
-        val item = event.item.itemStack
-        if (item.checkAir()) return
-        val owner = SakuraBindAPI.getOwner(item)?.toString()
-        if (owner != null) {
-            val setting = ItemSettings.getSetting(item)
-            if (setting.getBoolean("auto-unbind.enable", owner, player) &&
-                (setting.getBoolean("auto-unbind.onPickup", owner, player) ||
-                        NBTEditor.contains(item, Config.auto_bind_nbt))
-            ) {
-                SakuraBindAPI.unBind(item, BindType.PICKUP_UNBIND_ITEM)
-                MessageTool.messageCoolDown(player, Lang.auto_unbind__onPickup)
-            }
-        } else {
-            val setting = ItemSettings.getSetting(item, false)
-            if (setting.getBoolean("auto-bind.enable", null, player) &&
-                (setting.getBoolean("auto-bind.onPickup", null, player) ||
-                        NBTEditor.contains(item, Config.auto_bind_nbt))
-            ) {
-                SakuraBindAPI.bind(item, player, type = BindType.PICKUP_BIND_ITEM)
-                MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onPickup, setting, item)
-            }
-        }
-
-    }
 
     /**
      * 自动绑定, 丢弃物品时绑定
@@ -591,7 +518,7 @@ object ItemListener : Listener {
             val setting = ItemSettings.getSetting(item, false)
             if (setting.getBoolean("auto-bind.enable", null, player) &&
                 (setting.getBoolean("auto-bind.onDrop", null, player) ||
-                        NBTEditor.contains(item, Config.auto_bind_nbt))
+                        NBTEditor.contains(item, *Config.autoBindNbt))
             ) {
                 SakuraBindAPI.bind(item, player, type = BindType.DROP_BIND_ITEM)
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onDrop, setting, item)
@@ -633,13 +560,13 @@ object ItemListener : Listener {
             }
             if ((action == Action.LEFT_CLICK_BLOCK || action == Action.LEFT_CLICK_AIR) &&
                 (setting.getBoolean("auto-bind.onLeft", null, player) ||
-                        NBTEditor.contains(item, Config.auto_bind_nbt))
+                        NBTEditor.contains(item, *Config.autoBindNbt))
             ) {
                 SakuraBindAPI.bind(item, player, type = BindType.LEFT_BIND_ITEM)
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onLeft, setting, item)
             } else if ((action == Action.RIGHT_CLICK_BLOCK || action == Action.RIGHT_CLICK_AIR) &&
                 (setting.getBoolean("auto-bind.onRight", null, player) ||
-                        NBTEditor.contains(item, Config.auto_bind_nbt))
+                        NBTEditor.contains(item, *Config.autoBindNbt))
             ) {
                 SakuraBindAPI.bind(item, player, type = BindType.RIGHT_BIND_ITEM)
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onRight, setting, item)
@@ -671,7 +598,7 @@ object ItemListener : Listener {
                 return
             }
             if ((setting.getBoolean("auto-bind.onLeft", null, player) ||
-                        NBTEditor.contains(item, Config.auto_bind_nbt))
+                        NBTEditor.contains(item, *Config.autoBindNbt))
             ) {
                 SakuraBindAPI.bind(item, player, type = BindType.LEFT_BIND_ITEM)
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onLeft, setting, item)
@@ -689,7 +616,7 @@ object ItemListener : Listener {
             val setting = ItemSettings.getSetting(item)
             if (setting.getBoolean("auto-unbind.enable", owner, player) &&
                 (setting.getBoolean("auto-unbind.onUse", owner, player) ||
-                        NBTEditor.contains(item, Config.auto_bind_nbt))
+                        NBTEditor.contains(item, *Config.autoBindNbt))
             ) {
                 SakuraBindAPI.unBind(item, BindType.USE_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onUse)
@@ -698,7 +625,7 @@ object ItemListener : Listener {
             val setting = ItemSettings.getSetting(item, false)
             if (setting.getBoolean("auto-bind.enable", null, player) &&
                 (setting.getBoolean("auto-bind.onUse", null, player) ||
-                        NBTEditor.contains(item, Config.auto_bind_nbt))
+                        NBTEditor.contains(item, *Config.autoBindNbt))
             ) {
                 SakuraBindAPI.bind(item, player, type = BindType.USE_BIND_ITEM)
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onUse, setting, item)
@@ -734,9 +661,9 @@ object ItemListener : Listener {
         val owner = SakuraBindAPI.getOwner(itemStack)
         if (owner != null) {
             val delay = SakuraBindAPI.getItemSetting(itemStack).getInt("item.send-back-delay")
-            DropItemList.putItem(entity, owner, delay)
+            DropItemList.putDropItem(entity, owner, delay)
         } else {
-            DropItemList.putInnerItem(entity)
+            DropItemList.putDropInnerItem(entity)
         }
     }
 

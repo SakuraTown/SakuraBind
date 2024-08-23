@@ -36,7 +36,7 @@ object PaperListener : Listener {
         if (owner == null) {
             if (setting.getBoolean("auto-bind.enable", null, player) &&
                 (setting.getBoolean("auto-bind.onEquipWear", null, player) ||
-                        NBTEditor.contains(item, Config.auto_bind_nbt))
+                        NBTEditor.contains(item, *Config.autoBindNbt))
             ) {
                 SakuraBindAPI.bind(item, player, type = BindType.EQUIP_BIND_ITEM)
                 setEquip(event.slotType, player, item)

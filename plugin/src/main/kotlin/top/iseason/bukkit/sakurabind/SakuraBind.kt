@@ -128,6 +128,13 @@ object SakuraBind : BukkitPlugin {
             ItemListener194.registerListener()
         }
         ItemListener.registerListener()
+
+        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_12)) {
+            PickupItemListener.registerListener()
+        } else {
+            LegacyPickupItemListener.registerListener()
+        }
+
         if (AuthMeHook.hasHooked) {
             LoginAuthMeListener.registerListener()
         } else {

@@ -62,7 +62,7 @@ object ItemSettings : SimpleYAMLConfig() {
         "留空不使用缓存"
     )
     var nbt_cache_path: String = "sakura_bind_setting_cache"
-    var nbtPath: Array<String> = arrayOf("sakura_bind_setting_cache")
+    var nbtPath: Array<Any> = arrayOf("sakura_bind_setting_cache")
     var isCacheInNbt = true
 
     @Key
@@ -114,13 +114,22 @@ object ItemSettings : SimpleYAMLConfig() {
         settingCache2.cleanUp()
         nbtPath = if (nbt_cache_path.isBlank()) {
             emptyArray()
-        } else nbt_cache_path.split('.').toTypedArray()
+        } else {
+            if (NBTEditor.getMinecraftVersion().ordinal > NBTEditor.MinecraftVersion.v1_20_R4.ordinal) {
+                var list1 = ArrayList<Any>()
+                list1.add(NBTEditor.CUSTOM_DATA)
+                list1.addAll(nbt_cache_path.split('.'))
+                list1.toTypedArray()
+            } else {
+                nbt_cache_path.split('.').toTypedArray()
+            }
+        }
         isCacheInNbt = nbtPath.isNotEmpty()
         matchers.getKeys(false).forEach {
             val s = matchers.getConfigurationSection(it)!!
             try {
                 settings[it] = ItemSetting(it, s)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 warn("配置 $it 格式错误，请检查!")
             }
         }

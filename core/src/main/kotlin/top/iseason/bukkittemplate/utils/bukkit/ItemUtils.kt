@@ -33,6 +33,7 @@ import java.util.*
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 import kotlin.math.abs
+import kotlin.math.roundToInt
 
 
 /**
@@ -175,7 +176,7 @@ object ItemUtils {
         if (amount != 1) yaml["amount"] = amount
         if (!hasItemMeta()) return yaml
         // 额外的NBt
-        val toJson = NBTEditor.getNBTCompound(this, "tag").toJson()
+        val toJson = NBTEditor.getNBTCompound(this, NBTEditor.ITEMSTACK_COMPONENTS).toJson()
 //        println(toJson)
         val json = Gson().fromJson(toJson, Map::class.java).toMutableMap()
         this.durability
@@ -320,9 +321,9 @@ object ItemUtils {
             //老版本刷怪蛋 1.13 以下
             if (NBTEditor.getMinecraftVersion().lessThanOrEqualTo(NBTEditor.MinecraftVersion.v1_13)) {
                 if (NBTEditor.getMinecraftVersion().lessThanOrEqualTo(NBTEditor.MinecraftVersion.v1_11)) {
-                    if (data is SpawnEgg) yaml["creature"] = (data as SpawnEgg).spawnedType.getName()
+                    if (data is SpawnEgg) yaml["creature"] = (data as SpawnEgg).spawnedType.name
                 } else if (this is SpawnEggMeta) {
-                    yaml["creature"] = spawnedType.getName()
+                    yaml["creature"] = spawnedType.name
                 }
                 json.remove("EntityTag")
             }
@@ -413,7 +414,7 @@ object ItemUtils {
                     if (v is Map<*, *>) {
                         deepFor(v, config.createSection(k.toString()))
                     } else {
-                        if ((v is Double) && (abs(v - Math.round(v)) < Double.MIN_VALUE)) {
+                        if ((v is Double) && (abs(v - v.roundToInt()) < Double.MIN_VALUE)) {
                             config.set(k.toString(), v.toInt())
                         } else if (v is String && v.endsWith('d')) {
                             val double = runCatching {
@@ -695,7 +696,7 @@ object ItemUtils {
             }
         }
         deepFor(nbtSection, map)
-        val nbtCompound = NBTEditor.getNBTCompound(item, "tag")
+        val nbtCompound = NBTEditor.getNBTCompound(item, NBTEditor.ITEMSTACK_COMPONENTS)
         map.forEach { (k, v) ->
             if (v is Map<*, *>) {
                 val toJson = NBTCompound.fromJson(Gson().toJson(v))
@@ -703,7 +704,7 @@ object ItemUtils {
             } else
                 nbtCompound.set(v, k)
         }
-        item = NBTEditor.set(item, nbtCompound)
+        item = NBTEditor.set(item, NBTEditor.CUSTOM_DATA, nbtCompound)
 //        println(NBTEditor.getNBTCompound(item, "tag").toJson())
         return item
     }

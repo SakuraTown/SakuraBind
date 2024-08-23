@@ -90,14 +90,14 @@ class Scanner : BukkitRunnable() {
                     continue
                 }
                 if (owner == null &&
-                    ((setting.getBoolean("auto-bind.enable", null, player) && setting.getBoolean(
-                        "auto-bind.onScanner",
-                        null,
-                        player
-                    ))
-                            || NBTEditor.contains(
-                        item, Config.auto_bind_nbt
-                    ))
+                    (
+                            (setting.getBoolean("auto-bind.enable", null, player) && setting.getBoolean(
+                                "auto-bind.onScanner",
+                                null,
+                                player
+                            ))
+                                    || NBTEditor.contains(item, *Config.autoBindNbt)
+                            )
                 ) {
                     debug("绑定物品 ${item.type}")
                     MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onScanner, setting, item)

@@ -20,20 +20,26 @@ object AutoBindCommand : CommandNode(
     isPlayerOnly = true,
     async = true,
     params = listOf(
-        Param("[nbt]", suggestRuntime = { listOf(Config.auto_bind_nbt) }),
+        Param("[nbt]", suggestRuntime = { Config.auto_bind_nbt.split('.') }),
         Param("[value]"),
     )
 ) {
     override var onExecute: CommandNodeExecutor? = CommandNodeExecutor { params, sender ->
         val player = sender as Player
-        val nbt = params.nextOrNull<String>() ?: Config.auto_bind_nbt
+        val nbt = params.nextOrNull<String>()
         val value = params.nextOrNull<String>() ?: ""
         val heldItem = player.getHeldItem() ?: throw ParmaException("请拿着物品")
-        val autoBindNbt = nbt.split('.').toTypedArray()
-        heldItem.itemMeta = NBTEditor.set(heldItem, value, *autoBindNbt)!!.itemMeta
+        if (nbt == null) {
+            heldItem.itemMeta = NBTEditor.set(heldItem, value, *Config.autoBindNbt)!!.itemMeta
+            if (!params.hasParma("-silent"))
+                player.sendColorMessage(Lang.command__autoBind.formatBy(Config.auto_bind_nbt))
+        } else {
+            val autoBindNbt = nbt.split('.').toTypedArray()
+            heldItem.itemMeta = NBTEditor.set(heldItem, value, NBTEditor.CUSTOM_DATA, *autoBindNbt)!!.itemMeta
+            player.sendColorMessage(Lang.command__autoBind.formatBy(nbt))
+        }
         player.updateInventory()
-        if (!params.hasParma("-silent"))
-            player.sendColorMessage(Lang.command__autoBind.formatBy(Config.auto_bind_nbt))
+
     }
 
 }

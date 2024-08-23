@@ -137,7 +137,7 @@ object UniqueItem : org.bukkit.event.Listener {
     ) {
         while (iterator.hasNext()) {
             val next = iterator.next()
-            val item = next.item.itemStack
+            val item = next.getItemStack()
             val filterItem = SakuraBindAPI.filterItem(item, remove = true, deep = false, predicate)
             if (filterItem.isEmpty()) continue
             if (item.type == Material.AIR) {

@@ -1,5 +1,6 @@
 package top.iseason.bukkit.sakurabind.config
 
+import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.MemorySection
@@ -55,7 +56,7 @@ object UniqueItemConfig : SimpleYAMLConfig() {
     @Key
     @Comment("", "唯一Id的NBT路径,'.'为分隔符")
     var unique_nbt_path = "SakuraBind_Unique"
-    var uniqueItemNbt = arrayOf("SakuraBind_Unique")
+    var uniqueItemNbt = arrayOf<Any>("SakuraBind_Unique")
         private set
 
     @Key
@@ -131,7 +132,16 @@ object UniqueItemConfig : SimpleYAMLConfig() {
 
     override fun onLoaded(section: ConfigurationSection) {
         if (!logger__enable) setUpdate(false)
-        uniqueItemNbt = unique_nbt_path.split('.').toTypedArray()
+
+
+        if (NBTEditor.getMinecraftVersion().ordinal > NBTEditor.MinecraftVersion.v1_20_R4.ordinal) {
+            var list = ArrayList<Any>()
+            list.add(NBTEditor.CUSTOM_DATA)
+            list.addAll(unique_nbt_path.split('.'))
+            uniqueItemNbt = list.toTypedArray()
+        } else {
+            uniqueItemNbt = unique_nbt_path.split('.').toTypedArray()
+        }
         scanner?.cancel()
         scanner = null
         if (enable && scanner_period > 0L)

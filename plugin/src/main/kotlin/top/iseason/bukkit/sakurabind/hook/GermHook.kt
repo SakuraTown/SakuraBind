@@ -57,9 +57,7 @@ object GermHook : BaseHook("GermPlugin") {
                         "auto-bind.onScanner",
                         null,
                         player
-                    )) || NBTEditor.contains(
-                        item, Config.auto_bind_nbt
-                    ))
+                    )) || NBTEditor.contains(item, *Config.autoBindNbt))
                 ) {
                     debug("萌芽: 绑定物品 ${item.type}")
                     MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onScanner, setting, item)

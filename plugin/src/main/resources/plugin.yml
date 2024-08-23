@@ -15,6 +15,10 @@ softdepend:
   - BanItem
   - mcMMO
 
+permission:
+  sakurabind.bypass.all:
+    default: op
+
 
 runtime-libraries:
   # If not defined, it will be 'libraries'
