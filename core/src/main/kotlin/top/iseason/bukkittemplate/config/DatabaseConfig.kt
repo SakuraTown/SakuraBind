@@ -20,6 +20,8 @@ import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
 import top.iseason.bukkittemplate.debug.debug
 import top.iseason.bukkittemplate.debug.info
+import top.iseason.bukkittemplate.utils.JavaVersion
+import java.io.Closeable
 import java.io.File
 import java.util.*
 
@@ -125,6 +127,8 @@ object DatabaseConfig : SimpleYAMLConfig() {
     @Key
     var data_source__leakDetectionThreshold = 0L
 
+    private var ds: Closeable? = null
+
 
     // table缓存
     private var tables: Array<out Table> = emptyArray()
@@ -133,10 +137,20 @@ object DatabaseConfig : SimpleYAMLConfig() {
     private var isConnecting = false
     lateinit var connection: Database
         private set
-    private var ds: HikariDataSource? = null
 
     init {
         DisableHook.addTask { closeDB() }
+    }
+
+    init {
+        val runtimeManager = BukkitTemplate.getRuntimeManager()
+            .addRepository("https://maven.aliyun.com/repository/public")
+            .addRepository("https://repo.maven.apache.org/maven2/")
+        if (JavaVersion.isGreaterOrEqual(11)) {
+            runtimeManager.downloadDependency("com.zaxxer:HikariCP:5.1.0", 1)
+        } else {
+            runtimeManager.downloadDependency("com.zaxxer:HikariCP:4.0.3", 1)
+        }
     }
 
     override fun onLoaded(section: ConfigurationSection) {
@@ -190,13 +204,17 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 }
 
                 "SQLite" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependencyAssembly("org.xerial:sqlite-jdbc:3.46.0.1")
+                    runtimeManager.downloadADependencyAssembly("org.xerial:sqlite-jdbc:3.46.1.0")
                     jdbcUrl = "jdbc:sqlite:$address$params"
                     driverClassName = "org.sqlite.JDBC"
                 }
 
                 "H2" -> HikariConfig().apply {
-                    runtimeManager.downloadADependency("com.h2database:h2:2.3.230")
+                    if (JavaVersion.isGreaterOrEqual(11)) {
+                        runtimeManager.downloadADependency("com.h2database:h2:2.3.232")
+                    } else {
+                        runtimeManager.downloadADependency("com.h2database:h2:2.2.224")
+                    }
                     jdbcUrl = "jdbc:h2:$address/$database_name$params"
                     driverClassName = "org.h2.Driver"
                 }
@@ -208,13 +226,22 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 }
 
                 "Oracle" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependency("com.oracle.database.jdbc:ojdbc8:23.5.0.24.07")
+                    val oracleVersion = "23.5.0.24.07"
+                    if (JavaVersion.isGreaterOrEqual(11)) {
+                        runtimeManager.downloadADependency("com.oracle.database.jdbc:ojdbc11:$oracleVersion")
+                    } else {
+                        runtimeManager.downloadADependency("com.oracle.database.jdbc:ojdbc8:$oracleVersion")
+                    }
                     jdbcUrl = "dbc:oracle:thin:@//$address/$database_name$params"
                     driverClassName = "oracle.jdbc.OracleDriver"
                 }
 
                 "SQLServer" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependency("com.microsoft.sqlserver:mssql-jdbc:12.8.0.jre8")
+                    if (JavaVersion.isGreaterOrEqual(11)) {
+                        runtimeManager.downloadADependency("com.microsoft.sqlserver:mssql-jdbc:12.8.1.jre11")
+                    } else {
+                        runtimeManager.downloadADependency("com.microsoft.sqlserver:mssql-jdbc:12.8.1.jre8")
+                    }
                     jdbcUrl = "jdbc:sqlserver://$address;DatabaseName=$database_name$params"
                     driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
                 }
@@ -234,10 +261,12 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 } catch (_: Throwable) {
                 }
             }
-            ds = HikariDataSource(config)
-            connection = Database.connect(ds!!, databaseConfig = org.jetbrains.exposed.sql.DatabaseConfig.invoke {
-                sqlLogger = MySqlLogger
-            })
+            val hikariDataSource = HikariDataSource(config)
+            ds = hikariDataSource
+            connection =
+                Database.connect(hikariDataSource, databaseConfig = org.jetbrains.exposed.sql.DatabaseConfig.invoke {
+                    sqlLogger = MySqlLogger
+                })
             isConnected = true
             info("&a数据库链接成功: &6$database_type")
         }.getOrElse {
