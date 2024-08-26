@@ -34,6 +34,7 @@ object Config : SimpleYAMLConfig() {
     @Comment("", "识别绑定Lore的NBT路径(由tag开始)，'.' 为路径分隔符,数据是玩家旧的lore")
     var nbt_path_lore = "sakura_bind_lore"
     var nbtPathLore = arrayOf<Any>()
+    var nbtPathLoreKey = arrayOf<Any>()
 
     @Key
     @Comment("", "遗失物品使用 SakuraMail 发送而不是暂存箱")
@@ -219,6 +220,8 @@ object Config : SimpleYAMLConfig() {
             list2.add(NBTEditor.CUSTOM_DATA)
             list2.addAll(nbt_path_lore.split('.'))
             nbtPathLore = list2.toTypedArray()
+            list2.add(0, NBTEditor.ITEMSTACK_COMPONENTS)
+            nbtPathLoreKey = list2.toTypedArray()
             var list3 = ArrayList<Any>()
             list3.add(NBTEditor.CUSTOM_DATA)
             list3.addAll(auto_bind_nbt.split('.'))
@@ -226,6 +229,7 @@ object Config : SimpleYAMLConfig() {
         } else {
             nbtPathUuid = nbt_path_uuid.split('.').toTypedArray()
             nbtPathLore = nbt_path_lore.split('.').toTypedArray()
+            nbtPathLoreKey = nbtPathLore
             autoBindNbt = auto_bind_nbt.split('.').toTypedArray()
         }
         if (SakuraMailHook.hasHooked && mailId.isNotBlank()) {

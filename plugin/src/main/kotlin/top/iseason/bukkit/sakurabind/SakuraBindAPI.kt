@@ -26,7 +26,6 @@ import top.iseason.bukkit.sakurabind.config.matcher.LoreMatcher
 import top.iseason.bukkit.sakurabind.event.*
 import top.iseason.bukkit.sakurabind.pickers.BasePicker
 import top.iseason.bukkit.sakurabind.utils.BindType
-import top.iseason.bukkit.sakurabind.utils.NBTUtils
 import top.iseason.bukkit.sakurabind.utils.removeList
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.applyMeta
@@ -294,7 +293,8 @@ object SakuraBindAPI {
         var temp = item
         var oldLoreIndex = 0
         //有旧的lore,先删除
-        var oldLore = NBTUtils.getKeys(item, Config.nbtPathLore)
+//        var oldLore = NBTUtils.getKeys(item, Config.nbtPathLore)
+        var oldLore = NBTEditor.getKeys(item, *Config.nbtPathLoreKey)
         if (!oldLore.isNullOrEmpty()) {
             if (itemMeta.hasLore()) {
                 var (oi, newLore) = removeList(itemMeta.lore!!, oldLore) { raw, str ->
