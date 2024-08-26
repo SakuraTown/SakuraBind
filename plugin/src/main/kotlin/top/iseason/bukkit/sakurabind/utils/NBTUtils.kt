@@ -7,7 +7,7 @@ object NBTUtils {
     val method: Method?
 
     init {
-        if (NBTEditor.getMinecraftVersion().ordinal > NBTEditor.MinecraftVersion.v1_20_R4.ordinal) {
+        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_20_R4)) {
             var find = NBTEditor::class.java.declaredMethods.find { it.name == "getValue" }
             if (find != null) {
                 find.isAccessible = true
@@ -19,9 +19,9 @@ object NBTUtils {
         }
     }
 
-    fun getKeys(item: Any, vararg keys: Any): Collection<String>? {
+    fun getKeys(item: Any, keys: Array<Any>): Collection<String>? {
         if (method == null) {
-            return NBTEditor.getKeys(item, keys)
+            return NBTEditor.getKeys(item, *keys)
         } else {
             var map = method.invoke(null, item, keys) as? Map<String, String> ?: return null
             return map.keys

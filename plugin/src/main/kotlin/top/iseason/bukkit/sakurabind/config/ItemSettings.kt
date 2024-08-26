@@ -115,7 +115,7 @@ object ItemSettings : SimpleYAMLConfig() {
         nbtPath = if (nbt_cache_path.isBlank()) {
             emptyArray()
         } else {
-            if (NBTEditor.getMinecraftVersion().ordinal > NBTEditor.MinecraftVersion.v1_20_R4.ordinal) {
+            if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_20_R4)) {
                 var list1 = ArrayList<Any>()
                 list1.add(NBTEditor.CUSTOM_DATA)
                 list1.addAll(nbt_cache_path.split('.'))

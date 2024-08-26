@@ -134,7 +134,7 @@ object UniqueItemConfig : SimpleYAMLConfig() {
         if (!logger__enable) setUpdate(false)
 
 
-        if (NBTEditor.getMinecraftVersion().ordinal > NBTEditor.MinecraftVersion.v1_20_R4.ordinal) {
+        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_20_R4)) {
             var list = ArrayList<Any>()
             list.add(NBTEditor.CUSTOM_DATA)
             list.addAll(unique_nbt_path.split('.'))

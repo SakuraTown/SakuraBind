@@ -62,7 +62,7 @@ object BindItemConfig : SimpleYAMLConfig() {
     var syncAmount = true
 
     override fun onLoaded(section: ConfigurationSection) {
-        if (NBTEditor.getMinecraftVersion().ordinal > NBTEditor.MinecraftVersion.v1_20_R4.ordinal) {
+        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_20_R4)) {
             var list1 = ArrayList<Any>()
             list1.add(NBTEditor.CUSTOM_DATA)
             list1.addAll(bindNbt.split('.'))

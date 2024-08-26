@@ -294,7 +294,7 @@ object SakuraBindAPI {
         var temp = item
         var oldLoreIndex = 0
         //有旧的lore,先删除
-        var oldLore = NBTUtils.getKeys(item, *Config.nbtPathLore)
+        var oldLore = NBTUtils.getKeys(item, Config.nbtPathLore)
         if (!oldLore.isNullOrEmpty()) {
             if (itemMeta.hasLore()) {
                 var (oi, newLore) = removeList(itemMeta.lore!!, oldLore) { raw, str ->
