@@ -680,8 +680,9 @@ object ItemListener : Listener {
             val next = iterator.next()
             val owner = SakuraBindAPI.getOwner(next) ?: continue
             val setting = ItemSettings.getSetting(next)
-            if (!CallbackCommand.isCallback(owner)
-                && !setting.getBoolean("item-deny.drop-on-death", owner.toString(), entity)
+            if (
+//                !CallbackCommand.isCallback(owner) &&
+                !setting.getBoolean("item-deny.drop-on-death", owner.toString(), entity)
             ) continue
             iterator.remove()
             sendBackList.add(next)

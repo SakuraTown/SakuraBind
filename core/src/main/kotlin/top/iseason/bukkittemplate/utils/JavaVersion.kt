@@ -6,12 +6,20 @@ object JavaVersion {
     init {
         val versionString = System.getProperty("java.version")
         val indexOf = versionString.indexOf('.')
-        val substring = versionString.substring(0, indexOf)
-        if (substring == "1") {
-            val indexOf1 = versionString.indexOf('.', indexOf + 1)
-            version = versionString.substring(indexOf + 1, indexOf1).toInt()
-        } else {
-            version = substring.toInt()
+        version = try {
+            if (indexOf > 0) {
+                val substring = versionString.substring(0, indexOf)
+                if (substring == "1") {
+                    val indexOf1 = versionString.indexOf('.', indexOf + 1)
+                    versionString.substring(indexOf + 1, indexOf1).toInt()
+                } else {
+                    substring.toInt()
+                }
+            } else {
+                versionString.toInt()
+            }
+        } catch (_: Exception) {
+            8
         }
     }
 
