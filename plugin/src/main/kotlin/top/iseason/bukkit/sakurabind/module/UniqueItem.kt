@@ -1,6 +1,6 @@
 package top.iseason.bukkit.sakurabind.module
 
-import io.github.bananapuncher714.nbteditor.NBTEditor
+
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -30,7 +30,7 @@ object UniqueItem : org.bukkit.event.Listener {
         val maxNum = event.setting.getInt("module.unique-item")
         if (maxNum < 0) return
         val item = event.item
-        if (NBTEditor.contains(item, *UniqueItemConfig.uniqueItemNbt)) {
+        if (UniqueItemConfig.isUnique(item)) {
             return
         }
         val amount = item.amount
@@ -41,15 +41,16 @@ object UniqueItem : org.bukkit.event.Listener {
         val max = min(maxNum, item.maxStackSize)
         val firstNum = min(amount, max)
         item.amount = firstNum
-        item.itemMeta = NBTEditor.set(item, getUniqueKey(firstNum), *UniqueItemConfig.uniqueItemNbt).itemMeta
+        UniqueItemConfig.setUnique(item, firstNum)
         var last = amount - firstNum
         if (last <= 0) return
         var cost: Int
         val arrayListOf = ArrayList<ItemStack>(last)
         while (last > 0) {
             cost = min(last, max)
-            val repeatItem = NBTEditor.set(item, getUniqueKey(cost), *UniqueItemConfig.uniqueItemNbt)
+            val repeatItem = item.clone()
             repeatItem.amount = cost
+            UniqueItemConfig.setUnique(repeatItem, cost)
             SakuraBindAPI.bind(repeatItem, event.owner, type = event.bindType, silent = true)
             arrayListOf.add(repeatItem)
             last -= cost
@@ -95,8 +96,7 @@ object UniqueItem : org.bukkit.event.Listener {
     @EventHandler
     fun onBlockBindFromItem(event: BlockBindFromItemEvent) {
         val handItem = event.handItem
-        val value =
-            NBTEditor.getString(handItem, *UniqueItemConfig.uniqueItemNbt) ?: return
+        val value = UniqueItemConfig.getUniqueId(handItem) ?: return
         event.extraData.add("U^${value}")
     }
 
@@ -107,7 +107,7 @@ object UniqueItem : org.bukkit.event.Listener {
             val key = str.substring(2, str.length)
             runCatching { parseUniqueKey(key) }.getOrNull() ?: return
             val item = event.item
-            item.itemMeta = NBTEditor.set(item, key, *UniqueItemConfig.uniqueItemNbt).itemMeta
+            UniqueItemConfig.setUnique(item, key)
             break
         }
     }
@@ -161,8 +161,7 @@ object UniqueFilter : BiPredicate<UUID, ItemStack> {
     }
 
     override fun test(t: UUID, item: ItemStack): Boolean {
-        val value =
-            NBTEditor.getString(item, *UniqueItemConfig.uniqueItemNbt) ?: return false
+        val value = UniqueItemConfig.getUniqueId(item) ?: return false
         val (uid, num) = runCatching { UniqueItem.parseUniqueKey(value) }.getOrNull() ?: return false
         val raw = map[uid] ?: 0
         if (raw >= num) { // 超过限制

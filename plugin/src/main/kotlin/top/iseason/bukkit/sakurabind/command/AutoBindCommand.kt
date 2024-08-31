@@ -1,6 +1,7 @@
 package top.iseason.bukkit.sakurabind.command
 
-import io.github.bananapuncher714.nbteditor.NBTEditor
+import de.tr7zw.nbtapi.NBT
+
 import org.bukkit.entity.Player
 import org.bukkit.permissions.PermissionDefault
 import top.iseason.bukkit.sakurabind.config.Config
@@ -30,12 +31,15 @@ object AutoBindCommand : CommandNode(
         val value = params.nextOrNull<String>() ?: ""
         val heldItem = player.getHeldItem() ?: throw ParmaException("请拿着物品")
         if (nbt == null) {
-            heldItem.itemMeta = NBTEditor.set(heldItem, value, *Config.autoBindNbt)!!.itemMeta
+            NBT.modify(heldItem) {
+                it.setString(Config.auto_bind_nbt, value)
+            }
             if (!params.hasParma("-silent"))
                 player.sendColorMessage(Lang.command__autoBind.formatBy(Config.auto_bind_nbt))
         } else {
-            val autoBindNbt = nbt.split('.').toTypedArray()
-            heldItem.itemMeta = NBTEditor.set(heldItem, value, NBTEditor.CUSTOM_DATA, *autoBindNbt)!!.itemMeta
+            NBT.modify(heldItem) {
+                it.setString(Config.auto_bind_nbt, value)
+            }
             player.sendColorMessage(Lang.command__autoBind.formatBy(nbt))
         }
         player.updateInventory()

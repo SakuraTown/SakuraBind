@@ -1,6 +1,7 @@
 package top.iseason.bukkit.sakurabind
 
-import io.github.bananapuncher714.nbteditor.NBTEditor
+
+import de.tr7zw.nbtapi.utils.MinecraftVersion
 import org.bstats.bukkit.Metrics
 import org.bukkit.event.block.BlockPhysicsEvent
 import top.iseason.bukkit.sakurabind.cache.BlockCache
@@ -124,12 +125,12 @@ object SakuraBind : BukkitPlugin {
      * 注册监听器
      */
     private fun initListeners() {
-        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_9)) {
+        if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_9_R1)) {
             ItemListener194.registerListener()
         }
         ItemListener.registerListener()
 
-        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_12)) {
+        if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_12_R1)) {
             PickupItemListener.registerListener()
         } else {
             LegacyPickupItemListener.registerListener()
@@ -208,9 +209,11 @@ object SakuraBind : BukkitPlugin {
             addSubNode(CallbackCommand)
             addSubNode(SuperCallbackCommand)
             addSubNode(TestCommand)
-            addSubNode(NBTCommand)
             addSubNode(TestMatchCommand)
             addSubNode(TestTryMatchCommand)
+
+            addSubNode(NBTCommand)
+
             addSubNode(TestCacheCommand)
         }
         CommandHandler.register(RootCommand)

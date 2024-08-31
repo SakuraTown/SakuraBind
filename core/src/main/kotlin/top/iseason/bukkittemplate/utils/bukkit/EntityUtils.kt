@@ -2,7 +2,6 @@
 
 package top.iseason.bukkittemplate.utils.bukkit
 
-import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Item
@@ -47,7 +46,7 @@ object EntityUtils {
         for (addItem in addItems) {
             if (addItem == null) continue
             val item = world.spawnEntity(location, EntityType.DROPPED_ITEM) as Item
-            item.setItemStack(addItem)
+            item.itemStack = addItem
         }
     }
 
@@ -67,8 +66,4 @@ object EntityUtils {
      */
     fun Player.getHeldItem(): ItemStack? = inventory.getHeldItem()
 
-    /**
-     * 序列化为json
-     */
-    fun Entity.toJson(): String = NBTEditor.getNBTCompound(this).toJson()
 }

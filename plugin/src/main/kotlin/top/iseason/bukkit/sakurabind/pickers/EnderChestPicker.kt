@@ -16,7 +16,7 @@ object EnderChestPicker : BasePicker("ender-chest") {
     override fun pickup(player: Player, items: Array<ItemStack>, notify: Boolean): Array<ItemStack> {
         val count = items.sumOf { it.amount }
         val addItem = player.enderChest.addItem(*items)
-        if (addItem.isEmpty()) {
+        if (addItem.isEmpty) {
             if (notify) MessageTool.sendNormal(player, Lang.send_back__ender_chest_all.formatBy(count))
             return emptyArray()
         }

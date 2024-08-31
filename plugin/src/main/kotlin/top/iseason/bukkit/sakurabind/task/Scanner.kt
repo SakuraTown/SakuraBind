@@ -1,6 +1,6 @@
 package top.iseason.bukkit.sakurabind.task
 
-import io.github.bananapuncher714.nbteditor.NBTEditor
+
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -66,7 +66,7 @@ class Scanner : BukkitRunnable() {
                 if (item.checkAir()) continue
                 val owner = SakuraBindAPI.getOwner(item)
                 val ownerStr = owner?.toString()
-                val setting = ItemSettings.getSetting(item, owner != null)
+                val setting = ItemSettings.getSetting(item)
                 if (owner != null &&
                     setting.getBoolean("auto-unbind.enable", ownerStr, player) &&
                     setting.getBoolean("auto-unbind.onScanner", ownerStr, player)
@@ -96,7 +96,7 @@ class Scanner : BukkitRunnable() {
                                 null,
                                 player
                             ))
-                                    || NBTEditor.contains(item, *Config.autoBindNbt)
+                                    || SakuraBindAPI.isAutoBind(item)
                             )
                 ) {
                     debug("绑定物品 ${item.type}")

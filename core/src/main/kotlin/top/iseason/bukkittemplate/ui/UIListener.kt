@@ -20,7 +20,7 @@ import top.iseason.bukkittemplate.ui.slot.ClickSlot
 import top.iseason.bukkittemplate.ui.slot.IOSlot
 import top.iseason.bukkittemplate.ui.slot.merge
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
-import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.subtract
+import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.decrease
 import top.iseason.bukkittemplate.utils.other.WeakCoolDown
 import top.iseason.bukkittemplate.utils.other.submit
 
@@ -244,7 +244,7 @@ fun InventoryClickEvent.ioEvent() {
                         if (slot.output(slot, output)) {
                             amount += outputAmount
                             slot.onOutput(slot, output)
-                            itemStack.subtract(outputAmount)
+                            itemStack.decrease(outputAmount)
                         }
                     }
                 }
@@ -260,7 +260,7 @@ fun InventoryClickEvent.ioEvent() {
                             val need = maxStackSize - amount
                             val outputAmount = if (slotAmount <= need) slotAmount else need
                             amount += outputAmount
-                            itemStack.subtract(outputAmount)
+                            itemStack.decrease(outputAmount)
                         }
                     view.cursor = cursor.apply { this.amount = amount }
                 }

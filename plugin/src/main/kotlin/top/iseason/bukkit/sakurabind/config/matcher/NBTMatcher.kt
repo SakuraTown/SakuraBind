@@ -1,11 +1,12 @@
 package top.iseason.bukkit.sakurabind.config.matcher
 
 import com.google.gson.Gson
-import io.github.bananapuncher714.nbteditor.NBTEditor
+
 import org.bukkit.command.CommandSender
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toJson
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import java.util.regex.Pattern
@@ -28,7 +29,7 @@ class NBTMatcher : BaseMatcher() {
     }
 
     override fun tryMatch(item: ItemStack): Boolean {
-        val json = Gson().fromJson(NBTEditor.getNBTCompound(item).toJson(), Map::class.java)
+        val json = Gson().fromJson(item.toJson(), Map::class.java)
         return nbt.all {
             val path = it.first
             val pattern = it.second
@@ -55,7 +56,7 @@ class NBTMatcher : BaseMatcher() {
     }
 
     override fun onDebug(item: ItemStack, debugHolder: CommandSender) {
-        val json = Gson().fromJson(NBTEditor.getNBTCompound(item).toJson(), Map::class.java)
+        val json = Gson().fromJson(item.toJson(), Map::class.java)
         nbt.all {
             val path = it.first
             val pattern = it.second

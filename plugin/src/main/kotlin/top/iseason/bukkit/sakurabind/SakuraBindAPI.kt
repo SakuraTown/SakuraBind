@@ -1,6 +1,7 @@
 package top.iseason.bukkit.sakurabind
 
-import io.github.bananapuncher714.nbteditor.NBTEditor
+import de.tr7zw.nbtapi.NBT
+import de.tr7zw.nbtapi.utils.MinecraftVersion
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -104,18 +105,21 @@ object SakuraBindAPI {
         val itemBindEvent = ItemBindEvent(item, realSet, uuid, type)
         if (!silent) Bukkit.getPluginManager().callEvent(itemBindEvent)
         if (itemBindEvent.isCancelled) return
-        val set = NBTEditor.set(itemBindEvent.item, itemBindEvent.owner.toString(), *Config.nbtPathUuid) ?: return
-        if (item.type != set.type) {
-            item.type = set.type
+        val eventItem = itemBindEvent.item
+        NBT.modify(eventItem) {
+            it.setString(Config.nbt_path_uuid, itemBindEvent.owner.toString())
         }
-        if (!set.hasItemMeta()) return
-        item.itemMeta = set.itemMeta
-        if (showLore) updateLore(item, itemBindEvent.setting)
-        if (realSet != itemBindEvent.setting) setSettingCache(item, itemBindEvent.setting)
+        if (item.type != eventItem.type) {
+            item.type = eventItem.type
+        }
+        if (!eventItem.hasItemMeta()) return
+        val eventSetting = itemBindEvent.setting
+        if (showLore) updateLore(eventItem, eventSetting)
+        if (realSet != eventSetting) setSettingCache(item, eventSetting)
         BindLogger.log(
             itemBindEvent.owner,
             itemBindEvent.bindType,
-            itemBindEvent.setting,
+            eventSetting,
             item
         )
     }
@@ -131,10 +135,10 @@ object SakuraBindAPI {
         val itemUnBIndEvent = ItemUnBIndEvent(item, owner, ItemSettings.getSetting(item), type)
         if (!silent) Bukkit.getPluginManager().callEvent(itemUnBIndEvent)
         if (itemUnBIndEvent.isCancelled) return
-        var set = NBTEditor.set(item, null, *Config.nbtPathUuid)
-        if (ItemSettings.nbtPath.isNotEmpty())
-            set = NBTEditor.set(set, null, *ItemSettings.nbtPath)
-        item.itemMeta = set.itemMeta
+        NBT.modify(item) {
+            it.removeKey(Config.nbt_path_uuid)
+            it.removeKey(ItemSettings.nbt_cache_path)
+        }
         updateLore(item, itemUnBIndEvent.setting)
         BindLogger.log(
             itemUnBIndEvent.owner,
@@ -238,13 +242,13 @@ object SakuraBindAPI {
         val toString = entityBindEvent.owner.toString()
         EntityCache.addEntity(entity, toString, entityBindEvent.setting.keyPath)
         // 1.9 才有这个API
-        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_9) &&
+        if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_9_R1) &&
             entity is LivingEntity &&
             setting.getBoolean("entity-deny.ai", toString, player)
         ) {
             entity.setAI(false)
         }
-        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_10) &&
+        if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_10_R1) &&
             setting.getBoolean("entity-deny.gravity", toString, player)
         ) {
             entity.setGravity(false)
@@ -294,16 +298,17 @@ object SakuraBindAPI {
         var oldLoreIndex = 0
         //有旧的lore,先删除
 //        var oldLore = NBTUtils.getKeys(item, Config.nbtPathLore)
-        var oldLore = NBTEditor.getKeys(item, *Config.nbtPathLoreKey)
-        if (!oldLore.isNullOrEmpty()) {
+        var oldLore = NBT.get<List<String>>(item) {
+            it.getStringList(Config.nbt_path_lore).toList()
+        }
+        if (oldLore.isNotEmpty()) {
             if (itemMeta.hasLore()) {
                 var (oi, newLore) = removeList(itemMeta.lore!!, oldLore) { raw, str ->
-                    raw.startsWith(str) || str.startsWith(raw)
+                    raw == str
                 }
                 oldLoreIndex = oi
                 temp.applyMeta { this.lore = newLore }
             }
-            temp = NBTEditor.set(temp, null, *Config.nbtPathLore)
         }
         val setting = basesSetting ?: ItemSettings.getSetting(item)
         // 有主人
@@ -353,11 +358,9 @@ object SakuraBindAPI {
             //记录历史
             var size = loreStr.size
             if (size > 0) {
-                val compound = NBTEditor.getEmptyNBTCompound()
-                for (string in loreStr) {
-                    compound.set("", string)
+                NBT.modify(temp) {
+                    it.getStringList(Config.nbt_path_lore).addAll(loreStr)
                 }
-                temp = NBTEditor.set(temp, compound, *Config.nbtPathLore)
             }
         } else {
             val unBindLore = setting.getStringList("item-unbind.lore")
@@ -373,6 +376,13 @@ object SakuraBindAPI {
                 lore.addAll(oldLoreIndex, newLore)
                 tempMeta.lore = lore
                 temp.itemMeta = tempMeta
+                NBT.modify(temp) {
+                    it.getStringList(Config.nbt_path_lore).addAll(lore)
+                }
+            } else {
+                NBT.modify(temp) {
+                    it.removeKey(Config.nbt_path_lore)
+                }
             }
         }
         item.itemMeta = temp.itemMeta
@@ -438,8 +448,21 @@ object SakuraBindAPI {
     @JvmStatic
     fun getOwner(item: ItemStack): UUID? {
         if (!item.hasItemMeta()) return null
-        val uuidString = NBTEditor.getString(item, *Config.nbtPathUuid) ?: return null
+        val uuidString = NBT.get<String>(item) { it.getString(Config.nbt_path_uuid) }
+        if (uuidString == "") {
+            return null
+        }
         return kotlin.runCatching { UUID.fromString(uuidString) }.getOrNull()
+    }
+
+    @JvmStatic
+    fun getOwnerStr(item: ItemStack): String? {
+        if (!item.hasItemMeta()) return null
+        return NBT.get<String>(item) {
+            val string = it.getString(Config.nbt_path_uuid)
+            if (string == "") return@get null
+            string
+        }
     }
 
     /**
@@ -473,9 +496,7 @@ object SakuraBindAPI {
      * @return 绑定设置
      */
     @JvmStatic
-    @JvmOverloads
-    fun getItemSetting(item: ItemStack, setInCache: Boolean = true): BaseSetting =
-        ItemSettings.getSetting(item, setInCache)
+    fun getItemSetting(item: ItemStack): BaseSetting = ItemSettings.getSetting(item)
 
     /**
      * 获取方块的拥有者
@@ -776,5 +797,8 @@ object SakuraBindAPI {
     fun setSettingCache(item: ItemStack, setting: BaseSetting) {
         return ItemSettings.setSettingCache(item, setting)
     }
+
+    @JvmStatic
+    fun isAutoBind(item: ItemStack): Boolean = NBT.get<Boolean>(item) { it.hasTag(Config.auto_bind_nbt) }
 
 }

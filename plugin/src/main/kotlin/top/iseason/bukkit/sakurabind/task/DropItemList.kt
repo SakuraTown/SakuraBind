@@ -1,6 +1,7 @@
 package top.iseason.bukkit.sakurabind.task
 
-import io.github.bananapuncher714.nbteditor.NBTEditor
+
+import de.tr7zw.nbtapi.utils.MinecraftVersion
 import org.bukkit.block.BlockState
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
@@ -15,7 +16,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
 object DropItemList : BukkitRunnable() {
-    private val hasMinHeight = NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_17)
+    private val hasMinHeight = MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_17_R1)
     val drops = ConcurrentLinkedQueue<ItemSender>()
 
     fun putDropItem(item: Item, owner: UUID, delay: Int) {

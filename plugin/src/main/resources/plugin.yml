@@ -3,6 +3,8 @@ main: ${main}
 version: ${version}
 authors: [ ${ author } ]
 api-version: 1.13
+depend:
+  - NBTAPI
 softdepend:
   - SakuraMail
   - PlaceholderAPI

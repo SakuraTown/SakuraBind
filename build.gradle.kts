@@ -46,11 +46,12 @@ subprojects {
     dependencies {
         val kotlinVersion: String by rootProject
         val exposedVersion: String by rootProject
-        val nbtEditorVersion: String by rootProject
+        compileOnly("de.tr7zw:item-nbt-api-plugin:2.13.2")
         compileOnly(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
         //基础库
         compileOnly(kotlin("stdlib"))
-        compileOnly("org.spigotmc", "spigot-api", "1.16.5-R0.1-SNAPSHOT")
+        compileOnly("org.spigotmc", "spigot-api", "1.20.3-R0.1-SNAPSHOT")
+//        compileOnly("org.spigotmc", "spigot-api", "1.16.5-R0.1-SNAPSHOT")
         compileOnly(
             "com.destroystokyo.paper", "paper-api", "1.16.5-R0.1-SNAPSHOT"
         ) {
@@ -58,14 +59,13 @@ subprojects {
             exclude("org.bukkit")
         }
         compileOnly("me.clip:placeholderapi:2.11.3")
-        implementation("io.github.bananapuncher714:nbteditor:$nbtEditorVersion")
+//        implementation("io.github.bananapuncher714:nbteditor:7.19.3")
 
         // 数据库
         compileOnly("org.jetbrains.exposed", "exposed-core", exposedVersion)
         compileOnly("org.jetbrains.exposed", "exposed-dao", exposedVersion)
         compileOnly("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
         compileOnly("org.jetbrains.exposed", "exposed-java-time", exposedVersion)
-
         compileOnly("com.zaxxer:HikariCP:4.0.3")
     }
 

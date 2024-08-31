@@ -1,13 +1,11 @@
 package top.iseason.bukkit.sakurabind.hook
 
 import com.germ.germplugin.api.GermSlotAPI
-import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.command.CallbackCommand
-import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.utils.BindType
@@ -29,7 +27,7 @@ object GermHook : BaseHook("GermPlugin") {
                 if (item.checkAir()) continue
                 val owner = SakuraBindAPI.getOwner(item)
                 val ownerStr = owner?.toString()
-                val setting = ItemSettings.getSetting(item, owner != null)
+                val setting = ItemSettings.getSetting(item)
                 if (owner != null &&
                     setting.getBoolean("auto-unbind.enable", ownerStr, player) &&
                     setting.getBoolean("auto-unbind.onScanner", ownerStr, player)
@@ -57,7 +55,7 @@ object GermHook : BaseHook("GermPlugin") {
                         "auto-bind.onScanner",
                         null,
                         player
-                    )) || NBTEditor.contains(item, *Config.autoBindNbt))
+                    )) || SakuraBindAPI.isAutoBind(item))
                 ) {
                     debug("萌芽: 绑定物品 ${item.type}")
                     MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onScanner, setting, item)

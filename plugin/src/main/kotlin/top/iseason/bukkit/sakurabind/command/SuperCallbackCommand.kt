@@ -1,6 +1,7 @@
 package top.iseason.bukkit.sakurabind.command
 
-import io.github.bananapuncher714.nbteditor.NBTEditor
+
+import de.tr7zw.nbtapi.NBT
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Item
@@ -72,7 +73,7 @@ object SuperCallbackCommand : CommandNode(
                         .filter {
                             if (it !is InventoryHolder) return@filter false
                             // 防止被 proguard 优化成 Translatable 导致低版本无法使用, 所以强转
-                            if (NBTEditor.contains(it.block as Any, "LootTableSeed")) return@filter false
+                            if (NBT.get<Boolean>(it.block.state) { it.hasTag("LootTableSeed") }) return@filter false
                             true
                         }
                 }.collect(Collectors.toList())

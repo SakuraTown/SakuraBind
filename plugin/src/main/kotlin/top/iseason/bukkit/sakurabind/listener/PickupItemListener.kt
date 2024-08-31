@@ -1,6 +1,6 @@
 package top.iseason.bukkit.sakurabind.listener
 
-import io.github.bananapuncher714.nbteditor.NBTEditor
+
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.entity.ThrowableProjectile
@@ -101,10 +101,10 @@ object PickupItemListener : Listener {
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onPickup)
             }
         } else {
-            val setting = ItemSettings.getSetting(item, false)
+            val setting = ItemSettings.getSetting(item)
             if (setting.getBoolean("auto-bind.enable", null, player) &&
                 (setting.getBoolean("auto-bind.onPickup", null, player) ||
-                        NBTEditor.contains(item, *Config.autoBindNbt))
+                        SakuraBindAPI.isAutoBind(item))
             ) {
                 SakuraBindAPI.bind(item, player, type = BindType.PICKUP_BIND_ITEM)
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onPickup, setting, item)

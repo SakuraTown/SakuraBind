@@ -24,19 +24,21 @@ object TestMatchCommand : CommandNode(
         val count = params.nextOrDefault(1)
         val player = sender as Player
         val heldItem = player.getHeldItem() ?: throw ParmaException("请拿着物品")
-        val nanoTime = System.nanoTime()
-        val millisTime = System.currentTimeMillis()
+        val m1 = System.currentTimeMillis()
+        val n1 = System.nanoTime()
         var keyPath = "global-setting"
         sender.sendColorMessage(Lang.command__test__match_start.formatBy(count))
         repeat(count) {
             keyPath = ItemSettings.getMatchedSetting(heldItem).keyPath
         }
+        val m2 = System.currentTimeMillis()
+        val n2 = System.nanoTime()
         sender.sendColorMessage(
             Lang.command__test__match.formatBy(
                 count,
                 keyPath,
-                System.currentTimeMillis() - millisTime,
-                System.nanoTime() - nanoTime
+                m2 - m1,
+                n2 - n1
             )
         )
     }

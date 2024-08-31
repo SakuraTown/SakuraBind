@@ -48,7 +48,7 @@ class MigrationScanner : BukkitRunnable() {
                     val (playerStr, start) = pair
                     val player = playerStr.trim()
                     if (Config.data_migration__dont_bind) continue
-                    var setting = Config.dataMigrationSetting ?: ItemSettings.getSetting(item, false)
+                    var setting = Config.dataMigrationSetting ?: ItemSettings.getSetting(item)
                     val uuid =
                         if (Config.data_migration__is_uuid) {
                             runCatching { UUID.fromString(player) }.getOrNull()
@@ -138,6 +138,6 @@ class MigrationScanner : BukkitRunnable() {
         if (removeLore && player != null) item.itemMeta = itemMeta
         if (player != null) debug("&7从物品 &f${item.getDisplayName() ?: item.type} &7中检测到 &6$player &7的可迁移绑定的数据，已迁移。")
 
-        return if (player == null) null else player!! to start
+        return if (player == null) null else player to start
     }
 }

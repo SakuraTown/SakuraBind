@@ -45,18 +45,13 @@ dependencies {
 // 插件名称，请在gradle.properties 修改
 val pluginName: String by rootProject
 //包名，请在gradle.properties 修改
-val group: String by rootProject
-val groupS = group
+val groupS = project.group as String
 // 作者，请在gradle.properties 修改
 val author: String by rootProject
 // jar包输出路径，请在gradle.properties 修改
 val jarOutputFile: String by rootProject
 //插件版本，请在gradle.properties 修改
-val version: String by rootProject
-// shadowJar 版本 ，请在gradle.properties 修改
-val shadowJar: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar by tasks
-// exposed 数据库框架版本，请在gradle.properties 修改
-val exposedVersion: String by rootProject
+
 val obfuscated: String by rootProject
 val obfuscatedDictionary: String by rootProject
 val obfuscationDictionaryFile: File? = if (obfuscatedDictionary.isEmpty()) null
@@ -156,7 +151,7 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     //class规则
     if (isObfuscated) keep(allowObf, "class $obfuscatedMainClass {}")
     else keep("class $groupS.libs.core.BukkitTemplate {}")
-    keep("class kotlin.Metadata {}")
+    keepkotlinmetadata()
     keep(allowObf, "class * implements $groupS.libs.core.BukkitPlugin {*;}")
     keep("class top.iseason.bukkit.sakurabind.SakuraBindAPI {*;}")
     keepclassmembers("class * extends $groupS.libs.core.config.SimpleYAMLConfig {*;}")

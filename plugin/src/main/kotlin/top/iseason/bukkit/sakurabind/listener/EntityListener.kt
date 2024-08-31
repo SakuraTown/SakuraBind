@@ -1,6 +1,7 @@
 package top.iseason.bukkit.sakurabind.listener
 
-import io.github.bananapuncher714.nbteditor.NBTEditor
+
+import de.tr7zw.nbtapi.utils.MinecraftVersion
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -49,7 +50,7 @@ object EntityListener : Listener {
         val clickedBlock = event.clickedBlock
         var location: Location? = null
         if (clickedBlock != null) {
-            location = if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_13)
+            location = if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1)
                 && !clickedBlock.type.isSolid
             ) clickedBlock.location
             else clickedBlock.getRelative(event.blockFace).location

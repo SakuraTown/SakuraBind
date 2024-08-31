@@ -1,7 +1,6 @@
 package top.iseason.bukkit.sakurabind.listener
 
 import fr.xephi.authme.api.v3.AuthMeApi
-import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Item
@@ -477,23 +476,22 @@ object ItemListener : Listener {
             val setting = ItemSettings.getSetting(item)
             if (setting.getBoolean("auto-unbind.enable", owner, player) &&
                 (setting.getBoolean("auto-unbind.onClick", owner, player) ||
-                        NBTEditor.contains(item, *Config.autoBindNbt))
+                        SakuraBindAPI.isAutoBind(item))
             ) {
                 SakuraBindAPI.unBind(item, BindType.CLICK_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onClick)
             }
         } else {
-            val setting = ItemSettings.getSetting(item, false)
+            val setting = ItemSettings.getSetting(item)
             if (setting.getBoolean("auto-bind.enable", null, player) &&
                 (setting.getBoolean("auto-bind.onClick", null, player) ||
-                        NBTEditor.contains(item, *Config.autoBindNbt))
+                        SakuraBindAPI.isAutoBind(item))
             ) {
                 SakuraBindAPI.bind(item, player as Player, type = BindType.CLICK_BIND_ITEM)
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onClick, setting, item)
             }
         }
     }
-
 
 
     /**
@@ -515,10 +513,10 @@ object ItemListener : Listener {
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onDrop)
             }
         } else {
-            val setting = ItemSettings.getSetting(item, false)
+            val setting = ItemSettings.getSetting(item)
             if (setting.getBoolean("auto-bind.enable", null, player) &&
                 (setting.getBoolean("auto-bind.onDrop", null, player) ||
-                        NBTEditor.contains(item, *Config.autoBindNbt))
+                        SakuraBindAPI.isAutoBind(item))
             ) {
                 SakuraBindAPI.bind(item, player, type = BindType.DROP_BIND_ITEM)
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onDrop, setting, item)
@@ -554,19 +552,19 @@ object ItemListener : Listener {
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onRight)
             }
         } else {
-            val setting = ItemSettings.getSetting(item, false)
+            val setting = ItemSettings.getSetting(item)
             if (!setting.getBoolean("auto-bind.enable", null, player)) {
                 return
             }
             if ((action == Action.LEFT_CLICK_BLOCK || action == Action.LEFT_CLICK_AIR) &&
                 (setting.getBoolean("auto-bind.onLeft", null, player) ||
-                        NBTEditor.contains(item, *Config.autoBindNbt))
+                        SakuraBindAPI.isAutoBind(item))
             ) {
                 SakuraBindAPI.bind(item, player, type = BindType.LEFT_BIND_ITEM)
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onLeft, setting, item)
             } else if ((action == Action.RIGHT_CLICK_BLOCK || action == Action.RIGHT_CLICK_AIR) &&
                 (setting.getBoolean("auto-bind.onRight", null, player) ||
-                        NBTEditor.contains(item, *Config.autoBindNbt))
+                        SakuraBindAPI.isAutoBind(item))
             ) {
                 SakuraBindAPI.bind(item, player, type = BindType.RIGHT_BIND_ITEM)
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onRight, setting, item)
@@ -593,12 +591,12 @@ object ItemListener : Listener {
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onLeft)
             }
         } else {
-            val setting = ItemSettings.getSetting(item, false)
+            val setting = ItemSettings.getSetting(item)
             if (!setting.getBoolean("auto-bind.enable", null, player)) {
                 return
             }
             if ((setting.getBoolean("auto-bind.onLeft", null, player) ||
-                        NBTEditor.contains(item, *Config.autoBindNbt))
+                        SakuraBindAPI.isAutoBind(item))
             ) {
                 SakuraBindAPI.bind(item, player, type = BindType.LEFT_BIND_ITEM)
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onLeft, setting, item)
@@ -616,16 +614,16 @@ object ItemListener : Listener {
             val setting = ItemSettings.getSetting(item)
             if (setting.getBoolean("auto-unbind.enable", owner, player) &&
                 (setting.getBoolean("auto-unbind.onUse", owner, player) ||
-                        NBTEditor.contains(item, *Config.autoBindNbt))
+                        SakuraBindAPI.isAutoBind(item))
             ) {
                 SakuraBindAPI.unBind(item, BindType.USE_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onUse)
             }
         } else {
-            val setting = ItemSettings.getSetting(item, false)
+            val setting = ItemSettings.getSetting(item)
             if (setting.getBoolean("auto-bind.enable", null, player) &&
                 (setting.getBoolean("auto-bind.onUse", null, player) ||
-                        NBTEditor.contains(item, *Config.autoBindNbt))
+                        SakuraBindAPI.isAutoBind(item))
             ) {
                 SakuraBindAPI.bind(item, player, type = BindType.USE_BIND_ITEM)
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onUse, setting, item)

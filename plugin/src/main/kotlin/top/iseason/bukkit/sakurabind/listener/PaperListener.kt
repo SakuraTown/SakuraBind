@@ -2,7 +2,7 @@ package top.iseason.bukkit.sakurabind.listener
 
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent.SlotType.*
-import io.github.bananapuncher714.nbteditor.NBTEditor
+
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -36,7 +36,7 @@ object PaperListener : Listener {
         if (owner == null) {
             if (setting.getBoolean("auto-bind.enable", null, player) &&
                 (setting.getBoolean("auto-bind.onEquipWear", null, player) ||
-                        NBTEditor.contains(item, *Config.autoBindNbt))
+                        SakuraBindAPI.isAutoBind(item))
             ) {
                 SakuraBindAPI.bind(item, player, type = BindType.EQUIP_BIND_ITEM)
                 setEquip(event.slotType, player, item)

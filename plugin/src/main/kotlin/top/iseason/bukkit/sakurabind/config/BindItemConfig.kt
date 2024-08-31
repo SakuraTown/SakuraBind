@@ -1,8 +1,10 @@
 package top.iseason.bukkit.sakurabind.config
 
-import io.github.bananapuncher714.nbteditor.NBTEditor
+
+import de.tr7zw.nbtapi.NBT
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.MemorySection
+import org.bukkit.inventory.ItemStack
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
@@ -34,10 +36,9 @@ object BindItemConfig : SimpleYAMLConfig() {
     var bind: MemorySection? = null
 
     @Key("bind.nbt")
-    @Comment("", "识别配置的NBT路径,'.'为分隔符")
+    @Comment("", "识别配置的NBT路径")
     var bindNbt = "sakura_bind_bind-item"
-    var bindPath = arrayOf<Any>("sakura_bind_bind-item")
-        private set
+
 
     @Key("bind.chance")
     @Comment("", "成功率, 每次绑定都会消耗一个物品")
@@ -48,10 +49,8 @@ object BindItemConfig : SimpleYAMLConfig() {
     var unbind: MemorySection? = null
 
     @Key("unbind.nbt")
-    @Comment("", "识别配置的NBT路径,'.'为分隔符")
+    @Comment("", "识别配置的NBT路径")
     var unbindNbt = "sakura_bind_unbind-item"
-    var unBindPath = arrayOf<Any>("sakura_bind_unbind-item")
-        private set
 
     @Key("unbind.chance")
     @Comment("", "成功率, 每次解绑定都会消耗一个物品")
@@ -62,19 +61,12 @@ object BindItemConfig : SimpleYAMLConfig() {
     var syncAmount = true
 
     override fun onLoaded(section: ConfigurationSection) {
-        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_20_R4)) {
-            var list1 = ArrayList<Any>()
-            list1.add(NBTEditor.CUSTOM_DATA)
-            list1.addAll(bindNbt.split('.'))
-            bindPath = list1.toTypedArray()
-            var list2 = ArrayList<Any>()
-            list2.add(NBTEditor.CUSTOM_DATA)
-            list2.addAll(unbindNbt.split('.'))
-            unBindPath = list1.toTypedArray()
-        } else {
-            bindPath = bindNbt.split('.').toTypedArray()
-            unBindPath = unbindNbt.split('.').toTypedArray()
-        }
+
+    }
+
+    fun getSetting(item: ItemStack): String? = NBT.get<String>(item) {
+        val string = it.getString(bindNbt)
+        if (string == "") null else string
     }
 
 

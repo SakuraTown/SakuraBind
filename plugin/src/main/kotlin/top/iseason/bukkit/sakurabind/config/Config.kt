@@ -1,7 +1,6 @@
 package top.iseason.bukkit.sakurabind.config
 
 import com.google.common.cache.Cache
-import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.MemorySection
 import org.bukkit.entity.HumanEntity
@@ -26,15 +25,12 @@ import java.util.regex.Pattern
 object Config : SimpleYAMLConfig() {
 
     @Key
-    @Comment("", "识别绑定玩家的NBT路径(由tag开始)，'.' 为路径分隔符,数据是玩家uuid")
+    @Comment("", "识别绑定玩家的NBT路径")
     var nbt_path_uuid = "sakura_bind_uuid"
-    var nbtPathUuid = arrayOf<Any>()
 
     @Key
-    @Comment("", "识别绑定Lore的NBT路径(由tag开始)，'.' 为路径分隔符,数据是玩家旧的lore")
+    @Comment("", "识别绑定Lore的NBT路径,数据是玩家旧的lore")
     var nbt_path_lore = "sakura_bind_lore"
-    var nbtPathLore = arrayOf<Any>()
-    var nbtPathLoreKey = arrayOf<Any>()
 
     @Key
     @Comment("", "遗失物品使用 SakuraMail 发送而不是暂存箱")
@@ -100,7 +96,6 @@ object Config : SimpleYAMLConfig() {
     @Key
     @Comment("", "识别到此NBT就自动绑定物主")
     var auto_bind_nbt = "sakura_auto_bind"
-    var autoBindNbt = arrayOf<Any>()
 
     @Key
     @Comment("", "选择命令的最大超时时间,单位毫秒")
@@ -149,6 +144,10 @@ object Config : SimpleYAMLConfig() {
     @Key
     @Comment("", "物品读取设置的缓存个数,建议值是 玩家背包格子数量*玩家数量")
     var setting_cache_size = 2000L
+
+    @Key
+    @Comment("", "物品读取设置的缓存时间(秒),建议值大于 扫描器时间")
+    var setting_cache_time = 3500L
 
     @Key
     @Comment(
@@ -211,27 +210,6 @@ object Config : SimpleYAMLConfig() {
     fun getDataMigrationCacheStat() = dataMigrationCache?.stats()
 
     override fun onLoaded(section: ConfigurationSection) {
-        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_20_R4)) {
-            var list1 = ArrayList<Any>()
-            list1.add(NBTEditor.CUSTOM_DATA)
-            list1.addAll(nbt_path_uuid.split('.'))
-            nbtPathUuid = list1.toTypedArray()
-            var list2 = ArrayList<Any>()
-            list2.add(NBTEditor.CUSTOM_DATA)
-            list2.addAll(nbt_path_lore.split('.'))
-            nbtPathLore = list2.toTypedArray()
-            list2.add(0, NBTEditor.ITEMSTACK_COMPONENTS)
-            nbtPathLoreKey = list2.toTypedArray()
-            var list3 = ArrayList<Any>()
-            list3.add(NBTEditor.CUSTOM_DATA)
-            list3.addAll(auto_bind_nbt.split('.'))
-            autoBindNbt = list3.toTypedArray()
-        } else {
-            nbtPathUuid = nbt_path_uuid.split('.').toTypedArray()
-            nbtPathLore = nbt_path_lore.split('.').toTypedArray()
-            nbtPathLoreKey = nbtPathLore
-            autoBindNbt = auto_bind_nbt.split('.').toTypedArray()
-        }
         if (SakuraMailHook.hasHooked && mailId.isNotBlank()) {
             SystemMailsYml.getMailYml(mailId) ?: info("&c邮件&7 $mailId &c不存在!")
         }

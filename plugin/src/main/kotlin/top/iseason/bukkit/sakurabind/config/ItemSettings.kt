@@ -1,7 +1,7 @@
 package top.iseason.bukkit.sakurabind.config
 
 import com.google.common.cache.CacheBuilder
-import io.github.bananapuncher714.nbteditor.NBTEditor
+import de.tr7zw.nbtapi.NBT
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
@@ -12,6 +12,8 @@ import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
 import top.iseason.bukkittemplate.debug.warn
+import java.util.concurrent.TimeUnit
+import kotlin.math.max
 
 @FilePath("settings.yml")
 object ItemSettings : SimpleYAMLConfig() {
@@ -57,13 +59,11 @@ object ItemSettings : SimpleYAMLConfig() {
     @Key
     @Comment(
         "",
-        "为提高性能，匹配过一次的物品在绑定之后将会把匹配到的设置键存入物品NBT，此为NBT的路径(由tag路径开始) '.' 为路径分隔符",
+        "为提高性能，匹配过一次的物品在绑定之后将会把匹配到的设置键存入物品NBT，此为NBT的路径",
         "注意，缓存会导致不同配置的nbt不一致，以至于不同配置的相同物品无法堆叠",
         "留空不使用缓存"
     )
     var nbt_cache_path: String = "sakura_bind_setting_cache"
-    var nbtPath: Array<Any> = arrayOf("sakura_bind_setting_cache")
-    var isCacheInNbt = true
 
     @Key
     @Comment(
@@ -89,42 +89,28 @@ object ItemSettings : SimpleYAMLConfig() {
         }
     }
 
-//    val settingCache: UserManagedCache<ItemStack, BaseSetting> = UserManagedCacheBuilder
-//        .newUserManagedCacheBuilder(ItemStack::class.java, BaseSetting::class.java)
-//        .identifier("SakuraBind-Setting-Cache")
-//        .withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofSeconds(3)))
-//        .withKeyCopier(IdentityCopier.identityCopier())
-//        .withValueCopier(IdentityCopier.identityCopier())
-//        .withDispatcherConcurrency(2)
-//        .build(true)
-
-    private val settingCache2 = CacheBuilder.newBuilder()
+    private val settingCache = CacheBuilder.newBuilder()
+        .initialCapacity(max((Config.setting_cache_size / 8L).toInt(), 200))
         .maximumSize(Config.setting_cache_size)
-        .weakValues()
+        .expireAfterAccess(Config.setting_cache_time, TimeUnit.MILLISECONDS)
+        .concurrencyLevel(5)
+//        .weakKeys()
+//        .weakValues()
+//        .softValues()
         .recordStats()
         .build<ItemStack, BaseSetting>()
 
-    fun getCacheStats() = settingCache2.stats()
+    fun getCacheStats() = settingCache.stats()
 
     private var settings = LinkedHashMap<String, BaseSetting>()
 
     override fun onLoaded(section: ConfigurationSection) {
         settings.clear()
-        settingCache2.invalidateAll()
-        settingCache2.cleanUp()
-        nbtPath = if (nbt_cache_path.isBlank()) {
-            emptyArray()
-        } else {
-            if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_20_R4)) {
-                var list1 = ArrayList<Any>()
-                list1.add(NBTEditor.CUSTOM_DATA)
-                list1.addAll(nbt_cache_path.split('.'))
-                list1.toTypedArray()
-            } else {
-                nbt_cache_path.split('.').toTypedArray()
-            }
+        settingCache.invalidateAll()
+        settingCache.cleanUp()
+        if (nbt_cache_path.isBlank()) {
+            nbt_cache_path = "sakura_bind_setting_cache"
         }
-        isCacheInNbt = nbtPath.isNotEmpty()
         matchers.getKeys(false).forEach {
             val s = matchers.getConfigurationSection(it)!!
             try {
@@ -141,49 +127,38 @@ object ItemSettings : SimpleYAMLConfig() {
     /**
      * 获取物品对应的设置,具有三级缓存
      */
-    fun getSetting(item: ItemStack, setInCache: Boolean = true): BaseSetting {
-        // 一级缓存, 由EhCache实现
-        // 仅给未绑定物品添加一级缓存
-        var setting: BaseSetting? = if (setInCache && isCacheInNbt) null else settingCache2.getIfPresent(item)
-//        // 存在缓存，立即返回
-        if (setting != null) {
-            return setting
-        }
-        // 二级缓存,从NBT中读取设置的ID,再根据ID获取对应的对象
-        val key = if (isCacheInNbt) NBTEditor.getString(item, *nbtPath) else null
+    fun getSetting(item: ItemStack): BaseSetting {
+        var setting: BaseSetting? = null
+        // 绑定物品缓存, 从NBT中读取设置的ID,再根据ID获取对应的对象
+        val key = NBT.get<String>(item) { it.getString(nbt_cache_path) }
         // 持久化的ID可能过期，先判断
-        if (key != null && setInCache) {
+        if (key.isNullOrEmpty()) {
             // 存在缓存，立即返回
             setting = settings[key]
-            if (setting != null) return setting
-        }
-        // 物品匹配,顺序查找,找到了立即结束循环并加入缓存
-        for (s in settings.values) {
-            if (s.match(item)) {
-                val itemMatchedEvent = ItemMatchedEvent(item, s)
-                Bukkit.getPluginManager().callEvent(itemMatchedEvent)
-                setting = itemMatchedEvent.matchSetting ?: DefaultItemSetting
-                if (setInCache && isCacheInNbt) item.itemMeta =
-                    NBTEditor.set(item, setting.keyPath, *nbtPath).itemMeta
-                break
+            if (setting != null) {
+                return setting
+            } else { // 配置删了
+                setting = getMatchedSetting(item)
+                NBT.modify(item) { it.setString(nbt_cache_path, setting.keyPath) }
+                return setting
             }
         }
-        //到这就没有合适的键了，但又有nbt，说明被删了，清除旧的缓存
-        if (key != null) item.itemMeta = NBTEditor.set(item, null, *nbtPath).itemMeta
-        val s = setting ?: DefaultItemSetting
-        if (!setInCache) settingCache2.put(item, s)
-        return s
+        // 非绑定物品缓存
+        return settingCache.get(item) {
+            getMatchedSetting(item)
+        }
     }
 
     fun setSettingCache(item: ItemStack, setting: BaseSetting) {
-        if (nbtPath.isEmpty()) return
-        item.itemMeta = NBTEditor.set(item, setting.keyPath, *nbtPath).itemMeta
+        NBT.modify(item) { it.setString(nbt_cache_path, setting.keyPath) }
     }
 
     fun getMatchedSetting(item: ItemStack): BaseSetting {
         for ((_, s) in settings) {
             if (s.match(item)) {
-                return s
+                val itemMatchedEvent = ItemMatchedEvent(item, s)
+                Bukkit.getPluginManager().callEvent(itemMatchedEvent)
+                return itemMatchedEvent.matchSetting ?: DefaultItemSetting
             }
         }
         return DefaultItemSetting

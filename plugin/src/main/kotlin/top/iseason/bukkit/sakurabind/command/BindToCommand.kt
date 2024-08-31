@@ -1,6 +1,7 @@
 package top.iseason.bukkit.sakurabind.command
 
-import io.github.bananapuncher714.nbteditor.NBTEditor
+
+import de.tr7zw.nbtapi.utils.MinecraftVersion
 import org.bukkit.entity.Player
 import org.bukkit.permissions.PermissionDefault
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
@@ -56,7 +57,7 @@ object BindToCommand : CommandNode(
             }
 
             "entity" -> {
-                if (!NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_13)) {
+                if (!MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1)) {
                     throw ParmaException("实体绑定命令只在1.13或以上生效")
                 }
                 val eyeLocation = player.eyeLocation

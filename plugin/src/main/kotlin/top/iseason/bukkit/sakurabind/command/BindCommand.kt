@@ -1,6 +1,6 @@
 package top.iseason.bukkit.sakurabind.command
 
-import io.github.bananapuncher714.nbteditor.NBTEditor
+import de.tr7zw.nbtapi.utils.MinecraftVersion
 import org.bukkit.entity.Player
 import org.bukkit.permissions.PermissionDefault
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
@@ -12,7 +12,7 @@ import top.iseason.bukkittemplate.command.*
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessages
-import top.iseason.bukkittemplate.utils.other.submit
+import top.iseason.bukkittemplate.utils.other.runSync
 
 object BindCommand : CommandNode(
     name = "bind",
@@ -59,17 +59,17 @@ object BindCommand : CommandNode(
             }
 
             "entity" -> {
-                if (!NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_13)) {
+                if (!MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1)) {
                     throw ParmaException("实体绑定命令只在1.13或以上生效")
                 }
                 val eyeLocation = player.eyeLocation
                 val direction = player.eyeLocation.direction
 
-                submit {
+                runSync {
                     val rayTraceEntities =
                         player.world.rayTraceEntities(eyeLocation.clone().add(direction), direction, 5.0)
-                            ?: return@submit
-                    val hitEntity = rayTraceEntities.hitEntity ?: return@submit
+                            ?: return@runSync
+                    val hitEntity = rayTraceEntities.hitEntity ?: return@runSync
                     val settingStr = params.next<String>()
                     val setting = ItemSettings.getSetting(settingStr)
                     SakuraBindAPI.bindEntity(hitEntity, player, setting, BindType.COMMAND_BIND_ENTITY)

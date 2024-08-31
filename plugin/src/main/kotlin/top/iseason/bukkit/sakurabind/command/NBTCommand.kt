@@ -1,12 +1,13 @@
 package top.iseason.bukkit.sakurabind.command
 
-import io.github.bananapuncher714.nbteditor.NBTEditor
+
 import org.bukkit.entity.Player
 import org.bukkit.permissions.PermissionDefault
 import top.iseason.bukkittemplate.command.CommandNode
 import top.iseason.bukkittemplate.command.CommandNodeExecutor
 import top.iseason.bukkittemplate.command.ParmaException
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
+import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toJson
 
 object NBTCommand : CommandNode(
     name = "nbt",
@@ -18,7 +19,7 @@ object NBTCommand : CommandNode(
     override var onExecute: CommandNodeExecutor? = CommandNodeExecutor { params, sender ->
         val player = sender as Player
         val heldItem = player.inventory.getHeldItem() ?: throw ParmaException("请拿着物品")
-        println(NBTEditor.getNBTCompound(heldItem).toJson())
+        println(heldItem.toJson())
     }
 
 }

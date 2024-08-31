@@ -1,6 +1,6 @@
 package top.iseason.bukkit.sakurabind.config
 
-import io.github.bananapuncher714.nbteditor.NBTEditor
+import de.tr7zw.nbtapi.NBT
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.MemorySection
@@ -9,6 +9,7 @@ import org.bukkit.scheduler.BukkitTask
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.dto.UniqueLog
 import top.iseason.bukkit.sakurabind.module.UniqueItem
+import top.iseason.bukkit.sakurabind.module.UniqueItem.getUniqueKey
 import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.DisableHook
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
@@ -56,8 +57,6 @@ object UniqueItemConfig : SimpleYAMLConfig() {
     @Key
     @Comment("", "唯一Id的NBT路径,'.'为分隔符")
     var unique_nbt_path = "SakuraBind_Unique"
-    var uniqueItemNbt = arrayOf<Any>("SakuraBind_Unique")
-        private set
 
     @Key
     @Comment(
@@ -133,20 +132,32 @@ object UniqueItemConfig : SimpleYAMLConfig() {
     override fun onLoaded(section: ConfigurationSection) {
         if (!logger__enable) setUpdate(false)
 
-
-        if (NBTEditor.getMinecraftVersion().greaterThanOrEqualTo(NBTEditor.MinecraftVersion.v1_20_R4)) {
-            var list = ArrayList<Any>()
-            list.add(NBTEditor.CUSTOM_DATA)
-            list.addAll(unique_nbt_path.split('.'))
-            uniqueItemNbt = list.toTypedArray()
-        } else {
-            uniqueItemNbt = unique_nbt_path.split('.').toTypedArray()
-        }
         scanner?.cancel()
         scanner = null
         if (enable && scanner_period > 0L)
             scanner = UniqueItem.Scanner()
                 .runTaskTimerAsynchronously(BukkitTemplate.getPlugin(), scanner_period, scanner_period)
+    }
+
+    fun getUniqueId(item: ItemStack): String? = NBT.get<String>(item) {
+        val string = it.getString(unique_nbt_path)
+        if (string == "") null
+        else
+            string
+    }
+
+    fun isUnique(item: ItemStack): Boolean = NBT.get<Boolean>(item) { it.hasTag(unique_nbt_path) }
+
+    fun setUnique(item: ItemStack, amount: Int) {
+        NBT.modify(item) {
+            it.setString(unique_nbt_path, getUniqueKey(amount))
+        }
+    }
+
+    fun setUnique(item: ItemStack, key: String) {
+        NBT.modify(item) {
+            it.setString(unique_nbt_path, key)
+        }
     }
 
     fun log(unique: String, max: Int, item: ItemStack, reduce: Int, type: String, attach: String = "") {

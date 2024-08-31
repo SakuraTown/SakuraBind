@@ -1,6 +1,5 @@
 package top.iseason.bukkit.sakurabind.module
 
-import io.github.bananapuncher714.nbteditor.NBTEditor
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -12,7 +11,7 @@ import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkit.sakurabind.utils.MessageTool
-import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.subtract
+import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.decrease
 import top.iseason.bukkittemplate.utils.other.RandomUtils
 
 object BindItem : org.bukkit.event.Listener {
@@ -25,7 +24,7 @@ object BindItem : org.bukkit.event.Listener {
         val currentItem = event.currentItem ?: return
         val owner = SakuraBindAPI.getOwner(currentItem)
         if (owner != null) {
-            if (!NBTEditor.contains(cursor, *BindItemConfig.unBindPath)) return
+            if (!SakuraBindAPI.isAutoBind(cursor)) return
             if (event.whoClicked.uniqueId != owner) {
                 MessageTool.messageCoolDown(event.whoClicked, Lang.bind_item__not_owner)
                 event.isCancelled = true
@@ -33,7 +32,7 @@ object BindItem : org.bukkit.event.Listener {
             }
             if (BindItemConfig.syncAmount) {
                 if (cursor.amount >= currentItem.amount) {
-                    cursor.subtract(currentItem.amount)
+                    cursor.decrease(currentItem.amount)
                     if (cursor.type == Material.AIR) {
                         event.cursor = null
                     }
@@ -46,7 +45,7 @@ object BindItem : org.bukkit.event.Listener {
                 if (cursor.amount == 1) {
                     event.cursor = null
                 } else
-                    cursor.subtract(1)
+                    cursor.decrease(1)
             }
             if (!RandomUtils.checkPercentage(BindItemConfig.unbindChance)) {
                 SakuraBindAPI.unBind(currentItem, type = BindType.BIND_ITEM_UNBIND_ITEM)
@@ -54,13 +53,12 @@ object BindItem : org.bukkit.event.Listener {
             } else {
                 MessageTool.messageCoolDown(event.whoClicked, Lang.bind_item__unbind_failure)
             }
-
             event.isCancelled = true
         } else {
-            val string = NBTEditor.getString(cursor, *BindItemConfig.bindPath) ?: return
+            val string = BindItemConfig.getSetting(cursor) ?: return
             if (BindItemConfig.syncAmount) {
                 if (cursor.amount >= currentItem.amount) {
-                    cursor.subtract(currentItem.amount)
+                    cursor.decrease(currentItem.amount)
                     if (cursor.type == Material.AIR) {
                         event.cursor = null
                     }
@@ -73,7 +71,7 @@ object BindItem : org.bukkit.event.Listener {
                 if (cursor.amount == 1) {
                     event.cursor = null
                 } else
-                    cursor.subtract(1)
+                    cursor.decrease(1)
             }
             if (!RandomUtils.checkPercentage(BindItemConfig.bindChance)) {
                 val settingNullable = ItemSettings.getSettingNullable(string)
