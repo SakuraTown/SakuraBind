@@ -4,7 +4,9 @@ import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
 import studio.trc.bukkit.globalmarketplus.api.Mailbox
+import studio.trc.bukkit.globalmarketplus.api.Merchant
 import studio.trc.bukkit.globalmarketplus.mailbox.ItemMailType
+import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.hook.GlobalMarketPlusHook
 import java.util.UUID
 
@@ -29,20 +31,39 @@ object GlobalMarketPlusPicker : BasePicker("GlobalMarketPlus") {
         if (!GlobalMarketPlusHook.hasHooked) return items
         val uniqueId = player.uniqueId
         val mailbox = Mailbox.getMailbox(player.uniqueId)
-        for (stack in items) {
+        val senderName = Config.market_sender_name
+        val seconds = Config.market_sender_time
+        val time = System.currentTimeMillis()
+        val expire = if (seconds <= 0) -1L else (time + seconds * 1000)
+        // 邮箱上限
+        val mailQuantityLimit = Merchant.getMerchant(uniqueId).group.mailQuantityLimit
+
+        var mail = items
+        var remaining: Array<ItemStack> = emptyArray()
+        if (mailQuantityLimit > 0) {
+            // 剩余空间
+            val size = mailQuantityLimit - mailbox.itemMails.size
+            // 没空间
+            if (size <= 0) return items
+            mail = items.take(size).toTypedArray()
+            val mailSize = mail.size
+            if (mailSize < items.size)
+                remaining = items.drop(mailSize).toTypedArray()
+        }
+        for (stack in mail) {
             mailbox.addMail(
                 uniqueId,
                 player.name,
                 ItemMailType.OTHER_SOURCE,
-                System.currentTimeMillis(),
-                -1L,
+                time,
+                expire,
                 stack,
                 null,
-                null,
+                senderName,
                 stack.amount
             )
         }
-        return emptyArray()
+        return remaining
     }
 
 }

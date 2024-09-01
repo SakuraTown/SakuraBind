@@ -84,6 +84,19 @@ object Config : SimpleYAMLConfig() {
     )
     var send_back_queue = listOf("player", "ender-chest", "database")
 
+
+    @Key("global-market-plus")
+    @Comment("", "物品送回 GlobalMarketPlus 的设置")
+    var market_sender: MemorySection? = null
+
+    @Key("global-market-plus.name")
+    @Comment("", "邮件发送者名称")
+    var market_sender_name = "绑定系统"
+
+    @Key("global-market-plus.expire")
+    @Comment("", "邮件有效期, 单位 秒, -1 表示不过期")
+    var market_sender_time = -1
+
     @Key
     @Comment(
         "", "启用配置权限检查, 在获取绑定设置前优先从权限中读取。",
