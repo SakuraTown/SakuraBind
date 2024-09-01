@@ -1,6 +1,9 @@
 package top.iseason.bukkit.sakurabind
 
 import de.tr7zw.nbtapi.NBT
+import de.tr7zw.nbtapi.NBTCompound
+import de.tr7zw.nbtapi.NBTReflectionUtil
+import de.tr7zw.nbtapi.NBTType
 import de.tr7zw.nbtapi.utils.MinecraftVersion
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -101,21 +104,21 @@ object SakuraBindAPI {
         silent: Boolean = false
     ) {
         val realSet = setting ?: ItemSettings.getSetting(item)
-        if (setting != null) setSettingCache(item, setting)
         val itemBindEvent = ItemBindEvent(item, realSet, uuid, type)
         if (!silent) Bukkit.getPluginManager().callEvent(itemBindEvent)
         if (itemBindEvent.isCancelled) return
         val eventItem = itemBindEvent.item
-        NBT.modify(eventItem) {
-            it.setString(Config.nbt_path_uuid, itemBindEvent.owner.toString())
-        }
         if (item.type != eventItem.type) {
             item.type = eventItem.type
         }
-        if (!eventItem.hasItemMeta()) return
+        if (eventItem.checkAir()) return
         val eventSetting = itemBindEvent.setting
+        NBT.modify(eventItem) {
+            it.setString(Config.nbt_path_uuid, itemBindEvent.owner.toString())
+            if (eventSetting != null)
+                it.setString(ItemSettings.nbt_cache_path, eventSetting.keyPath)
+        }
         if (showLore) updateLore(eventItem, eventSetting)
-        if (realSet != eventSetting) setSettingCache(item, eventSetting)
         BindLogger.log(
             itemBindEvent.owner,
             itemBindEvent.bindType,
@@ -135,16 +138,18 @@ object SakuraBindAPI {
         val itemUnBIndEvent = ItemUnBIndEvent(item, owner, ItemSettings.getSetting(item), type)
         if (!silent) Bukkit.getPluginManager().callEvent(itemUnBIndEvent)
         if (itemUnBIndEvent.isCancelled) return
-        NBT.modify(item) {
+        val eventItem = itemUnBIndEvent.item
+        NBT.modify(eventItem) {
             it.removeKey(Config.nbt_path_uuid)
             it.removeKey(ItemSettings.nbt_cache_path)
         }
-        updateLore(item, itemUnBIndEvent.setting)
+        val setting = itemUnBIndEvent.setting
+        updateLore(eventItem, setting)
         BindLogger.log(
             itemUnBIndEvent.owner,
             itemUnBIndEvent.bindType,
-            itemUnBIndEvent.setting,
-            item
+            setting,
+            eventItem
         )
     }
 
@@ -294,20 +299,27 @@ object SakuraBindAPI {
     fun updateLore(item: ItemStack, basesSetting: BaseSetting? = null) {
         val itemMeta = item.itemMeta ?: return
         val owner = getOwner(item)
-        var temp = item
         var oldLoreIndex = 0
         //有旧的lore,先删除
-//        var oldLore = NBTUtils.getKeys(item, Config.nbtPathLore)
         var oldLore = NBT.get<List<String>>(item) {
-            it.getStringList(Config.nbt_path_lore).toList()
+            val type = it.getType(Config.nbt_path_lore)
+            if (type == NBTType.NBTTagCompound) { // 旧插件格式
+                val compound = it.getCompound(Config.nbt_path_lore)!! as NBTCompound
+                val keys = NBTReflectionUtil.getKeys(compound)
+                keys.map { it.dropLast(2) }
+            } else if (type == NBTType.NBTTagList) {
+                it.getStringList(Config.nbt_path_lore).toList()
+            } else emptyList()
         }
         if (oldLore.isNotEmpty()) {
             if (itemMeta.hasLore()) {
                 var (oi, newLore) = removeList(itemMeta.lore!!, oldLore) { raw, str ->
                     raw == str
                 }
-                oldLoreIndex = oi
-                temp.applyMeta { this.lore = newLore }
+                if (oi >= 0) {
+                    oldLoreIndex = oi
+                    item.applyMeta { this.lore = newLore }
+                }
             }
         }
         val setting = basesSetting ?: ItemSettings.getSetting(item)
@@ -321,9 +333,9 @@ object SakuraBindAPI {
                 t
             }
             //添加lore
-            setting.matchers.forEach { it.onBind(temp) }
+//            setting.matchers.forEach { it.onBind(temp) }
 
-            temp.applyMeta {
+            item.applyMeta {
                 lore = if (hasLore()) {
                     var lore = lore!!.toMutableList()
                     var index = setting.getInt("item.lore-index")
@@ -358,34 +370,35 @@ object SakuraBindAPI {
             //记录历史
             var size = loreStr.size
             if (size > 0) {
-                NBT.modify(temp) {
+                NBT.modify(item) {
                     it.getStringList(Config.nbt_path_lore).addAll(loreStr)
                 }
             }
         } else {
             val unBindLore = setting.getStringList("item-unbind.lore")
-            val tempMeta = temp.itemMeta
+            val tempMeta = item.itemMeta
             if (tempMeta != null && unBindLore.isNotEmpty()) {
                 if (!setting.getBoolean("item-unbind.lore-replace-matched", null, null)) {
                     oldLoreIndex = setting.getInt("item-unbind.lore-index")
                 }
                 val lore = if (tempMeta.hasLore()) tempMeta.lore!! else mutableListOf<String>()
                 val size = lore.size
-                oldLoreIndex = if (oldLoreIndex < 0) max(0, size - oldLoreIndex) else min(size, oldLoreIndex)
-                val newLore = unBindLore.map { PlaceHolderHook.setPlaceHolder(it, null) }
+                oldLoreIndex = if (oldLoreIndex < 0)
+                    max(0, size + oldLoreIndex)
+                else
+                    min(size, oldLoreIndex)
+                val newLore = PlaceHolderHook.setPlaceHolder(unBindLore, null)
                 lore.addAll(oldLoreIndex, newLore)
                 tempMeta.lore = lore
-                temp.itemMeta = tempMeta
-                NBT.modify(temp) {
-                    it.getStringList(Config.nbt_path_lore).addAll(lore)
-                }
-            } else {
-                NBT.modify(temp) {
-                    it.removeKey(Config.nbt_path_lore)
-                }
+                item.itemMeta = tempMeta
+//                NBT.modify(temp) {
+//                    it.getStringList(Config.nbt_path_lore).addAll(newLore)
+//                }
+            }
+            NBT.modify(item) {
+                it.removeKey(Config.nbt_path_lore)
             }
         }
-        item.itemMeta = temp.itemMeta
     }
 
     /**

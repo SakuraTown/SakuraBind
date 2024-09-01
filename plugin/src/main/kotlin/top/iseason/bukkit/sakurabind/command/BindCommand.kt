@@ -4,6 +4,7 @@ import de.tr7zw.nbtapi.utils.MinecraftVersion
 import org.bukkit.entity.Player
 import org.bukkit.permissions.PermissionDefault
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
+import top.iseason.bukkit.sakurabind.config.DefaultItemSetting
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.utils.BindType
@@ -29,12 +30,14 @@ object BindCommand : CommandNode(
     override var onExecute: CommandNodeExecutor? = CommandNodeExecutor { params, sender ->
         val type = params.next<String>()
         val player = params.next<Player>()
+        val settingKey = params.nextOrNull<String>()
         val showLore = !params.hasParma("-noLore")
         val isSilent = params.hasParma("-silent")
+        var setting = ItemSettings.getSettingNullable(settingKey)
         when (type.lowercase()) {
             "item" -> {
                 val itemInMainHand = player.getHeldItem() ?: return@CommandNodeExecutor
-                SakuraBindAPI.bind(itemInMainHand, player, showLore, BindType.COMMAND_BIND_ITEM)
+                SakuraBindAPI.bind(itemInMainHand, player, showLore, BindType.COMMAND_BIND_ITEM, setting)
                 if (!isSilent) {
                     sender.sendColorMessages(Lang.command__bind_item.formatBy(player.name))
                     MessageTool.bindMessageCoolDown(
@@ -49,8 +52,8 @@ object BindCommand : CommandNode(
             "block" -> {
                 val targetBlock = player.getTargetBlock(null, 5)
                 if (targetBlock == null || targetBlock.isEmpty) throw ParmaException("目标前方没有一个有效的方块")
-                val settingStr = params.next<String>()
-                val setting = ItemSettings.getSetting(settingStr)
+
+                if (setting == null) setting = DefaultItemSetting
                 SakuraBindAPI.bindBlock(targetBlock, player.uniqueId, setting, BindType.COMMAND_BIND_BLOCK)
                 if (!isSilent) {
                     sender.sendColorMessages(Lang.command__bind_block.formatBy(player.name))
@@ -70,8 +73,7 @@ object BindCommand : CommandNode(
                         player.world.rayTraceEntities(eyeLocation.clone().add(direction), direction, 5.0)
                             ?: return@runSync
                     val hitEntity = rayTraceEntities.hitEntity ?: return@runSync
-                    val settingStr = params.next<String>()
-                    val setting = ItemSettings.getSetting(settingStr)
+                    if (setting == null) setting = DefaultItemSetting
                     SakuraBindAPI.bindEntity(hitEntity, player, setting, BindType.COMMAND_BIND_ENTITY)
                     if (!isSilent) {
                         sender.sendColorMessages(Lang.command__bind_entity.formatBy(player.name))

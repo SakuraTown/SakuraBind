@@ -132,7 +132,7 @@ object ItemSettings : SimpleYAMLConfig() {
         // 绑定物品缓存, 从NBT中读取设置的ID,再根据ID获取对应的对象
         val key = NBT.get<String>(item) { it.getString(nbt_cache_path) }
         // 持久化的ID可能过期，先判断
-        if (key.isNullOrEmpty()) {
+        if (!key.isNullOrEmpty()) {
             // 存在缓存，立即返回
             setting = settings[key]
             if (setting != null) {
@@ -164,9 +164,12 @@ object ItemSettings : SimpleYAMLConfig() {
         return DefaultItemSetting
     }
 
-    fun getSetting(key: String?) = settings[key ?: "global-setting"] ?: DefaultItemSetting
+    fun getSetting(key: String?): BaseSetting {
+        if (key == null) return DefaultItemSetting
+        return settings[key] ?: DefaultItemSetting
+    }
 
-    fun getSettingNullable(key: String) = settings[key]
+    fun getSettingNullable(key: String?) = settings[key]
 
     fun getSettingKeys() = settings.keys
 

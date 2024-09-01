@@ -209,13 +209,12 @@ object SakuraBind : BukkitPlugin {
             addSubNode(CallbackCommand)
             addSubNode(SuperCallbackCommand)
             addSubNode(TestCommand)
-            addSubNode(TestMatchCommand)
-            addSubNode(TestTryMatchCommand)
-
             addSubNode(NBTCommand)
-
             addSubNode(TestCacheCommand)
         }
+        TestCommand.addSubNode(TestMatchCommand)
+        TestCommand.addSubNode(TestTryMatchCommand)
+
         CommandHandler.register(RootCommand)
         CommandHandler.updateCommands()
     }
