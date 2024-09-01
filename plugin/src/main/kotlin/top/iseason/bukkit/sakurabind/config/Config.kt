@@ -80,6 +80,7 @@ object Config : SimpleYAMLConfig() {
         "player: 玩家背包",
         "ender-chest: 末影箱",
         "database: 插件自带暂存箱",
+        "GlobalMarketPlus: GlobalMarketPlus插件的邮箱",
     )
     var send_back_queue = listOf("player", "ender-chest", "database")
 

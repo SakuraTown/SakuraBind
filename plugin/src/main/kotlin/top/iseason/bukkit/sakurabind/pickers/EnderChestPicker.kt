@@ -1,5 +1,6 @@
 package top.iseason.bukkit.sakurabind.pickers
 
+import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.config.Lang
@@ -13,7 +14,10 @@ object EnderChestPicker : BasePicker("ender-chest") {
         return null
     }
 
-    override fun pickup(player: Player, items: Array<ItemStack>, notify: Boolean): Array<ItemStack> {
+    override fun pickup(player: OfflinePlayer, items: Array<ItemStack>, notify: Boolean): Array<ItemStack> {
+        if (player !is Player) {
+            return items
+        }
         val count = items.sumOf { it.amount }
         val addItem = player.enderChest.addItem(*items)
         if (addItem.isEmpty) {

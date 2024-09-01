@@ -1,8 +1,9 @@
 package top.iseason.bukkit.sakurabind.pickers
 
 import org.bukkit.Bukkit
-import org.bukkit.entity.Player
+import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
+import top.iseason.bukkit.sakurabind.hook.GlobalMarketPlusHook
 import java.util.*
 
 abstract class BasePicker(val name: String) {
@@ -11,10 +12,10 @@ abstract class BasePicker(val name: String) {
     abstract fun pickup(uuid: UUID, items: Array<ItemStack>, notify: Boolean): Array<ItemStack>?
 
     // 在线拾取
-    abstract fun pickup(player: Player, items: Array<ItemStack>, notify: Boolean): Array<ItemStack>?
+    abstract fun pickup(player: OfflinePlayer, items: Array<ItemStack>, notify: Boolean): Array<ItemStack>?
 
     fun register() {
-        allPickers[name] = this
+        allPickers[name.lowercase()] = this
     }
 
     companion object {
@@ -24,6 +25,9 @@ abstract class BasePicker(val name: String) {
             PlayerInvPicker.register()
             EnderChestPicker.register()
             DataBasePicker.register()
+            if (GlobalMarketPlusHook.hasHooked) {
+                GlobalMarketPlusPicker.register()
+            }
         }
 
         fun pickup(uuid: UUID, items: Array<ItemStack>, notify: Boolean): Array<ItemStack> {

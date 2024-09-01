@@ -102,6 +102,8 @@ object SakuraBind : BukkitPlugin {
         BanItemHook.checkHooked()
         GermHook.checkHooked()
         McMMoHook.checkHooked()
+        GlobalMarketPlusHook.checkHooked()
+
         if (PlaceHolderHook.hasHooked) PlaceHolderExpansion.register()
         if (MMOItemsHook.hasHooked) {
             MatcherManager.addMatcher(MMOItemsMatcher())

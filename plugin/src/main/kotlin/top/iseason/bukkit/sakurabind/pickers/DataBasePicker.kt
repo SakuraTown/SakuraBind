@@ -1,5 +1,6 @@
 package top.iseason.bukkit.sakurabind.pickers
 
+import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.config.Config
@@ -18,9 +19,10 @@ object DataBasePicker : BasePicker("database") {
         return emptyArray()
     }
 
-    override fun pickup(player: Player, items: Array<ItemStack>, notify: Boolean): Array<ItemStack>? {
+    override fun pickup(player: OfflinePlayer, items: Array<ItemStack>, notify: Boolean): Array<ItemStack>? {
         val pickup = pickup(player.uniqueId, items, notify)
-        if (pickup != null && notify) {
+
+        if (pickup != null && notify && player is Player) {
             val count = items.sumOf { it.amount }
             MessageTool.sendNormal(player, Lang.send_back__database_all.formatBy(count))
         }

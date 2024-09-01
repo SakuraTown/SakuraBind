@@ -16,6 +16,7 @@ softdepend:
   - GermPlugin
   - BanItem
   - mcMMO
+  - GlobalMarketPlus
 
 permission:
   sakurabind.bypass.all:
