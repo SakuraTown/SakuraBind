@@ -95,7 +95,7 @@ object Config : SimpleYAMLConfig() {
 
     @Key("global-market-plus.expire")
     @Comment("", "邮件有效期, 单位 秒, -1 表示不过期")
-    var market_sender_time = -1
+    var market_sender_time = -1L
 
     @Key
     @Comment(

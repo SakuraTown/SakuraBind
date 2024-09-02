@@ -19,6 +19,7 @@ object Lang : top.iseason.bukkittemplate.config.Lang() {
 
     var send_back__database_all = "&7你的{0}个遗失物品已全部放入你的&a暂存箱"
 
+    var send_back__global_market_plus = "&7你的{0}个遗失物品已全部放入你的&a全球市场邮箱"
 
     var item_bind_hand = "&7你手上的物品已绑定"
     var block_bind = "&7你前面的方块已绑定"

@@ -2,12 +2,16 @@ package top.iseason.bukkit.sakurabind.pickers
 
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import studio.trc.bukkit.globalmarketplus.api.Mailbox
 import studio.trc.bukkit.globalmarketplus.api.Merchant
 import studio.trc.bukkit.globalmarketplus.mailbox.ItemMailType
 import top.iseason.bukkit.sakurabind.config.Config
+import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.hook.GlobalMarketPlusHook
+import top.iseason.bukkit.sakurabind.utils.MessageTool
+import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import java.util.UUID
 
 object GlobalMarketPlusPicker : BasePicker("GlobalMarketPlus") {
@@ -50,7 +54,9 @@ object GlobalMarketPlusPicker : BasePicker("GlobalMarketPlus") {
             if (mailSize < items.size)
                 remaining = items.drop(mailSize).toTypedArray()
         }
+        var count = 0
         for (stack in mail) {
+            count += stack.amount
             mailbox.addMail(
                 uniqueId,
                 player.name,
@@ -62,6 +68,9 @@ object GlobalMarketPlusPicker : BasePicker("GlobalMarketPlus") {
                 senderName,
                 stack.amount
             )
+        }
+        if (player is Player) {
+            MessageTool.sendNormal(player, Lang.send_back__global_market_plus.formatBy(count))
         }
         return remaining
     }

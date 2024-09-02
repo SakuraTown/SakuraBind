@@ -54,6 +54,7 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
 
     private fun sendItem(async: Boolean = true) {
         val itemStacks = inv.filterNotNull()
+        inv.clear()
         if (DatabaseConfig.isConnected) {
             if (async) submit(async = true) {
                 sendToDataBase(uuid, itemStacks)
@@ -61,7 +62,6 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
         } else {
             warn("数据库未启用,无法发送暂存箱子!")
         }
-        inv.clear()
         Bukkit.getPlayer(uuid)?.sendColorMessage(Lang.lost_item_send_when_online)
     }
 
@@ -70,14 +70,16 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
         private val plugin = BukkitTemplate.getPlugin()
 
         fun sendItem(uuid: UUID, items: Array<ItemStack>) {
-            val delaySender = map.computeIfAbsent(uuid) {
-                DelaySender(uuid)
-            }
-            delaySender.addItem(items)
-            if (plugin.isEnabled) {
-                delaySender.runTaskTimerAsynchronously(plugin, 20, 20)
-            } else {
-                delaySender.sendItem(false)
+            var sender = map[uuid]
+            if (!plugin.isEnabled) {
+                if (sender == null) sender = DelaySender(uuid)
+                sender.addItem(items)
+                sender.sendItem(false)
+            } else if (sender == null) {
+                sender = DelaySender(uuid)
+                map[uuid] = sender
+                sender.addItem(items)
+                sender.runTaskTimerAsynchronously(plugin, 20, 20)
             }
         }
 
