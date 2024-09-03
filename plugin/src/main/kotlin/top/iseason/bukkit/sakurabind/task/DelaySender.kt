@@ -12,6 +12,7 @@ import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toByteArray
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
+import top.iseason.bukkittemplate.utils.other.runAsync
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -21,7 +22,7 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
 
     override fun run() {
         remove(uuid)
-        sendItem()
+        sendItem(false)
     }
 
     @Synchronized
@@ -29,7 +30,7 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
         val addItem = inv.addItem(*items)
         //缓存满了
         if (addItem.isNotEmpty()) {
-            sendItem()
+            sendItem(true)
             addItem(addItem.values.toTypedArray())
             return
         }
@@ -38,14 +39,17 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
     override fun cancel() {
         super.cancel()
         remove(uuid)
-        sendItem()
+        sendItem(false)
     }
 
-    private fun sendItem() {
+    private fun sendItem(async: Boolean) {
         val itemStacks = inv.filterNotNull()
         inv.clear()
         if (DatabaseConfig.isConnected) {
-            sendToDataBase(uuid, itemStacks)
+            if (async) runAsync {
+                sendToDataBase(uuid, itemStacks)
+            } else
+                sendToDataBase(uuid, itemStacks)
         } else {
             warn("数据库未启用,无法发送暂存箱子!")
         }
@@ -61,7 +65,7 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
             if (!plugin.isEnabled) {
                 if (sender == null) sender = DelaySender(uuid)
                 sender.addItem(items)
-                sender.sendItem()
+                sender.sendItem(false)
             } else if (sender == null) {
                 sender = DelaySender(uuid)
                 map[uuid] = sender
