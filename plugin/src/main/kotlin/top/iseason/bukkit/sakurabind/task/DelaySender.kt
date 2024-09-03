@@ -12,7 +12,6 @@ import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toByteArray
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
-import top.iseason.bukkittemplate.utils.other.submit
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -20,22 +19,12 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
 
     private val inv = Bukkit.createInventory(null, 36)
 
-    //缓冲5秒
-    @Volatile
-    private var coolDown = 3
-    private var onShutDown = false
     override fun run() {
-        if (coolDown < 0) {
-            cancel()
-            return
-        }
-        coolDown--
+        sendItem()
     }
 
     @Synchronized
     private fun addItem(items: Array<ItemStack>) {
-
-        coolDown = 3
         val addItem = inv.addItem(*items)
         //缓存满了
         if (addItem.isNotEmpty()) {
@@ -48,17 +37,15 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
 
     override fun cancel() {
         super.cancel()
-        sendItem(!onShutDown)
-        remove(uuid)
+        sendItem()
     }
 
-    private fun sendItem(async: Boolean = true) {
+    private fun sendItem() {
+        remove(uuid)
         val itemStacks = inv.filterNotNull()
         inv.clear()
         if (DatabaseConfig.isConnected) {
-            if (async) submit(async = true) {
-                sendToDataBase(uuid, itemStacks)
-            } else sendToDataBase(uuid, itemStacks)
+            sendToDataBase(uuid, itemStacks)
         } else {
             warn("数据库未启用,无法发送暂存箱子!")
         }
@@ -74,19 +61,18 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
             if (!plugin.isEnabled) {
                 if (sender == null) sender = DelaySender(uuid)
                 sender.addItem(items)
-                sender.sendItem(false)
+                sender.sendItem()
             } else if (sender == null) {
                 sender = DelaySender(uuid)
                 map[uuid] = sender
                 sender.addItem(items)
-                sender.runTaskTimerAsynchronously(plugin, 20, 20)
+                sender.runTaskLaterAsynchronously(plugin, 60)
             }
         }
 
         fun remove(uuid: UUID) = map.remove(uuid)
         fun shutdown() {
             map.values.forEach {
-                it.onShutDown = true
                 it.cancel()
             }
         }

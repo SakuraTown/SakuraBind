@@ -19,6 +19,7 @@ import top.iseason.bukkit.sakurabind.listener.*
 import top.iseason.bukkit.sakurabind.module.BindItem
 import top.iseason.bukkit.sakurabind.module.UniqueItem
 import top.iseason.bukkit.sakurabind.pickers.BasePicker
+import top.iseason.bukkit.sakurabind.pickers.GlobalMarketPlusPicker
 import top.iseason.bukkit.sakurabind.task.DelaySender
 import top.iseason.bukkit.sakurabind.task.DropItemList
 import top.iseason.bukkit.sakurabind.task.EntityRemoveQueue
@@ -230,6 +231,7 @@ object SakuraBind : BukkitPlugin {
         }
         try {
             DelaySender.shutdown()
+            GlobalMarketPlusPicker.shutdown()
         } catch (e: Exception) {
             e.printStackTrace()
         }
