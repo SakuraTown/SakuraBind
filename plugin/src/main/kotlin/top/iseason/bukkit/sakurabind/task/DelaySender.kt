@@ -20,6 +20,7 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
     private val inv = Bukkit.createInventory(null, 36)
 
     override fun run() {
+        remove(uuid)
         sendItem()
     }
 
@@ -32,16 +33,15 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
             addItem(addItem.values.toTypedArray())
             return
         }
-
     }
 
     override fun cancel() {
         super.cancel()
+        remove(uuid)
         sendItem()
     }
 
     private fun sendItem() {
-        remove(uuid)
         val itemStacks = inv.filterNotNull()
         inv.clear()
         if (DatabaseConfig.isConnected) {
@@ -75,6 +75,7 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
             map.values.forEach {
                 it.cancel()
             }
+            map.clear()
         }
 
         fun sendToDataBase(uid: UUID, items: List<ItemStack>) {

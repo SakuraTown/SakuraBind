@@ -47,5 +47,25 @@ abstract class BasePicker(val name: String) {
             }
             return temp
         }
+
+        fun continuePickup(base: BasePicker, uuid: UUID, items: Array<ItemStack>) {
+            val player = Bukkit.getPlayer(uuid)
+            val isOnline = player != null
+            var find = false
+            var temp = items
+            for (picker in configPickers) {
+                if (!find) {
+                    if (picker == base) {
+                        find = true
+                    }
+                    continue
+                }
+                temp = if (isOnline)
+                    picker.pickup(player, temp, true) ?: continue
+                else
+                    picker.pickup(uuid, temp, false) ?: continue
+                if (temp.isEmpty()) break
+            }
+        }
     }
 }

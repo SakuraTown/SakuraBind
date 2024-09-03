@@ -61,22 +61,7 @@ object GlobalMarketPlusPicker : BasePicker("GlobalMarketPlus") {
 
     fun sendBack(uuid: UUID) {
         var temp = sendBack0(uuid) ?: return
-        val player = Bukkit.getPlayer(uuid)
-        val isOnline = player != null
-        var find = false
-        for (picker in configPickers) {
-            if (!find) {
-                if (picker == GlobalMarketPlusPicker) {
-                    find = true
-                }
-                continue
-            }
-            if (isOnline)
-                temp = picker.pickup(player, temp, true) ?: continue
-            else
-                temp = picker.pickup(uuid, temp, false) ?: continue
-            if (temp.isEmpty()) break
-        }
+        continuePickup(GlobalMarketPlusPicker, uuid, temp)
     }
 
     fun sendBack0(uuid: UUID): Array<ItemStack>? {
