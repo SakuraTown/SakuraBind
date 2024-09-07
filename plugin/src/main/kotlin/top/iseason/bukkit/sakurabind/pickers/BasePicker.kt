@@ -4,7 +4,11 @@ import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.hook.GlobalMarketPlusHook
+import top.iseason.bukkit.sakurabind.hook.SweetMailHook
+import top.iseason.bukkittemplate.BukkitTemplate
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.collections.set
 
 abstract class BasePicker(val name: String) {
 
@@ -21,12 +25,18 @@ abstract class BasePicker(val name: String) {
     companion object {
         val allPickers: HashMap<String, BasePicker> = hashMapOf()
         val configPickers = ArrayList<BasePicker>()
+
+        private val plugin = BukkitTemplate.getPlugin()
+        private val isInit = LinkedList<ItemStack>()
         fun init() {
             PlayerInvPicker.register()
             EnderChestPicker.register()
             DataBasePicker.register()
             if (GlobalMarketPlusHook.hasHooked) {
                 GlobalMarketPlusPicker.register()
+            }
+            if (SweetMailHook.hasHooked) {
+                SweetMailPicker.register()
             }
         }
 
@@ -66,6 +76,30 @@ abstract class BasePicker(val name: String) {
                     picker.pickup(uuid, temp, false) ?: continue
                 if (temp.isEmpty()) break
             }
+        }
+
+        fun addCache(
+            cacheMap: ConcurrentHashMap<UUID, LinkedList<ItemStack>>,
+            uuid: UUID,
+            items: Array<ItemStack>,
+            sendBackFun: (UUID) -> Unit
+        ) {
+            val cache = cacheMap.computeIfAbsent(uuid) {
+                if (!plugin.isEnabled) {
+                    sendBackFun.invoke(uuid)
+                    return@computeIfAbsent isInit
+                } else {
+                    Bukkit.getScheduler()
+                        .runTaskLaterAsynchronously(
+                            BukkitTemplate.getPlugin(),
+                            Runnable { sendBackFun(uuid) },
+                            60L
+                        )
+                }
+                LinkedList()
+            }
+            if (cache === isInit) return
+            cache.addAll(items)
         }
     }
 }

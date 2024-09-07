@@ -18,6 +18,10 @@ repositories {
         name = "McMMO"
         url = uri("https://nexus.neetgames.com/repository/maven-releases/")
     }
+    maven {
+        name = "jitpack"
+        url = uri("https://www.jitpack.io")
+    }
 }
 
 dependencies {
@@ -40,6 +44,7 @@ dependencies {
     compileOnly("com.github.LoneDev6:api-itemsadder:3.4.1-r4") { isTransitive = false }
     compileOnly("com.github.oraxen:oraxen:1.155.3") { isTransitive = false }
     compileOnly("com.gmail.nossr50.mcMMO:mcMMO:2.2.012") { isTransitive = false }
+    compileOnly("com.github.MrXiaoM:SweetMail:cef8a6d031") { isTransitive = false }
 }
 
 // 插件名称，请在gradle.properties 修改

@@ -77,10 +77,11 @@ object Config : SimpleYAMLConfig() {
     @Comment(
         "",
         "丢失物品返还顺序, 满了才下一个顺序",
-        "player: 玩家背包",
-        "ender-chest: 末影箱",
+        "player: 玩家背包 仅玩家在线有效",
+        "ender-chest: 末影箱 仅玩家在线有效",
         "database: 插件自带暂存箱",
         "GlobalMarketPlus: GlobalMarketPlus插件的邮箱",
+        "SweetMail: SweetMail 邮件",
     )
     var send_back_queue = listOf("player", "ender-chest", "database")
 
@@ -96,6 +97,30 @@ object Config : SimpleYAMLConfig() {
     @Key("global-market-plus.expire")
     @Comment("", "邮件有效期, 单位 秒, -1 表示不过期")
     var market_sender_time = -1L
+
+    @Key("sweet-mail")
+    @Comment("", "物品送回 SweetMail 的设置")
+    var sweetMailSection: MemorySection? = null
+
+    @Key("sweet-mail.sender")
+    @Comment("", "邮件发送者名称")
+    var sweetMailSender = "绑定系统"
+
+    @Key("sweet-mail.icon")
+    @Comment("", "邮件图标, SweetMail的格式")
+    var sweetMailIcon = "BOOK"
+
+    @Key("sweet-mail.title")
+    @Comment("", "邮件标题")
+    var sweetMailTitle = "绑定系统"
+
+    @Key("sweet-mail.content")
+    @Comment("", "邮件内容,一行一页\\n换行")
+    var sweetMailContent = listOf("以下是你丢失的绑定物品\n请查收")
+
+    @Key("sweet-mail.expire")
+    @Comment("", "邮件有效时间(秒) -1 无限")
+    var sweetMailExpire = -1L
 
     @Key
     @Comment(

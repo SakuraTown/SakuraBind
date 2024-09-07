@@ -20,6 +20,7 @@ import top.iseason.bukkit.sakurabind.module.BindItem
 import top.iseason.bukkit.sakurabind.module.UniqueItem
 import top.iseason.bukkit.sakurabind.pickers.BasePicker
 import top.iseason.bukkit.sakurabind.pickers.GlobalMarketPlusPicker
+import top.iseason.bukkit.sakurabind.pickers.SweetMailPicker
 import top.iseason.bukkit.sakurabind.task.DelaySender
 import top.iseason.bukkit.sakurabind.task.DropItemList
 import top.iseason.bukkit.sakurabind.task.EntityRemoveQueue
@@ -104,7 +105,7 @@ object SakuraBind : BukkitPlugin {
         GermHook.checkHooked()
         McMMoHook.checkHooked()
         GlobalMarketPlusHook.checkHooked()
-
+        SweetMailHook.checkHooked()
         if (PlaceHolderHook.hasHooked) PlaceHolderExpansion.register()
         if (MMOItemsHook.hasHooked) {
             MatcherManager.addMatcher(MMOItemsMatcher())
@@ -232,6 +233,7 @@ object SakuraBind : BukkitPlugin {
         try {
             DelaySender.shutdown()
             GlobalMarketPlusPicker.shutdown()
+            SweetMailPicker.shutdown()
         } catch (e: Exception) {
             e.printStackTrace()
         }

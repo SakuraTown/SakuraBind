@@ -17,6 +17,7 @@ softdepend:
   - BanItem
   - mcMMO
   - GlobalMarketPlus
+  - SweetMail
 
 permission:
   sakurabind.bypass.all:

@@ -11,17 +11,15 @@ import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.hook.GlobalMarketPlusHook
 import top.iseason.bukkit.sakurabind.utils.MessageTool
-import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
+import java.util.LinkedList
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.drop
-import kotlin.collections.set
 import kotlin.collections.take
 
 object GlobalMarketPlusPicker : BasePicker("GlobalMarketPlus") {
-    private val map = ConcurrentHashMap<UUID, ArrayList<ItemStack>>()
-    private val plugin = BukkitTemplate.getPlugin()
+    private val map = ConcurrentHashMap<UUID, LinkedList<ItemStack>>()
 
     override fun pickup(
         uuid: UUID,
@@ -29,24 +27,7 @@ object GlobalMarketPlusPicker : BasePicker("GlobalMarketPlus") {
         notify: Boolean
     ): Array<ItemStack>? {
         if (!GlobalMarketPlusHook.hasHooked) return items
-        var cache = map[uuid]
-        if (!plugin.isEnabled) {
-            if (cache == null) cache = ArrayList(items.size)
-            cache.addAll(items)
-            sendBack(uuid)
-        } else if (cache == null) {
-            cache = ArrayList(items.size)
-            cache.addAll(items)
-            map[uuid] = cache
-            Bukkit.getScheduler()
-                .runTaskLaterAsynchronously(
-                    BukkitTemplate.getPlugin(),
-                    Runnable { sendBack(uuid) },
-                    60L
-                )
-        } else {
-            cache.addAll(items)
-        }
+        addCache(map, uuid, items, GlobalMarketPlusPicker::sendBack)
         return emptyArray()
     }
 
