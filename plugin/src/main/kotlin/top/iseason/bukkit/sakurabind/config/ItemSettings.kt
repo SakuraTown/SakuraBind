@@ -61,7 +61,7 @@ object ItemSettings : SimpleYAMLConfig() {
         "",
         "为提高性能，匹配过一次的物品在绑定之后将会把匹配到的设置键存入物品NBT，此为NBT的路径",
         "注意，缓存会导致不同配置的nbt不一致，以至于不同配置的相同物品无法堆叠",
-        "留空不使用缓存"
+        "留空会使用默认的缓存键"
     )
     var nbt_cache_path: String = "sakura_bind_setting_cache"
 
