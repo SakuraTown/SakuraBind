@@ -159,12 +159,17 @@ object BlockListener : Listener {
         val deny = blockInfo.setting.getBoolean("block-deny.break", owner, event.player)
         //可以破坏
         if (Config.checkByPass(event.player) || !deny) {
-            BlockCache.addBlockTemp(BlockCache.blockToString(block), blockInfo)
+            val blockToString = BlockCache.blockToString(block)
+            BlockCache.addBlockTemp(blockToString, blockInfo)
             //没有掉落物直接删除
             if (event.player.gameMode != GameMode.SURVIVAL || block.getDrops(
                     player.getHeldItem() ?: ItemStack(Material.AIR)
                 ).isEmpty()
             ) SakuraBindAPI.unbindBlock(block, type = BindType.BLOCK_TO_ITEM_UNBIND)
+            val state = block.state
+            if (state is InventoryHolder && state.inventory.size > 0) {
+                BlockCache.containerCache.put(blockToString, block.type)
+            }
         } else {
             event.isCancelled = true
             MessageTool.denyMessageCoolDown(
@@ -172,7 +177,6 @@ object BlockListener : Listener {
                 blockInfo.setting, block = block
             )
         }
-
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -301,6 +305,8 @@ object BlockListener : Listener {
         val itemMeta = itemStack.itemMeta
         if (itemMeta is BlockStateMeta && itemMeta.hasBlockState() && itemMeta.blockState is InventoryHolder && itemStack.amount != 1) return
         val entityToString = BlockCache.dropItemToString(entity)
+        val ifPresent = BlockCache.containerCache.getIfPresent(entityToString)
+        if (ifPresent != null && (itemStack.type != ifPresent || itemStack.amount != 1)) return
         val blockInfo = BlockCache.getBlockTemp(entityToString) ?: BlockCache.getBlockInfo(entityToString) ?: return
         SakuraBindAPI.bind(itemStack, blockInfo)
         BlockCache.removeCache(entityToString)

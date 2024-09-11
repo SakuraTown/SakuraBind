@@ -157,7 +157,7 @@ object GlobalSettings : SimpleYAMLConfig() {
     var item_deny__command_pattern = listOf(".*")
 
     @Key
-    @Comment("", "禁止绑定物品放入特定标题的容器里,为了防止各种操作绕过将同时也会禁止点击")
+    @Comment("", "禁止绑定物品放入特定的容器里,是以下2个选项的总开关", "为了防止各种操作绕过将同时也会禁止点击")
     var item_deny__inventory = false
 
     @Key

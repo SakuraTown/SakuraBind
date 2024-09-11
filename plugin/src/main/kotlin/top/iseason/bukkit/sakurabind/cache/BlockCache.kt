@@ -2,6 +2,7 @@ package top.iseason.bukkit.sakurabind.cache
 
 import com.google.common.cache.CacheBuilder
 import com.google.common.hash.Funnels
+import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 import org.bukkit.entity.Item
@@ -48,6 +49,11 @@ object BlockCache : BaseCache {
         .concurrencyLevel(2)
         .expireAfterWrite(500L, TimeUnit.MILLISECONDS)
         .build<String, BlockInfo>()
+
+    val containerCache = CacheBuilder.newBuilder()
+        .concurrencyLevel(2)
+        .expireAfterWrite(200L, TimeUnit.MILLISECONDS)
+        .build<String, Material>()
 
     private val emptyInfo = BlockInfo("empty", DefaultItemSetting)
 
