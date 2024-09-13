@@ -14,10 +14,12 @@ object PlayerInvPicker : BasePicker("player") {
         return null
     }
 
-    override fun pickup(player: OfflinePlayer, items: Array<ItemStack>, notify: Boolean): Array<ItemStack> {
+    override fun pickup(player: OfflinePlayer, items: Array<ItemStack>, notify: Boolean): Array<ItemStack>? {
+        if (!player.isOnline) return null
         if (player !is Player) {
-            return items
+            return null
         }
+        if (player.isDead) return null
         val count = items.sumOf { it.amount }
         val addItem = player.inventory.addItem(*items)
         if (addItem.isEmpty) {

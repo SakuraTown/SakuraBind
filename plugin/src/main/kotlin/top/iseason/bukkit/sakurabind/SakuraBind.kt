@@ -134,6 +134,9 @@ object SakuraBind : BukkitPlugin {
         }
         ItemListener.registerListener()
 
+        if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_16_R1)) {
+            ItemListener16.registerListener()
+        }
         if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_12_R1)) {
             PickupItemListener.registerListener()
         } else {
