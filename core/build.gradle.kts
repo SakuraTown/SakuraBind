@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm")
-    id("org.jetbrains.dokka") version "1.9.20"
+//    id("org.jetbrains.dokka") version "1.9.20"
 }
 
 group = "top.iseason.bukkittemplate"
@@ -19,7 +19,7 @@ repositories {
 }
 dependencies {
 //    compileOnly("org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT")
-    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.9.20")
+//    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.9.20")
 
     compileOnly("net.kyori:adventure-text-minimessage:4.16.0")
     compileOnly("net.kyori:adventure-platform-bukkit:4.3.2")
@@ -38,11 +38,11 @@ tasks {
         options.encoding = "UTF-8"
         options.isFailOnError = false
     }
-    dokkaHtml.configure {
-        dokkaSourceSets {
-            named("main") {
-                moduleName.set("BukkitTemplate")
-            }
-        }
-    }
+//    dokkaHtml.configure {
+//        dokkaSourceSets {
+//            named("main") {
+//                moduleName.set("BukkitTemplate")
+//            }
+//        }
+//    }
 }

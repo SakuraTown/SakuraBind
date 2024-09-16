@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm")
     id("com.gradleup.shadow")
+    id("org.jetbrains.dokka") version "1.9.20"
 }
 
 buildscript {
@@ -32,11 +33,11 @@ dependencies {
 
 //    协程库
 //    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2")
+    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.9.20")
 
 // 本地依赖放在libs文件夹内
     implementation("org.bstats:bstats-bukkit:3.0.2")
     compileOnly(fileTree("libs") { include("*.jar") })
-
     compileOnly("org.ehcache:ehcache:3.10.8") { isTransitive = false }
     compileOnly("me.clip:placeholderapi:2.11.2") { isTransitive = false }
     compileOnly("fr.xephi:authme:5.6.0-SNAPSHOT") { isTransitive = false }
@@ -116,6 +117,13 @@ tasks {
                 "exposedVersion" to getProperties("exposedVersion"),
                 "nbtEditorVersion" to getProperties("nbtEditorVersion")
             )
+        }
+    }
+    dokkaHtml.configure {
+        dokkaSourceSets {
+            named("main") {
+                moduleName.set("SakuraBind")
+            }
         }
     }
 }
