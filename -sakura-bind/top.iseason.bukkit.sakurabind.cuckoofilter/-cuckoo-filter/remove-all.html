@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>removeAll</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+                    <a class="library-name--link" href="../../../index.html">
+                            SakuraBind
+                    </a>
+            </div>
+            <div class="library-version">
+2.3.23            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":plugin:dokkaHtml/main">jvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="member" id="content" pageIds="SakuraBind::top.iseason.bukkit.sakurabind.cuckoofilter/CuckooFilter/removeAll/#java.util.Collection&lt;? extends E&gt;/PointingToDeclaration//76972122">
+  <div class="breadcrumbs"><a href="../../../index.html">SakuraBind</a><span class="delimiter">/</span><a href="../index.html">top.iseason.bukkit.sakurabind.cuckoofilter</a><span class="delimiter">/</span><a href="index.html">CuckooFilter</a><span class="delimiter">/</span><span class="current">removeAll</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>remove</span><wbr></wbr><span><span>All</span></span></h1>
+  </div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword"></span>boolean <a href="remove-all.html"><span class="token function">removeAll</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span> </span><span class="token keyword"></span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span> </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html">Collection</a><span class="token operator">&lt;</span><span class="token keyword">? extends </span><a href="index.html">E</a><span class="token operator">&gt;</span> c</span></span><span class="token punctuation">)</span></div><p class="paragraph">Removes from this filter all of its elements that are contained in the specified collection. All element contained in the specified collection must be contained in the filter prior to invocation. </p><p class="paragraph"> If <code class="lang-kotlin">false</code> is returned, this is <i>definitely</i> an indication that the specified collection contained elements that were not contained in this filter prior to invocation, and this filter can no longer be relied upon to return correct <code class="lang-kotlin">false</code> responses from <a href="contains.html">contains</a>, unless <a href="is-empty.html">isEmpty</a> is also <code class="lang-kotlin">true</code>. </p><p class="paragraph"> Some elements of <code class="lang-kotlin">c</code> may have been removed from the filter even when <code class="lang-kotlin">false</code> is returned. In this case, the caller may <a href="add.html">add</a> the additions by comparing the filter <a href="size-long.html">sizeLong</a> before and after the invocation, knowing that removals from <code class="lang-kotlin">
+c</code> occurred in <code class="lang-kotlin">c</code>'s iteration order.</p><span class="kdoc-tag"><h4 class="">Return</h4><p class="paragraph"><code class="lang-kotlin">true</code> if all of the elements of the specified collection were successfully removed from the filter, <code class="lang-kotlin">false</code> if any of the elements was not successfully removed</p></span><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>c</span></span></u></div></span></div><div><div class="title"><p class="paragraph">collection containing elements to be removed from this filter</p></div></div></div></div></div><h4 class="">See also</h4><div class="table"><div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="contains.html"><span><span>contains(Object)</span></span></a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="remove.html"><span><span>remove(Object)</span></span></a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="remove-all.html"><span>remove</span><wbr></wbr><span>All(Probabilistic</span><wbr></wbr><span><span>Filter)</span></span></a></div></span></div><div></div></div></div></div><h4 class="">Throws</h4><div class="table"><div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html"><span>Null</span><wbr></wbr><span>Pointer</span><wbr></wbr><span><span>Exception</span></span></a></div></span></div><div><div class="title"><p class="paragraph">if the specified collection contains one or more <code class="lang-kotlin">null</code> elements, or if the specified collection is <code class="lang-kotlin">null</code></p></div></div></div></div></div><hr><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword"></span>boolean <a href="remove-all.html"><span class="token function">removeAll</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span> </span><span class="token keyword"></span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span> </span><a href="../-probabilistic-filter/index.html">ProbabilisticFilter</a><span class="token operator">&lt;</span><a href="index.html">E</a><span class="token operator">&gt;</span> f</span></span><span class="token punctuation">)</span></div><p class="paragraph">Subtracts the specified filter from <code class="lang-kotlin">this</code> filter. The mutations happen to <code class="lang-kotlin">this</code> instance. Callers must ensure that the specified filter represents elements that are currently contained in <code class="lang-kotlin">this</code> filter. </p><p class="paragraph"> If <code class="lang-kotlin">false</code> is returned, this is <i>definitely</i> an indication that the specified filter contained elements that were not contained in this filter prior to invocation and this filter can no longer be relied upon to return correct <code class="lang-kotlin">false</code> responses from <a href="contains.html">contains</a>, unless <a href="is-empty.html">isEmpty</a> is also <code class="lang-kotlin">true</code>.</p><span class="kdoc-tag"><h4 class="">Return</h4><p class="paragraph"><code class="lang-kotlin">true</code> if the operation was successful, <code class="lang-kotlin">false</code> otherwise</p></span><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>f</span></span></u></div></span></div><div><div class="title"><p class="paragraph">filter containing elements to remove from <code class="lang-kotlin">this</code> filter - <code class="lang-kotlin">f</code> is not mutated</p></div></div></div></div></div><h4 class="">See also</h4><div class="table"><div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="contains.html"><span><span>contains(Object)</span></span></a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="remove.html"><span><span>remove(Object)</span></span></a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="remove-all.html"><span>remove</span><wbr></wbr><span><span>All(Collection)</span></span></a></div></span></div><div></div></div></div></div><h4 class="">Throws</h4><div class="table"><div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html"><span>Null</span><wbr></wbr><span>Pointer</span><wbr></wbr><span><span>Exception</span></span></a></div></span></div><div><div class="title"><p class="paragraph">if the specified filter is null</p></div></div></div></div><div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html"><span>Illegal</span><wbr></wbr><span>Argument</span><wbr></wbr><span><span>Exception</span></span></a></div></span></div><div><div class="title"><p class="paragraph">if <a href="is-compatible.html">isCompatible</a><code class="lang-kotlin">== false</code> given <code class="lang-kotlin">f</code></p></div></div></div></div></div></div></div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>MURMUR128_BEALDUPRAS_32</title>
+    <link href="../../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../../styles/style.css" rel="Stylesheet">
+<link href="../../../../styles/main.css" rel="Stylesheet">
+<link href="../../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+                    <a class="library-name--link" href="../../../../index.html">
+                            SakuraBind
+                    </a>
+            </div>
+            <div class="library-version">
+2.3.23            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":plugin:dokkaHtml/main">jvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="SakuraBind::top.iseason.bukkit.sakurabind.cuckoofilter/CuckooStrategies.MURMUR128_BEALDUPRAS_32///PointingToDeclaration/{&quot;org.jetbrains.dokka.links.EnumEntryDRIExtra&quot;:{&quot;key&quot;:&quot;org.jetbrains.dokka.links.EnumEntryDRIExtra&quot;}}/76972122">
+  <div class="breadcrumbs"><a href="../../../../index.html">SakuraBind</a><span class="delimiter">/</span><a href="../../index.html">top.iseason.bukkit.sakurabind.cuckoofilter</a><span class="delimiter">/</span><a href="../index.html">CuckooStrategies</a><span class="delimiter">/</span><span class="current">MURMUR128_BEALDUPRAS_32</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>MURMUR128_BEALDUPRAS_32</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace"><a href="index.html">MURMUR128_BEALDUPRAS_32</a></div><p class="paragraph">Adaptation of <i>&quot;Cuckoo Filter: Practically Better Than Bloom&quot;, Bin Fan, et al</i>, that is comparable to a Bloom Filter's memory efficiency, supports entry deletion, and can accept up to 12.8 billion entries at 3% FPP. </p><p class="paragraph">This strategy uses 32 bits of murmur3_128 to find an entry's primary index. The next non-zero f-bit segment of the hash is used as the entry's fingerprint. An entry's alternate index is defined as <code class="lang-kotlin">[hash(fingerprint) * parsign(index)] modulo bucket_count</code>, where <code class="lang-kotlin">hash(fingerprint)</code> is always odd, and <code class="lang-kotlin">parsign(index)</code> is defined as <code class="lang-kotlin">
++1</code> when <code class="lang-kotlin">index</code> is even and <code class="lang-kotlin">-1</code> when <code class="lang-kotlin">index</code> is odd. The filter's bucket count is rounded up to an even number. By specifying an even number of buckets and an odd fingerprint hash, the parity of the alternate index is guaranteed to be opposite the parity of the primary index. The use of the index's parity to apply a sign to <code class="lang-kotlin">hash(fingerprint)</code> causes the operation to be reversible, i.e. <code class="lang-kotlin">index(e) == altIndex(altIndex(e))</code>.</p><p class="paragraph">A notable difference of this strategy from &quot;Cuckoo Filter&quot; is the method of selecting an entry's alternate index. In the paper, the alternate index is defined as <code class="lang-kotlin">index xor
+hash(fingerprint)</code>. The use of <code class="lang-kotlin">xor</code> requires that the index space be defined as [0..2^f]. The side-effect of this is that the Cuckoo Filter's bucket count must be a power of 2, meaning the memory utilization of the filter must be &quot;rounded up&quot; to the next power of two. This side-effect of the paper's algorithm is avoided by the algorithm as described above.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"></div>
+    <div class="tabs-section-body"></div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
