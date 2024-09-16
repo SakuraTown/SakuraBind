@@ -58,7 +58,7 @@ subprojects {
             isTransitive = false
             exclude("org.bukkit")
         }
-        compileOnly("me.clip:placeholderapi:2.11.3")
+        compileOnly("me.clip:placeholderapi:2.11.6")
 //        implementation("io.github.bananapuncher714:nbteditor:7.19.3")
 
         // 数据库

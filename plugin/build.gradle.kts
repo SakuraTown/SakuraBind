@@ -24,27 +24,6 @@ repositories {
         url = uri("https://www.jitpack.io")
     }
     maven {
-        name = "aliyun"
-        url = uri("https://maven.aliyun.com/repository/public")
-    }
-    maven {
-        name = "aliyun-google"
-        url = uri("https://maven.aliyun.com/repository/google")
-    }
-//        google()
-    maven {
-        name = "spigot"
-        url = uri("https://hub.spigotmc.org/nexus/content/repositories/public/")
-    }
-    maven {
-        name = "papermc"
-        url = uri("https://repo.papermc.io/repository/maven-public/")
-    }
-    maven {
-        name = "CodeMC"
-        url = uri("https://repo.codemc.org/repository/maven-public")
-    }
-    maven {
         name = "PlaceholderAPI"
         url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
     }
@@ -64,7 +43,7 @@ dependencies {
     implementation("org.bstats:bstats-bukkit:3.0.2")
     compileOnly(fileTree("libs") { include("*.jar") })
     compileOnly("org.ehcache:ehcache:3.10.8") { isTransitive = false }
-    compileOnly("me.clip:placeholderapi:2.11.2") { isTransitive = false }
+    compileOnly("me.clip:placeholderapi:2.11.6") { isTransitive = false }
     compileOnly("fr.xephi:authme:5.6.0-SNAPSHOT") { isTransitive = false }
     compileOnly("net.Indyuce:MMOItems-API:6.9.4-SNAPSHOT") { isTransitive = false }
     compileOnly("com.github.LoneDev6:api-itemsadder:3.4.1-r4") { isTransitive = false }
