@@ -16,6 +16,10 @@ repositories {
         name = "Oraxen"
         url = uri("https://repo.oraxen.com/releases")
     }
+    maven {
+        name = "PlaceholderAPI"
+        url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    }
 }
 dependencies {
 //    compileOnly("org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT")

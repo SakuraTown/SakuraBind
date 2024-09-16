@@ -23,6 +23,31 @@ repositories {
         name = "jitpack"
         url = uri("https://www.jitpack.io")
     }
+    maven {
+        name = "aliyun"
+        url = uri("https://maven.aliyun.com/repository/public")
+    }
+    maven {
+        name = "aliyun-google"
+        url = uri("https://maven.aliyun.com/repository/google")
+    }
+//        google()
+    maven {
+        name = "spigot"
+        url = uri("https://hub.spigotmc.org/nexus/content/repositories/public/")
+    }
+    maven {
+        name = "papermc"
+        url = uri("https://repo.papermc.io/repository/maven-public/")
+    }
+    maven {
+        name = "CodeMC"
+        url = uri("https://repo.codemc.org/repository/maven-public")
+    }
+    maven {
+        name = "PlaceholderAPI"
+        url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    }
 }
 
 dependencies {
