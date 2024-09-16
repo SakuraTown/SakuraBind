@@ -17,6 +17,8 @@ jobs:
         with:
           java-version: 21
           distribution: 'adopt'
+      - name: Permission
+        run: chmod +rx ./gradlew dokkaHtml
 
       - name: Build documentation
         run: ./gradlew dokkaHtml
