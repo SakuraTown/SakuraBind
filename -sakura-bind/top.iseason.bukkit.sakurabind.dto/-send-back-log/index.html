@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>SendBackLog</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+                    <a class="library-name--link" href="../../../index.html">
+                            SakuraBind
+                    </a>
+            </div>
+            <div class="library-version">
+2.4.0            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":plugin:dokkaHtml/main">jvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="SakuraBind::top.iseason.bukkit.sakurabind.dto/SendBackLog///PointingToDeclaration//76972122">
+  <div class="breadcrumbs"><a href="../../../index.html">SakuraBind</a><span class="delimiter">/</span><a href="../index.html">top.iseason.bukkit.sakurabind.dto</a><span class="delimiter">/</span><span class="current">SendBackLog</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Send</span><wbr></wbr><span>Back</span><wbr></wbr><span><span>Log</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span class="token keyword">class </span><a href="index.html">SendBackLog</a><span class="token keyword"> extends </span><span data-unresolved-link="org.jetbrains.exposed.dao/IntEntity///PointingToDeclaration/">IntEntity</span></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="2074391542%2FConstructors%2F76972122" anchor-label="SendBackLog" id="2074391542%2FConstructors%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-send-back-log.html"><span>Send</span><wbr></wbr><span>Back</span><wbr></wbr><span><span>Log</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2074391542%2FConstructors%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword"></span><a href="index.html">SendBackLog</a> <a href="-send-back-log.html"><span class="token function">SendBackLog</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao.id/EntityID///PointingToDeclaration/">EntityID</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span> id</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-756041725%2FClasslikes%2F76972122" anchor-label="Companion" id="-756041725%2FClasslikes%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-756041725%2FClasslikes%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">public </span><span class="token keyword">class </span><a href="-companion/index.html">Companion</a><span class="token keyword"> extends </span><span data-unresolved-link="org.jetbrains.exposed.dao/IntEntityClass///PointingToDeclaration/">IntEntityClass</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html">SendBackLog</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="-2098822139%2FProperties%2F76972122" anchor-label="_readValues" id="-2098822139%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#-2098822139%2FProperties%2F76972122"><span>_read</span><wbr></wbr><span><span>Values</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2098822139%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.sql/ResultRow///PointingToDeclaration/">ResultRow</span> <a href="../-unique-log/index.html#-2098822139%2FProperties%2F76972122">_readValues</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-651390343%2FProperties%2F76972122" anchor-label="attach" id="-651390343%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-651390343%2FProperties%2F76972122"><span><span>attach</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-651390343%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a> <a href="index.html#-651390343%2FProperties%2F76972122">attach</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="218135058%2FProperties%2F76972122" anchor-label="Companion" id="218135058%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#218135058%2FProperties%2F76972122"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="218135058%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword">static </span><a href="-companion/index.html">SendBackLog.Companion</a> <a href="index.html#218135058%2FProperties%2F76972122">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1715679808%2FProperties%2F76972122" anchor-label="db" id="-1715679808%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#-1715679808%2FProperties%2F76972122"><span><span>db</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1715679808%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.sql/Database///PointingToDeclaration/">Database</span> <a href="../-unique-log/index.html#-1715679808%2FProperties%2F76972122">db</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1140745988%2FProperties%2F76972122" anchor-label="dest" id="-1140745988%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1140745988%2FProperties%2F76972122"><span><span>dest</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1140745988%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a> <a href="index.html#-1140745988%2FProperties%2F76972122">dest</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1140537405%2FProperties%2F76972122" anchor-label="id" id="-1140537405%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#-1140537405%2FProperties%2F76972122"><span><span>id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1140537405%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao.id/EntityID///PointingToDeclaration/">EntityID</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span> <a href="../-unique-log/index.html#-1140537405%2FProperties%2F76972122">id</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1812061660%2FProperties%2F76972122" anchor-label="klass" id="1812061660%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#1812061660%2FProperties%2F76972122"><span><span>klass</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1812061660%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/EntityClass///PointingToDeclaration/">EntityClass</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token punctuation">, </span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span> <a href="../-unique-log/index.html#1812061660%2FProperties%2F76972122">klass</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1258952742%2FProperties%2F76972122" anchor-label="readValues" id="1258952742%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#1258952742%2FProperties%2F76972122"><span>read</span><wbr></wbr><span><span>Values</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1258952742%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.sql/ResultRow///PointingToDeclaration/">ResultRow</span> <a href="../-unique-log/index.html#1258952742%2FProperties%2F76972122">readValues</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1600013519%2FProperties%2F76972122" anchor-label="time" id="-1600013519%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1600013519%2FProperties%2F76972122"><span><span>time</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1600013519%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/time/LocalDateTime.html">LocalDateTime</a> <a href="index.html#-1600013519%2FProperties%2F76972122">time</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1504011108%2FProperties%2F76972122" anchor-label="type" id="1504011108%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1504011108%2FProperties%2F76972122"><span><span>type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1504011108%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><a href="../../top.iseason.bukkit.sakurabind.utils/-send-back-type/index.html">SendBackType</a> <a href="index.html#1504011108%2FProperties%2F76972122">type</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="748708355%2FProperties%2F76972122" anchor-label="uuid" id="748708355%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#748708355%2FProperties%2F76972122"><span><span>uuid</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="748708355%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/UUID.html">UUID</a> <a href="index.html#748708355%2FProperties%2F76972122">uuid</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1015419227%2FProperties%2F76972122" anchor-label="writeValues" id="1015419227%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#1015419227%2FProperties%2F76972122"><span>write</span><wbr></wbr><span><span>Values</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1015419227%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html">LinkedHashMap</a><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.sql/Column///PointingToDeclaration/">Column</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html">Object</a><span class="token operator">&gt;</span><span class="token punctuation">, </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html">Object</a><span class="token operator">&gt;</span> <a href="../-unique-log/index.html#1015419227%2FProperties%2F76972122">writeValues</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1796355917%2FFunctions%2F76972122" anchor-label="delete" id="-1796355917%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#-1796355917%2FFunctions%2F76972122"><span><span>delete</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1796355917%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> <a href="../-unique-log/index.html#-1796355917%2FFunctions%2F76972122"><span class="token function">delete</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-583453363%2FFunctions%2F76972122" anchor-label="flush" id="-583453363%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#-583453363%2FFunctions%2F76972122"><span><span>flush</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-583453363%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="../-unique-log/index.html#-583453363%2FFunctions%2F76972122"><span class="token function">flush</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/EntityBatchUpdate///PointingToDeclaration/">EntityBatchUpdate</span> batch</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1049536707%2FFunctions%2F76972122" anchor-label="get_readValues" id="-1049536707%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#-1049536707%2FFunctions%2F76972122"><span>get_read</span><wbr></wbr><span><span>Values</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1049536707%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.sql/ResultRow///PointingToDeclaration/">ResultRow</span> <a href="../-unique-log/index.html#-1049536707%2FFunctions%2F76972122"><span class="token function">get_readValues</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1114104351%2FFunctions%2F76972122" anchor-label="getAttach" id="-1114104351%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-attach.html"><span>get</span><wbr></wbr><span><span>Attach</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1114104351%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a> <a href="get-attach.html"><span class="token function">getAttach</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2108497048%2FFunctions%2F76972122" anchor-label="getDb" id="-2108497048%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#-2108497048%2FFunctions%2F76972122"><span>get</span><wbr></wbr><span><span>Db</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2108497048%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.sql/Database///PointingToDeclaration/">Database</span> <a href="../-unique-log/index.html#-2108497048%2FFunctions%2F76972122"><span class="token function">getDb</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1294524004%2FFunctions%2F76972122" anchor-label="getDest" id="1294524004%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-dest.html"><span>get</span><wbr></wbr><span><span>Dest</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1294524004%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a> <a href="get-dest.html"><span class="token function">getDest</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1533354645%2FFunctions%2F76972122" anchor-label="getId" id="-1533354645%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#-1533354645%2FFunctions%2F76972122"><span>get</span><wbr></wbr><span><span>Id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1533354645%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao.id/EntityID///PointingToDeclaration/">EntityID</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span> <a href="../-unique-log/index.html#-1533354645%2FFunctions%2F76972122"><span class="token function">getId</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1115420876%2FFunctions%2F76972122" anchor-label="getKlass" id="-1115420876%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#-1115420876%2FFunctions%2F76972122"><span>get</span><wbr></wbr><span><span>Klass</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1115420876%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/EntityClass///PointingToDeclaration/">EntityClass</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token punctuation">, </span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span> <a href="../-unique-log/index.html#-1115420876%2FFunctions%2F76972122"><span class="token function">getKlass</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="665060814%2FFunctions%2F76972122" anchor-label="getReadValues" id="665060814%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#665060814%2FFunctions%2F76972122"><span>get</span><wbr></wbr><span>Read</span><wbr></wbr><span><span>Values</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="665060814%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.sql/ResultRow///PointingToDeclaration/">ResultRow</span> <a href="../-unique-log/index.html#665060814%2FFunctions%2F76972122"><span class="token function">getReadValues</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="835256473%2FFunctions%2F76972122" anchor-label="getTime" id="835256473%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-time.html"><span>get</span><wbr></wbr><span><span>Time</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="835256473%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/time/LocalDateTime.html">LocalDateTime</a> <a href="get-time.html"><span class="token function">getTime</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-355686196%2FFunctions%2F76972122" anchor-label="getType" id="-355686196%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-type.html"><span>get</span><wbr></wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-355686196%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="../../top.iseason.bukkit.sakurabind.utils/-send-back-type/index.html">SendBackType</a> <a href="get-type.html"><span class="token function">getType</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1110988949%2FFunctions%2F76972122" anchor-label="getUuid" id="-1110988949%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-uuid.html"><span>get</span><wbr></wbr><span><span>Uuid</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1110988949%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/UUID.html">UUID</a> <a href="get-uuid.html"><span class="token function">getUuid</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1779733903%2FFunctions%2F76972122" anchor-label="getValue" id="1779733903%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#-660305598%2FFunctions%2F76972122"><span>get</span><wbr></wbr><span><span>Value</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1779733903%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="../-unique-log/index.html#-660305598%2FFunctions%2F76972122">Wrapped</a> <a href="../-unique-log/index.html#-660305598%2FFunctions%2F76972122"><span class="token function">getValue</span></a><span class="token operator">&lt;</span>Unwrapped<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">, </span>Wrapped<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/EntityFieldWithTransform///PointingToDeclaration/">EntityFieldWithTransform</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#-660305598%2FFunctions%2F76972122">Unwrapped</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../-unique-log/index.html#-660305598%2FFunctions%2F76972122">Wrapped</a><span class="token operator">&gt;</span> $self<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span> o<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property/index.html">KProperty</a><span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">&gt;</span> desc</span></span><span class="token punctuation">)</span></div><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="../-unique-log/index.html#910208516%2FFunctions%2F76972122">T</a> <a href="../-unique-log/index.html#910208516%2FFunctions%2F76972122"><span class="token function">getValue</span></a><span class="token operator">&lt;</span>REF<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-comparable/index.html">Comparable</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#910208516%2FFunctions%2F76972122">REF</a><span class="token operator">&gt;</span><span class="token punctuation">, </span>RID<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-comparable/index.html">Comparable</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#910208516%2FFunctions%2F76972122">RID</a><span class="token operator">&gt;</span><span class="token punctuation">, </span>T<span class="token keyword"> extends </span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#910208516%2FFunctions%2F76972122">RID</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/OptionalReference///PointingToDeclaration/">OptionalReference</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#910208516%2FFunctions%2F76972122">REF</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../-unique-log/index.html#910208516%2FFunctions%2F76972122">RID</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../-unique-log/index.html#910208516%2FFunctions%2F76972122">T</a><span class="token operator">&gt;</span> $self<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span> o<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property/index.html">KProperty</a><span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">&gt;</span> desc</span></span><span class="token punctuation">)</span></div><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="../-unique-log/index.html#-919933052%2FFunctions%2F76972122">T</a> <a href="../-unique-log/index.html#-919933052%2FFunctions%2F76972122"><span class="token function">getValue</span></a><span class="token operator">&lt;</span>REF<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-comparable/index.html">Comparable</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#-919933052%2FFunctions%2F76972122">REF</a><span class="token operator">&gt;</span><span class="token punctuation">, </span>RID<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-comparable/index.html">Comparable</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#-919933052%2FFunctions%2F76972122">RID</a><span class="token operator">&gt;</span><span class="token punctuation">, </span>T<span class="token keyword"> extends </span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#-919933052%2FFunctions%2F76972122">RID</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/Reference///PointingToDeclaration/">Reference</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#-919933052%2FFunctions%2F76972122">REF</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../-unique-log/index.html#-919933052%2FFunctions%2F76972122">RID</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../-unique-log/index.html#-919933052%2FFunctions%2F76972122">T</a><span class="token operator">&gt;</span> $self<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span> o<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property/index.html">KProperty</a><span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">&gt;</span> desc</span></span><span class="token punctuation">)</span></div><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="../-unique-log/index.html#-1562203761%2FFunctions%2F76972122">T</a> <a href="../-unique-log/index.html#-1562203761%2FFunctions%2F76972122"><span class="token function">getValue</span></a><span class="token operator">&lt;</span>T<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.sql/Column///PointingToDeclaration/">Column</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#-1562203761%2FFunctions%2F76972122">T</a><span class="token operator">&gt;</span> $self<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span> o<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property/index.html">KProperty</a><span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">&gt;</span> desc</span></span><span class="token punctuation">)</span></div><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="../-unique-log/index.html#1569408690%2FFunctions%2F76972122">T</a> <a href="../-unique-log/index.html#1569408690%2FFunctions%2F76972122"><span class="token function">getValue</span></a><span class="token operator">&lt;</span>T<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.sql/CompositeColumn///PointingToDeclaration/">CompositeColumn</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#1569408690%2FFunctions%2F76972122">T</a><span class="token operator">&gt;</span> $self<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span> o<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property/index.html">KProperty</a><span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">&gt;</span> desc</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-215361357%2FFunctions%2F76972122" anchor-label="getWriteValues" id="-215361357%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#-215361357%2FFunctions%2F76972122"><span>get</span><wbr></wbr><span>Write</span><wbr></wbr><span><span>Values</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-215361357%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html">LinkedHashMap</a><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.sql/Column///PointingToDeclaration/">Column</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html">Object</a><span class="token operator">&gt;</span><span class="token punctuation">, </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html">Object</a><span class="token operator">&gt;</span> <a href="../-unique-log/index.html#-215361357%2FFunctions%2F76972122"><span class="token function">getWriteValues</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2076602490%2FFunctions%2F76972122" anchor-label="lookup" id="-2076602490%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#-2076602490%2FFunctions%2F76972122"><span><span>lookup</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2076602490%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="../-unique-log/index.html#-2076602490%2FFunctions%2F76972122">T</a> <a href="../-unique-log/index.html#-2076602490%2FFunctions%2F76972122"><span class="token function">lookup</span></a><span class="token operator">&lt;</span>T<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.sql/Column///PointingToDeclaration/">Column</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#-2076602490%2FFunctions%2F76972122">T</a><span class="token operator">&gt;</span> $self</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1201706482%2FFunctions%2F76972122" anchor-label="lookupInReadValues" id="1201706482%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#1201706482%2FFunctions%2F76972122"><span>lookup</span><wbr></wbr><span>In</span><wbr></wbr><span>Read</span><wbr></wbr><span><span>Values</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1201706482%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="../-unique-log/index.html#1201706482%2FFunctions%2F76972122">R</a> <a href="../-unique-log/index.html#1201706482%2FFunctions%2F76972122"><span class="token function">lookupInReadValues</span></a><span class="token operator">&lt;</span>T<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">, </span>R<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.sql/Column///PointingToDeclaration/">Column</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#1201706482%2FFunctions%2F76972122">T</a><span class="token operator">&gt;</span> $self<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="kotlin.jvm.functions/Function1///PointingToDeclaration/">Function1</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#1201706482%2FFunctions%2F76972122">T</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../-unique-log/index.html#1201706482%2FFunctions%2F76972122">R</a><span class="token operator">&gt;</span> found<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="kotlin.jvm.functions/Function0///PointingToDeclaration/">Function0</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#1201706482%2FFunctions%2F76972122">R</a><span class="token operator">&gt;</span> notFound</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="771771046%2FFunctions%2F76972122" anchor-label="refresh" id="771771046%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#771771046%2FFunctions%2F76972122"><span><span>refresh</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="771771046%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> <a href="../-unique-log/index.html#771771046%2FFunctions%2F76972122"><span class="token function">refresh</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> flush</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="558678327%2FFunctions%2F76972122" anchor-label="set_readValues" id="558678327%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#558678327%2FFunctions%2F76972122"><span>set_read</span><wbr></wbr><span><span>Values</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="558678327%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> <a href="../-unique-log/index.html#558678327%2FFunctions%2F76972122"><span class="token function">set_readValues</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.sql/ResultRow///PointingToDeclaration/">ResultRow</span> _readValues</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-704441393%2FFunctions%2F76972122" anchor-label="setAttach" id="-704441393%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-attach.html"><span>set</span><wbr></wbr><span><span>Attach</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-704441393%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-attach.html"><span class="token function">setAttach</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a> attach</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1174940884%2FFunctions%2F76972122" anchor-label="setDest" id="-1174940884%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-dest.html"><span>set</span><wbr></wbr><span><span>Dest</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1174940884%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-dest.html"><span class="token function">setDest</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a> dest</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1268247684%2FFunctions%2F76972122" anchor-label="setTime" id="1268247684%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-time.html"><span>set</span><wbr></wbr><span><span>Time</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1268247684%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-time.html"><span class="token function">setTime</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/time/LocalDateTime.html">LocalDateTime</a> time</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-246838363%2FFunctions%2F76972122" anchor-label="setType" id="-246838363%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-type.html"><span>set</span><wbr></wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-246838363%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-type.html"><span class="token function">setType</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="../../top.iseason.bukkit.sakurabind.utils/-send-back-type/index.html">SendBackType</a> type</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1127214500%2FFunctions%2F76972122" anchor-label="setUuid" id="1127214500%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-uuid.html"><span>set</span><wbr></wbr><span><span>Uuid</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1127214500%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-uuid.html"><span class="token function">setUuid</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/UUID.html">UUID</a> uuid</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-412400847%2FFunctions%2F76972122" anchor-label="setValue" id="-412400847%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#-2004336299%2FFunctions%2F76972122"><span>set</span><wbr></wbr><span><span>Value</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-412400847%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> <a href="../-unique-log/index.html#-2004336299%2FFunctions%2F76972122"><span class="token function">setValue</span></a><span class="token operator">&lt;</span>Unwrapped<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">, </span>Wrapped<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/EntityFieldWithTransform///PointingToDeclaration/">EntityFieldWithTransform</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#-2004336299%2FFunctions%2F76972122">Unwrapped</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../-unique-log/index.html#-2004336299%2FFunctions%2F76972122">Wrapped</a><span class="token operator">&gt;</span> $self<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span> o<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property/index.html">KProperty</a><span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">&gt;</span> desc<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><a href="../-unique-log/index.html#-2004336299%2FFunctions%2F76972122">Wrapped</a> value</span></span><span class="token punctuation">)</span></div><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> <a href="../-unique-log/index.html#1064910032%2FFunctions%2F76972122"><span class="token function">setValue</span></a><span class="token operator">&lt;</span>REF<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-comparable/index.html">Comparable</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#1064910032%2FFunctions%2F76972122">REF</a><span class="token operator">&gt;</span><span class="token punctuation">, </span>RID<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-comparable/index.html">Comparable</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#1064910032%2FFunctions%2F76972122">RID</a><span class="token operator">&gt;</span><span class="token punctuation">, </span>T<span class="token keyword"> extends </span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#1064910032%2FFunctions%2F76972122">RID</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/OptionalReference///PointingToDeclaration/">OptionalReference</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#1064910032%2FFunctions%2F76972122">REF</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../-unique-log/index.html#1064910032%2FFunctions%2F76972122">RID</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../-unique-log/index.html#1064910032%2FFunctions%2F76972122">T</a><span class="token operator">&gt;</span> $self<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span> o<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property/index.html">KProperty</a><span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">&gt;</span> desc<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><a href="../-unique-log/index.html#1064910032%2FFunctions%2F76972122">T</a> value</span></span><span class="token punctuation">)</span></div><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> <a href="../-unique-log/index.html#-2096957965%2FFunctions%2F76972122"><span class="token function">setValue</span></a><span class="token operator">&lt;</span>REF<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-comparable/index.html">Comparable</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#-2096957965%2FFunctions%2F76972122">REF</a><span class="token operator">&gt;</span><span class="token punctuation">, </span>RID<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-comparable/index.html">Comparable</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#-2096957965%2FFunctions%2F76972122">RID</a><span class="token operator">&gt;</span><span class="token punctuation">, </span>T<span class="token keyword"> extends </span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#-2096957965%2FFunctions%2F76972122">RID</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/Reference///PointingToDeclaration/">Reference</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#-2096957965%2FFunctions%2F76972122">REF</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../-unique-log/index.html#-2096957965%2FFunctions%2F76972122">RID</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../-unique-log/index.html#-2096957965%2FFunctions%2F76972122">T</a><span class="token operator">&gt;</span> $self<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span> o<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property/index.html">KProperty</a><span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">&gt;</span> desc<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><a href="../-unique-log/index.html#-2096957965%2FFunctions%2F76972122">T</a> value</span></span><span class="token punctuation">)</span></div><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> <a href="../-unique-log/index.html#-713706846%2FFunctions%2F76972122"><span class="token function">setValue</span></a><span class="token operator">&lt;</span>T<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.sql/Column///PointingToDeclaration/">Column</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#-713706846%2FFunctions%2F76972122">T</a><span class="token operator">&gt;</span> $self<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span> o<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property/index.html">KProperty</a><span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">&gt;</span> desc<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><a href="../-unique-log/index.html#-713706846%2FFunctions%2F76972122">T</a> value</span></span><span class="token punctuation">)</span></div><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> <a href="../-unique-log/index.html#-648410275%2FFunctions%2F76972122"><span class="token function">setValue</span></a><span class="token operator">&lt;</span>T<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.sql/CompositeColumn///PointingToDeclaration/">CompositeColumn</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#-648410275%2FFunctions%2F76972122">T</a><span class="token operator">&gt;</span> $self<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span> o<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property/index.html">KProperty</a><span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">&gt;</span> desc<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><a href="../-unique-log/index.html#-648410275%2FFunctions%2F76972122">T</a> value</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="904790982%2FFunctions%2F76972122" anchor-label="storeWrittenValues" id="904790982%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#904790982%2FFunctions%2F76972122"><span>store</span><wbr></wbr><span>Written</span><wbr></wbr><span><span>Values</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="904790982%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> <a href="../-unique-log/index.html#904790982%2FFunctions%2F76972122"><span class="token function">storeWrittenValues</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1037915242%2FFunctions%2F76972122" anchor-label="via" id="1037915242%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-log/index.html#276230342%2FFunctions%2F76972122"><span><span>via</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1037915242%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/InnerTableLink///PointingToDeclaration/">InnerTableLink</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token punctuation">, </span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span><span class="token punctuation">, </span><span class="token keyword"></span><a href="../-unique-log/index.html#276230342%2FFunctions%2F76972122">TID</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../-unique-log/index.html#276230342%2FFunctions%2F76972122">Target</a><span class="token operator">&gt;</span> <a href="../-unique-log/index.html#276230342%2FFunctions%2F76972122"><span class="token function">via</span></a><span class="token operator">&lt;</span>TID<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-comparable/index.html">Comparable</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#276230342%2FFunctions%2F76972122">TID</a><span class="token operator">&gt;</span><span class="token punctuation">, </span>Target<span class="token keyword"> extends </span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#276230342%2FFunctions%2F76972122">TID</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/EntityClass///PointingToDeclaration/">EntityClass</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#276230342%2FFunctions%2F76972122">TID</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../-unique-log/index.html#276230342%2FFunctions%2F76972122">Target</a><span class="token operator">&gt;</span> $self<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.sql/Table///PointingToDeclaration/">Table</span> table</span></span><span class="token punctuation">)</span></div><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/InnerTableLink///PointingToDeclaration/">InnerTableLink</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token punctuation">, </span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span><span class="token punctuation">, </span><span class="token keyword"></span><a href="../-unique-log/index.html#-237686936%2FFunctions%2F76972122">TID</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../-unique-log/index.html#-237686936%2FFunctions%2F76972122">Target</a><span class="token operator">&gt;</span> <a href="../-unique-log/index.html#-237686936%2FFunctions%2F76972122"><span class="token function">via</span></a><span class="token operator">&lt;</span>TID<span class="token keyword"> extends </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-comparable/index.html">Comparable</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#-237686936%2FFunctions%2F76972122">TID</a><span class="token operator">&gt;</span><span class="token punctuation">, </span>Target<span class="token keyword"> extends </span><span data-unresolved-link="org.jetbrains.exposed.dao/Entity///PointingToDeclaration/">Entity</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#-237686936%2FFunctions%2F76972122">TID</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao/EntityClass///PointingToDeclaration/">EntityClass</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#-237686936%2FFunctions%2F76972122">TID</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../-unique-log/index.html#-237686936%2FFunctions%2F76972122">Target</a><span class="token operator">&gt;</span> $self<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.sql/Column///PointingToDeclaration/">Column</span><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao.id/EntityID///PointingToDeclaration/">EntityID</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span> sourceColumn<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.sql/Column///PointingToDeclaration/">Column</span><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="org.jetbrains.exposed.dao.id/EntityID///PointingToDeclaration/">EntityID</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-unique-log/index.html#-237686936%2FFunctions%2F76972122">TID</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span> targetColumn</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
