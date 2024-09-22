@@ -12,7 +12,6 @@ import org.bukkit.event.player.PlayerQuitEvent
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.Lang
-import top.iseason.bukkit.sakurabind.hook.PlayerDataSQLHook
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
@@ -24,6 +23,8 @@ import java.util.concurrent.ConcurrentHashMap
 object SelectListener : Listener {
     val selecting = ConcurrentHashMap<Player, Any>()
     private val coolDown = WeakCoolDown<Player>()
+
+    var hasSyncPlugin = false
 
     /**
      * 登录之后的一段时间内不检查
@@ -98,9 +99,9 @@ object SelectListener : Listener {
     @EventHandler(priority = EventPriority.LOW)
     fun onPlayerLoginEvent(event: PlayerLoginEvent) {
         val uniqueId = event.player.uniqueId
-        if (PlayerDataSQLHook.hasHooked) {
+        if (hasSyncPlugin) {
             noScanning.add(uniqueId)
-            submit(async = true, delay = 100L) {  //超时5秒
+            submit(async = true, delay = 100) {
                 noScanning.remove(uniqueId)
             }
             return

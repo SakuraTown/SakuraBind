@@ -214,7 +214,7 @@ open class SimpleYAMLConfig(
                     try {
                         key.setValue(this, configType.read(value, key.field))
                     } catch (e: Exception) {
-                        debug("Loading config $configPath error! key:${keyName} value: $value")
+                        debug { "Loading config $configPath error! key:${keyName} value: $value" }
                     }
                 } else {
                     //缺少键，重写入
@@ -223,7 +223,7 @@ open class SimpleYAMLConfig(
                         iterator = keys.iterator()
                         temp = YamlConfiguration()
                         commentMap.clear()
-                        debug("completing file $configPath ")
+                        debug { "completing file $configPath " }
                         continue
                     }
                 }
@@ -245,7 +245,7 @@ open class SimpleYAMLConfig(
                     temp.createSection(keyName)
                 }
             } catch (e: Exception) {
-                debug("setting config $configPath error! key:${keyName}")
+                debug { "setting config $configPath error! key:${keyName}" }
             }
         }
         if (!(!incomplete && isReadOnly) || !configPath.exists()) {

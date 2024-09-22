@@ -1,11 +1,12 @@
 package top.iseason.bukkit.sakurabind.cache
 
+import com.github.mgunlogson.cuckoofilter4j.CuckooFilter
 import com.google.common.cache.CacheBuilder
-import com.google.common.hash.Funnels
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 import org.bukkit.entity.Item
+import org.bukkit.scheduler.BukkitTask
 import org.ehcache.Cache
 import org.ehcache.PersistentCacheManager
 import org.ehcache.config.builders.CacheConfigurationBuilder
@@ -15,45 +16,28 @@ import org.ehcache.config.builders.ResourcePoolsBuilder
 import org.ehcache.config.units.EntryUnit
 import org.ehcache.config.units.MemoryUnit
 import top.iseason.bukkit.sakurabind.config.DefaultItemSetting
-import top.iseason.bukkit.sakurabind.cuckoofilter.CuckooFilter
 import top.iseason.bukkittemplate.BukkitTemplate
+import top.iseason.bukkittemplate.utils.other.runSync
 import java.io.File
-import java.nio.charset.StandardCharsets
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
-object BlockCache : BaseCache {
+object BlockCache : BaseCache() {
     private val filterFile = File(BukkitTemplate.getPlugin().dataFolder, "data${File.separator}Filter-Block")
-    private lateinit var blockCache: Cache<String, String>
+    lateinit var blockCache: Cache<String, String>
 
-    private val blockFilter: CuckooFilter<CharSequence> = if (!filterFile.exists()) CuckooFilter.create(
-        Funnels.stringFunnel(StandardCharsets.UTF_8), 20480, 0.03
-    )
-    else filterFile.inputStream().use { CuckooFilter.readFrom(it, Funnels.stringFunnel(StandardCharsets.UTF_8)) }
+    var blockFilter: CuckooFilter = loadFilter(filterFile)
+        private set
 
-//    val tempBlockCache: UserManagedCache<String, String> = UserManagedCacheBuilder
-//        .newUserManagedCacheBuilder(String::class.java, String::class.java)
-//        .withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofSeconds(1)))
-//        .withDispatcherConcurrency(1)
-//        .withKeyCopier(IdentityCopier())
-//        .withValueCopier(IdentityCopier())
-//        .build(true)
-
-    private val tempBlockCache2 = CacheBuilder.newBuilder()
+    val tempBlockCache2 = CacheBuilder.newBuilder()
         .concurrencyLevel(2)
-        .expireAfterAccess(500L, TimeUnit.MILLISECONDS)
-        .softValues()
+        .expireAfterAccess(3000L, TimeUnit.MILLISECONDS)
         .build<String, BlockInfo>()
 
-    private val tempBlockCache3 = CacheBuilder.newBuilder()
-        .concurrencyLevel(2)
-        .expireAfterWrite(500L, TimeUnit.MILLISECONDS)
-        .build<String, BlockInfo>()
+    private val breakingCache: MutableMap<String, Pair<BlockInfo, BukkitTask>> = ConcurrentHashMap()
 
-    val containerCache = CacheBuilder.newBuilder()
-        .concurrencyLevel(2)
-        .expireAfterWrite(200L, TimeUnit.MILLISECONDS)
-        .build<String, Material>()
+    val containerCache: MutableMap<String, Material> = ConcurrentHashMap()
 
     private val emptyInfo = BlockInfo("empty", DefaultItemSetting)
 
@@ -63,7 +47,7 @@ object BlockCache : BaseCache {
             CacheConfigurationBuilder.newCacheConfigurationBuilder(
                 String::class.java, String::class.java,
                 ResourcePoolsBuilder.newResourcePoolsBuilder()
-                    .heap(500, EntryUnit.ENTRIES)
+                    .heap(8192, EntryUnit.ENTRIES)
                     .offheap(10, MemoryUnit.MB)
                     .disk(500, MemoryUnit.MB, true)
             ).withDispatcherConcurrency(2)
@@ -74,16 +58,22 @@ object BlockCache : BaseCache {
 
     override fun init(cacheManager: org.ehcache.CacheManager) {
         blockCache = cacheManager.getCache("Block-owner", String::class.java, String::class.java)!!
+        super.init(cacheManager)
+    }
+
+    override fun reloadFilter() {
+        val iterator = blockCache.iterator()
+        while (iterator.hasNext()) {
+            val next = iterator.next()
+            blockFilter.put(string2FilterKey(next.key))
+        }
     }
 
     override fun onSave() {
-        if (!filterFile.exists()) {
-            filterFile.createNewFile()
-        }
-        filterFile.outputStream().use {
-            blockFilter.writeTo(it)
-        }
+        saveFilter(filterFile, blockFilter)
     }
+
+    fun mightContain(str: String) = blockFilter.mightContain(string2FilterKey(str))
 
     fun addBlock(block: Block, owner: UUID, setting: String?, extraData: List<String>?) {
         val blockToString = blockToString(block)
@@ -110,30 +100,42 @@ object BlockCache : BaseCache {
     }
 
     private fun addBlock(key: String, value: String, extraData: List<String>?) {
+        if (!blockCache.containsKey(key)) {
+            blockFilter.put(string2FilterKey(key))
+        }
         if (extraData.isNullOrEmpty()) {
             blockCache.put(key, value)
         } else {
             val extraValue = extraData.joinToString(prefix = "$value\t", separator = "\t")
             blockCache.put(key, extraValue)
         }
-        blockFilter.add(key)
     }
 
     fun removeBlock(block: Block) {
-        removeCache(blockToString(block))
+        removeBlock(blockToString(block))
     }
 
-    fun removeCache(str: String) {
+    fun removeBlock(block: BlockState) {
+        removeBlock(blockToString(block))
+    }
+
+    fun removeBlock(str: String) {
+        if (blockCache.containsKey(str)) {
+            blockCache.remove(str)
+            blockFilter.delete(string2FilterKey(str))
+        }
         tempBlockCache2.invalidate(str)
-        blockFilter.remove(str)
-        blockCache.remove(str)
     }
 
-    fun blockToString(block: Block): String {
+    inline fun blockToString(block: Block): String {
         return CacheManager.locationToString(block.location)
     }
 
-    fun dropItemToString(entity: Item): String {
+    inline fun blockToString(block: BlockState): String {
+        return CacheManager.locationToString(block.location)
+    }
+
+    inline fun dropItemToString(entity: Item): String {
         return CacheManager.locationToString(entity.location)
     }
 
@@ -141,15 +143,12 @@ object BlockCache : BaseCache {
      * 获取方块绑定的信息
      */
     fun getBlockInfo(block: Block): BlockInfo? {
-//        if (SakuraBindAPI.isTileEntity(block)) {
-//            return SakuraBindAPI.getTileOwner(block)
-//        }
-        return getBlockInfo(blockToString(block))
-    }
-
-    fun getBlockInfo(block: BlockState): BlockInfo? {
         return getBlockInfo(CacheManager.locationToString(block.location))
     }
+
+//    fun getBlockInfo(block: BlockState): BlockInfo? {
+//        return getBlockInfo(CacheManager.locationToString(block.location))
+//    }
 
     /**
      * 获取方块绑定的玩家
@@ -157,13 +156,15 @@ object BlockCache : BaseCache {
     fun getBlockInfo(key: String): BlockInfo? {
         //使用布谷鸟过滤防止缓存穿透
 //        val nanoTime = System.nanoTime()
-        if (!blockFilter.contains(key)) return null
+
+        if (!blockFilter.mightContain(string2FilterKey(key))) return null
 //        println("mightContain cost ${System.nanoTime() - nanoTime}")
         val info = tempBlockCache2.get(key) {
             val value = blockCache.get(key) ?: return@get emptyInfo
             try {
                 BlockInfo.deserialize(value)
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                e.printStackTrace()
                 emptyInfo
             }
         }
@@ -182,8 +183,25 @@ object BlockCache : BaseCache {
 //        return cache.get(str)
     }
 
-    fun addBlockTemp(loc: String, blockInfo: BlockInfo) = tempBlockCache3.put(loc, blockInfo)
-    fun getBlockTemp(loc: String): BlockInfo? = tempBlockCache3.getIfPresent(loc)
-    fun removeBlockTemp(loc: String) = tempBlockCache3.invalidate(loc)
+    fun addBreakingCache(loc: String, blockInfo: BlockInfo) {
+        val task = runSync {
+            breakingCache.remove(loc)
+        }
+        val cache = breakingCache.put(loc, blockInfo to task)
+        if (cache != null) {
+            val oldTask = cache.second
+            if (!oldTask.isCancelled) oldTask.cancel()
+        }
+    }
+
+    fun getBreakingCache(loc: String): BlockInfo? = breakingCache[loc]?.first
+
+    fun removeBreakingCache(loc: String) {
+        val cache = breakingCache.remove(loc)
+        if (cache != null) {
+            val oldTask = cache.second
+            if (!oldTask.isCancelled) oldTask.cancel()
+        }
+    }
 
 }

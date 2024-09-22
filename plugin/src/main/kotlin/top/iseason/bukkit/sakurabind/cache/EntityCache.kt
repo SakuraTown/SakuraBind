@@ -1,6 +1,6 @@
 package top.iseason.bukkit.sakurabind.cache
 
-import com.google.common.hash.Funnels
+import com.github.mgunlogson.cuckoofilter4j.CuckooFilter
 import org.bukkit.entity.Entity
 import org.ehcache.Cache
 import org.ehcache.CacheManager
@@ -13,18 +13,21 @@ import org.ehcache.config.units.EntryUnit
 import org.ehcache.config.units.MemoryUnit
 import top.iseason.bukkit.sakurabind.config.BaseSetting
 import top.iseason.bukkit.sakurabind.config.ItemSettings
-import top.iseason.bukkit.sakurabind.cuckoofilter.CuckooFilter
 import top.iseason.bukkittemplate.BukkitTemplate
 import java.io.File
-import java.nio.charset.StandardCharsets
 
-object EntityCache : BaseCache {
+
+object EntityCache : BaseCache() {
     private val filterFile = File(BukkitTemplate.getPlugin().dataFolder, "data${File.separator}Filter-Entity")
     private lateinit var entityCache: Cache<String, String>
-    private val entityFilter: CuckooFilter<CharSequence> = if (!filterFile.exists()) CuckooFilter.create(
-        Funnels.stringFunnel(StandardCharsets.UTF_8), 20480, 0.03
-    )
-    else filterFile.inputStream().use { CuckooFilter.readFrom(it, Funnels.stringFunnel(StandardCharsets.UTF_8)) }
+
+    private val entityFilter = loadFilter(filterFile)
+
+    override fun newFilter() = CuckooFilter
+        .Builder(32768)
+        .withFalsePositiveRate(0.0001)
+        .withExpectedConcurrency(2)
+        .build()
 
     override fun setCache(builder: CacheManagerBuilder<PersistentCacheManager>): CacheManagerBuilder<PersistentCacheManager> {
         return builder.withCache(
@@ -43,21 +46,25 @@ object EntityCache : BaseCache {
 
     override fun init(cacheManager: CacheManager) {
         entityCache = cacheManager.getCache("Entity-owner", String::class.java, String::class.java)!!
+        super.init(cacheManager)
+    }
+
+    override fun reloadFilter() {
+        val iterator = entityCache.iterator()
+        while (iterator.hasNext()) {
+            val next = iterator.next()
+            entityFilter.put(string2FilterKey(next.key))
+        }
     }
 
     override fun onSave() {
-        if (!filterFile.exists()) {
-            filterFile.createNewFile()
-        }
-        filterFile.outputStream().use {
-            entityFilter.writeTo(it)
-        }
+        saveFilter(filterFile, entityFilter)
     }
 
     fun getEntityInfo(entity: Entity): Pair<String, BaseSetting>? {
         //使用布谷鸟过滤防止缓存穿透
         val uuid = entity.uniqueId.toString()
-        if (!entityFilter.contains(uuid)) return null
+        if (!entityFilter.mightContain(string2FilterKey(uuid))) return null
         val get = entityCache.get(uuid) ?: return null
         val split = get.split(',')
         return split[0] to ItemSettings.getSetting(split.getOrNull(1))
@@ -72,13 +79,17 @@ object EntityCache : BaseCache {
 
     fun addEntity(entity: Entity, value: String) {
         val uuid = entity.uniqueId.toString()
+        if (!entityCache.containsKey(value)) {
+            entityFilter.put(string2FilterKey(uuid))
+        }
         entityCache.put(uuid, value)
-        entityFilter.add(uuid)
     }
 
     fun removeEntity(entity: Entity) {
         val uuid = entity.uniqueId.toString()
-        entityCache.remove(uuid)
-        entityFilter.remove(uuid)
+        if (entityCache.containsKey(uuid)) {
+            entityCache.remove(uuid)
+            entityFilter.delete(string2FilterKey(uuid))
+        }
     }
 }

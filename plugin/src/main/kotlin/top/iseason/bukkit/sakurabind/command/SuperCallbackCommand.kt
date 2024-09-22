@@ -13,6 +13,7 @@ import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.SakuraBindAPI.filterInventory
 import top.iseason.bukkit.sakurabind.SakuraBindAPI.filterItem
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.utils.SendBackType
 import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.command.CommandNode
 import top.iseason.bukkittemplate.command.CommandNodeExecutor
@@ -127,7 +128,7 @@ object SuperCallbackCommand : CommandNode(
                 )
             )
         }
-        SakuraBindAPI.sendBackItem(uniqueId, linkedList)
+        SakuraBindAPI.sendBackItem(uniqueId, linkedList, type = SendBackType.COMMON_SUPER_CALLBACK)
         player.sendColorMessage(Lang.command__super_callback_player.formatBy(linkedList.size, sumOf))
     }
 

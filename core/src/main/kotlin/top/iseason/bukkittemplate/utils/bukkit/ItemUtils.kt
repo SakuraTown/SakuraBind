@@ -90,13 +90,19 @@ object ItemUtils {
     /**
      * 检查材质是否是空气
      */
-    fun Material.checkAir(): Boolean = when (this.name) {
-        "AIR",
-        "VOID_AIR",
-        "CAVE_AIR",
-        "LEGACY_AIR" -> true
+    fun Material.checkAir(): Boolean {
+        return if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1)) {
+            when (this) {
+                Material.AIR,
+                Material.CAVE_AIR,
+                Material.VOID_AIR,
+                Material.LEGACY_AIR -> true
 
-        else -> false
+                else -> false
+            }
+        } else {
+            this == Material.AIR
+        }
     }
 
     /**

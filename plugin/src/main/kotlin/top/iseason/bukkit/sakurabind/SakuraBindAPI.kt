@@ -30,6 +30,7 @@ import top.iseason.bukkit.sakurabind.config.matcher.LoreMatcher
 import top.iseason.bukkit.sakurabind.event.*
 import top.iseason.bukkit.sakurabind.pickers.BasePicker
 import top.iseason.bukkit.sakurabind.utils.BindType
+import top.iseason.bukkit.sakurabind.utils.SendBackType
 import top.iseason.bukkit.sakurabind.utils.removeList
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.applyMeta
@@ -224,7 +225,6 @@ object SakuraBindAPI {
             blockUnBindEvent.setting,
             block
         )
-
     }
 
     /**
@@ -611,10 +611,18 @@ object SakuraBindAPI {
      */
     @JvmStatic
     @JvmOverloads
-    fun sendBackItem(uuid: UUID, items: Collection<ItemStack>, notify: Boolean = true): Array<ItemStack> {
-        return BasePicker.pickup(uuid, items.toTypedArray(), notify)
+    fun sendBackItem(
+        uuid: UUID,
+        items: Collection<ItemStack>,
+        notify: Boolean = true,
+        type: SendBackType = SendBackType.API
+    ) {
+        val toTypedArray = items.toTypedArray()
+        var event = ItemSendBackEvent(uuid, type, toTypedArray)
+        Bukkit.getPluginManager().callEvent(event)
+        if (event.isCancelled) return
+        BasePicker.pickup(uuid, toTypedArray, type, notify)
     }
-
 
     /**
      * 检查物品行为是否被某个设置禁止
@@ -811,6 +819,9 @@ object SakuraBindAPI {
         return ItemSettings.setSettingCache(item, setting)
     }
 
+    /*
+    * 物品是否有自动绑定的NBT
+    * */
     @JvmStatic
     fun isAutoBind(item: ItemStack): Boolean = NBT.get<Boolean>(item) { it.hasTag(Config.auto_bind_nbt) }
 

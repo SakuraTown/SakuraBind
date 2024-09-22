@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.scheduler.BukkitRunnable
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.task.EntityRemoveQueue.syncRemove
+import top.iseason.bukkit.sakurabind.utils.SendBackType
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
@@ -84,7 +85,7 @@ object DropItemList : BukkitRunnable() {
             hashMap.computeIfAbsent(it.owner) { mutableListOf() }.add(it.getItemStack())
             entity.remove()
         }
-        hashMap.forEach { (uuid, items) -> SakuraBindAPI.sendBackItem(uuid, items) }
+        hashMap.forEach { (uuid, items) -> SakuraBindAPI.sendBackItem(uuid, items, type = SendBackType.DROP) }
     }
 
     abstract class ItemSender(val entity: Entity, val owner: UUID, var delay: Int) {
@@ -92,7 +93,7 @@ object DropItemList : BukkitRunnable() {
         var markAsRemoved = false
 
         open fun sendBack() {
-            SakuraBindAPI.sendBackItem(owner, listOf(getItemStack()))
+            SakuraBindAPI.sendBackItem(owner, listOf(getItemStack()), type = SendBackType.DROP)
             syncRemove(entity)
         }
 
@@ -124,7 +125,7 @@ object DropItemList : BukkitRunnable() {
     ) : DropItemSender(item, owner, delay) {
 
         override fun sendBack() {
-            SakuraBindAPI.sendBackItem(owner, listOf(slotItem))
+            SakuraBindAPI.sendBackItem(owner, listOf(slotItem), type = SendBackType.CONTAINER_DROP)
             remove()
         }
 

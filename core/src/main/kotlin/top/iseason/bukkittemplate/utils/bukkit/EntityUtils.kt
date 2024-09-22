@@ -50,6 +50,17 @@ object EntityUtils {
         }
     }
 
+    //    @JvmName("giveItemsOrDrop")
+    fun InventoryHolder.giveItem(itemStack: ItemStack) {
+        val addItems = inventory.addItem(itemStack).values
+        if (this !is Entity) return
+        for (addItem in addItems) {
+            if (addItem == null) continue
+            val item = world.spawnEntity(location, EntityType.DROPPED_ITEM) as Item
+            item.itemStack = addItem
+        }
+    }
+
     /**
      * 获取玩家手上拿着的物品,兼容低版本
      * @return 没有或者是空气都返回null

@@ -323,7 +323,7 @@ abstract class StringEntityClass<out E : Entity<String>>(
 
 object MySqlLogger : SqlLogger {
     override fun log(context: StatementContext, transaction: Transaction) {
-        debug("&6DEBUG SQL: &7${context.expandArgs(transaction)}")
+        debug { "&6DEBUG SQL: &7${context.expandArgs(transaction)}" }
     }
 }
 

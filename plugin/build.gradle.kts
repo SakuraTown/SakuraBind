@@ -50,6 +50,7 @@ dependencies {
     compileOnly("com.github.oraxen:oraxen:1.155.3") { isTransitive = false }
     compileOnly("com.gmail.nossr50.mcMMO:mcMMO:2.2.012") { isTransitive = false }
     compileOnly("com.github.MrXiaoM:SweetMail:cef8a6d031") { isTransitive = false }
+    compileOnly("net.william278:husksync:3.2.1") { isTransitive = false }
 }
 
 // 插件名称，请在gradle.properties 修改
@@ -100,7 +101,8 @@ tasks {
         }
         relocate("top.iseason.bukkittemplate", "$groupS.libs.core")
         relocate("org.bstats", "$groupS.libs.bstats")
-        relocate("io.github.bananapuncher714.nbteditor", "$groupS.libs.nbteditor")
+//        relocate("io.github.bananapuncher714.nbteditor", "$groupS.libs.nbteditor")
+        relocate("com.github.mgunlogson.cuckoofilter4j", "$groupS.libs.cuckoofilter")
 //        relocate("net.cinnom:nano-cuckoo", "$groupS.libs.nanocuckoo")
     }
     build {
@@ -171,6 +173,14 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     keepkotlinmetadata()
     keep(allowObf, "class * implements $groupS.libs.core.BukkitPlugin {*;}")
     keep("class top.iseason.bukkit.sakurabind.SakuraBindAPI {*;}")
+    keepclassmembers(
+        allowObf, """class * implements java.io.Serializable{
+        |static final long serialVersionUID;
+        |private void writeObject(java.io.ObjectOutputStream);
+        |private void readObject(java.io.ObjectInputStream);
+        |}
+    """.trimMargin()
+    )
     keepclassmembers("class * extends $groupS.libs.core.config.SimpleYAMLConfig {*;}")
     keepclassmembers("class * implements $groupS.libs.core.ui.container.BaseUI {*;}")
     keepclassmembers(allowObf, "class * implements org.bukkit.event.Listener {*;}")

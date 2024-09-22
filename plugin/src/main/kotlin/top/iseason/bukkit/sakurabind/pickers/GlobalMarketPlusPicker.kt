@@ -9,8 +9,10 @@ import studio.trc.bukkit.globalmarketplus.api.Merchant
 import studio.trc.bukkit.globalmarketplus.mailbox.ItemMailType
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.config.SendBackLogger
 import top.iseason.bukkit.sakurabind.hook.GlobalMarketPlusHook
 import top.iseason.bukkit.sakurabind.utils.MessageTool
+import top.iseason.bukkit.sakurabind.utils.SendBackType
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import java.util.LinkedList
 import java.util.UUID
@@ -24,28 +26,30 @@ object GlobalMarketPlusPicker : BasePicker("GlobalMarketPlus") {
     override fun pickup(
         uuid: UUID,
         items: Array<ItemStack>,
+        type: SendBackType,
         notify: Boolean
     ): Array<ItemStack>? {
         if (!GlobalMarketPlusHook.hasHooked) return items
-        addCache(map, uuid, items, GlobalMarketPlusPicker::sendBack)
+        addCache(map, uuid, type, items, GlobalMarketPlusPicker::sendBack)
         return emptyArray()
     }
 
     override fun pickup(
         player: OfflinePlayer,
         items: Array<ItemStack>,
+        type: SendBackType,
         notify: Boolean
     ): Array<ItemStack>? {
         if (!GlobalMarketPlusHook.hasHooked) return items
-        return pickup(player.uniqueId, items, notify)
+        return pickup(player.uniqueId, items, type, notify)
     }
 
-    fun sendBack(uuid: UUID) {
-        var temp = sendBack0(uuid) ?: return
-        continuePickup(GlobalMarketPlusPicker, uuid, temp)
+    fun sendBack(uuid: UUID, type: SendBackType) {
+        var temp = sendBack0(uuid, type) ?: return
+        continuePickup(GlobalMarketPlusPicker, uuid, type, temp)
     }
 
-    fun sendBack0(uuid: UUID): Array<ItemStack>? {
+    fun sendBack0(uuid: UUID, type: SendBackType): Array<ItemStack>? {
         val mailbox = Mailbox.getMailbox(uuid)
         val senderName = Config.market_sender_name
         val seconds = Config.market_sender_time
@@ -88,13 +92,8 @@ object GlobalMarketPlusPicker : BasePicker("GlobalMarketPlus") {
         if (player is Player) {
             MessageTool.sendNormal(player, Lang.send_back__global_market_plus.formatBy(count))
         }
+        SendBackLogger.log(uuid, type, GlobalMarketPlusPicker.name, mail)
         return remaining.toTypedArray()
-    }
-
-    fun shutdown() {
-        map.keys.forEach {
-            sendBack(it)
-        }
     }
 
 }

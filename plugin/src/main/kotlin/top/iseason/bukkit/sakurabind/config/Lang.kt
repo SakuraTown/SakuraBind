@@ -146,10 +146,13 @@ object Lang : top.iseason.bukkittemplate.config.Lang() {
     var lost_item_send_when_online = "&a你有遗失的物品,请输入 &6'/sakurabind getLost' &a领取"
 
     var bind_item__not_owner = "&6你不是这个物品的主人, 无法解绑"
+    var bind_item__not_match = "&6无法解绑该物品"
     var bind_item__unbind_failure = "&6解绑失败"
-    var bind_item__unbind_success = "&a解绑成功"
+    var bind_item__unbind_success = "&a全部解绑成功"
+    var bind_item__unbind_success_remain = "&a成功解绑 {0} 个物品"
     var bind_item__bind_failure = "&6绑定失败"
-    var bind_item__bind_success = "&a绑定成功"
+    var bind_item__bind_success = "&a全部绑定成功"
+    var bind_item__bind_success_remain = "&a成功绑定 {0} 个物品"
     var bind_item__no_amount = "&6物品数量不足"
 
     var addons__mcmmo_salvage = "&6该物品无法分解"

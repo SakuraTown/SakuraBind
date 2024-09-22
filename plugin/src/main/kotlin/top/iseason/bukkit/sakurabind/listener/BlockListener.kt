@@ -26,11 +26,10 @@ import top.iseason.bukkit.sakurabind.task.EntityRemoveQueue
 import top.iseason.bukkit.sakurabind.task.FallingList
 import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkit.sakurabind.utils.MessageTool
-import top.iseason.bukkit.sakurabind.utils.PlayerTool
-import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
+import top.iseason.bukkit.sakurabind.utils.SendBackType
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
-import java.util.*
+import top.iseason.bukkittemplate.utils.other.runSync
 
 /**
  * 方块物品监听器
@@ -74,27 +73,16 @@ object BlockListener : Listener {
 //            event.isCancelled = true
 //            return
 //        }
-        var heldItem = player.getHeldItem()
-        var owner: UUID? = null
-        lateinit var setting: BaseSetting
-        if (!heldItem.checkAir()) { //主手放置物品
-            owner = SakuraBindAPI.getOwner(heldItem!!) ?: return
-            setting = SakuraBindAPI.getItemSetting(heldItem)
-        } else {
-            heldItem = PlayerTool.getOffHandItem(player)
-            if (!heldItem.checkAir()) { // 副手放置物品
-                owner = SakuraBindAPI.getOwner(heldItem!!) ?: return
-                setting = SakuraBindAPI.getItemSetting(heldItem)
-            }
+        val itemInHand = event.itemInHand
+        if (itemInHand.checkAir()) return
+        val owner = SakuraBindAPI.getOwner(itemInHand) ?: return
+        val setting = SakuraBindAPI.getItemSetting(itemInHand)
+        val deny = checkDenyBlockPlace(player, itemInHand, setting, owner.toString()) ?: return
+        if (deny) {
+            event.isCancelled = true
+            return
         }
-        if (owner != null) {
-            val deny = checkDenyBlockPlace(player, heldItem!!, setting, owner.toString()) ?: return
-            if (deny) {
-                event.isCancelled = true
-                return
-            }
-            SakuraBindAPI.bindBlock(player, heldItem, block, owner, setting, false)
-        }
+        SakuraBindAPI.bindBlock(player, itemInHand, block, owner, setting, false)
     }
 
     /**
@@ -104,34 +92,32 @@ object BlockListener : Listener {
     fun onBlockMultiPlaceEvent(event: BlockMultiPlaceEvent) {
         val player = event.player
 //        if (Config.checkByPass(player)) return
-        var heldItem = player.getHeldItem()
-        var owner: UUID? = null
-        lateinit var setting: BaseSetting
-        if (!heldItem.checkAir()) { //主手放置物品
-            owner = SakuraBindAPI.getOwner(heldItem!!) ?: return
-            setting = SakuraBindAPI.getItemSetting(heldItem)
-        } else {
-            heldItem = PlayerTool.getOffHandItem(player)
-            if (!heldItem.checkAir()) { // 副手放置物品
-                owner = SakuraBindAPI.getOwner(heldItem!!) ?: return
-                setting = SakuraBindAPI.getItemSetting(heldItem)
-            }
-        }
-        if (owner != null) {
-            //覆盖检查，比如草，但是不实用
-//            if (event.replacedBlockStates.any { BlockCache.getOwner(it) != null }) {
-//                event.isCancelled = true
-//                MessageTool.sendCoolDown(player, Lang.block__deny_place_exist)
-//                return
+        val heldItem = event.itemInHand
+        val owner = SakuraBindAPI.getOwner(heldItem) ?: return
+        val setting = SakuraBindAPI.getItemSetting(heldItem)
+//        if (!heldItem.checkAir()) { //主手放置物品
+//            owner = SakuraBindAPI.getOwner(heldItem!!) ?: return
+//            setting = SakuraBindAPI.getItemSetting(heldItem)
+//        } else {
+//            heldItem = PlayerTool.getOffHandItem(player)
+//            if (!heldItem.checkAir()) { // 副手放置物品
+//                owner = SakuraBindAPI.getOwner(heldItem!!) ?: return
+//                setting = SakuraBindAPI.getItemSetting(heldItem)
 //            }
-            val deny = checkDenyBlockPlace(player, heldItem!!, setting, owner.toString()) ?: return
-            if (deny) {
-                event.isCancelled = true
-                return
-            }
-            for (state in event.replacedBlockStates) {
-                SakuraBindAPI.bindBlock(player, heldItem, state.block, owner, setting, true)
-            }
+//        }
+        val deny = checkDenyBlockPlace(player, heldItem, setting, owner.toString()) ?: return
+        if (deny) {
+            event.isCancelled = true
+            return
+        }
+        val rawLoc = event.block.location
+        val x = rawLoc.x
+        val y = rawLoc.y
+        val z = rawLoc.z
+        for (state in event.replacedBlockStates) {
+            val loc = state.location
+            if (x == loc.x && y == loc.y && z == loc.z) continue
+            SakuraBindAPI.bindBlock(player, heldItem, state.block, owner, setting, true)
         }
     }
 
@@ -150,7 +136,7 @@ object BlockListener : Listener {
 
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun onBlockBreakEvent2(event: BlockBreakEvent) {
+    fun onBlockBreakEvent(event: BlockBreakEvent) {
         val block = event.block
         val player = event.player
         val blockInfo = SakuraBindAPI.getBlockInfo(block) ?: return
@@ -160,15 +146,18 @@ object BlockListener : Listener {
         //可以破坏
         if (Config.checkByPass(event.player) || !deny) {
             val blockToString = BlockCache.blockToString(block)
-            BlockCache.addBlockTemp(blockToString, blockInfo)
+            BlockCache.addBreakingCache(blockToString, blockInfo)
             //没有掉落物直接删除
-            if (event.player.gameMode != GameMode.SURVIVAL || block.getDrops(
-                    player.getHeldItem() ?: ItemStack(Material.AIR)
-                ).isEmpty()
-            ) SakuraBindAPI.unbindBlock(block, type = BindType.BLOCK_TO_ITEM_UNBIND)
+            if (event.player.gameMode == GameMode.CREATIVE) {
+                SakuraBindAPI.unbindBlock(block, type = BindType.BLOCK_TO_ITEM_UNBIND)
+            }
             val state = block.state
             if (state is InventoryHolder && state.inventory.size > 0) {
-                BlockCache.containerCache.put(blockToString, block.type)
+                val containerCache = BlockCache.containerCache
+                containerCache.put(blockToString, block.type)
+                runSync {
+                    containerCache.remove(blockToString)
+                }
             }
         } else {
             event.isCancelled = true
@@ -204,11 +193,12 @@ object BlockListener : Listener {
         val block = event.block
         //只检查变成空气的
         if (!block.isEmpty) return
-        val blockInfo = SakuraBindAPI.getBlockInfo(block) ?: return
+        val blockToString = BlockCache.blockToString(block)
+        val blockInfo = BlockCache.getBlockInfo(blockToString) ?: return
         SakuraBindAPI.unbindBlock(block, BindType.BLOCK_TO_ITEM_UNBIND)
 //        println("${event.block.type} -> ${event.changedType} ${event.block.location}")
 //        if(event.changedType==Material.AIR)
-        BlockCache.addBlockTemp(BlockCache.blockToString(block), blockInfo)
+        BlockCache.addBreakingCache(blockToString, blockInfo)
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -221,7 +211,7 @@ object BlockListener : Listener {
             if (first != null) {
                 val uuid = blockInfo.ownerUUID
                 SakuraBindAPI.bind(first, uuid, type = BindType.BLOCK_TO_ITEM_BIND)
-                SakuraBindAPI.sendBackItem(uuid, listOf(first))
+                SakuraBindAPI.sendBackItem(uuid, listOf(first), type = SendBackType.BLOCK_FROM_TO)
             }
             event.toBlock.type = Material.AIR
         }
@@ -291,6 +281,7 @@ object BlockListener : Listener {
             return
         }
         val itemStack = entity.itemStack
+        entity.location
         // 处理下落方块变成掉落物
         kotlin.run {
             val findEntity = FallingList.findFalling(entity.location)
@@ -305,12 +296,11 @@ object BlockListener : Listener {
         val itemMeta = itemStack.itemMeta
         if (itemMeta is BlockStateMeta && itemMeta.hasBlockState() && itemMeta.blockState is InventoryHolder && itemStack.amount != 1) return
         val entityToString = BlockCache.dropItemToString(entity)
-        val ifPresent = BlockCache.containerCache.getIfPresent(entityToString)
+        val ifPresent = BlockCache.containerCache[entityToString]
         if (ifPresent != null && (itemStack.type != ifPresent || itemStack.amount != 1)) return
-        val blockInfo = BlockCache.getBlockTemp(entityToString) ?: BlockCache.getBlockInfo(entityToString) ?: return
+        val blockInfo = BlockCache.getBreakingCache(entityToString) ?: return
         SakuraBindAPI.bind(itemStack, blockInfo)
-        BlockCache.removeCache(entityToString)
-        BlockCache.removeBlockTemp(entityToString)
+        BlockCache.removeBreakingCache(entityToString)
         return
     }
 

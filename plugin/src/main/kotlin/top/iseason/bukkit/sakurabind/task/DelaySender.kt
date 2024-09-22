@@ -75,12 +75,6 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
         }
 
         fun remove(uuid: UUID) = map.remove(uuid)
-        fun shutdown() {
-            map.values.forEach {
-                it.cancel()
-            }
-            map.clear()
-        }
 
         fun sendToDataBase(uid: UUID, items: List<ItemStack>) {
             dbTransaction {

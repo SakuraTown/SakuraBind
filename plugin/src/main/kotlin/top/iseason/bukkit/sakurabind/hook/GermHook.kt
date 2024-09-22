@@ -32,7 +32,7 @@ object GermHook : BaseHook("GermPlugin") {
                     setting.getBoolean("auto-unbind.enable", ownerStr, player) &&
                     setting.getBoolean("auto-unbind.onScanner", ownerStr, player)
                 ) {
-                    debug("萌芽: 解绑物品 ${item.type}")
+                    debug { "萌芽: 解绑物品 ${item.type}" }
                     SakuraBindAPI.unBind(item, BindType.SCANNER_UNBIND_ITEM)
                     MessageTool.messageCoolDown(player, Lang.auto_unbind__onScanner)
                     continue
@@ -44,7 +44,7 @@ object GermHook : BaseHook("GermPlugin") {
                         player
                     ))
                 ) {
-                    debug("萌芽: ${player.name} 的槽中存在绑定物品 ${item.type} 属于 $owner")
+                    debug { "萌芽: ${player.name} 的槽中存在绑定物品 ${item.type} 属于 $owner" }
                     sendBackMap.computeIfAbsent(owner) { mutableListOf() }.add(item)
                     GermSlotAPI.saveItemStackToIdentity(player, id, ItemStack(Material.AIR))
                     hasFound = true
@@ -57,7 +57,7 @@ object GermHook : BaseHook("GermPlugin") {
                         player
                     )) || SakuraBindAPI.isAutoBind(item))
                 ) {
-                    debug("萌芽: 绑定物品 ${item.type}")
+                    debug { "萌芽: 绑定物品 ${item.type}" }
                     MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onScanner, setting, item)
                     SakuraBindAPI.bind(item, player, type = BindType.SCANNER_BIND_ITEM)
                 }

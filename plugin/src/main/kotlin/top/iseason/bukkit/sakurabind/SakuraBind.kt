@@ -13,15 +13,13 @@ import top.iseason.bukkit.sakurabind.config.*
 import top.iseason.bukkit.sakurabind.config.matcher.MatcherManager
 import top.iseason.bukkit.sakurabind.dto.BindLogs
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
+import top.iseason.bukkit.sakurabind.dto.SendBackLogs
 import top.iseason.bukkit.sakurabind.dto.UniqueLogs
 import top.iseason.bukkit.sakurabind.hook.*
 import top.iseason.bukkit.sakurabind.listener.*
 import top.iseason.bukkit.sakurabind.module.BindItem
 import top.iseason.bukkit.sakurabind.module.UniqueItem
 import top.iseason.bukkit.sakurabind.pickers.BasePicker
-import top.iseason.bukkit.sakurabind.pickers.GlobalMarketPlusPicker
-import top.iseason.bukkit.sakurabind.pickers.SweetMailPicker
-import top.iseason.bukkit.sakurabind.task.DelaySender
 import top.iseason.bukkit.sakurabind.task.DropItemList
 import top.iseason.bukkit.sakurabind.task.EntityRemoveQueue
 import top.iseason.bukkittemplate.BukkitPlugin
@@ -80,10 +78,11 @@ object SakuraBind : BukkitPlugin {
         Config.load(false)
         DatabaseConfig.load(false)
         if (Config.send_back_database)
-            DatabaseConfig.initTables(PlayerItems, BindLogs, UniqueLogs)
+            DatabaseConfig.initTables(PlayerItems, BindLogs, SendBackLogs, UniqueLogs)
         else
-            DatabaseConfig.initTables(BindLogs, UniqueLogs)
+            DatabaseConfig.initTables(BindLogs, SendBackLogs, UniqueLogs)
         BindLogger.load(false)
+        SendBackLogger.load(false)
         UniqueItemConfig.load(false)
         BindItemConfig.load(false)
         info("&a配置初始化完毕!")
@@ -100,12 +99,14 @@ object SakuraBind : BukkitPlugin {
         MMOItemsHook.checkHooked()
         ItemsAdderHook.checkHooked()
         OraxenHook.checkHooked()
-        PlayerDataSQLHook.checkHooked()
         BanItemHook.checkHooked()
         GermHook.checkHooked()
         McMMoHook.checkHooked()
         GlobalMarketPlusHook.checkHooked()
         SweetMailHook.checkHooked()
+        PlayerDataSQLHook.checkHooked()
+        HuskSyncHook.checkHooked()
+        InvSyncHook.checkHooked()
         if (PlaceHolderHook.hasHooked) PlaceHolderExpansion.register()
         if (MMOItemsHook.hasHooked) {
             MatcherManager.addMatcher(MMOItemsMatcher())
@@ -113,8 +114,11 @@ object SakuraBind : BukkitPlugin {
         }
         if (ItemsAdderHook.hasHooked) MatcherManager.addMatcher(ItemsAdderMatcher())
         if (OraxenHook.hasHooked) MatcherManager.addMatcher(OraxenMatcher())
-        if (PlayerDataSQLHook.hasHooked) PlayerDataSQLHook.registerListener()
         if (McMMoHook.hasHooked) McMMoHook.registerListener()
+        if (PlayerDataSQLHook.hasHooked) PlayerDataSQLHook.registerListener()
+        if (HuskSyncHook.hasHooked) HuskSyncHook.registerListener()
+        if (InvSyncHook.hasHooked) InvSyncHook.registerListener()
+
     }
 
     /**
@@ -137,7 +141,7 @@ object SakuraBind : BukkitPlugin {
         if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_16_R1)) {
             ItemListener16.registerListener()
         }
-        if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_12_R1)) {
+        if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_14_R1)) {
             PickupItemListener.registerListener()
         } else {
             LegacyPickupItemListener.registerListener()
@@ -230,13 +234,6 @@ object SakuraBind : BukkitPlugin {
         info("&6插件注销中...")
         try {
             DropItemList.cancel()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        try {
-            DelaySender.shutdown()
-            GlobalMarketPlusPicker.shutdown()
-            SweetMailPicker.shutdown()
         } catch (e: Exception) {
             e.printStackTrace()
         }

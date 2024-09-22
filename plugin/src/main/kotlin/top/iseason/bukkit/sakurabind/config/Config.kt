@@ -77,7 +77,7 @@ object Config : SimpleYAMLConfig() {
     @Comment(
         "",
         "丢失物品返还顺序, 满了才下一个顺序",
-        "player: 玩家背包 仅玩家在线有效",
+        "player: 玩家背包 仅玩家活着有效",
         "ender-chest: 末影箱 仅玩家在线有效",
         "database: 插件自带暂存箱",
         "GlobalMarketPlus: GlobalMarketPlus插件的邮箱",
@@ -128,7 +128,7 @@ object Config : SimpleYAMLConfig() {
         "绑定全局设置权限 `sakurabind.settings.{键名}.true|false` 不支持`键名@`的形式",
         "绑定设置权限 `sakurabind.setting.{设置名}.{键名}.true|false` 设置名是 `settings.yml` 匹配键,覆盖全局权限 不支持`键名@`"
     )
-    var enable_setting_permission_check = true
+    var enable_setting_permission_check = false
 
     private var task: BukkitTask? = null
 
@@ -290,7 +290,7 @@ object Config : SimpleYAMLConfig() {
         task = null
         if (scanner_period > 0L && (DatabaseConfig.isConnected || (SakuraMailHook.hasHooked && sakuraMail_hook))) {
             info("&a定时扫描任务已启动,周期: $scanner_period tick")
-            task = Scanner().runTaskTimer(BukkitTemplate.getPlugin(), scanner_period, scanner_period)
+            task = Scanner().runTaskTimerAsynchronously(BukkitTemplate.getPlugin(), scanner_period, scanner_period)
         }
     }
 

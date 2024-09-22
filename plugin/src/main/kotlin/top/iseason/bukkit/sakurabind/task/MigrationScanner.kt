@@ -136,8 +136,8 @@ class MigrationScanner : BukkitRunnable() {
             }
         }
         if (removeLore && player != null) item.itemMeta = itemMeta
-        if (player != null) debug("&7从物品 &f${item.getDisplayName() ?: item.type} &7中检测到 &6$player &7的可迁移绑定的数据，已迁移。")
-
+        if (player != null)
+            debug { "&7从物品 &f${item.getDisplayName() ?: item.type} &7中检测到 &6$player &7的可迁移绑定的数据，已迁移。" }
         return if (player == null) null else player to start
     }
 }

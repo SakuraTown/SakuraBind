@@ -3,8 +3,10 @@ package top.iseason.bukkit.sakurabind.pickers
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
+import org.bukkit.scheduler.BukkitRunnable
 import top.iseason.bukkit.sakurabind.hook.GlobalMarketPlusHook
 import top.iseason.bukkit.sakurabind.hook.SweetMailHook
+import top.iseason.bukkit.sakurabind.utils.SendBackType
 import top.iseason.bukkittemplate.BukkitTemplate
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -13,10 +15,15 @@ import kotlin.collections.set
 abstract class BasePicker(val name: String) {
 
     // 离线拾取
-    abstract fun pickup(uuid: UUID, items: Array<ItemStack>, notify: Boolean): Array<ItemStack>?
+    abstract fun pickup(uuid: UUID, items: Array<ItemStack>, type: SendBackType, notify: Boolean): Array<ItemStack>?
 
     // 在线拾取
-    abstract fun pickup(player: OfflinePlayer, items: Array<ItemStack>, notify: Boolean): Array<ItemStack>?
+    abstract fun pickup(
+        player: OfflinePlayer,
+        items: Array<ItemStack>,
+        type: SendBackType,
+        notify: Boolean
+    ): Array<ItemStack>?
 
     fun register() {
         allPickers[name.lowercase()] = this
@@ -40,25 +47,25 @@ abstract class BasePicker(val name: String) {
             }
         }
 
-        fun pickup(uuid: UUID, items: Array<ItemStack>, notify: Boolean): Array<ItemStack> {
+        fun pickup(uuid: UUID, items: Array<ItemStack>, type: SendBackType, notify: Boolean): Array<ItemStack> {
             var temp = items
             val player = Bukkit.getPlayer(uuid)
             // 在线
             if (player != null && player.isOnline) {
                 for (picker in configPickers) {
-                    temp = picker.pickup(player, temp, notify) ?: continue
+                    temp = picker.pickup(player, temp, type, notify) ?: continue
                     if (temp.isEmpty()) break
                 }
             } else {
                 for (picker in configPickers) {
-                    temp = picker.pickup(uuid, temp, notify) ?: continue
+                    temp = picker.pickup(uuid, temp, type, notify) ?: continue
                     if (temp.isEmpty()) break
                 }
             }
             return temp
         }
 
-        fun continuePickup(base: BasePicker, uuid: UUID, items: Array<ItemStack>) {
+        fun continuePickup(base: BasePicker, uuid: UUID, type: SendBackType, items: Array<ItemStack>) {
             val player = Bukkit.getPlayer(uuid)
             val isOnline = player != null
             var find = false
@@ -71,30 +78,41 @@ abstract class BasePicker(val name: String) {
                     continue
                 }
                 temp = if (isOnline)
-                    picker.pickup(player, temp, true) ?: continue
+                    picker.pickup(player, temp, type, true) ?: continue
                 else
-                    picker.pickup(uuid, temp, false) ?: continue
+                    picker.pickup(uuid, temp, type, false) ?: continue
                 if (temp.isEmpty()) break
+            }
+        }
+
+        class DelayPicker(
+            val uuid: UUID,
+            val type: SendBackType,
+            val sendBackFun: (UUID, SendBackType) -> Unit
+        ) : BukkitRunnable() {
+            override fun run() {
+                sendBackFun.invoke(uuid, type)
+            }
+
+            override fun cancel() {
+                super.cancel()
+                sendBackFun.invoke(uuid, type)
             }
         }
 
         fun addCache(
             cacheMap: ConcurrentHashMap<UUID, LinkedList<ItemStack>>,
             uuid: UUID,
+            type: SendBackType,
             items: Array<ItemStack>,
-            sendBackFun: (UUID) -> Unit
+            sendBackFun: (UUID, SendBackType) -> Unit
         ) {
             val cache = cacheMap.computeIfAbsent(uuid) {
                 if (!plugin.isEnabled) {
-                    sendBackFun.invoke(uuid)
+                    sendBackFun.invoke(uuid, type)
                     return@computeIfAbsent isInit
                 } else {
-                    Bukkit.getScheduler()
-                        .runTaskLaterAsynchronously(
-                            BukkitTemplate.getPlugin(),
-                            Runnable { sendBackFun(uuid) },
-                            60L
-                        )
+                    DelayPicker(uuid, type, sendBackFun).runTaskLaterAsynchronously(BukkitTemplate.getPlugin(), 60L)
                 }
                 LinkedList()
             }

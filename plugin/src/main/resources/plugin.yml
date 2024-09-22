@@ -12,12 +12,14 @@ softdepend:
   - MMOItems
   - ItemsAdder
   - Oraxen
-  - PlayerDataSQL
   - GermPlugin
   - BanItem
   - mcMMO
   - GlobalMarketPlus
   - SweetMail
+  - PlayerDataSQL
+  - InvSync
+  - HuskSync
 
 permission:
   sakurabind.bypass.all:

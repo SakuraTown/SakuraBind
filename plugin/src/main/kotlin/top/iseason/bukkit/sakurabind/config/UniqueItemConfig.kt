@@ -7,6 +7,7 @@ import org.bukkit.configuration.MemorySection
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitTask
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
+import top.iseason.bukkit.sakurabind.config.BindLogger.Formatter
 import top.iseason.bukkit.sakurabind.dto.UniqueLog
 import top.iseason.bukkit.sakurabind.module.UniqueItem
 import top.iseason.bukkit.sakurabind.module.UniqueItem.getUniqueKey
@@ -27,7 +28,6 @@ import java.io.File
 import java.time.LocalDateTime
 import java.util.logging.FileHandler
 import java.util.logging.Logger
-import java.util.logging.SimpleFormatter
 
 @FilePath("modules/unique-item.yml")
 object UniqueItemConfig : SimpleYAMLConfig() {
@@ -112,13 +112,17 @@ object UniqueItemConfig : SimpleYAMLConfig() {
     var logger__file_path =
         File(BukkitTemplate.getPlugin().dataFolder, "log${File.separatorChar}unique-log-%g-%u.log").toString()
 
+    @Key
+    @Comment("", "独立的文件的最大数量，每个1M,修改需重启生效")
+    var file_max_count = 10
+
 
     private val file_logger = Logger.getLogger("SakuraBind-UniqueLogger")
         .apply {
             useParentHandlers = false
             File(logger__file_path).parentFile.mkdirs()
-            val handler = FileHandler(logger__file_path, 1024000, BindLogger.file_max_count, true)
-            handler.formatter = SimpleFormatter()
+            val handler = FileHandler(logger__file_path, 1024000, file_max_count, true)
+            handler.formatter = Formatter()
             handler.encoding = "UTF-8"
             addHandler(handler)
         }

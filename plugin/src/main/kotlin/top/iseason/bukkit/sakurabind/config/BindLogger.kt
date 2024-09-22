@@ -17,6 +17,7 @@ import top.iseason.bukkittemplate.config.annotations.Key
 import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.debug.SimpleLogger
 import top.iseason.bukkittemplate.debug.warn
+import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.getDisplayName
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.noColor
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
@@ -25,6 +26,7 @@ import java.io.File
 import java.time.LocalDateTime
 import java.util.*
 import java.util.logging.FileHandler
+import java.util.logging.LogRecord
 import java.util.logging.Logger
 import java.util.logging.SimpleFormatter
 
@@ -56,7 +58,7 @@ object BindLogger : SimpleYAMLConfig() {
     var file_path = File(BukkitTemplate.getPlugin().dataFolder, "log${File.separatorChar}bind-log-%g-%u.log").toString()
 
     @Key
-    @Comment("", "独立的文件的最大数量，每个1M,修改需重启生效")
+    @Comment("", "独立的文件的最大数量，每个5M,修改需重启生效")
     var file_max_count = 10
 
     @Key
@@ -102,15 +104,26 @@ object BindLogger : SimpleYAMLConfig() {
     @Comment("", "实体显示格式, 替换logger.format的 {3}", "占位符分别为 类型、名字、UUID、位置")
     var format_entity = "实体: {0} {1} {2} {3} {4}"
 
-    private val file_logger = Logger.getLogger("SakuraBind-FileLogger")
+    private val file_logger = Logger.getLogger("SakuraBind-BindLogger")
         .apply {
             useParentHandlers = false
             File(file_path).parentFile.mkdirs()
-            val handler = FileHandler(file_path, 1024000, file_max_count, true)
-            handler.formatter = SimpleFormatter()
+            val handler = FileHandler(file_path, 5120000, file_max_count, true)
+            handler.formatter = Formatter()
             handler.encoding = "UTF-8"
             addHandler(handler)
         }
+
+    class Formatter : SimpleFormatter() {
+        private val format = "[%1\$tF %1\$tT] %2\$s %n"
+        override fun format(record: LogRecord): String {
+            return String.format(
+                format,
+                Date(record.millis),
+                record.message
+            )
+        }
+    }
 
     init {
         DisableHook.addTask {
@@ -130,9 +143,7 @@ object BindLogger : SimpleYAMLConfig() {
 
     fun log(owner: UUID, type: BindType, setting: BaseSetting, item: ItemStack) {
         if (!enable || filter.contains(type.name)) return
-        val name = if (item.hasItemMeta() && item.itemMeta!!.hasDisplayName()) {
-            item.itemMeta!!.displayName
-        } else ""
+        val name = item.getDisplayName() ?: ""
         val subId = item.data?.data ?: 0
         val attach = format_item.formatBy(item.type, name, item.amount, if (subId > 0) subId else "")
         log(owner, type, setting, attach)
@@ -158,11 +169,14 @@ object BindLogger : SimpleYAMLConfig() {
 
     private fun log(owner: UUID, type: BindType, setting: BaseSetting, attach: String) {
         runAsync {
-            val message = format.formatBy(owner, type.description, setting.keyPath, attach)
+            var message: String? = null
             if (console) {
+                message = format.formatBy(owner, type.description, setting.keyPath, attach)
                 Bukkit.getConsoleSender().sendMessage((SimpleLogger.prefix + message).toColor())
             }
             if (file) {
+                if (message == null)
+                    message = format.formatBy(owner, type.description, setting.keyPath, attach)
                 file_logger.info(message.toColor().noColor())
             }
             if (database) {

@@ -100,7 +100,7 @@ object CacheManager {
         watchDog!!.start()
     }
 
-    fun locationToString(location: Location): String =
+    inline fun locationToString(location: Location): String =
         "${location.world?.name},${location.blockX},${location.blockY},${location.blockZ}"
 
     @Throws(Exception::class)

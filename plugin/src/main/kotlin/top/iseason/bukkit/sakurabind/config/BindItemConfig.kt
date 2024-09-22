@@ -36,13 +36,17 @@ object BindItemConfig : SimpleYAMLConfig() {
     var bind: MemorySection? = null
 
     @Key("bind.nbt")
-    @Comment("", "识别配置的NBT路径")
+    @Comment("", "识别配置的NBT路径, 值是指定 settings.yml的匹配器键，不存在将自动识别")
     var bindNbt = "sakura_bind_bind-item"
 
 
     @Key("bind.chance")
     @Comment("", "成功率, 每次绑定都会消耗一个物品")
     var bindChance = 100.0
+
+    @Key("bind.chance-nbt")
+    @Comment("", "成功率，储存在nbt中，不读配置")
+    var bindChanceNbt = "sakura_bind_bind-item-chance"
 
     @Key
     @Comment("", "解绑物品")
@@ -56,6 +60,10 @@ object BindItemConfig : SimpleYAMLConfig() {
     @Comment("", "成功率, 每次解绑定都会消耗一个物品")
     var unbindChance = 100.0
 
+    @Key("unbind.chance-nbt")
+    @Comment("", "成功率，储存在nbt中，不读配置")
+    var unBindChanceNbt = "sakura_bind_unbind-item-chance"
+
     @Key
     @Comment("", "如果绑定/解绑的是可堆叠的物品，那么需要消耗相同数量的物品，否则每次只消耗一个")
     var syncAmount = true
@@ -64,10 +72,30 @@ object BindItemConfig : SimpleYAMLConfig() {
 
     }
 
-    fun getSetting(item: ItemStack): String? = NBT.get<String>(item) {
-        val string = it.getString(bindNbt)
-        if (string == "") null else string
+    fun getBind(item: ItemStack): Pair<String, Double>? {
+        val (settingKey, rate) = NBT.get<Pair<String?, Double?>>(item) {
+            if (it.hasTag(bindNbt)) {
+                val chanceStr = it.getString(bindChanceNbt)
+                val chance = if (chanceStr == "") bindChance
+                else runCatching { chanceStr.toDouble() }.getOrElse { bindChance }
+                it.getString(bindNbt) to chance
+            } else Pair(null, null)
+        }
+        if (settingKey == null) return null
+        return settingKey to rate!!
     }
 
+    fun getUnBind(item: ItemStack): Pair<String, Double>? {
+        val (settingKey, rate) = NBT.get<Pair<String?, Double?>>(item) {
+            if (it.hasTag(unbindNbt)) {
+                val chanceStr = it.getString(unBindChanceNbt)
+                val chance = if (chanceStr == "") unbindChance
+                else runCatching { chanceStr.toDouble() }.getOrElse { unbindChance }
+                it.getString(unbindNbt) to chance
+            } else Pair(null, null)
+        }
+        if (settingKey == null) return null
+        return settingKey to rate!!
+    }
 
 }

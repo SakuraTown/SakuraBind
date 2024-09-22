@@ -18,6 +18,7 @@ import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkit.sakurabind.utils.MessageTool
+import top.iseason.bukkit.sakurabind.utils.SendBackType
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 
@@ -25,12 +26,10 @@ object PickupItemListener : Listener {
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerPickupArrowEvent(event: PlayerPickupArrowEvent) {
-        val entity = event.arrow
-        if (entity is ThrowableProjectile) {
-            val item = event.item
-            playerPickupItem(event.player, item, event)
-            if (!item.isValid) entity.remove()
-        }
+        val entity = event.arrow as? ThrowableProjectile ?: return
+        val item = event.item
+        playerPickupItem(event.player, item, event)
+        if (!item.isValid) entity.remove()
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -41,11 +40,9 @@ object PickupItemListener : Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun autoBindPlayerPickupArrowEvent(event: PlayerPickupArrowEvent) {
-        val entity = event.arrow
-        if (entity is ThrowableProjectile) {
-            val item = event.item
-            checkAutoBind(event.player, item.itemStack)
-        }
+        event.arrow as? ThrowableProjectile ?: return
+        val item = event.item
+        checkAutoBind(event.player, item.itemStack)
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -60,9 +57,7 @@ object PickupItemListener : Listener {
         val owner = SakuraBindAPI.getOwner(item) ?: return
         val uniqueId = player.uniqueId
         if (owner != uniqueId && CallbackCommand.isCallback(owner)) {
-            val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
-            if (sendBackItem.isEmpty()) entity.remove()
-            else entity.itemStack = sendBackItem.first()
+            SakuraBindAPI.sendBackItem(owner, listOf(item), type = SendBackType.COMMON_CALLBACK)
             event.isCancelled = true
             entity.pickupDelay = 10
             player.sendColorMessage(Lang.command__callback)
@@ -72,13 +67,8 @@ object PickupItemListener : Listener {
         if (itemSetting.getBoolean("item-deny.pickup", owner.toString(), player)) {
             event.isCancelled = true
             if (owner != uniqueId && itemSetting.getBoolean("item.send-back-on-pickup", owner.toString(), player)) {
-                val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
-                if (sendBackItem.isEmpty()) {
-                    entity.remove()
-                } else {
-                    entity.itemStack = sendBackItem.first()
-                    entity.pickupDelay = 20
-                }
+                SakuraBindAPI.sendBackItem(owner, listOf(item), type = SendBackType.PLAYER_PICKUP)
+                entity.remove()
                 MessageTool.denyMessageCoolDown(
                     player,
                     Lang.item__deny_pickup.formatBy(SakuraBindAPI.getOwnerName(owner)),

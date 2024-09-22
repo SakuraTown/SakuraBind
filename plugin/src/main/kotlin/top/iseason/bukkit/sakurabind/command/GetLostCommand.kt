@@ -7,8 +7,11 @@ import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.dto.PlayerItem
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
+import top.iseason.bukkit.sakurabind.listener.SelectListener
 import top.iseason.bukkittemplate.command.CommandNode
 import top.iseason.bukkittemplate.command.CommandNodeExecutor
+import top.iseason.bukkittemplate.command.ParmaException
+import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toByteArray
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
@@ -30,11 +33,14 @@ object GetLostCommand : CommandNode(
             sender.sendColorMessage(Lang.command__getLost_coolDown)
             return@CommandNodeExecutor
         }
+        if (!DatabaseConfig.isConnected) throw ParmaException("数据库异常")
+        val uniqueId = player.uniqueId
+        if (SelectListener.noScanning.contains(uniqueId)) throw ParmaException("数据同步中，请稍后")
         var totalCount = 0
         dbTransaction {
             while (true) {
                 val items =
-                    PlayerItem.find { PlayerItems.uuid eq player.uniqueId }
+                    PlayerItem.find { PlayerItems.uuid eq uniqueId }
                         .limit(10, (page * 10).toLong())
                         .toList()
                 if (items.isEmpty()) break

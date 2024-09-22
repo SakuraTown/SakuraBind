@@ -21,8 +21,8 @@ object AutoBindCommand : CommandNode(
     isPlayerOnly = true,
     async = true,
     params = listOf(
-        Param("[nbt]", suggestRuntime = { Config.auto_bind_nbt.split('.') }),
-        Param("[value]"),
+        Param("[nbtKey]", suggestRuntime = { Config.auto_bind_nbt.split('.') }),
+        Param("[nbtvalue]"),
     )
 ) {
     override var onExecute: CommandNodeExecutor? = CommandNodeExecutor { params, sender ->
@@ -38,11 +38,10 @@ object AutoBindCommand : CommandNode(
                 player.sendColorMessage(Lang.command__autoBind.formatBy(Config.auto_bind_nbt))
         } else {
             NBT.modify(heldItem) {
-                it.setString(Config.auto_bind_nbt, value)
+                it.setString(nbt, value)
             }
             player.sendColorMessage(Lang.command__autoBind.formatBy(nbt))
         }
-        player.updateInventory()
 
     }
 

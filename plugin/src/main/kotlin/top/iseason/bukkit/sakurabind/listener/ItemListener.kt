@@ -38,6 +38,7 @@ import top.iseason.bukkit.sakurabind.task.EntityRemoveQueue
 import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkit.sakurabind.utils.PlayerTool
+import top.iseason.bukkit.sakurabind.utils.SendBackType
 import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
@@ -161,10 +162,7 @@ object ItemListener : Listener {
         val owner = SakuraBindAPI.getOwner(item) ?: return
         //处理召回
         if (CallbackCommand.isCallback(owner)) {
-            val sendBackItem = SakuraBindAPI.sendBackItem(owner, listOf(item))
-            if (sendBackItem.isEmpty()) {
-                EntityRemoveQueue.syncRemove(itemDrop)
-            } else itemDrop.itemStack = sendBackItem.first()
+            SakuraBindAPI.sendBackItem(owner, listOf(item), type = SendBackType.COMMON_CALLBACK)
             MessageTool.messageCoolDown(player, Lang.command__callback)
             return
         }
@@ -179,7 +177,11 @@ object ItemListener : Listener {
                 openInventory.cursor = null
             }
             if (release.isNotEmpty()) {
-                SakuraBindAPI.sendBackItem(SakuraBindAPI.getOwner(item)!!, release.values.toList())
+                SakuraBindAPI.sendBackItem(
+                    SakuraBindAPI.getOwner(item)!!,
+                    release.values.toList(),
+                    type = SendBackType.PLAYER_DROP
+                )
             }
             MessageTool.denyMessageCoolDown(event.player, Lang.item__deny_drop, ItemSettings.getSetting(item), item)
         }
@@ -349,7 +351,7 @@ object ItemListener : Listener {
                 return@submit
             }
             map.forEach { (uid, items) ->
-                SakuraBindAPI.sendBackItem(uid, items)
+                SakuraBindAPI.sendBackItem(uid, items, type = SendBackType.CONTAINER_BREAK)
             }
         }
     }
@@ -370,7 +372,7 @@ object ItemListener : Listener {
         if (filterItem.isEmpty()) return
         if (itemStack.type == Material.AIR) item.remove()
         for ((uuid, bindItems) in filterItem) {
-            SakuraBindAPI.sendBackItem(uuid, bindItems)
+            SakuraBindAPI.sendBackItem(uuid, bindItems, type = SendBackType.ITEM_DAMAGE)
         }
     }
 
@@ -389,7 +391,7 @@ object ItemListener : Listener {
         if (filterItem.isEmpty()) return
         if (itemStack.type == Material.AIR) item.remove()
         for ((uuid, bindItems) in filterItem) {
-            SakuraBindAPI.sendBackItem(uuid, bindItems)
+            SakuraBindAPI.sendBackItem(uuid, bindItems, type = SendBackType.ITEM_DE_SPAWN)
         }
     }
 
@@ -448,8 +450,7 @@ object ItemListener : Listener {
         if (owner != null) {
             val setting = ItemSettings.getSetting(item)
             if (setting.getBoolean("auto-unbind.enable", owner, player) &&
-                (setting.getBoolean("auto-unbind.onClick", owner, player) ||
-                        SakuraBindAPI.isAutoBind(item))
+                setting.getBoolean("auto-unbind.onClick", owner, player)
             ) {
                 SakuraBindAPI.unBind(item, BindType.CLICK_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onClick)
@@ -660,7 +661,7 @@ object ItemListener : Listener {
         }
         if (sendBackList.isNotEmpty()) {
             submit(async = true) {
-                SakuraBindAPI.sendBackItem(entity.uniqueId, sendBackList)
+                SakuraBindAPI.sendBackItem(entity.uniqueId, sendBackList, type = SendBackType.PLAYER_DEATH)
             }
         }
     }
@@ -682,7 +683,7 @@ object ItemListener : Listener {
                         .iterator()
                 iterator.hasNext()
             }
-//            debug("玩家的暂存箱: ${hasItem}")
+//           debug{"玩家的暂存箱: ${hasItem}"}
             if (!hasItem) return@submit
             player.sendColorMessage(Lang.has_lost_item)
         }

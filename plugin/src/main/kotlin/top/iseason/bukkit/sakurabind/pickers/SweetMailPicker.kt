@@ -4,7 +4,9 @@ import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.config.Config
+import top.iseason.bukkit.sakurabind.config.SendBackLogger
 import top.iseason.bukkit.sakurabind.hook.SweetMailHook
+import top.iseason.bukkit.sakurabind.utils.SendBackType
 import top.mrxiaom.sweetmail.IMail
 import top.mrxiaom.sweetmail.SweetMail
 import top.mrxiaom.sweetmail.attachments.AttachmentItem
@@ -20,14 +22,15 @@ object SweetMailPicker : BasePicker("SweetMail") {
     override fun pickup(
         uuid: UUID,
         items: Array<ItemStack>,
+        type: SendBackType,
         notify: Boolean
     ): Array<ItemStack>? {
         if (!SweetMailHook.hasHooked) return null
-        addCache(map, uuid, items, SweetMailPicker::sendBack)
+        addCache(map, uuid, type, items, SweetMailPicker::sendBack)
         return emptyArray()
     }
 
-    fun sendBack(uuid: UUID) {
+    fun sendBack(uuid: UUID, type: SendBackType) {
         val items = map.remove(uuid) ?: return
         val sender = if (SweetMail.getInstance().isOnlineMode) {
             uuid.toString()
@@ -44,22 +47,20 @@ object SweetMailPicker : BasePicker("SweetMail") {
             mail.outdateTime = System.currentTimeMillis() + sweetMailExpire * 1000L
         val send = mail.send()
         if (!send.ok()) {
-            continuePickup(SweetMailPicker, uuid, items.toTypedArray())
+            continuePickup(SweetMailPicker, uuid, type, items.toTypedArray())
+        } else {
+            SendBackLogger.log(uuid, type, name, items)
         }
     }
 
     override fun pickup(
         player: OfflinePlayer,
         items: Array<ItemStack>,
+        type: SendBackType,
         notify: Boolean
     ): Array<ItemStack>? {
         if (!SweetMailHook.hasHooked) return null
-        return pickup(player.uniqueId, items, notify)
+        return pickup(player.uniqueId, items, type, notify)
     }
 
-    fun shutdown() {
-        map.keys.forEach {
-            sendBack(it)
-        }
-    }
 }
