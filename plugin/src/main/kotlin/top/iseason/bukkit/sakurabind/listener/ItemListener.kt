@@ -364,10 +364,6 @@ object ItemListener : Listener {
         val item = event.entity as? Item ?: return
         if (item.isDead) return
         val itemStack = item.itemStack
-        if (!DatabaseConfig.isConnected && SakuraBindAPI.hasInnerBind(itemStack)) {
-            event.isCancelled = true
-            return
-        }
         val filterItem = SakuraBindAPI.filterItem(itemStack) { it.getBoolean("item.send-when-lost", null, null) }
         if (filterItem.isEmpty()) return
         if (itemStack.type == Material.AIR) item.remove()
@@ -383,10 +379,7 @@ object ItemListener : Listener {
     fun onItemDespawnEvent(event: ItemDespawnEvent) {
         val item = event.entity
         val itemStack = item.itemStack
-        if (!DatabaseConfig.isConnected && SakuraBindAPI.hasInnerBind(itemStack)) {
-            event.isCancelled = true
-            return
-        }
+
         val filterItem = SakuraBindAPI.filterItem(itemStack) { it.getBoolean("item.send-when-lost", null, null) }
         if (filterItem.isEmpty()) return
         if (itemStack.type == Material.AIR) item.remove()
