@@ -3,7 +3,6 @@ package top.iseason.bukkit.sakurabind
 
 import de.tr7zw.nbtapi.utils.MinecraftVersion
 import org.bstats.bukkit.Metrics
-import org.bukkit.event.block.BlockPhysicsEvent
 import top.iseason.bukkit.sakurabind.cache.BlockCache
 import top.iseason.bukkit.sakurabind.cache.CacheManager
 import top.iseason.bukkit.sakurabind.cache.EntityCache
@@ -133,18 +132,28 @@ object SakuraBind : BukkitPlugin {
      * 注册监听器
      */
     private fun initListeners() {
-        if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_9_R1)) {
-            ItemListener194.registerListener()
-        }
         ItemListener.registerListener()
+        if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_8_R3)) {
+            ItemListenerMC108.registerListener()
+        }
+
+        if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_9_R1)) {
+            ItemListenerMC119.registerListener()
+        }
 
         if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_16_R1)) {
-            ItemListener16.registerListener()
+            ItemListenerMC116.registerListener()
         }
+
         if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_14_R1)) {
             PickupItemListener.registerListener()
         } else {
             LegacyPickupItemListener.registerListener()
+        }
+
+        SelectListener.registerListener()
+        if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_8_R3)) {
+            SelectListenerMC108.registerListener()
         }
 
         if (AuthMeHook.hasHooked) {
@@ -154,19 +163,23 @@ object SakuraBind : BukkitPlugin {
         }
         if (Config.block_listener) {
             BlockListener.registerListener()
-            try {
-                BlockPhysicsEvent::class.java.getMethod("getSourceBlock")
-                BlockListener1132.registerListener()
-            } catch (_: Exception) {
+            if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_8_R3)) {
+                BlockListenerMC108.registerListener()
+            }
+            if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_14_R1)) {
+                BlockListenerMC114.registerListener()
             }
             info("&a已启用方块监听器!")
         }
         if (Config.entity_listener) {
             CacheManager.register(EntityCache)
             EntityListener.registerListener()
+            if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_8_R3)) {
+                EntityListenerMC108.registerListener()
+            }
             info("&a已启用实体监听器!")
         }
-        SelectListener.registerListener()
+
         BindActionListener.registerListener()
         if (UniqueItemConfig.enable) {
             UniqueItem.registerListener()

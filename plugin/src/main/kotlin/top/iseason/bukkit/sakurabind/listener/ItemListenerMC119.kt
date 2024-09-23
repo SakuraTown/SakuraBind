@@ -10,7 +10,7 @@ import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 
-object ItemListener194 : Listener {
+object ItemListenerMC119 : Listener {
 
     /**
      * 禁止用于铁砧

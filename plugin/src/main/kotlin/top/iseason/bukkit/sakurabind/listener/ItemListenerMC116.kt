@@ -13,7 +13,7 @@ import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.task.DropItemList
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 
-object ItemListener16 : Listener {
+object ItemListenerMC116 : Listener {
     /**
      * 禁止弹射物射出
      */

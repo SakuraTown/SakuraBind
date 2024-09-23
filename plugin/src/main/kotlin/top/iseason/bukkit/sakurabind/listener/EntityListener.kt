@@ -10,7 +10,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.entity.*
-import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
@@ -91,26 +90,6 @@ object EntityListener : Listener {
 
     }
 
-    /**
-     * 禁止交互
-     */
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    fun onPlayerInteractAtEntityEvent(event: PlayerInteractAtEntityEvent) {
-        if (Config.checkByPass(event.player)) {
-            return
-        }
-        val rightClicked = event.rightClicked
-        val entityOwner = SakuraBindAPI.getEntityInfo(rightClicked) ?: return
-        if (entityOwner.second.getBoolean("entity-deny.interact", entityOwner.first, event.player)) {
-            MessageTool.denyMessageCoolDown(
-                event.player,
-                Lang.entity__deny_interact.formatBy(SakuraBindAPI.getOwnerName(UUID.fromString(entityOwner.first))),
-                entityOwner.second,
-                entity = rightClicked
-            )
-            event.isCancelled = true
-        }
-    }
 
     /**
      * 禁止被实体攻击

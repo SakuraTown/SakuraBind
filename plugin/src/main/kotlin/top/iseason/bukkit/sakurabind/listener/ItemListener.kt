@@ -1,5 +1,6 @@
 package top.iseason.bukkit.sakurabind.listener
 
+import de.tr7zw.nbtapi.utils.MinecraftVersion
 import fr.xephi.authme.api.v3.AuthMeApi
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -82,30 +83,6 @@ object ItemListener : Listener {
         }
     }
 
-    /**
-     * 盔甲架检查
-     */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun onPlayerArmorStandManipulateEvent(event: PlayerArmorStandManipulateEvent) {
-        if (Config.checkByPass(event.player)) return
-        if (SakuraBindAPI.checkDenyBySetting(event.playerItem, event.player, "item-deny.armor-stand")) {
-            event.isCancelled = true
-            MessageTool.denyMessageCoolDown(
-                event.player, Lang.item__deny_armor_stand_set,
-                ItemSettings.getSetting(event.playerItem),
-                event.playerItem
-            )
-        } else if (SakuraBindAPI.checkDenyBySetting(event.armorStandItem, event.player, "item-deny.armor-stand")) {
-            event.isCancelled = true
-            MessageTool.denyMessageCoolDown(
-                event.player,
-                Lang.item__deny_armor_stand_get,
-                ItemSettings.getSetting(event.armorStandItem),
-                event.armorStandItem
-            )
-        }
-
-    }
 
     /**
      * 不能实体互动
@@ -364,10 +341,6 @@ object ItemListener : Listener {
         val item = event.entity as? Item ?: return
         if (item.isDead) return
         val itemStack = item.itemStack
-        if (!DatabaseConfig.isConnected && SakuraBindAPI.hasInnerBind(itemStack)) {
-            event.isCancelled = true
-            return
-        }
         val filterItem = SakuraBindAPI.filterItem(itemStack) { it.getBoolean("item.send-when-lost", null, null) }
         if (filterItem.isEmpty()) return
         if (itemStack.type == Material.AIR) item.remove()
@@ -383,10 +356,6 @@ object ItemListener : Listener {
     fun onItemDespawnEvent(event: ItemDespawnEvent) {
         val item = event.entity
         val itemStack = item.itemStack
-        if (!DatabaseConfig.isConnected && SakuraBindAPI.hasInnerBind(itemStack)) {
-            event.isCancelled = true
-            return
-        }
         val filterItem = SakuraBindAPI.filterItem(itemStack) { it.getBoolean("item.send-when-lost", null, null) }
         if (filterItem.isEmpty()) return
         if (itemStack.type == Material.AIR) item.remove()
@@ -634,7 +603,7 @@ object ItemListener : Listener {
         if (owner != null) {
             val delay = SakuraBindAPI.getItemSetting(itemStack).getInt("item.send-back-delay")
             DropItemList.putDropItem(entity, owner, delay)
-        } else {
+        } else if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_8_R3)) {
             DropItemList.putDropInnerItem(entity)
         }
     }

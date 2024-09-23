@@ -1,5 +1,6 @@
 package top.iseason.bukkit.sakurabind.listener
 
+import de.tr7zw.nbtapi.utils.MinecraftVersion
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.block.PistonMoveReaction
@@ -9,7 +10,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.*
 import org.bukkit.event.entity.EntityChangeBlockEvent
-import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.ItemSpawnEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.InventoryHolder
@@ -168,25 +168,6 @@ object BlockListener : Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun onBlockExplodeEvent(event: BlockExplodeEvent) {
-        val iterator = event.blockList().iterator()
-        while (iterator.hasNext()) {
-            val next = iterator.next()
-            val blockInfo = SakuraBindAPI.getBlockInfo(next) ?: continue
-            if (blockInfo.setting.getBoolean("block-deny.explode", null, null)) iterator.remove()
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun onEntityExplodeEvent(event: EntityExplodeEvent) {
-        val iterator = event.blockList().iterator()
-        while (iterator.hasNext()) {
-            val next = iterator.next()
-            val blockInfo = SakuraBindAPI.getBlockInfo(next) ?: continue
-            if (blockInfo.setting.getBoolean("block-deny.explode", null, null)) iterator.remove()
-        }
-    }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockPhysicsEvent(event: BlockPhysicsEvent) {
@@ -249,30 +230,7 @@ object BlockListener : Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun onBlockPistonRetractEvent(event: BlockPistonRetractEvent) {
-        val direction = event.direction
-        val cancel = event.blocks.reversed().any {
-            if (it.pistonMoveReaction == PistonMoveReaction.BREAK) return@any false
-            val blockInfo = SakuraBindAPI.getBlockInfo(it) ?: return@any false
-            val denyMove = blockInfo.setting.getBoolean("block-deny.piston", null, null)
-            //可以移动
-            if (!denyMove) {
-                SakuraBindAPI.unbindBlock(it, BindType.BLOCK_MOVE_UNBIND)
-                SakuraBindAPI.bindBlock(
-                    it.getRelative(direction, 1),
-                    blockInfo.ownerUUID,
-                    blockInfo.setting,
-                    BindType.BLOCK_MOVE_BIND
-                )
-            }
-            denyMove
-        }
-        if (cancel) {
-            event.isCancelled = true
-            return
-        }
-    }
+
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onItemSpawnEvent(event: ItemSpawnEvent) {
@@ -294,7 +252,12 @@ object BlockListener : Listener {
         }
         //处理方块变成掉落物
         val itemMeta = itemStack.itemMeta
-        if (itemMeta is BlockStateMeta && itemMeta.hasBlockState() && itemMeta.blockState is InventoryHolder && itemStack.amount != 1) return
+        if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_8_R3)
+            && itemMeta is BlockStateMeta
+            && itemMeta.hasBlockState()
+            && itemMeta.blockState is InventoryHolder
+            && itemStack.amount != 1
+        ) return
         val entityToString = BlockCache.dropItemToString(entity)
         val ifPresent = BlockCache.containerCache[entityToString]
         if (ifPresent != null && (itemStack.type != ifPresent || itemStack.amount != 1)) return

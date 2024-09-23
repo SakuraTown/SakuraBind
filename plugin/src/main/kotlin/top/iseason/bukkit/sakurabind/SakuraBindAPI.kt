@@ -756,7 +756,10 @@ object SakuraBindAPI {
             mutableMapOf[owner] = mutableListOf(clone)
         }
         val itemMeta = item.itemMeta
-        if (itemMeta is BlockStateMeta && itemMeta.hasBlockState()) {
+        if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_8_R3) &&
+            itemMeta is BlockStateMeta &&
+            itemMeta.hasBlockState()
+        ) {
             val blockState = itemMeta.blockState
             if (blockState is InventoryHolder) {
                 val filterInventory = filterInventory(blockState.inventory, remove, deep, predicate)

@@ -9,7 +9,7 @@ import top.iseason.bukkit.sakurabind.cache.BlockCache
 import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkittemplate.debug.debug
 
-object BlockListener1132 : Listener {
+object BlockListenerMC114 : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockPhysicsEvent(event: BlockPhysicsEvent) {

@@ -190,7 +190,10 @@ object BlockCache : BaseCache() {
         val cache = breakingCache.put(loc, blockInfo to task)
         if (cache != null) {
             val oldTask = cache.second
-            if (!oldTask.isCancelled) oldTask.cancel()
+            try {
+                oldTask.cancel()
+            } catch (_: Exception) {
+            }
         }
     }
 
@@ -200,7 +203,10 @@ object BlockCache : BaseCache() {
         val cache = breakingCache.remove(loc)
         if (cache != null) {
             val oldTask = cache.second
-            if (!oldTask.isCancelled) oldTask.cancel()
+            try {
+                oldTask.cancel()
+            } catch (_: Exception) {
+            }
         }
     }
 
