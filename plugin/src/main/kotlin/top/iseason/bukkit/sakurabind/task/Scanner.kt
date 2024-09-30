@@ -32,9 +32,10 @@ class Scanner : BukkitRunnable() {
                 it.isOnline && !Config.checkByPass(it) && !SelectListener.noScanning.contains(it.uniqueId)
             }
             .forEach { player ->
+                if (!player.isValid) return@forEach
                 var hasFound = false
                 val inventories = mutableListOf<Inventory>()
-                val playerInv = player!!.openInventory.bottomInventory
+                val playerInv = player!!.openInventory?.bottomInventory
                 if (playerInv != null) inventories.add(playerInv)
                 if (BanItemHook.hasHooked) inventories.addAll(BanItemHook.getModInventories(player))
                 if (GermHook.hasHooked) {
