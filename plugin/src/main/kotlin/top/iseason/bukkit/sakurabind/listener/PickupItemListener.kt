@@ -60,6 +60,7 @@ object PickupItemListener : Listener {
             SakuraBindAPI.sendBackItem(owner, listOf(item), type = SendBackType.COMMON_CALLBACK)
             event.isCancelled = true
             entity.pickupDelay = 10
+            entity.remove()
             player.sendColorMessage(Lang.command__callback)
             return
         }

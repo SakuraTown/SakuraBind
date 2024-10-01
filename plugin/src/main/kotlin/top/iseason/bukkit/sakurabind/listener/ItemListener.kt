@@ -162,6 +162,7 @@ object ItemListener : Listener {
         val owner = SakuraBindAPI.getOwner(item) ?: return
         //处理召回
         if (CallbackCommand.isCallback(owner)) {
+            EntityRemoveQueue.syncRemove(itemDrop)
             SakuraBindAPI.sendBackItem(owner, listOf(item), type = SendBackType.COMMON_CALLBACK)
             MessageTool.messageCoolDown(player, Lang.command__callback)
             return
