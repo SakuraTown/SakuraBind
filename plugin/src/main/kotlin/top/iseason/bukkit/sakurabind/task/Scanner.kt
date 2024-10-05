@@ -29,10 +29,9 @@ class Scanner : BukkitRunnable() {
 //            debug { "开始扫描玩家背包,共 ${onlinePlayers.size} 人" }
         onlinePlayers.parallelStream()
             .filter {
-                it.isOnline && !Config.checkByPass(it) && !SelectListener.noScanning.contains(it.uniqueId)
+                it.isValid && it.isOnline && !SelectListener.noScanning.contains(it.uniqueId) && !Config.checkByPass(it)
             }
             .forEach { player ->
-                if (!player.isValid) return@forEach
                 var hasFound = false
                 val inventories = mutableListOf<Inventory>()
                 val playerInv = player!!.openInventory?.bottomInventory

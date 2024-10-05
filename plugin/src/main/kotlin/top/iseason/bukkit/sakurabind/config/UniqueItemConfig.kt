@@ -187,7 +187,7 @@ object UniqueItemConfig : SimpleYAMLConfig() {
                 )
             }
             if (logger__console) {
-                Bukkit.getConsoleSender().sendColorMessage(SimpleLogger.prefix + message)
+                Bukkit.getConsoleSender().sendColorMessage(message, SimpleLogger.prefix)
             }
             val noColor by lazy { message.noColor() }
             if (logger__file) {
