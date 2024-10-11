@@ -9,6 +9,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
+import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.UniqueItemConfig
 import top.iseason.bukkit.sakurabind.event.BlockBindFromItemEvent
 import top.iseason.bukkit.sakurabind.event.ItemBindEvent
@@ -66,7 +67,12 @@ object UniqueItem : org.bukkit.event.Listener {
             UniqueFilter.remover = InventoryRemover
             // 鼠标、查看的界面、背包
             for (player in Bukkit.getOnlinePlayers()) {
-                if (!player.isOnline || SelectListener.noScanning.contains(player.uniqueId)) continue
+                if (
+                    !player.isValid ||
+                    !player.isOnline ||
+                    SelectListener.noScanning.contains(player.uniqueId) ||
+                    Config.checkByPass(player)
+                ) continue
                 UniqueFilter.player = player
                 val openInventory = player.openInventory ?: continue
                 val cursor = player.itemOnCursor

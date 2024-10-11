@@ -139,6 +139,7 @@ object ItemListener : Listener {
         val owner = SakuraBindAPI.getOwner(item) ?: return
         //处理召回
         if (CallbackCommand.isCallback(owner)) {
+            EntityRemoveQueue.syncRemove(itemDrop)
             SakuraBindAPI.sendBackItem(owner, listOf(item), type = SendBackType.COMMON_CALLBACK)
             MessageTool.messageCoolDown(player, Lang.command__callback)
             return
@@ -356,6 +357,7 @@ object ItemListener : Listener {
     fun onItemDespawnEvent(event: ItemDespawnEvent) {
         val item = event.entity
         val itemStack = item.itemStack
+
         val filterItem = SakuraBindAPI.filterItem(itemStack) { it.getBoolean("item.send-when-lost", null, null) }
         if (filterItem.isEmpty()) return
         if (itemStack.type == Material.AIR) item.remove()

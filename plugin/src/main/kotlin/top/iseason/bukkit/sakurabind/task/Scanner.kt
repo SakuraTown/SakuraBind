@@ -29,12 +29,12 @@ class Scanner : BukkitRunnable() {
 //            debug { "开始扫描玩家背包,共 ${onlinePlayers.size} 人" }
         onlinePlayers.parallelStream()
             .filter {
-                it.isOnline && !Config.checkByPass(it) && !SelectListener.noScanning.contains(it.uniqueId)
+                it.isValid && it.isOnline && !SelectListener.noScanning.contains(it.uniqueId) && !Config.checkByPass(it)
             }
             .forEach { player ->
                 var hasFound = false
                 val inventories = mutableListOf<Inventory>()
-                val playerInv = player!!.openInventory.bottomInventory
+                val playerInv = player!!.openInventory?.bottomInventory
                 if (playerInv != null) inventories.add(playerInv)
                 if (BanItemHook.hasHooked) inventories.addAll(BanItemHook.getModInventories(player))
                 if (GermHook.hasHooked) {
