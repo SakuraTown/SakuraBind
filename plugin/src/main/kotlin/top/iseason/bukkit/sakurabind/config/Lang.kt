@@ -17,7 +17,7 @@ object Lang : top.iseason.bukkittemplate.config.Lang() {
     var send_back__ender_chest_all = "&7你的{0}个遗失物品已全部放入你的&a末影箱"
     var send_back__ender_chest_half = "&7你的{0}个遗失物品已放入你的&a末影箱"
 
-    var send_back__database_all = "&7你的{0}个遗失物品已全部放入你的&a暂存箱"
+    var send_back__database_all = "&7你的{0}个遗失物品已全部放入你的&a暂存箱, 请输入 &6'/sakurabind getLost' &a领取"
 
     var send_back__global_market_plus = "&7你的{0}个遗失物品已全部放入你的&a全球市场邮箱"
 
