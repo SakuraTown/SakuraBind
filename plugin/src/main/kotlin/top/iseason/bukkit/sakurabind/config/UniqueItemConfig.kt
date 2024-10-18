@@ -4,6 +4,8 @@ import de.tr7zw.nbtapi.NBT
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.MemorySection
+import org.bukkit.entity.Player
+import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitTask
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
@@ -19,6 +21,7 @@ import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
 import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.debug.SimpleLogger
+import top.iseason.bukkittemplate.debug.debug
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.noColor
@@ -83,6 +86,34 @@ object UniqueItemConfig : SimpleYAMLConfig() {
     var random_template__template = "XXXX-XXXXXX"
 
     @Key
+    @Comment(
+        "",
+        "是否忽略玩家打开的界面, 只扫描玩家背包，打开之后下方的几个选项将失效",
+    )
+    var skip_top_inv = false
+
+    @Key
+    @Comment(
+        "",
+        "跳过原版容器的输出槽, 比如铁砧、砂轮、熔炉的输出槽，仅 1.14+有效",
+    )
+    var skip_result_slot = true
+
+    @Key
+    @Comment(
+        "",
+        "容器标题过滤器(黑名单)，主要用于排除特殊的界面, 正则表达式, 填入容器标题",
+        "原版的容器标题是英文的，可以通过命令 '/sakurabind debug' 打开调试模式在控制台输出容器标题",
+    )
+    var inventory_filter = setOf<String>()
+
+    var inventoryFilter = ArrayList<Regex>()
+
+    @Key
+    @Comment("", "反转上面过滤器，从黑名单变为白名单")
+    var inventory_filter_reversed = false
+
+    @Key
     @Comment("", "日志系统，用于记录删除日志")
     var logger = ""
 
@@ -134,13 +165,29 @@ object UniqueItemConfig : SimpleYAMLConfig() {
     }
 
     override fun onLoaded(section: ConfigurationSection) {
-        if (!logger__enable) setUpdate(false)
 
         scanner?.cancel()
         scanner = null
         if (enable && scanner_period > 0L)
             scanner = UniqueItem.Scanner()
                 .runTaskTimerAsynchronously(BukkitTemplate.getPlugin(), scanner_period, scanner_period)
+        inventoryFilter.clear()
+        for (string in inventory_filter) {
+            inventoryFilter.add(Regex(string))
+        }
+    }
+
+    fun checkHolder(player: Player, inv: InventoryView?): Boolean {
+        if (inv == null) return true
+        val title = inv.title
+        val bool = if (title.isBlank()) true
+        else {
+            if (inventory_filter_reversed)
+                inventoryFilter.any { it.matches(title) }
+            else inventoryFilter.none { it.matches(title) }
+        }
+        debug { "[唯一物品] 判断是否检查 ${player.name} 打开的容器标题: $title ,结果: $bool" }
+        return bool
     }
 
     fun getUniqueId(item: ItemStack): String? = NBT.get<String>(item) {

@@ -2,7 +2,6 @@ package top.iseason.bukkit.sakurabind.config
 
 
 import de.tr7zw.nbtapi.NBT
-import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.MemorySection
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
@@ -68,9 +67,6 @@ object BindItemConfig : SimpleYAMLConfig() {
     @Comment("", "如果绑定/解绑的是可堆叠的物品，那么需要消耗相同数量的物品，否则每次只消耗一个")
     var syncAmount = true
 
-    override fun onLoaded(section: ConfigurationSection) {
-
-    }
 
     fun getBind(item: ItemStack): Pair<String, Double>? {
         val (settingKey, rate) = NBT.get<Pair<String?, Double?>>(item) {

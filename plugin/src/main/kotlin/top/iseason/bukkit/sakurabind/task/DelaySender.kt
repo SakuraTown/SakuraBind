@@ -11,10 +11,12 @@ import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toByteArray
+import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.other.runAsync
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.collections.sumOf
 
 class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable() {
 
@@ -53,7 +55,10 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
         } else {
             warn("数据库未启用,无法发送暂存箱子!")
         }
-        Bukkit.getPlayer(uuid)?.sendColorMessage(Lang.lost_item_send_when_online)
+        Bukkit.getPlayer(uuid)?.let {
+            val count = itemStacks.sumOf { it.amount }
+            it.sendColorMessage(Lang.send_back__database_all.formatBy(count))
+        }
     }
 
     companion object {
@@ -71,6 +76,8 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
                 map[uuid] = sender
                 sender.addItem(items)
                 sender.runTaskLaterAsynchronously(plugin, 60)
+            } else {
+                sender.addItem(items)
             }
         }
 

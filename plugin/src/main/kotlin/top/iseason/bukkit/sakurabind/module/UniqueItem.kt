@@ -1,14 +1,20 @@
 package top.iseason.bukkit.sakurabind.module
 
 
+import de.tr7zw.nbtapi.utils.MinecraftVersion
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.inventory.InventoryType
+import org.bukkit.inventory.DoubleChestInventory
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
+import top.iseason.bukkit.sakurabind.SakuraBindAPI.filterItem
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.UniqueItemConfig
 import top.iseason.bukkit.sakurabind.event.BlockBindFromItemEvent
@@ -17,6 +23,7 @@ import top.iseason.bukkit.sakurabind.event.ItemBindFromBlockEvent
 import top.iseason.bukkit.sakurabind.listener.SelectListener
 import top.iseason.bukkit.sakurabind.task.DropItemList
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
+import top.iseason.bukkittemplate.utils.other.runSync
 import java.util.*
 import java.util.function.BiPredicate
 import kotlin.math.min
@@ -60,11 +67,13 @@ object UniqueItem : org.bukkit.event.Listener {
     }
 
     class Scanner : BukkitRunnable() {
+        val set = HashSet<Any>()
 
         override fun run() {
             val uniqueFilter = UniqueFilter
             UniqueFilter.reset()
             UniqueFilter.remover = InventoryRemover
+            set.clear()
             // 鼠标、查看的界面、背包
             for (player in Bukkit.getOnlinePlayers()) {
                 if (
@@ -83,13 +92,26 @@ object UniqueItem : org.bukkit.event.Listener {
                     SakuraBindAPI.filterItems(cur, remove = false, deep = true, uniqueFilter)
                     UniqueFilter.remover = InventoryRemover
                 }
-                SakuraBindAPI.filterInventory(openInventory.topInventory, remove = true, deep = true, uniqueFilter)
-                SakuraBindAPI.filterInventory(
-                    openInventory.bottomInventory,
-                    remove = true,
-                    deep = true,
-                    uniqueFilter
-                )
+                val topInventory = openInventory.topInventory
+                var key = if (topInventory is DoubleChestInventory)
+                    topInventory.leftSide
+                else topInventory
+
+                if (
+                    !UniqueItemConfig.skip_top_inv &&
+                    !set.contains(key) &&
+                    UniqueItemConfig.checkHolder(player, openInventory)
+                ) {
+                    filterInventory(
+                        openInventory.topInventory,
+                        remove = true,
+                        deep = true,
+                        if (UniqueItemConfig.skip_result_slot) openInventory else null,
+                        uniqueFilter
+                    )
+                    set.add(key)
+                }
+                SakuraBindAPI.filterInventory(openInventory.bottomInventory, true, true, uniqueFilter)
             }
             // 掉落物
             UniqueFilter.remover = DroppedRemover
@@ -97,6 +119,30 @@ object UniqueItem : org.bukkit.event.Listener {
             checkDrops(DropItemList.drops.iterator(), uniqueFilter)
         }
 
+    }
+
+    fun filterInventory(
+        inventory: Inventory,
+        remove: Boolean = true,
+        deep: Boolean = false,
+        viewSkipResult: InventoryView? = null,
+        predicate: BiPredicate<UUID, ItemStack>
+    ) {
+        val skipResultSlot = viewSkipResult != null && MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_14_R1)
+        for (i in 0 until inventory.size) {
+            if (skipResultSlot && viewSkipResult.getSlotType(i) == InventoryType.SlotType.RESULT) continue
+            val item = inventory.getItem(i) ?: continue
+            if (item.checkAir()) continue
+            val filterItem = filterItem(item, remove, deep, predicate)
+            if (filterItem.isEmpty()) continue
+            if (remove && item.type == Material.AIR) {
+                if (Bukkit.isPrimaryThread()) {
+                    inventory.setItem(i, null)
+                } else runSync {
+                    inventory.setItem(i, null)
+                }
+            }
+        }
     }
 
     @EventHandler
@@ -144,7 +190,7 @@ object UniqueItem : org.bukkit.event.Listener {
         while (iterator.hasNext()) {
             val next = iterator.next()
             val item = next.getItemStack()
-            val filterItem = SakuraBindAPI.filterItem(item, remove = true, deep = false, predicate)
+            val filterItem = filterItem(item, remove = true, deep = false, predicate)
             if (filterItem.isEmpty()) continue
             if (item.type == Material.AIR) {
                 if (iterator is MutableIterator) {
