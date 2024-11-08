@@ -362,7 +362,7 @@ object SakuraBindAPI {
                     if (index > lore.size - 1) {
                         lore.addAll(loreStr)
                     } else if (index < 0) {
-                        lore.addAll(max(lore.size - index, 0), loreStr)
+                        lore.addAll(max(lore.size + index, 0), loreStr)
                     } else lore.addAll(index, loreStr)
                     lore
                 } else loreStr
