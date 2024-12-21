@@ -536,14 +536,14 @@ object ItemUtils {
                     ) {
                         mapSection.getConfigurationSection("view")?.also {
                             runCatching {
-                                val mapView = Bukkit.createMap(Bukkit.getWorld(it.getString("world")!!)!!)
-                                mapView.scale = MapView.Scale.valueOf(it.getString("scale")!!)
-                                mapView.centerX = it.getString("center")!!.split(',')[0].toInt()
-                                mapView.centerZ = it.getString("center")!!.split(',')[1].toInt()
-                                mapView.isLocked = it.getBoolean("locked")
-                                mapView.isTrackingPosition = it.getBoolean("tracking-position")
-                                mapView.isUnlimitedTracking = it.getBoolean("unlimited-tracking")
-
+                                val mapView2 = Bukkit.createMap(Bukkit.getWorld(it.getString("world")!!)!!)
+                                mapView2.scale = MapView.Scale.valueOf(it.getString("scale")!!)
+                                mapView2.centerX = it.getString("center")!!.split(',')[0].toInt()
+                                mapView2.centerZ = it.getString("center")!!.split(',')[1].toInt()
+                                mapView2.isLocked = it.getBoolean("locked")
+                                mapView2.isTrackingPosition = it.getBoolean("tracking-position")
+                                mapView2.isUnlimitedTracking = it.getBoolean("unlimited-tracking")
+                                mapView = mapView2
                             }
                         }
                     }
