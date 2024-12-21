@@ -543,7 +543,7 @@ object ItemUtils {
                                 mapView.isLocked = it.getBoolean("locked")
                                 mapView.isTrackingPosition = it.getBoolean("tracking-position")
                                 mapView.isUnlimitedTracking = it.getBoolean("unlimited-tracking")
-                                mapView = mapView
+
                             }
                         }
                     }
