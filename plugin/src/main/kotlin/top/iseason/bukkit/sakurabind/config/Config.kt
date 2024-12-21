@@ -185,7 +185,7 @@ object Config : SimpleYAMLConfig() {
     var setting_cache_size = 2000L
 
     @Key
-    @Comment("", "物品读取设置的缓存时间(秒),建议值大于 扫描器时间")
+    @Comment("", "物品读取设置的缓存时间(毫秒),建议值大于 扫描器时间")
     var setting_cache_time = 3500L
 
     @Key

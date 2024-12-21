@@ -93,7 +93,7 @@ object ItemSettings : SimpleYAMLConfig() {
         .initialCapacity(max((Config.setting_cache_size / 8L).toInt(), 200))
         .maximumSize(Config.setting_cache_size)
         .expireAfterAccess(Config.setting_cache_time, TimeUnit.MILLISECONDS)
-        .concurrencyLevel(5)
+        .concurrencyLevel(1)
 //        .weakKeys()
 //        .weakValues()
 //        .softValues()

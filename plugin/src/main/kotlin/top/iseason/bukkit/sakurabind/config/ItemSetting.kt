@@ -77,6 +77,7 @@ open class ItemSetting(override val keyPath: String, protected val section: Conf
                 }
             }
             if (setting.contains(key)) return@run setting.getBoolean(key)
+
             val globalConfig = GlobalSettings.config
             if (globalConfig.contains("$key@")) {
                 return@run if (isOwner) !globalConfig.getBoolean("$key@")

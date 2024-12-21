@@ -16,11 +16,7 @@ object DefaultItemSetting : ItemSetting("global-setting", YamlConfiguration()) {
         //权限检查
         val result = run {
             if (Config.enable_setting_permission_check && player != null) {
-                if (player.hasPermission("sakurabind.setting.$keyPath.$key.true")) {
-                    return@run true
-                } else if (player.hasPermission("sakurabind.setting.$keyPath.$key.false")) {
-                    return@run false
-                } else if (player.hasPermission("sakurabind.settings.$key.true")) {
+                if (player.hasPermission("sakurabind.settings.$key.true")) {
                     return@run true
                 } else if (player.hasPermission("sakurabind.settings.$key.false")) {
                     return@run false

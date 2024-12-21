@@ -26,6 +26,8 @@ import org.bukkit.potion.*
 import org.bukkit.util.io.BukkitObjectInputStream
 import org.bukkit.util.io.BukkitObjectOutputStream
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
+import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toBase64
+import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toSection
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -541,7 +543,7 @@ object ItemUtils {
                                 mapView.isLocked = it.getBoolean("locked")
                                 mapView.isTrackingPosition = it.getBoolean("tracking-position")
                                 mapView.isUnlimitedTracking = it.getBoolean("unlimited-tracking")
-                                setMapView(mapView)
+                                mapView = mapView
                             }
                         }
                     }
@@ -593,7 +595,7 @@ object ItemUtils {
                     addAttributeModifier(attribute, AttributeModifier(uuid, name, amount, operation, slot))
                 }
             }
-            if (!MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_14_R1)) {
+            if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_14_R1)) {
                 val modelData = section.getInt("custom-model-data")
                 if (modelData != 0) setCustomModelData(modelData)
                 if (this is CrossbowMeta) {

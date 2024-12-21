@@ -13,11 +13,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockDispenseEvent
 import org.bukkit.event.entity.*
-import org.bukkit.event.inventory.InventoryAction
-import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.inventory.InventoryMoveItemEvent
-import org.bukkit.event.inventory.InventoryPickupItemEvent
-import org.bukkit.event.inventory.PrepareItemCraftEvent
+import org.bukkit.event.inventory.*
 import org.bukkit.event.player.*
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
@@ -190,29 +186,12 @@ object ItemListener : Listener {
 
 
     /**
-     * 物品点击检查，只检查点击上面的物品栏
-     */
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    fun onInventoryClickEvent(event: InventoryClickEvent) {
-        val player = event.whoClicked as? Player ?: return
-        if (Config.checkByPass(player)) return
-        val item = event.currentItem ?: return
-        if (event.clickedInventory == event.view.topInventory
-            && SakuraBindAPI.checkDenyBySetting(item, player, "item-deny.click")
-        ) {
-            event.isCancelled = true
-            MessageTool.denyMessageCoolDown(player, Lang.item__deny_click, ItemSettings.getSetting(item), item)
-        }
-
-    }
-
-    /**
      * 上面的物品栏标题符合规则时禁止点击(放入)
      */
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+//    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     fun onInventoryClickEvent2(event: InventoryClickEvent) {
         val whoClicked = event.whoClicked
-        if (Config.checkByPass(whoClicked)) return
+//        if (Config.checkByPass(whoClicked)) return
         val title = event.view.title
         var item: ItemStack?
         if (event.click.name == "SWAP_OFFHAND") {
@@ -423,7 +402,7 @@ object ItemListener : Listener {
     /**
      * 自动绑定, 点击时绑定
      */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun autoBindInventoryClickEvent(event: InventoryClickEvent) {
         val player = event.whoClicked
         if (Config.checkByPass(player)) return
@@ -459,6 +438,17 @@ object ItemListener : Listener {
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onClick, setting, item)
             }
         }
+        // 点击检查
+        if (event.clickedInventory == event.view.topInventory
+            && SakuraBindAPI.checkDenyBySetting(item, player, "item-deny.click")
+        ) {
+            event.isCancelled = true
+            MessageTool.denyMessageCoolDown(player, Lang.item__deny_click, ItemSettings.getSetting(item), item)
+            return
+        }
+        // 背包类型检查
+        onInventoryClickEvent2(event)
+
     }
 
 

@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -400,6 +399,8 @@ public class RuntimeManager {
         return this;
     }
 
+    volatile boolean failure = false;
+
     /**
      * 下载所有未加载的依赖
      *
@@ -412,16 +413,16 @@ public class RuntimeManager {
             logger.info("Successful Flags: [I]=Loading Isolated [A]=Loading Assembly");
             logger.info("Failure Flags: [E]=Loading Error [N]=NetWork Error [F]=Library Format Error");
         }
-        AtomicBoolean failure = new AtomicBoolean(false);
+        failure = false;
         Stream<Map.Entry<String, Integer>> stream =
                 isParallel ?
                         dependencies.entrySet().parallelStream() :
                         dependencies.entrySet().stream();
         stream.forEach(entry -> {
-                    if (failure.get()) return;
+            if (failure) return;
                     LinkedList<String> printList = new LinkedList<>();
                     if (!downloadDependency(entry.getKey(), 1, entry.getValue(), repositories, printList, false)) {
-                        failure.set(true);
+                        failure = true;
                     }
                     if (logger != null) {
                         for (String s : printList) {
@@ -430,13 +431,12 @@ public class RuntimeManager {
                     }
                 }
         );
-        boolean isFailure = failure.get();
         if (logger != null) {
-            if (isFailure)
+            if (failure)
                 logger.warning("Loading libraries error.");
             else logger.info("Loading libraries successfully.");
         }
-        return !isFailure;
+        return !failure;
     }
 
     /**
