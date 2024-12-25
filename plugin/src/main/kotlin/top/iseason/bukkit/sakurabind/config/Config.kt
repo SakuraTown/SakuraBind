@@ -12,7 +12,6 @@ import top.iseason.bukkit.sakurabind.task.MigrationScanner
 import top.iseason.bukkit.sakurabind.task.Scanner
 import top.iseason.bukkit.sakuramail.config.SystemMailsYml
 import top.iseason.bukkittemplate.BukkitTemplate
-import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
@@ -288,7 +287,7 @@ object Config : SimpleYAMLConfig() {
     fun setupScanner() {
         task?.cancel()
         task = null
-        if (scanner_period > 0L && (DatabaseConfig.isConnected || (SakuraMailHook.hasHooked && sakuraMail_hook))) {
+        if (scanner_period > 0L) {
             info("&a定时扫描任务已启动,周期: $scanner_period tick")
             task = Scanner().runTaskTimerAsynchronously(BukkitTemplate.getPlugin(), scanner_period, scanner_period)
         }

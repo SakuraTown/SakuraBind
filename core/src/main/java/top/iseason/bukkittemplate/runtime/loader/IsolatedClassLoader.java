@@ -27,7 +27,6 @@ public class IsolatedClassLoader extends MLet {
     }
 
     public IsolatedClassLoader() {
-        super();
     }
 
     public static void addBlackList(Class<?> clazz) {
