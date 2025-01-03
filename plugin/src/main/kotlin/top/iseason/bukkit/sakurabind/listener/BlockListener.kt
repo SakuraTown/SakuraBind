@@ -152,9 +152,9 @@ object BlockListener : Listener {
                 SakuraBindAPI.unbindBlock(block, type = BindType.BLOCK_TO_ITEM_UNBIND)
             }
             val state = block.state
-            if (state is InventoryHolder && state.inventory.size > 0) {
+            if (state is InventoryHolder && !state.inventory.all { it.checkAir() }) {
                 val containerCache = BlockCache.containerCache
-                containerCache.put(blockToString, block.type)
+                containerCache.put(blockToString, block.type.name)
                 runSync {
                     containerCache.remove(blockToString)
                 }
@@ -281,7 +281,6 @@ object BlockListener : Listener {
             return
         }
         val itemStack = entity.itemStack
-        entity.location
         // 处理下落方块变成掉落物
         val findEntity = FallingList.findFalling(entity.location)
         FallingList.check()
@@ -296,7 +295,7 @@ object BlockListener : Listener {
         if (itemMeta is BlockStateMeta && itemMeta.hasBlockState() && itemMeta.blockState is InventoryHolder && itemStack.amount != 1) return
         val entityToString = BlockCache.dropItemToString(entity)
         val ifPresent = BlockCache.containerCache[entityToString]
-        if (ifPresent != null && (itemStack.type != ifPresent || itemStack.amount != 1)) return
+        if (ifPresent != null && (itemStack.type.name != ifPresent || itemStack.amount != 1)) return
         val blockInfo = BlockCache.getBreakingCache(entityToString) ?: return
         SakuraBindAPI.bind(itemStack, blockInfo)
         BlockCache.removeBreakingCache(entityToString)

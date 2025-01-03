@@ -2,7 +2,6 @@ package top.iseason.bukkit.sakurabind.cache
 
 import com.github.mgunlogson.cuckoofilter4j.CuckooFilter
 import com.google.common.cache.CacheBuilder
-import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 import org.bukkit.entity.Item
@@ -37,7 +36,7 @@ object BlockCache : BaseCache() {
 
     private val breakingCache: MutableMap<String, Pair<BlockInfo, BukkitTask>> = ConcurrentHashMap()
 
-    val containerCache: MutableMap<String, Material> = ConcurrentHashMap()
+    val containerCache: MutableMap<String, String> = ConcurrentHashMap()
 
     private val emptyInfo = BlockInfo("empty", DefaultItemSetting)
 
