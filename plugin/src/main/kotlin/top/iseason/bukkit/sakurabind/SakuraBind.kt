@@ -94,7 +94,6 @@ object SakuraBind : BukkitPlugin {
      */
     private fun checkHooks() {
         PlaceHolderHook.checkHooked()
-        SakuraMailHook.checkHooked()
         AuthMeHook.checkHooked()
         MMOItemsHook.checkHooked()
         ItemsAdderHook.checkHooked()

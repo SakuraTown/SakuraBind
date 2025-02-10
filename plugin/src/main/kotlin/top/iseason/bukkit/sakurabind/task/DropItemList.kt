@@ -44,7 +44,7 @@ object DropItemList : BukkitRunnable() {
     }
 
     override fun run() {
-        if (drops.isEmpty) {
+        if (drops.isEmpty()) {
             return
         }
         val iterator = drops.iterator()

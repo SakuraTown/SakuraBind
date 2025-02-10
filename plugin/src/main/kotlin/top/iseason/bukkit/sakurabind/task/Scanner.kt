@@ -27,15 +27,14 @@ class Scanner : BukkitRunnable() {
     override fun run() {
         val onlinePlayers = Bukkit.getOnlinePlayers()
 //            debug { "开始扫描玩家背包,共 ${onlinePlayers.size} 人" }
-        onlinePlayers.parallelStream()
+        onlinePlayers
+            .parallelStream()
             .filter {
                 it.isValid && it.isOnline && !SelectListener.noScanning.contains(it.uniqueId) && !Config.checkByPass(it)
             }
             .forEach { player ->
                 var hasFound = false
-                val inventories = mutableListOf<Inventory>()
-                val playerInv = player!!.openInventory?.bottomInventory
-                if (playerInv != null) inventories.add(playerInv)
+                val inventories = mutableListOf<Inventory>(player!!.inventory)
                 if (BanItemHook.hasHooked) inventories.addAll(BanItemHook.getModInventories(player))
                 if (GermHook.hasHooked) {
                     hasFound = GermHook.scanSlots(sendBackMap, player)

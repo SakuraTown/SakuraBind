@@ -6,7 +6,6 @@ api-version: 1.13
 depend:
   - NBTAPI
 softdepend:
-  - SakuraMail
   - PlaceholderAPI
   - AuthMe
   - MMOItems
@@ -33,7 +32,7 @@ runtime-libraries:
   repositories:
     - https://maven.aliyun.com/repository/public/
     - https://repo.maven.apache.org/maven2/
-  parallel: false
+  parallel: true
   # ${kotlinVersion}
   libraries:
     - org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}

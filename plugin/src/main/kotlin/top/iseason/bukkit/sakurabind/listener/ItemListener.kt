@@ -113,38 +113,55 @@ object ItemListener : Listener {
         val isItemFrame = event.rightClicked is ItemFrame
         val mainHand = player.getHeldItem()
         val offHand = PlayerTool.getOffHandItem(player)
-        //检查展示框
-        if (isItemFrame) {
-            if (SakuraBindAPI.checkDenyBySetting(mainHand, player, "item-deny.item-frame")
-                || (mainHand == null && SakuraBindAPI.checkDenyBySetting(offHand, player, "item-deny.item-frame"))
-            ) {
-                val item = mainHand ?: offHand!!
-                event.isCancelled = true
-                MessageTool.denyMessageCoolDown(
-                    player, Lang.item__deny_itemFrame,
-                    ItemSettings.getSetting(item),
-                    item
-                )
-            }
-        } else {
-            if (SakuraBindAPI.checkDenyBySetting(mainHand, player, "item-deny.interact-entity")
-                || (mainHand == null && SakuraBindAPI.checkDenyBySetting(
-                    offHand,
-                    player,
-                    "item-deny.interact-entity"
-                ))
-            ) {
-                val item = mainHand ?: offHand!!
-                event.isCancelled = true
-                MessageTool.denyMessageCoolDown(
-                    player, Lang.item__deny_entity_interact,
-                    ItemSettings.getSetting(item),
-                    item
-                )
-            }
+        if (!mainHand.checkAir()) {
+            checkRightAtEntity(player, mainHand!!, event, isItemFrame)
+        }
+        if (!offHand.checkAir()) {
+            checkRightAtEntity(player, offHand!!, event, isItemFrame)
         }
     }
 
+    fun checkRightAtEntity(player: Player, item: ItemStack, event: PlayerInteractEntityEvent, isItemFrame: Boolean) {
+        val ownerStr = SakuraBindAPI.getOwner(item)?.toString()
+        val setting = ItemSettings.getSetting(item)
+        if (ownerStr != null) {
+            if (setting.getBoolean(
+                    "auto-unbind.enable",
+                    ownerStr,
+                    player
+                ) && setting.getBoolean("auto-unbind.onRight", ownerStr, player)
+            ) {
+                SakuraBindAPI.unBind(item, BindType.RIGHT_UNBIND_ITEM)
+                MessageTool.messageCoolDown(player, Lang.auto_unbind__onRight)
+            }
+        } else {
+            if (setting.getBoolean("auto-bind.enable", null, player) && (setting.getBoolean(
+                    "auto-bind.onRight",
+                    null,
+                    player
+                ) || SakuraBindAPI.isAutoBind(item))
+            ) {
+                SakuraBindAPI.bind(item, player, type = BindType.RIGHT_BIND_ITEM)
+                MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onRight, setting, item)
+            }
+        }
+        if (ownerStr == null || event.isCancelled) return
+        if (isItemFrame && setting.getBoolean("item-deny.item-frame", ownerStr, player)) {
+            event.isCancelled = true
+            MessageTool.denyMessageCoolDown(
+                player, Lang.item__deny_itemFrame,
+                ItemSettings.getSetting(item),
+                item
+            )
+        } else if (!isItemFrame && setting.getBoolean("item-deny.interact-entity", ownerStr, player)) {
+            event.isCancelled = true
+            MessageTool.denyMessageCoolDown(
+                player, Lang.item__deny_entity_interact,
+                ItemSettings.getSetting(item),
+                item
+            )
+        }
+    }
 
     /**
      * 不能丢
@@ -152,10 +169,19 @@ object ItemListener : Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onPlayerDropItemEvent(event: PlayerDropItemEvent) {
         val player = event.player
-        if (Config.checkByPass(player)) return
+        if (!player.isDead && Config.checkByPass(player)) return
         val itemDrop = event.itemDrop
         val item = itemDrop.itemStack
         val owner = SakuraBindAPI.getOwner(item) ?: return
+        // 有些端是真死亡-->掉落 无语
+        if (player.isDead) {
+            if (ItemSettings.getSetting(item)
+                    .getBoolean("item-deny.drop-on-death", owner.toString(), player)
+            ) {
+                EntityRemoveQueue.syncRemove(itemDrop)
+            }
+            return
+        }
         //处理召回
         if (CallbackCommand.isCallback(owner)) {
             EntityRemoveQueue.syncRemove(itemDrop)
@@ -531,6 +557,46 @@ object ItemListener : Listener {
     }
 
     /**
+     * 自动绑定/解绑, 右键展示框绑定
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    fun autoBindPlayerInteractEntityEvent(event: PlayerInteractEntityEvent) {
+        val player = event.player
+        if (Config.checkByPass(player)) return
+        if (event.rightClicked !is ItemFrame) {
+            return
+        }
+        var itemStack = player.getHeldItem()
+        if (itemStack.checkAir()) itemStack = PlayerTool.getOffHandItem(player)
+        if (itemStack.checkAir()) return
+        val item = itemStack!!
+        val ownerStr = SakuraBindAPI.getOwner(item)?.toString()
+
+        if (ownerStr != null) {
+            val setting = ItemSettings.getSetting(item)
+            if (!setting.getBoolean("auto-unbind.enable", ownerStr, player)) {
+                return
+            }
+            if (setting.getBoolean("auto-unbind.onRight", ownerStr, player)) {
+                SakuraBindAPI.unBind(item, BindType.RIGHT_UNBIND_ITEM)
+                MessageTool.messageCoolDown(player, Lang.auto_unbind__onRight)
+            }
+        } else {
+            val setting = ItemSettings.getSetting(item)
+            if (!setting.getBoolean("auto-bind.enable", null, player)) {
+                return
+            }
+            if (
+                (setting.getBoolean("auto-bind.onRight", null, player) ||
+                        SakuraBindAPI.isAutoBind(item))
+            ) {
+                SakuraBindAPI.bind(item, player, type = BindType.RIGHT_BIND_ITEM)
+                MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onRight, setting, item)
+            }
+        }
+    }
+
+    /**
      * 自动绑定/解绑, 左键实体(其实是攻击动作，但是 PlayerInteractEvent 没有捕获)
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
@@ -623,15 +689,16 @@ object ItemListener : Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerDeathEvent(event: PlayerDeathEvent) {
         //item_deny__drop_on_death
         val entity = event.entity
-        if (event.keepInventory || Config.checkByPass(entity)) {
+        if (entity.world.getGameRuleValue("keepInventory") == "true") {
             return
         }
         val iterator = event.drops.iterator()
         val sendBackList = mutableListOf<ItemStack>()
+
         while (iterator.hasNext()) {
             val next = iterator.next()
             val owner = SakuraBindAPI.getOwner(next) ?: continue

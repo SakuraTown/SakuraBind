@@ -45,7 +45,8 @@ class WeakCoolDown<T> {
  * 对String键的全局冷却，即开即用，弱引用，适用于不太重要的冷却
  */
 object EasyCoolDown {
-    private val coolDownMap: WeakHashMap<String, Long> = WeakHashMap()
+
+    private val coolDownMap: MutableMap<String, Long> = Collections.synchronizedMap(WeakHashMap())
 
     /**
      * 检查键值是否在冷却中

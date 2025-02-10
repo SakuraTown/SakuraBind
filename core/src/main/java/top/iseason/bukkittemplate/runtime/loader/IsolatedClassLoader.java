@@ -1,7 +1,7 @@
 package top.iseason.bukkittemplate.runtime.loader;
 
-import javax.management.loading.MLet;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  * <p>插件自定义的加载器，用于隔离依赖</p>
  * <p>本ClassLoader将优先加载urls中有的class，而不是双亲委托</p>
  */
-public class IsolatedClassLoader extends MLet {
+public class IsolatedClassLoader extends URLClassLoader {
     /**
      * 自由添加黑名单
      */
@@ -26,8 +26,6 @@ public class IsolatedClassLoader extends MLet {
         super(urls, parent);
     }
 
-    public IsolatedClassLoader() {
-    }
 
     public static void addBlackList(Class<?> clazz) {
         BLACK_LIST.add(clazz.getName());
@@ -40,8 +38,10 @@ public class IsolatedClassLoader extends MLet {
         synchronized (getClassLoadingLock(name)) {
             Class<?> loadedClass = findLoadedClass(name);
             if (loadedClass == null) {
+                String path = name.replace('.', '/').concat(".class");
+                URL resource = findResource(path);
                 // 读取依赖
-                if (!BLACK_LIST.contains(name)) {
+                if (resource != null && !BLACK_LIST.contains(name)) {
                     try {
                         loadedClass = findClass(name);
                     } catch (ClassNotFoundException ignored) {

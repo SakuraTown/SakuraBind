@@ -228,7 +228,8 @@ object ItemUtils {
                 // 附魔书附魔
                 is EnchantmentStorageMeta ->
                     if (hasStoredEnchants()) {
-                        yaml.createSection("stored-enchants",
+                        yaml.createSection(
+                            "stored-enchants",
                             storedEnchants.mapKeys { it.key.key })
                     }
 

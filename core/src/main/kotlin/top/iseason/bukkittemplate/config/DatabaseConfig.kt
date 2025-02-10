@@ -147,7 +147,7 @@ object DatabaseConfig : SimpleYAMLConfig() {
             .addRepository("https://maven.aliyun.com/repository/public")
             .addRepository("https://repo.maven.apache.org/maven2/")
         if (JavaVersion.isGreaterOrEqual(11)) {
-            runtimeManager.downloadDependency("com.zaxxer:HikariCP:5.1.0", 1)
+            runtimeManager.downloadDependency("com.zaxxer:HikariCP:6.2.1", 1)
         } else {
             runtimeManager.downloadDependency("com.zaxxer:HikariCP:4.0.3", 1)
         }
@@ -198,13 +198,13 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 }
 
                 "MariaDB" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependency("org.mariadb.jdbc:mariadb-java-client:3.4.1")
+                    runtimeManager.downloadADependency("org.mariadb.jdbc:mariadb-java-client:3.5.1")
                     jdbcUrl = "jdbc:mariadb://$address/$database_name$params"
                     driverClassName = "org.mariadb.jdbc.Driver"
                 }
 
                 "SQLite" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependencyAssembly("org.xerial:sqlite-jdbc:3.46.1.0")
+                    runtimeManager.downloadADependencyAssembly("org.xerial:sqlite-jdbc:3.49.0.0")
                     jdbcUrl = "jdbc:sqlite:$address$params"
                     driverClassName = "org.sqlite.JDBC"
                 }
@@ -226,8 +226,10 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 }
 
                 "Oracle" -> HikariConfig(props).apply {
-                    val oracleVersion = "23.5.0.24.07"
-                    if (JavaVersion.isGreaterOrEqual(11)) {
+                    val oracleVersion = "23.7.0.25.01"
+                    if (JavaVersion.isGreaterOrEqual(17)) {
+                        runtimeManager.downloadADependency("com.oracle.database.jdbc:ojdbc17:$oracleVersion")
+                    } else if (JavaVersion.isGreaterOrEqual(11)) {
                         runtimeManager.downloadADependency("com.oracle.database.jdbc:ojdbc11:$oracleVersion")
                     } else {
                         runtimeManager.downloadADependency("com.oracle.database.jdbc:ojdbc8:$oracleVersion")

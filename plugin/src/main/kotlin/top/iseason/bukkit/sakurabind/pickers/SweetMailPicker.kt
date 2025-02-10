@@ -10,10 +10,8 @@ import top.iseason.bukkit.sakurabind.utils.SendBackType
 import top.mrxiaom.sweetmail.IMail
 import top.mrxiaom.sweetmail.SweetMail
 import top.mrxiaom.sweetmail.attachments.AttachmentItem
-import java.util.LinkedList
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.map
 
 object SweetMailPicker : BasePicker("SweetMail") {
 

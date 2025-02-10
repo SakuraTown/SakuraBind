@@ -76,13 +76,13 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Comment("", "", "物品禁用设置")
     var item_deny: MemorySection? = null
 
-    @Key("item-deny.interact-left@")
+    @Key("item-deny.interact-left")
     @Comment("", "手上拿着绑定物品时禁止左键交互")
-    var item_deny__interact_left = true
+    var item_deny__interact_left = false
 
-    @Key("item-deny.interact-right@")
+    @Key("item-deny.interact-right")
     @Comment("", "手上拿着绑定物品时禁止右键交互")
-    var item_deny__interact_right = true
+    var item_deny__interact_right = false
 
     @Key
     @Comment("", "手上拿着绑定物品时禁止左键交互绑定方块, 需要开启方块监听器")
@@ -92,13 +92,13 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Comment("", "手上拿着绑定物品时禁止右键交互交互绑定方块, 需要开启方块监听器")
     var item_deny__right_click_at_bind_block = false
 
-    @Key("item-deny.interact-entity@")
+    @Key("item-deny.interact-entity")
     @Comment("", "禁止实体交互(攻击或右键)")
-    var item_deny__interact_entity = true
+    var item_deny__interact_entity = false
 
-    @Key("item-deny.armor-stand@")
+    @Key("item-deny.armor-stand")
     @Comment("", "禁止盔甲架交互")
-    var item_deny__armor_stand = true
+    var item_deny__armor_stand = false
 
     @Key
     @Comment("", "禁止丢弃")
@@ -112,9 +112,9 @@ object GlobalSettings : SimpleYAMLConfig() {
     @Comment("", "禁止捡起")
     var item_deny__pickup = false
 
-    @Key("item-deny.click@")
+    @Key("item-deny.click")
     @Comment("", "禁止拿走绑定物品")
-    var item_deny__click = true
+    var item_deny__click = false
 
     @Key
     @Comment("", "禁止铁砧(1.9以上)")

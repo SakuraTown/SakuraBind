@@ -41,7 +41,8 @@ object GetLostCommand : CommandNode(
             while (true) {
                 val items =
                     PlayerItem.find { PlayerItems.uuid eq uniqueId }
-                        .limit(10, (page * 10).toLong())
+                        .limit(10)
+                        .offset((page * 10).toLong())
                         .toList()
                 if (items.isEmpty()) break
                 for (item in items) {

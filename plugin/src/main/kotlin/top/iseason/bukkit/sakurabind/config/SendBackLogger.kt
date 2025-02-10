@@ -26,8 +26,6 @@ import java.time.LocalDateTime
 import java.util.*
 import java.util.logging.FileHandler
 import java.util.logging.Logger
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 @FilePath("send-back-logger.yml")
 object SendBackLogger : SimpleYAMLConfig() {

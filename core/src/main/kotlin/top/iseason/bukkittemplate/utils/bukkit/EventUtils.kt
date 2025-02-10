@@ -7,7 +7,6 @@ import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.plugin.EventExecutor
 import top.iseason.bukkittemplate.BukkitTemplate
-import top.iseason.bukkittemplate.utils.bukkit.EventUtils.FakeEventListener
 
 /**
  * bukkit的事件相关工具

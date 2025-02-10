@@ -23,7 +23,11 @@ object ItemListener16 : Listener {
         val player = entity.shooter as? Player ?: return
         if (Config.checkByPass(player)) return
         val throwable = entity as? ThrowableProjectile ?: return
-        val item = throwable.item
+        val item = try {
+            throwable.item
+        } catch (_: Throwable) {
+            return
+        }
         val owner = SakuraBindAPI.getOwner(item) ?: return
         val setting = ItemSettings.getSetting(item)
         if (setting.getBoolean("item-deny.throw", owner.toString(), player)) {

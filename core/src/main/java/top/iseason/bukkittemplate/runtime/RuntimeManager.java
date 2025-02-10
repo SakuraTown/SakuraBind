@@ -50,6 +50,7 @@ public class RuntimeManager {
      * maxDepth表示最大依赖解析层数
      */
     public Map<String, Integer> dependencies;
+    volatile boolean failure = false;
 
     public RuntimeManager(File parent, ClassAppender classAppender, List<String> repositories, List<String> dependencies, List<String> assembly, boolean isParallel) {
         this(parent, classAppender, repositories, new LinkedHashMap<>(), assembly, isParallel);
@@ -146,7 +147,6 @@ public class RuntimeManager {
         }
         return true;
     }
-
 
     public static String printTree(String name, int level, boolean isLast) {
         // 输出的前缀
@@ -398,8 +398,6 @@ public class RuntimeManager {
         dependencies.put(dependency, maxDepth);
         return this;
     }
-
-    volatile boolean failure = false;
 
     /**
      * 下载所有未加载的依赖

@@ -16,7 +16,6 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.other.runAsync
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.sumOf
 
 class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable() {
 

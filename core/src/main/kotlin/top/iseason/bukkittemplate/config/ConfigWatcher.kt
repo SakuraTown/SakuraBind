@@ -6,7 +6,10 @@ import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.DisableHook
 import java.io.File
 import java.io.IOException
-import java.nio.file.*
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardWatchEventKinds
+import java.nio.file.WatchService
 
 /**
  * 配置文件监听器，负责实现配置修改之后的自动重载

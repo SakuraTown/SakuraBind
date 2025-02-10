@@ -6,11 +6,9 @@ import org.bukkit.configuration.MemorySection
 import org.bukkit.entity.HumanEntity
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitTask
-import top.iseason.bukkit.sakurabind.hook.SakuraMailHook
 import top.iseason.bukkit.sakurabind.pickers.BasePicker
 import top.iseason.bukkit.sakurabind.task.MigrationScanner
 import top.iseason.bukkit.sakurabind.task.Scanner
-import top.iseason.bukkit.sakuramail.config.SystemMailsYml
 import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.config.annotations.Comment
@@ -30,19 +28,6 @@ object Config : SimpleYAMLConfig() {
     @Key
     @Comment("", "识别绑定Lore的NBT路径,数据是玩家旧的lore")
     var nbt_path_lore = "sakura_bind_lore"
-
-    @Key
-    @Comment("", "遗失物品使用 SakuraMail 发送而不是暂存箱")
-    var sakuraMail_hook = false
-
-    @Key
-    @Comment(
-        "",
-        "如果要发送丢失物品邮件",
-        "填入SakuraMail的邮件id，丢失物品将会替换邮件的物品",
-        "按顺序替换，不够的将会删除, 多余的将会在另外的邮件里"
-    )
-    var mailId = ""
 
     @Key
     @Comment("", "登入时如果暂存箱有物品则提醒，此为延迟，单位tick, 设置小于0以关闭提示")
@@ -248,9 +233,6 @@ object Config : SimpleYAMLConfig() {
     fun getDataMigrationCacheStat() = dataMigrationCache?.stats()
 
     override fun onLoaded(section: ConfigurationSection) {
-        if (SakuraMailHook.hasHooked && mailId.isNotBlank()) {
-            SystemMailsYml.getMailYml(mailId) ?: info("&c邮件&7 $mailId &c不存在!")
-        }
 
         dataMigrationTask?.cancel()
         dataMigrationTask = null

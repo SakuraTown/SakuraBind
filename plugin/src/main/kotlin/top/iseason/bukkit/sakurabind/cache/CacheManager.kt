@@ -7,7 +7,7 @@ import org.bukkit.Location
 import org.ehcache.CacheManager
 import org.ehcache.PersistentCacheManager
 import org.ehcache.Status
-import org.ehcache.config.builders.*
+import org.ehcache.config.builders.CacheManagerBuilder
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.utils.other.submit

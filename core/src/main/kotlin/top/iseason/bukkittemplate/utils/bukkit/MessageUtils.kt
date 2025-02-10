@@ -137,8 +137,8 @@ object MessageUtils {
         val dd = BukkitTemplate.getRuntimeManager()
             .addRepository("https://maven.aliyun.com/repository/public")
             .addRepository("https://repo.maven.apache.org/maven2/")
-        dd.addDependency("net.kyori:adventure-platform-bukkit:4.3.2", 4)
-        dd.addDependency("net.kyori:adventure-text-minimessage:4.14.0", 1)
+        dd.addDependency("net.kyori:adventure-platform-bukkit:4.3.4", 4)
+        dd.addDependency("net.kyori:adventure-text-minimessage:4.18.0", 1)
         dd.downloadAll()
         audiences = BukkitAudiences.create(BukkitTemplate.getPlugin())
         miniMessageLoaded = true
