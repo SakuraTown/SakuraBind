@@ -31,7 +31,7 @@ dependencies {
 
     compileOnly("net.Indyuce:MMOItems-API:6.9.4-SNAPSHOT") { isTransitive = false }
     compileOnly("com.github.LoneDev6:api-itemsadder:3.6.1") { isTransitive = false }
-    compileOnly("io.th0rgal:oraxen:1.175.0") { isTransitive = false }
+    compileOnly("io.th0rgal:oraxen:1.189.0") { isTransitive = false }
 }
 tasks {
     kotlin {

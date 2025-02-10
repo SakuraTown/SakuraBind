@@ -27,6 +27,10 @@ repositories {
         name = "PlaceholderAPI"
         url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
     }
+    maven {
+        name = "Oraxen"
+        url = uri("https://repo.oraxen.com/releases")
+    }
 }
 
 dependencies {
@@ -47,7 +51,7 @@ dependencies {
     compileOnly("fr.xephi:authme:5.6.0-SNAPSHOT") { isTransitive = false }
     compileOnly("net.Indyuce:MMOItems-API:6.9.4-SNAPSHOT") { isTransitive = false }
     compileOnly("com.github.LoneDev6:api-itemsadder:3.4.1-r4") { isTransitive = false }
-    compileOnly("com.github.oraxen:oraxen:1.155.3") { isTransitive = false }
+    compileOnly("io.th0rgal:oraxen:1.189.0") { isTransitive = false }
     compileOnly("com.gmail.nossr50.mcMMO:mcMMO:2.2.012") { isTransitive = false }
     compileOnly("com.github.MrXiaoM:SweetMail:main-SNAPSHOT") { isTransitive = false }
     compileOnly("net.william278:husksync:3.2.1") { isTransitive = false }
