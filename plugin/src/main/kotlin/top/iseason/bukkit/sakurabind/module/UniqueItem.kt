@@ -1,6 +1,7 @@
 package top.iseason.bukkit.sakurabind.module
 
 
+import de.tr7zw.nbtapi.NBT
 import de.tr7zw.nbtapi.utils.MinecraftVersion
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -16,10 +17,11 @@ import org.bukkit.scheduler.BukkitRunnable
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.SakuraBindAPI.filterItem
 import top.iseason.bukkit.sakurabind.config.Config
-import top.iseason.bukkit.sakurabind.config.UniqueItemConfig
+import top.iseason.bukkit.sakurabind.config.module.UniqueItemConfig
 import top.iseason.bukkit.sakurabind.event.BlockBindFromItemEvent
 import top.iseason.bukkit.sakurabind.event.ItemBindEvent
 import top.iseason.bukkit.sakurabind.event.ItemBindFromBlockEvent
+import top.iseason.bukkit.sakurabind.event.ItemUnBIndEvent
 import top.iseason.bukkit.sakurabind.listener.SelectListener
 import top.iseason.bukkit.sakurabind.task.DropItemList
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
@@ -64,6 +66,13 @@ object UniqueItem : org.bukkit.event.Listener {
             last -= cost
         }
         SakuraBindAPI.sendBackItem(event.owner, arrayListOf, false)
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun onItemUnBIndEvent(event: ItemUnBIndEvent) {
+        NBT.modify(event.item) {
+            it.removeKey(UniqueItemConfig.unique_nbt_path)
+        }
     }
 
     class Scanner : BukkitRunnable() {

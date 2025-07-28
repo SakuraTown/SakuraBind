@@ -13,11 +13,13 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockDispenseEvent
 import org.bukkit.event.entity.*
-import org.bukkit.event.inventory.*
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryMoveItemEvent
+import org.bukkit.event.inventory.InventoryPickupItemEvent
+import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.*
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.PlayerInventory
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
@@ -26,6 +28,7 @@ import top.iseason.bukkit.sakurabind.command.CallbackCommand
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.config.module.AutoUnBindConfig
 import top.iseason.bukkit.sakurabind.dto.PlayerItem
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkit.sakurabind.hook.AuthMeHook
@@ -125,11 +128,12 @@ object ItemListener : Listener {
         val ownerStr = SakuraBindAPI.getOwner(item)?.toString()
         val setting = ItemSettings.getSetting(item)
         if (ownerStr != null) {
-            if (setting.getBoolean(
+            if ((setting.getBoolean(
                     "auto-unbind.enable",
                     ownerStr,
                     player
-                ) && setting.getBoolean("auto-unbind.onRight", ownerStr, player)
+                ) && setting.getBoolean("auto-unbind.onRight", ownerStr, player))
+                || (AutoUnBindConfig.onRight && AutoUnBindConfig.check(item, AutoUnBindConfig.onRightMatcher))
             ) {
                 SakuraBindAPI.unBind(item, BindType.RIGHT_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onRight)
@@ -215,25 +219,13 @@ object ItemListener : Listener {
      * 上面的物品栏标题符合规则时禁止点击(放入)
      */
 //    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    fun onInventoryClickEvent2(event: InventoryClickEvent) {
+    fun onInventoryClickEvent2(event: InventoryClickEvent, item: ItemStack) {
+        val owner = SakuraBindAPI.getOwner(item)?.toString() ?: return
         val whoClicked = event.whoClicked
 //        if (Config.checkByPass(whoClicked)) return
         val title = event.view.title
-        var item: ItemStack?
-        if (event.click.name == "SWAP_OFFHAND") {
-            item = whoClicked.inventory.itemInOffHand
-        } else {
-            if (event.hotbarButton >= 0) {
-                item = whoClicked.inventory.getItem(event.hotbarButton)
-            } else {
-                item = event.currentItem
-                if (item == null || item.checkAir()) item = event.cursor
-            }
-        }
-        if (item == null || item.checkAir()) return
-        val owner = SakuraBindAPI.getOwner(item) ?: return
         val setting = ItemSettings.getSetting(item)
-        if (setting.getBoolean("item-deny.inventory", owner.toString(), whoClicked)) {
+        if (setting.getBoolean("item-deny.inventory", owner, whoClicked)) {
             val types = setting.getStringList("item-deny.inventory-types")
             val name = event.view.topInventory.type.name
             var any = types.any { name.equals(it, true) }
@@ -428,34 +420,36 @@ object ItemListener : Listener {
     /**
      * 自动绑定, 点击时绑定
      */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun autoBindInventoryClickEvent(event: InventoryClickEvent) {
         val player = event.whoClicked
         if (Config.checkByPass(player)) return
         var item: ItemStack? = event.currentItem
 
-        if (item.checkAir() && (event.action == InventoryAction.HOTBAR_SWAP || event.action == InventoryAction.HOTBAR_MOVE_AND_READD)) {
-            val bottomInventory = event.view.bottomInventory
-            if (event.hotbarButton == -1) {
-                val playerInventory = bottomInventory as PlayerInventory
-                item = playerInventory.getItem(playerInventory.size - 1)
+        if (item.checkAir()) {
+            item = if (event.click.name == "SWAP_OFFHAND") {
+                player.inventory.itemInOffHand
             } else {
-                item = bottomInventory.getItem(event.hotbarButton)
+                if (event.hotbarButton >= 0) {
+                    player.inventory.getItem(event.hotbarButton)
+                } else {
+                    event.cursor
+                }
             }
         }
-
-        if (item == null || item.checkAir()) return
-        val owner = SakuraBindAPI.getOwner(item)?.toString()
+        if (item.checkAir()) return
+        val owner = SakuraBindAPI.getOwner(item!!)?.toString()
+        val setting = ItemSettings.getSetting(item)
         if (owner != null) {
-            val setting = ItemSettings.getSetting(item)
-            if (setting.getBoolean("auto-unbind.enable", owner, player) &&
-                setting.getBoolean("auto-unbind.onClick", owner, player)
+            if (
+                (setting.getBoolean("auto-unbind.enable", owner, player)
+                        && setting.getBoolean("auto-unbind.onClick", owner, player))
+                || (AutoUnBindConfig.onClick && AutoUnBindConfig.check(item, AutoUnBindConfig.onClickMatcher))
             ) {
                 SakuraBindAPI.unBind(item, BindType.CLICK_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onClick)
             }
         } else {
-            val setting = ItemSettings.getSetting(item)
             if (setting.getBoolean("auto-bind.enable", null, player) &&
                 (setting.getBoolean("auto-bind.onClick", null, player) ||
                         SakuraBindAPI.isAutoBind(item))
@@ -473,7 +467,7 @@ object ItemListener : Listener {
             return
         }
         // 背包类型检查
-        onInventoryClickEvent2(event)
+        onInventoryClickEvent2(event, item)
 
     }
 
@@ -490,8 +484,9 @@ object ItemListener : Listener {
         val ownerStr = owner?.toString()
         if (ownerStr != null) {
             val setting = ItemSettings.getSetting(item)
-            if (setting.getBoolean("auto-unbind.enable", ownerStr, player) &&
-                (setting.getBoolean("auto-unbind.onDrop", ownerStr, player))
+            if ((setting.getBoolean("auto-unbind.enable", ownerStr, player) &&
+                        (setting.getBoolean("auto-unbind.onDrop", ownerStr, player)))
+                || (AutoUnBindConfig.onDrop && AutoUnBindConfig.check(item, AutoUnBindConfig.onDropMatcher))
             ) {
                 SakuraBindAPI.unBind(item, BindType.DROP_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onDrop)
@@ -521,16 +516,17 @@ object ItemListener : Listener {
         val action = event.action
         if (ownerStr != null) {
             val setting = ItemSettings.getSetting(item)
-            if (!setting.getBoolean("auto-unbind.enable", ownerStr, player)) {
-                return
-            }
+            val isUnbind = setting.getBoolean("auto-unbind.enable", ownerStr, player)
             if ((action == Action.LEFT_CLICK_BLOCK || action == Action.LEFT_CLICK_AIR) &&
-                (setting.getBoolean("auto-unbind.onLeft", ownerStr, player))
+                ((isUnbind && setting.getBoolean("auto-unbind.onLeft", ownerStr, player))
+                        || (AutoUnBindConfig.onLeft && AutoUnBindConfig.check(item, AutoUnBindConfig.onLeftMatcher))
+                        )
             ) {
                 SakuraBindAPI.unBind(item, BindType.LEFT_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onLeft)
             } else if ((action == Action.RIGHT_CLICK_BLOCK || action == Action.RIGHT_CLICK_AIR) &&
-                (setting.getBoolean("auto-unbind.onRight", ownerStr, player))
+                ((isUnbind && setting.getBoolean("auto-unbind.onRight", ownerStr, player))
+                        || (AutoUnBindConfig.onRight && AutoUnBindConfig.check(item, AutoUnBindConfig.onRightMatcher)))
             ) {
                 SakuraBindAPI.unBind(item, BindType.RIGHT_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onRight)
@@ -574,10 +570,10 @@ object ItemListener : Listener {
 
         if (ownerStr != null) {
             val setting = ItemSettings.getSetting(item)
-            if (!setting.getBoolean("auto-unbind.enable", ownerStr, player)) {
-                return
-            }
-            if (setting.getBoolean("auto-unbind.onRight", ownerStr, player)) {
+            if ((setting.getBoolean("auto-unbind.enable", ownerStr, player)
+                        && setting.getBoolean("auto-unbind.onRight", ownerStr, player))
+                || (AutoUnBindConfig.onRight && AutoUnBindConfig.check(item, AutoUnBindConfig.onRightMatcher))
+            ) {
                 SakuraBindAPI.unBind(item, BindType.RIGHT_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onRight)
             }
@@ -607,10 +603,10 @@ object ItemListener : Listener {
         val ownerStr = SakuraBindAPI.getOwner(item)?.toString()
         if (ownerStr != null) {
             val setting = ItemSettings.getSetting(item)
-            if (!setting.getBoolean("auto-unbind.enable", ownerStr, player)) {
-                return
-            }
-            if ((setting.getBoolean("auto-unbind.onLeft", ownerStr, player))) {
+            if ((setting.getBoolean("auto-unbind.enable", ownerStr, player)
+                        && setting.getBoolean("auto-unbind.onLeft", ownerStr, player))
+                || (AutoUnBindConfig.onLeft && AutoUnBindConfig.check(item, AutoUnBindConfig.onLeftMatcher))
+            ) {
                 SakuraBindAPI.unBind(item, BindType.LEFT_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onLeft)
             }
@@ -619,8 +615,9 @@ object ItemListener : Listener {
             if (!setting.getBoolean("auto-bind.enable", null, player)) {
                 return
             }
-            if ((setting.getBoolean("auto-bind.onLeft", null, player) ||
-                        SakuraBindAPI.isAutoBind(item))
+            if ((setting.getBoolean("auto-bind.enable", null, player) &&
+                        setting.getBoolean("auto-bind.onLeft", null, player)) ||
+                SakuraBindAPI.isAutoBind(item)
             ) {
                 SakuraBindAPI.bind(item, player, type = BindType.LEFT_BIND_ITEM)
                 MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onLeft, setting, item)
@@ -636,9 +633,10 @@ object ItemListener : Listener {
         val owner = SakuraBindAPI.getOwner(item)?.toString()
         if (owner != null) {
             val setting = ItemSettings.getSetting(item)
-            if (setting.getBoolean("auto-unbind.enable", owner, player) &&
-                (setting.getBoolean("auto-unbind.onUse", owner, player) ||
-                        SakuraBindAPI.isAutoBind(item))
+            if ((setting.getBoolean("auto-unbind.enable", owner, player) &&
+                        setting.getBoolean("auto-unbind.onUse", owner, player))
+                || SakuraBindAPI.isAutoBind(item)
+                || (AutoUnBindConfig.onUse && AutoUnBindConfig.check(item, AutoUnBindConfig.onUseMatcher))
             ) {
                 SakuraBindAPI.unBind(item, BindType.USE_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onUse)

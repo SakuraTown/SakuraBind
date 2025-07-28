@@ -1,4 +1,4 @@
-package top.iseason.bukkit.sakurabind.config
+package top.iseason.bukkit.sakurabind.config.module
 
 import de.tr7zw.nbtapi.NBT
 import org.bukkit.Bukkit
@@ -27,6 +27,7 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.noColor
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.other.runAsync
+import top.iseason.bukkittemplate.utils.other.submit
 import java.io.File
 import java.time.LocalDateTime
 import java.util.logging.FileHandler
@@ -56,6 +57,10 @@ object UniqueItemConfig : SimpleYAMLConfig() {
     @Comment("", "扫描频率，单位 tick")
     var scanner_period = 10L
     private var scanner: BukkitTask? = null
+
+    @Key
+    @Comment("", "是否同步在主线程扫描, 如果你的服务端在扫描时报错请开启此选项")
+    var is_sync_scanning = false
 
     @Key
     @Comment("", "唯一Id的NBT路径,'.'为分隔符")
@@ -168,9 +173,9 @@ object UniqueItemConfig : SimpleYAMLConfig() {
 
         scanner?.cancel()
         scanner = null
-        if (enable && scanner_period > 0L)
-            scanner = UniqueItem.Scanner()
-                .runTaskTimerAsynchronously(BukkitTemplate.getPlugin(), scanner_period, scanner_period)
+        if (enable && scanner_period > 0L) {
+            scanner = submit(scanner_period, scanner_period, !is_sync_scanning, UniqueItem.Scanner())
+        }
         inventoryFilter.clear()
         for (string in inventory_filter) {
             inventoryFilter.add(Regex(string))

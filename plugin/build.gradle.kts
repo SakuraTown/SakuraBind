@@ -53,7 +53,7 @@ dependencies {
     compileOnly("com.github.LoneDev6:api-itemsadder:3.4.1-r4") { isTransitive = false }
     compileOnly("io.th0rgal:oraxen:1.189.0") { isTransitive = false }
     compileOnly("com.gmail.nossr50.mcMMO:mcMMO:2.2.012") { isTransitive = false }
-    compileOnly("com.github.MrXiaoM:SweetMail:main-SNAPSHOT") { isTransitive = false }
+    compileOnly("com.github.MrXiaoM:SweetMail:1.0.3") { isTransitive = false }
     compileOnly("net.william278:husksync:3.2.1") { isTransitive = false }
 }
 

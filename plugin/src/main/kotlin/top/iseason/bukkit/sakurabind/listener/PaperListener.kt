@@ -11,6 +11,7 @@ import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.config.module.AutoUnBindConfig
 import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
@@ -43,8 +44,9 @@ object PaperListener : Listener {
                 MessageTool.messageCoolDown(player, Lang.auto_bind__onEquiped)
             }
         } else {
-            if (setting.getBoolean("auto-unbind.enable", owner, player) &&
-                setting.getBoolean("auto-unbind.onEquipWear", owner, player)
+            if ((setting.getBoolean("auto-unbind.enable", owner, player) &&
+                        setting.getBoolean("auto-unbind.onEquipWear", owner, player))
+                || (AutoUnBindConfig.onEquipWear && AutoUnBindConfig.check(item, AutoUnBindConfig.onEquipWearMatcher))
             ) {
                 SakuraBindAPI.unBind(item, type = BindType.EQUIP_UNBIND_ITEM)
                 setEquip(event.slotType, player, item)

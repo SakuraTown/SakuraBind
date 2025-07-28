@@ -16,9 +16,11 @@ import top.iseason.bukkit.sakurabind.command.CallbackCommand
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.config.module.AutoUnBindConfig
 import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkit.sakurabind.utils.SendBackType
+import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 
@@ -52,8 +54,9 @@ object PickupItemListener : Listener {
     }
 
     fun playerPickupItem(player: Player, entity: Item, event: Cancellable) {
-        if (Config.checkByPass(player)) return
         val item = entity.itemStack
+        if (item.checkAir()) return
+        if (Config.checkByPass(player)) return
         val owner = SakuraBindAPI.getOwner(item) ?: return
         val uniqueId = player.uniqueId
         if (owner != uniqueId && CallbackCommand.isCallback(owner)) {
@@ -81,12 +84,14 @@ object PickupItemListener : Listener {
     }
 
     fun checkAutoBind(player: Player, item: ItemStack) {
+        if (item.checkAir()) return
         if (Config.checkByPass(player)) return
         val owner = SakuraBindAPI.getOwner(item)?.toString()
         if (owner != null) {
             val setting = ItemSettings.getSetting(item)
-            if (setting.getBoolean("auto-unbind.enable", owner, player) &&
-                setting.getBoolean("auto-unbind.onPickup", owner, player)
+            if ((setting.getBoolean("auto-unbind.enable", owner, player) &&
+                        setting.getBoolean("auto-unbind.onPickup", owner, player))
+                || (AutoUnBindConfig.onPickup && AutoUnBindConfig.check(item, AutoUnBindConfig.onPickupMatcher))
             ) {
                 SakuraBindAPI.unBind(item, BindType.PICKUP_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onPickup)

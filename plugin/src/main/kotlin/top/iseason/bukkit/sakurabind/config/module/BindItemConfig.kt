@@ -1,4 +1,4 @@
-package top.iseason.bukkit.sakurabind.config
+package top.iseason.bukkit.sakurabind.config.module
 
 
 import de.tr7zw.nbtapi.NBT

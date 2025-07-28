@@ -1,5 +1,6 @@
 package top.iseason.bukkit.sakurabind.config
 
+import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import de.tr7zw.nbtapi.NBT
 import org.bukkit.Bukkit
@@ -89,25 +90,29 @@ object ItemSettings : SimpleYAMLConfig() {
         }
     }
 
-    private val settingCache = CacheBuilder.newBuilder()
-        .initialCapacity(max((Config.setting_cache_size / 8L).toInt(), 200))
-        .maximumSize(Config.setting_cache_size)
-        .expireAfterAccess(Config.setting_cache_time, TimeUnit.MILLISECONDS)
-        .concurrencyLevel(1)
-//        .weakKeys()
-//        .weakValues()
-//        .softValues()
-        .recordStats()
-        .build<ItemStack, BaseSetting>()
+    private var settingCache: Cache<ItemStack, BaseSetting>? = null
 
-    fun getCacheStats() = settingCache.stats()
+    fun getCacheStats() = settingCache?.stats()
 
     private var settings = LinkedHashMap<String, BaseSetting>()
 
     override fun onLoaded(section: ConfigurationSection) {
+        if (settingCache == null) {
+            settingCache = CacheBuilder.newBuilder()
+                .initialCapacity(max((Config.setting_cache_size / 8L).toInt(), 200))
+                .maximumSize(Config.setting_cache_size)
+                .expireAfterAccess(Config.setting_cache_time, TimeUnit.MILLISECONDS)
+                .concurrencyLevel(1)
+                .weakKeys()
+//        .weakValues()
+//        .softValues()
+                .recordStats()
+                .build<ItemStack, BaseSetting>()
+        } else {
+            settingCache!!.invalidateAll()
+            settingCache!!.cleanUp()
+        }
         settings.clear()
-        settingCache.invalidateAll()
-        settingCache.cleanUp()
         if (nbt_cache_path.isBlank()) {
             nbt_cache_path = "sakura_bind_setting_cache"
         }
@@ -144,9 +149,9 @@ object ItemSettings : SimpleYAMLConfig() {
             }
         }
         // 非绑定物品缓存
-        return settingCache.get(item) {
+        return settingCache?.get(item) {
             getMatchedSetting(item)
-        }
+        } ?: getMatchedSetting(item)
     }
 
     fun setSettingCache(item: ItemStack, setting: BaseSetting) {

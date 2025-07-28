@@ -56,7 +56,8 @@ open class ItemSetting(override val keyPath: String, protected val section: Conf
     override fun getBoolean(key: String, owner: String?, player: HumanEntity?): Boolean {
         //权限检查
         val result = run {
-            if (Config.enable_setting_permission_check && player != null) {
+            val checkPermission = Config.enable_setting_permission_check && player != null
+            if (checkPermission) {
                 if (player.hasPermission("sakurabind.setting.$keyPath.$key.true")) {
                     return@run true
                 } else if (player.hasPermission("sakurabind.setting.$keyPath.$key.false")) {
@@ -71,7 +72,8 @@ open class ItemSetting(override val keyPath: String, protected val section: Conf
             var isOwner = false
             if (owner != null && player != null) {
                 isOwner =
-                    (owner == player.uniqueId.toString()) || player.hasPermission("sakurabind.bypass.$owner") == true
+                    (owner == player.uniqueId.toString()) ||
+                            (checkPermission && player.hasPermission("sakurabind.bypass.$owner"))
                 if (isOwner && setting.contains("$key@")) {
                     return@run !setting.getBoolean("$key@")
                 }

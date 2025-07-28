@@ -297,7 +297,9 @@ object BlockListener : Listener {
         val ifPresent = BlockCache.containerCache[entityToString]
         if (ifPresent != null && (itemStack.type.name != ifPresent || itemStack.amount != 1)) return
         val blockInfo = BlockCache.getBreakingCache(entityToString) ?: return
-        SakuraBindAPI.bind(itemStack, blockInfo)
+        SakuraBindAPI.unbindBlock(entity.location.block, type = BindType.BLOCK_TO_ITEM_UNBIND)
+        SakuraBindAPI.bind(itemStack, blockInfo, type = BindType.BLOCK_TO_ITEM_BIND)
+
         BlockCache.removeBreakingCache(entityToString)
         return
     }

@@ -11,6 +11,7 @@ import top.iseason.bukkit.sakurabind.command.CallbackCommand
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.config.module.AutoUnBindConfig
 import top.iseason.bukkit.sakurabind.hook.BanItemHook
 import top.iseason.bukkit.sakurabind.hook.GermHook
 import top.iseason.bukkit.sakurabind.listener.SelectListener
@@ -64,37 +65,35 @@ class Scanner : BukkitRunnable() {
                 val owner = SakuraBindAPI.getOwner(item)
                 val ownerStr = owner?.toString()
                 val setting = ItemSettings.getSetting(item)
-                if (owner != null &&
-                    setting.getBoolean("auto-unbind.enable", ownerStr, player) &&
-                    setting.getBoolean("auto-unbind.onScanner", ownerStr, player)
-                ) {
-                    debug { "解绑物品 ${item.type}" }
-                    SakuraBindAPI.unBind(item, BindType.SCANNER_UNBIND_ITEM)
-                    MessageTool.messageCoolDown(player, Lang.auto_unbind__onScanner)
-                    continue
-                }
-                if (owner != null && owner != player.uniqueId &&
-                    (CallbackCommand.isCallback(owner) || setting.getBoolean(
-                        "item.send-back-scanner",
-                        ownerStr,
+                if (owner != null) {
+                    if (
+                        (setting.getBoolean("auto-unbind.enable", ownerStr, player) &&
+                                setting.getBoolean("auto-unbind.onScanner", ownerStr, player)) ||
+                        (AutoUnBindConfig.onScanner && AutoUnBindConfig.check(item, AutoUnBindConfig.onScannerMatcher))
+                    ) {
+                        debug { "解绑物品 ${item.type}" }
+                        SakuraBindAPI.unBind(item, BindType.SCANNER_UNBIND_ITEM)
+                        MessageTool.messageCoolDown(player, Lang.auto_unbind__onScanner)
+                        continue
+                    }
+                    if (owner != player.uniqueId &&
+                        (CallbackCommand.isCallback(owner) || setting.getBoolean(
+                            "item.send-back-scanner",
+                            ownerStr,
+                            player
+                        ))
+                    ) {
+                        debug { "${player.name} 的背包中存在绑定物品 ${item.type} 属于 $owner" }
+                        sendBackMap.computeIfAbsent(owner) { mutableListOf() }.add(item)
+                        inv.setItem(i, null)
+                        hasFound = true
+                        continue
+                    }
+                } else if ((setting.getBoolean("auto-bind.enable", null, player) && setting.getBoolean(
+                        "auto-bind.onScanner",
+                        null,
                         player
-                    ))
-                ) {
-                    debug { "${player.name} 的背包中存在绑定物品 ${item.type} 属于 $owner" }
-                    sendBackMap.computeIfAbsent(owner) { mutableListOf() }.add(item)
-                    inv.setItem(i, null)
-                    hasFound = true
-                    continue
-                }
-                if (owner == null &&
-                    (
-                            (setting.getBoolean("auto-bind.enable", null, player) && setting.getBoolean(
-                                "auto-bind.onScanner",
-                                null,
-                                player
-                            ))
-                                    || SakuraBindAPI.isAutoBind(item)
-                            )
+                    )) || SakuraBindAPI.isAutoBind(item)
                 ) {
                     debug { "绑定物品 ${item.type}" }
                     MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onScanner, setting, item)

@@ -11,6 +11,10 @@ import top.iseason.bukkit.sakurabind.cache.FallingBlockCache
 import top.iseason.bukkit.sakurabind.command.*
 import top.iseason.bukkit.sakurabind.config.*
 import top.iseason.bukkit.sakurabind.config.matcher.MatcherManager
+import top.iseason.bukkit.sakurabind.config.module.AutoUnBindConfig
+import top.iseason.bukkit.sakurabind.config.module.BindItemConfig
+import top.iseason.bukkit.sakurabind.config.module.MigrationConfig
+import top.iseason.bukkit.sakurabind.config.module.UniqueItemConfig
 import top.iseason.bukkit.sakurabind.dto.BindLogs
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkit.sakurabind.dto.SendBackLogs
@@ -47,16 +51,16 @@ object SakuraBind : BukkitPlugin {
         SimpleLogger.prefix = "&a[&6${javaPlugin.description.name}&a]&r ".toColor()
         SimpleYAMLConfig.notifyMessage = "&6配置文件 &f%s &6已重载!"
         try {
-            initCommands()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            warn("命令注册异常,请重启以恢复命令...")
-        }
-        try {
             initConfig()
         } catch (e: Exception) {
             e.printStackTrace()
             warn("配置或数据库初始化异常!")
+        }
+        try {
+            initCommands()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            warn("命令注册异常,请重启以恢复命令...")
         }
         initCaches()
         initListeners()
@@ -85,6 +89,8 @@ object SakuraBind : BukkitPlugin {
         SendBackLogger.load(false)
         UniqueItemConfig.load(false)
         BindItemConfig.load(false)
+        MigrationConfig.load(false)
+        AutoUnBindConfig.load(false)
         info("&a配置初始化完毕!")
         Config.setupScanner()
     }
@@ -220,7 +226,7 @@ object SakuraBind : BukkitPlugin {
             addSubNode(SuperCallbackCommand)
             addSubNode(TestCommand)
             addSubNode(NBTCommand)
-            addSubNode(TestCacheCommand)
+            addSubNode(CacheCommand)
         }
         TestCommand.addSubNode(TestMatchCommand)
         TestCommand.addSubNode(TestTryMatchCommand)

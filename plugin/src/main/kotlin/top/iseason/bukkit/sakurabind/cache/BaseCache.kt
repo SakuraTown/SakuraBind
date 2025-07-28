@@ -35,7 +35,7 @@ abstract class BaseCache {
      */
     abstract fun onSave()
 
-    inline fun string2FilterKey(str: String): Long = Hashing.murmur3_128().hashUnencodedChars(str).asLong()
+    fun string2FilterKey(str: String): Long = Hashing.murmur3_128().hashUnencodedChars(str).asLong()
 
     fun loadFilter(file: File): CuckooFilter {
         return if (!file.exists())

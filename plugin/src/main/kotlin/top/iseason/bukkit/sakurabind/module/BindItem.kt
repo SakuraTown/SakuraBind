@@ -7,9 +7,9 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryClickEvent
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
-import top.iseason.bukkit.sakurabind.config.BindItemConfig
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
+import top.iseason.bukkit.sakurabind.config.module.BindItemConfig
 import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.giveItem

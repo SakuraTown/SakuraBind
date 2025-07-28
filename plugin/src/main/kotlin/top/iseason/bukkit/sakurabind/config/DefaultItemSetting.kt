@@ -15,7 +15,8 @@ object DefaultItemSetting : ItemSetting("global-setting", YamlConfiguration()) {
     override fun getBoolean(key: String, owner: String?, player: HumanEntity?): Boolean {
         //权限检查
         val result = run {
-            if (Config.enable_setting_permission_check && player != null) {
+            val checkPermission = Config.enable_setting_permission_check && player != null
+            if (checkPermission) {
                 if (player.hasPermission("sakurabind.settings.$key.true")) {
                     return@run true
                 } else if (player.hasPermission("sakurabind.settings.$key.false")) {
@@ -25,7 +26,8 @@ object DefaultItemSetting : ItemSetting("global-setting", YamlConfiguration()) {
             var isOwner = false
             if (owner != null) {
                 isOwner =
-                    (owner == player?.uniqueId.toString()) || player?.hasPermission("sakurabind.bypass.$owner") == true
+                    (owner == player?.uniqueId.toString()) ||
+                            (checkPermission && player.hasPermission("sakurabind.bypass.$owner"))
             }
             val globalConfig = GlobalSettings.config
             if (globalConfig.contains("$key@")) {
