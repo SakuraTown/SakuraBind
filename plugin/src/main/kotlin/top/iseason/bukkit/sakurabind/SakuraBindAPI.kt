@@ -300,20 +300,28 @@ object SakuraBindAPI {
         val itemMeta = item.itemMeta ?: return
         val owner = getOwner(item)
         var oldLoreIndex = 0
+        val lorePath = Config.nbt_path_lore
         //有旧的lore,先删除
-        var oldLore = NBT.get<List<String>>(item) {
-            val type = it.getType(Config.nbt_path_lore)
-            if (type == NBTType.NBTTagCompound) { // 旧插件格式
-                val compound = it.getCompound(Config.nbt_path_lore)!! as NBTCompound
-                val keys = NBTReflectionUtil.getKeys(compound)
-                keys.map { it.dropLast(2) }
-            } else if (type == NBTType.NBTTagList) {
-                it.getStringList(Config.nbt_path_lore).toList()
-            } else emptyList()
+        val oldLore = NBT.get<List<String>>(item) {
+            val type = it.getType(lorePath)
+            when (type) {
+                NBTType.NBTTagCompound -> { // 旧插件格式
+                    val compound = it.getCompound(lorePath)!! as NBTCompound
+                    val keys = NBTReflectionUtil.getKeys(compound)
+                    keys.map { key -> key.dropLast(2) }
+                }
+
+                NBTType.NBTTagList -> {
+                    it.getStringList(lorePath).toList()
+                }
+
+                else -> emptyList()
+            }
         }
         if (oldLore.isNotEmpty()) {
+            NBT.modify(item) { it.removeKey(lorePath) }
             if (itemMeta.hasLore()) {
-                var (oi, newLore) = removeList(itemMeta.lore!!, oldLore) { raw, str ->
+                val (oi, newLore) = removeList(itemMeta.lore!!, oldLore) { raw, str ->
                     raw == str
                 }
                 if (oi >= 0) {
@@ -334,11 +342,11 @@ object SakuraBindAPI {
             }
             //添加lore
 //            setting.matchers.forEach { it.onBind(temp) }
-
+            var index = 0
             item.applyMeta {
                 lore = if (hasLore()) {
                     var lore = lore!!.toMutableList()
-                    var index = setting.getInt("item.lore-index")
+                    index = setting.getInt("item.lore-index")
                     // lore matcher start
                     val loreMatcher = setting.matchers.firstOrNull { it is LoreMatcher } as? LoreMatcher
                     if (loreMatcher != null) {
@@ -360,18 +368,22 @@ object SakuraBindAPI {
                     }
                     // lore matcher end
                     if (index > lore.size - 1) {
+                        index = lore.size
                         lore.addAll(loreStr)
                     } else if (index < 0) {
-                        lore.addAll(max(lore.size + index, 0), loreStr)
+                        index = max(lore.size + index, 0)
+                        lore.addAll(index, loreStr)
                     } else lore.addAll(index, loreStr)
                     lore
                 } else loreStr
             }
             //记录历史
-            var size = loreStr.size
-            if (size > 0) {
+            if (loreStr.isNotEmpty()) {
+                val newLore = item.itemMeta!!.lore!!
+                val subList = newLore.subList(index, index + loreStr.size)
                 NBT.modify(item) {
-                    it.getStringList(Config.nbt_path_lore).addAll(loreStr)
+                    val stringList = it.getStringList(lorePath)
+                    stringList.addAll(subList)
                 }
             }
         } else {
@@ -618,7 +630,7 @@ object SakuraBindAPI {
         type: SendBackType = SendBackType.API
     ) {
         val toTypedArray = items.toTypedArray()
-        var event = ItemSendBackEvent(uuid, type, toTypedArray)
+        val event = ItemSendBackEvent(uuid, type, toTypedArray)
         Bukkit.getPluginManager().callEvent(event)
         if (event.isCancelled) return
         BasePicker.pickup(uuid, toTypedArray, type, notify)
@@ -769,7 +781,7 @@ object SakuraBindAPI {
 //                    }
 //                }
                 for ((uuid, items) in filterInventory) {
-                    val itemsList = if (items is MutableList) items else items.toMutableList()
+                    val itemsList = items as? MutableList ?: items.toMutableList()
                     mutableMapOf.merge(uuid, itemsList) { old, list ->
                         old.addAll(list)
                         old
