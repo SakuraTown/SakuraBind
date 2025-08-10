@@ -29,7 +29,7 @@ object BlockCache : BaseCache() {
     var blockFilter: CuckooFilter = loadFilter(filterFile)
         private set
 
-    val tempBlockCache2 = CacheBuilder.newBuilder()
+    val tempBlockCache2: com.google.common.cache.Cache<String?, BlockInfo?> = CacheBuilder.newBuilder()
         .concurrencyLevel(2)
         .expireAfterAccess(3000L, TimeUnit.MILLISECONDS)
         .build<String, BlockInfo>()

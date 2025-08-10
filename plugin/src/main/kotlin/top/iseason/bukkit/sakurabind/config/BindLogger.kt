@@ -86,7 +86,7 @@ object BindLogger : SimpleYAMLConfig() {
     @Key("bind-type-description-v2")
     @Comment("", "绑定类型翻译")
     var bind_type_description: ConfigurationSection =
-        config.createSection("bind-type-description-v2", BindType.values().associate { it.name to it.description })
+        config.createSection("bind-type-description-v2", BindType.entries.associate { it.name to it.description })
 
     @Key
     @Comment("", "日志显示格式")

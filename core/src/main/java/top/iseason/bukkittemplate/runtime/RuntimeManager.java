@@ -44,7 +44,7 @@ public class RuntimeManager {
     /**
      * 下载源
      */
-    public Set<String> repositories = new LinkedHashSet<String>();
+    public Set<String> repositories = new LinkedHashSet<>();
     /**
      * 依赖 group:artifact:version to maxDepth
      * maxDepth表示最大依赖解析层数

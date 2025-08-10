@@ -19,7 +19,7 @@ object FallingBlockCache : BaseCache() {
     private val filterFile = File(BukkitTemplate.getPlugin().dataFolder, "data${File.separator}Filter-FallingBlock")
     private lateinit var fallingBlockCache: Cache<String, String>
     private val fallingBlockFilter = loadFilter(filterFile)
-    override fun newFilter() = CuckooFilter
+    override fun newFilter(): CuckooFilter = CuckooFilter
         .Builder(32768)
         .withFalsePositiveRate(0.0001)
         .withExpectedConcurrency(2)

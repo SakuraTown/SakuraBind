@@ -2,6 +2,7 @@ package top.iseason.bukkit.sakurabind.cache
 
 import com.github.mgunlogson.cuckoofilter4j.CuckooFilter
 import com.google.common.hash.Hashing
+import org.ehcache.CacheManager
 import org.ehcache.PersistentCacheManager
 import org.ehcache.config.builders.CacheManagerBuilder
 import top.iseason.bukkittemplate.debug.warn
@@ -21,7 +22,7 @@ abstract class BaseCache {
     /**
      * 初始化
      */
-    open fun init(cacheManager: org.ehcache.CacheManager) {
+    open fun init(cacheManager: CacheManager) {
         if (rebuildFilter) {
             rebuildFilter = false
             reloadFilter()
@@ -60,7 +61,7 @@ abstract class BaseCache {
 
     }
 
-    open fun newFilter() = CuckooFilter
+    open fun newFilter(): CuckooFilter = CuckooFilter
         .Builder(65536)
         .withFalsePositiveRate(0.0001)
         .withExpectedConcurrency(2)

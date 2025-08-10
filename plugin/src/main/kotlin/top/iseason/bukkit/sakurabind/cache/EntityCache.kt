@@ -23,7 +23,7 @@ object EntityCache : BaseCache() {
 
     private val entityFilter = loadFilter(filterFile)
 
-    override fun newFilter() = CuckooFilter
+    override fun newFilter(): CuckooFilter = CuckooFilter
         .Builder(32768)
         .withFalsePositiveRate(0.0001)
         .withExpectedConcurrency(2)
