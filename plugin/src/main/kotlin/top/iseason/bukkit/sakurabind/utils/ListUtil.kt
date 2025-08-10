@@ -8,8 +8,8 @@ internal fun <T> removeList(
     collection: Collection<T>,
     op: (String, T) -> Boolean
 ): Pair<Int, MutableList<String>> {
-    var index = indexOfList(list1, collection, op)
-    var toMutableList = list1.toMutableList()
+    val index = indexOfList(list1, collection, op)
+    val toMutableList = list1.toMutableList()
     if (index > -1) {
         repeat(collection.size) {
             toMutableList.removeAt(index)
@@ -37,7 +37,7 @@ internal fun <T> indexOfList(
     var iterator = collection.iterator()
     first@ for ((i, raw) in list1.withIndex()) {
         if (!iterator.hasNext()) break@first
-        var next = iterator.next()
+        val next = iterator.next()
         if (!op(raw, next)) {
             index = -1
             iterator = collection.iterator()

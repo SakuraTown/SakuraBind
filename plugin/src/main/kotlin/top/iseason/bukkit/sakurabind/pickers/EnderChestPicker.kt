@@ -34,7 +34,7 @@ object EnderChestPicker : BasePicker("ender-chest") {
         for (item in items) {
             val rawAmount = item.amount
             val addItem = inventory.addItem(item)
-            if (addItem.isEmpty) {//全部放下
+            if (addItem.isEmpty()) {//全部放下
                 count += rawAmount
                 val clone = item.clone()
                 clone.amount = rawAmount
@@ -56,7 +56,7 @@ object EnderChestPicker : BasePicker("ender-chest") {
         }
 
         SendBackLogger.log(player.uniqueId, type, name, add)
-        if (remain.isEmpty) {
+        if (remain.isEmpty()) {
             if (notify) MessageTool.sendNormal(player, Lang.send_back__ender_chest_all.formatBy(count))
             return emptyArray()
         } else if (count > 0 && notify)
