@@ -10,6 +10,7 @@ import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSetting
 import top.iseason.bukkit.sakurabind.config.ItemSettings
+import top.iseason.bukkit.sakurabind.config.module.MigrationConfig
 import top.iseason.bukkit.sakurabind.hook.AuthMeHook
 import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkittemplate.debug.debug
@@ -47,10 +48,10 @@ class MigrationScanner : BukkitRunnable() {
                     }
                     val (playerStr, start) = pair
                     val player = playerStr.trim()
-                    if (Config.data_migration__dont_bind) continue
-                    var setting = Config.dataMigrationSetting ?: ItemSettings.getSetting(item)
+                    if (MigrationConfig.dont_bind) continue
+                    var setting = MigrationConfig.bindSetting ?: ItemSettings.getSetting(item)
                     val uuid =
-                        if (Config.data_migration__is_uuid) {
+                        if (MigrationConfig.lore_is_uuid) {
                             runCatching { UUID.fromString(player) }.getOrNull()
                         } else {
                             val oPlayer = Bukkit.getPlayerExact(player)
@@ -59,7 +60,7 @@ class MigrationScanner : BukkitRunnable() {
                             } else {
                                 val offlinePlayer = Bukkit.getOfflinePlayer(player)
                                 if (offlinePlayer.hasPlayedBefore()) offlinePlayer.uniqueId
-                                else if (Config.data_migration__force_bind) {
+                                else if (MigrationConfig.force_bind) {
                                     var forceUid = if (AuthMeHook.hasHooked) {
                                         AuthMeApi.getInstance().getPlayerInfo(player).getOrNull()?.uuid?.getOrNull()
                                     } else null
@@ -74,7 +75,7 @@ class MigrationScanner : BukkitRunnable() {
                         continue
                     }
                     // 兼容位置选择
-                    if (Config.data_migration__remove_lore && setting.getBoolean(
+                    if (MigrationConfig.remove_lore && setting.getBoolean(
                             "item.lore-replace-matched",
                             uuid.toString(),
                             onlinePlayer
@@ -101,15 +102,15 @@ class MigrationScanner : BukkitRunnable() {
             return null
         }
         var player: String? = null
-        val removeLore = Config.data_migration__remove_lore
+        val removeLore = MigrationConfig.remove_lore
         val itemMeta = item.itemMeta!!
         var start = -1
         with(itemMeta) {
             if (!hasLore()) return null
             val lore = lore!!
-            val dataMigrationLore = Config.dataMigrationLore
+            val dataMigrationLore = MigrationConfig.dataMigrationLore
             if (dataMigrationLore.isEmpty() || dataMigrationLore.size > lore.size) return null
-            val patternIterator = Config.dataMigrationLore.iterator()
+            val patternIterator = MigrationConfig.dataMigrationLore.iterator()
             var pattern = patternIterator.next()
             var end = -1
             for ((i, s) in lore.withIndex()) {

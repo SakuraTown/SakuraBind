@@ -125,6 +125,7 @@ object AutoUnBindConfig : SimpleYAMLConfig() {
     }
 
     override fun onLoaded(section: ConfigurationSection) {
+        if (!enable) return
         if (cache == null) {
             cache = CacheBuilder.newBuilder()
                 .recordStats()

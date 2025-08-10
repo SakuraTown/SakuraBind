@@ -1,13 +1,10 @@
 package top.iseason.bukkit.sakurabind.config
 
-import com.google.common.cache.Cache
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.MemorySection
 import org.bukkit.entity.HumanEntity
-import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitTask
 import top.iseason.bukkit.sakurabind.pickers.BasePicker
-import top.iseason.bukkit.sakurabind.task.MigrationScanner
 import top.iseason.bukkit.sakurabind.task.Scanner
 import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
@@ -16,7 +13,6 @@ import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.debug.warn
-import java.util.regex.Pattern
 
 @FilePath("config.yml")
 object Config : SimpleYAMLConfig() {
@@ -172,88 +168,8 @@ object Config : SimpleYAMLConfig() {
     @Comment("", "物品读取设置的缓存时间(毫秒),建议值大于 扫描器时间")
     var setting_cache_time = 3500L
 
-    @Key
-    @Comment(
-        "",
-        "数据迁移设置, 从其他lore类型的绑定插件中读取数据重新绑定",
-        "启用将会定时扫描玩家背包和打开的容器"
-    )
-    var data_migration: MemorySection? = null
-
-    @Key
-    @Comment("", "是否启用")
-    var data_migration__enable = false
-
-    @Key
-    @Comment("", "扫描的周期, 单位tick")
-    var data_migration__period = 10L
-
-    @Key
-    @Comment(
-        "",
-        "从物品中读取lore，将其转换为SakuraBind的物品, 正则表达式",
-        "默认为: '\\[绑定]: (.*)' 可以匹配lore: '[绑定]: Iseason', 如果lore中有符号请在前面加上'\\' 请将代表玩家名的地方使用()包围",
-        "在这测试你的正则表达式: https://www.bejson.com/othertools/regex/"
-    )
-    var data_migration__lore = listOf("\\[绑定]: (.*)")
-    var dataMigrationLore = listOf<Pattern>()
-
-    @Key
-    @Comment("", "lore中不是玩家名，而是玩家的uuid")
-    var data_migration__is_uuid = false
-
-    @Key
-    @Comment(
-        "",
-        "如果检测不到这个玩家的数据, 强行绑定物品",
-        "如果安装了AuthMe将尝试通过AuthMe获取UUID",
-        "如果没有则使用该名字对应的离线UUID",
-    )
-    var data_migration__force_bind = false
-
-    @Key
-    @Comment("", "删除匹配到的lore")
-    var data_migration__remove_lore = true
-
-    @Key
-    @Comment("", "不绑定，如果打开了，且上面也是打开的，那么就是删除旧的绑定lore的效果")
-    var data_migration__dont_bind = false
-
-    @Key
-    @Comment("", "匹配到的设置,留空或者填写错误都会使用常规匹配")
-    var data_migration__setting = ""
-
-
-    var dataMigrationSetting: BaseSetting? = null
-
-    private var dataMigrationTask: BukkitTask? = null
-
-    private var dataMigrationCache: Cache<ItemStack, Any>? = null
-
-    fun getDataMigrationCacheStat() = dataMigrationCache?.stats()
-
     override fun onLoaded(section: ConfigurationSection) {
-
-        dataMigrationTask?.cancel()
-        dataMigrationTask = null
-        dataMigrationCache = null
         setupScanner()
-        if (data_migration__enable) {
-            dataMigrationLore = data_migration__lore.map { Pattern.compile(it) }
-            info("&a数据迁移扫描任务已启动,周期: $data_migration__period tick")
-            val migrationScanner = MigrationScanner()
-            dataMigrationTask = migrationScanner.runTaskTimerAsynchronously(
-                BukkitTemplate.getPlugin(),
-                data_migration__period,
-                data_migration__period
-            )
-            dataMigrationCache = migrationScanner.cache
-            dataMigrationSetting =
-                if (data_migration__setting.isNotBlank()) ItemSettings.getSettingNullable(data_migration__setting) else null
-            dataMigrationSetting
-                ?: warn("config.yml 中 data-migration.setting  $data_migration__setting 不是一个有效的配置,将通过匹配器匹配")
-        }
-
         BasePicker.configPickers.clear()
         val allPickers = BasePicker.allPickers
         for (pickerName in send_back_queue) {
