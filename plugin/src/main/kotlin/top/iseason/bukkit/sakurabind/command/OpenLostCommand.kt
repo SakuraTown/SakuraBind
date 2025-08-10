@@ -13,6 +13,7 @@ import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.dto.PlayerItem
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkittemplate.command.*
+import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.IOUtils.onItemInput
@@ -28,18 +29,21 @@ object OpenLostCommand : CommandNode(
     async = true,
     isPlayerOnly = true,
     params = listOf(
-        Param("<player>", suggestRuntime = ParamSuggestCache.playerParam),
+        Param("<player>|<uuid>", suggestRuntime = ParamSuggestCache.playerParam),
         Param("<page>"),
     )
 ) {
     override var onExecute: CommandNodeExecutor? = CommandNodeExecutor { params, sender ->
-        val player = params.next<OfflinePlayer>()
+        val player = params.nextOrNull<OfflinePlayer>()
+        val uuid = player?.uniqueId ?: params.next()
+        val name = player?.name ?: uuid.toString()
         val page = params.nextOrNull<Int>() ?: 1
         val silent = params.hasParma("-silent")
-        val items = dbTransaction { PlayerItem.find { PlayerItems.uuid eq player.uniqueId }.toList() }
+        if (!DatabaseConfig.isConnected) throw ParmaException("数据库异常")
+        val items = dbTransaction { PlayerItem.find { PlayerItems.uuid eq uuid }.toList() }
         if (!Config.command_openLost_open_empty && items.isEmpty()) throw ParmaException(Lang.command__openLost_empty)
         val senderPlayer = sender as Player
-        val tempChestTitle = PlaceHolderHook.setPlaceHolder(Config.temp_chest_title.formatBy(player.name), player)
+        val tempChestTitle = PlaceHolderHook.setPlaceHolder(Config.temp_chest_title.formatBy(name), player)
         val inventories = mutableListOf(Bukkit.createInventory(senderPlayer, 54, tempChestTitle))
         var temp: Array<ItemStack>
         var index: Int
@@ -60,21 +64,21 @@ object OpenLostCommand : CommandNode(
             Lang.command__openLost_page_not_exist.formatBy(inventories.size)
         )
         if (!silent)
-            senderPlayer.sendColorMessage(Lang.command__openLost_open.formatBy(player.name, page))
+            senderPlayer.sendColorMessage(Lang.command__openLost_open.formatBy(name, page))
         senderPlayer.onItemInput(inv, true) {
             dbTransaction {
-                PlayerItems.deleteWhere { uuid eq player.uniqueId }
+                PlayerItems.deleteWhere { this.uuid eq uuid }
                 for (inventory in inventories) {
                     val itemStacks = inventory.filter { !it.checkAir() }
                     if (itemStacks.isEmpty()) continue
                     PlayerItem.new {
-                        this.uuid = player.uniqueId
+                        this.uuid = uuid
                         this.item = ExposedBlob(itemStacks.toByteArray())
                     }
                 }
             }
             if (!silent)
-                senderPlayer.sendColorMessage(Lang.command__openLost_closed.formatBy(player.name))
+                senderPlayer.sendColorMessage(Lang.command__openLost_closed.formatBy(name))
         }
     }
 }

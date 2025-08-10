@@ -107,6 +107,9 @@ private fun setDefaultParams() {
         runCatching { it.toDouble() }.getOrNull()
     }.register()
     ParamAdopter(String::class) { it }.register()
+    ParamAdopter(UUID::class, errorMessage = "&c%s &7不是一个有效的UUID") {
+        runCatching { UUID.fromString(it) }.getOrNull()
+    }.register()
     ParamAdopter(
         PotionEffectType::class,
         "&c%s &7不是一个有效的药水种类"
