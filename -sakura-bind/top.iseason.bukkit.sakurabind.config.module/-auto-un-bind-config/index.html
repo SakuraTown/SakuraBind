@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>AutoUnBindConfig</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+                    <a class="library-name--link" href="../../../index.html">
+                            SakuraBind
+                    </a>
+            </div>
+            <div class="library-version">
+2.4.5-dev4            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":plugin:dokkaHtml/main">jvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="SakuraBind::top.iseason.bukkit.sakurabind.config.module/AutoUnBindConfig///PointingToDeclaration//76972122">
+  <div class="breadcrumbs"><a href="../../../index.html">SakuraBind</a><span class="delimiter">/</span><a href="../index.html">top.iseason.bukkit.sakurabind.config.module</a><span class="delimiter">/</span><span class="current">AutoUnBindConfig</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Auto</span><wbr></wbr><span>Un</span><wbr></wbr><span>Bind</span><wbr></wbr><span><span>Config</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">public </span><span class="token keyword">class </span><a href="index.html">AutoUnBindConfig</a><span class="token keyword"> extends </span><span data-unresolved-link="top.iseason.bukkittemplate.config/SimpleYAMLConfig///PointingToDeclaration/">SimpleYAMLConfig</span></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="1065273750%2FProperties%2F76972122" anchor-label="cacheSize" id="1065273750%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1065273750%2FProperties%2F76972122"><span>cache</span><wbr></wbr><span><span>Size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1065273750%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html">Long</a> <a href="index.html#1065273750%2FProperties%2F76972122">cacheSize</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-585239239%2FProperties%2F76972122" anchor-label="config" id="-585239239%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-item-config/index.html#-585239239%2FProperties%2F76972122"><span><span>config</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-585239239%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/ConfigurationSection///PointingToDeclaration/">ConfigurationSection</span> <a href="../-unique-item-config/index.html#-585239239%2FProperties%2F76972122">config</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="663840404%2FProperties%2F76972122" anchor-label="configPath" id="663840404%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-item-config/index.html#663840404%2FProperties%2F76972122"><span>config</span><wbr></wbr><span><span>Path</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="663840404%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html">File</a> <a href="../-unique-item-config/index.html#663840404%2FProperties%2F76972122">configPath</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="440731833%2FProperties%2F76972122" anchor-label="defaultPath" id="440731833%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-item-config/index.html#440731833%2FProperties%2F76972122"><span>default</span><wbr></wbr><span><span>Path</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="440731833%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a> <a href="../-unique-item-config/index.html#440731833%2FProperties%2F76972122">defaultPath</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1052340734%2FProperties%2F76972122" anchor-label="enable" id="1052340734%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1052340734%2FProperties%2F76972122"><span><span>enable</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1052340734%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="index.html#1052340734%2FProperties%2F76972122">enable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2109095380%2FProperties%2F76972122" anchor-label="INSTANCE" id="-2109095380%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-2109095380%2FProperties%2F76972122"><span><span>INSTANCE</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2109095380%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword">static </span><a href="index.html">AutoUnBindConfig</a> <a href="index.html#-2109095380%2FProperties%2F76972122">INSTANCE</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="219127257%2FProperties%2F76972122" anchor-label="isAutoUpdate" id="219127257%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-item-config/index.html#219127257%2FProperties%2F76972122"><span>is</span><wbr></wbr><span>Auto</span><wbr></wbr><span><span>Update</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="219127257%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="../-unique-item-config/index.html#219127257%2FProperties%2F76972122">isAutoUpdate</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2092266256%2FProperties%2F76972122" anchor-label="onClick" id="2092266256%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#2092266256%2FProperties%2F76972122"><span>on</span><wbr></wbr><span><span>Click</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2092266256%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="index.html#2092266256%2FProperties%2F76972122">onClick</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-181643208%2FProperties%2F76972122" anchor-label="onClickMatcher" id="-181643208%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-181643208%2FProperties%2F76972122"><span>on</span><wbr></wbr><span>Click</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-181643208%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> <a href="index.html#-181643208%2FProperties%2F76972122">onClickMatcher</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1398677989%2FProperties%2F76972122" anchor-label="onClickSection" id="1398677989%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1398677989%2FProperties%2F76972122"><span>on</span><wbr></wbr><span>Click</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1398677989%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> <a href="index.html#1398677989%2FProperties%2F76972122">onClickSection</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="790535283%2FProperties%2F76972122" anchor-label="onDrop" id="790535283%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#790535283%2FProperties%2F76972122"><span>on</span><wbr></wbr><span><span>Drop</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="790535283%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="index.html#790535283%2FProperties%2F76972122">onDrop</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1494783627%2FProperties%2F76972122" anchor-label="onDropMatcher" id="-1494783627%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1494783627%2FProperties%2F76972122"><span>on</span><wbr></wbr><span>Drop</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1494783627%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> <a href="index.html#-1494783627%2FProperties%2F76972122">onDropMatcher</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="85537570%2FProperties%2F76972122" anchor-label="onDropSection" id="85537570%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#85537570%2FProperties%2F76972122"><span>on</span><wbr></wbr><span>Drop</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="85537570%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> <a href="index.html#85537570%2FProperties%2F76972122">onDropSection</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1720599255%2FProperties%2F76972122" anchor-label="onEquipWear" id="-1720599255%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1720599255%2FProperties%2F76972122"><span>on</span><wbr></wbr><span>Equip</span><wbr></wbr><span><span>Wear</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1720599255%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="index.html#-1720599255%2FProperties%2F76972122">onEquipWear</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1998180353%2FProperties%2F76972122" anchor-label="onEquipWearMatcher" id="-1998180353%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1998180353%2FProperties%2F76972122"><span>on</span><wbr></wbr><span>Equip</span><wbr></wbr><span>Wear</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1998180353%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> <a href="index.html#-1998180353%2FProperties%2F76972122">onEquipWearMatcher</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-417859156%2FProperties%2F76972122" anchor-label="onEquipWearSection" id="-417859156%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-417859156%2FProperties%2F76972122"><span>on</span><wbr></wbr><span>Equip</span><wbr></wbr><span>Wear</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-417859156%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> <a href="index.html#-417859156%2FProperties%2F76972122">onEquipWearSection</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1116477019%2FProperties%2F76972122" anchor-label="onLeft" id="1116477019%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1116477019%2FProperties%2F76972122"><span>on</span><wbr></wbr><span><span>Left</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1116477019%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="index.html#1116477019%2FProperties%2F76972122">onLeft</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-517965171%2FProperties%2F76972122" anchor-label="onLeftMatcher" id="-517965171%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-517965171%2FProperties%2F76972122"><span>on</span><wbr></wbr><span>Left</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-517965171%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> <a href="index.html#-517965171%2FProperties%2F76972122">onLeftMatcher</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1062356026%2FProperties%2F76972122" anchor-label="onLeftSection" id="1062356026%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1062356026%2FProperties%2F76972122"><span>on</span><wbr></wbr><span>Left</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1062356026%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> <a href="index.html#1062356026%2FProperties%2F76972122">onLeftSection</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1265093702%2FProperties%2F76972122" anchor-label="onPickup" id="1265093702%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1265093702%2FProperties%2F76972122"><span>on</span><wbr></wbr><span><span>Pickup</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1265093702%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="index.html#1265093702%2FProperties%2F76972122">onPickup</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-866953662%2FProperties%2F76972122" anchor-label="onPickupMatcher" id="-866953662%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-866953662%2FProperties%2F76972122"><span>on</span><wbr></wbr><span>Pickup</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-866953662%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> <a href="index.html#-866953662%2FProperties%2F76972122">onPickupMatcher</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="713367535%2FProperties%2F76972122" anchor-label="onPickupSection" id="713367535%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#713367535%2FProperties%2F76972122"><span>on</span><wbr></wbr><span>Pickup</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="713367535%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> <a href="index.html#713367535%2FProperties%2F76972122">onPickupSection</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1484457212%2FProperties%2F76972122" anchor-label="onRight" id="1484457212%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1484457212%2FProperties%2F76972122"><span>on</span><wbr></wbr><span><span>Right</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1484457212%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="index.html#1484457212%2FProperties%2F76972122">onRight</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1882782516%2FProperties%2F76972122" anchor-label="onRightMatcher" id="-1882782516%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1882782516%2FProperties%2F76972122"><span>on</span><wbr></wbr><span>Right</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1882782516%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> <a href="index.html#-1882782516%2FProperties%2F76972122">onRightMatcher</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-302461319%2FProperties%2F76972122" anchor-label="onRightSection" id="-302461319%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-302461319%2FProperties%2F76972122"><span>on</span><wbr></wbr><span>Right</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-302461319%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> <a href="index.html#-302461319%2FProperties%2F76972122">onRightSection</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="110299290%2FProperties%2F76972122" anchor-label="onScanner" id="110299290%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#110299290%2FProperties%2F76972122"><span>on</span><wbr></wbr><span><span>Scanner</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="110299290%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="index.html#110299290%2FProperties%2F76972122">onScanner</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="388977518%2FProperties%2F76972122" anchor-label="onScannerMatcher" id="388977518%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#388977518%2FProperties%2F76972122"><span>on</span><wbr></wbr><span>Scanner</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="388977518%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> <a href="index.html#388977518%2FProperties%2F76972122">onScannerMatcher</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1969298715%2FProperties%2F76972122" anchor-label="onScannerSection" id="1969298715%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1969298715%2FProperties%2F76972122"><span>on</span><wbr></wbr><span>Scanner</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1969298715%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> <a href="index.html#1969298715%2FProperties%2F76972122">onScannerSection</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="732388017%2FProperties%2F76972122" anchor-label="onUse" id="732388017%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#732388017%2FProperties%2F76972122"><span>on</span><wbr></wbr><span><span>Use</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="732388017%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="index.html#732388017%2FProperties%2F76972122">onUse</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1228261751%2FProperties%2F76972122" anchor-label="onUseMatcher" id="1228261751%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1228261751%2FProperties%2F76972122"><span>on</span><wbr></wbr><span>Use</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1228261751%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> <a href="index.html#1228261751%2FProperties%2F76972122">onUseMatcher</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1486384348%2FProperties%2F76972122" anchor-label="onUseSection" id="-1486384348%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1486384348%2FProperties%2F76972122"><span>on</span><wbr></wbr><span>Use</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1486384348%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> <a href="index.html#-1486384348%2FProperties%2F76972122">onUseSection</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1668068403%2FProperties%2F76972122" anchor-label="readme" id="1668068403%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1668068403%2FProperties%2F76972122"><span><span>readme</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1668068403%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a> <a href="index.html#1668068403%2FProperties%2F76972122">readme</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="511456905%2FProperties%2F76972122" anchor-label="updateNotify" id="511456905%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-item-config/index.html#511456905%2FProperties%2F76972122"><span>update</span><wbr></wbr><span><span>Notify</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="511456905%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="../-unique-item-config/index.html#511456905%2FProperties%2F76972122">updateNotify</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2042908475%2FProperties%2F76972122" anchor-label="updateTime" id="-2042908475%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-unique-item-config/index.html#-2042908475%2FProperties%2F76972122"><span>update</span><wbr></wbr><span><span>Time</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2042908475%2FProperties%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">private </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html">Long</a> <a href="../-unique-item-config/index.html#-2042908475%2FProperties%2F76972122">updateTime</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-744829651%2FFunctions%2F76972122" anchor-label="check" id="-744829651%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="check.html"><span><span>check</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-744829651%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="check.html"><span class="token function">check</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.inventory/ItemStack///PointingToDeclaration/">ItemStack</span> itemStack<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html">Map</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../../top.iseason.bukkit.sakurabind.config/-item-setting/index.html">ItemSetting</a><span class="token operator">&gt;</span> matcherMap</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-797015084%2FFunctions%2F76972122" anchor-label="getCacheSize" id="-797015084%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-cache-size.html"><span>get</span><wbr></wbr><span>Cache</span><wbr></wbr><span><span>Size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-797015084%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html">Long</a> <a href="get-cache-size.html"><span class="token function">getCacheSize</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1404366623%2FFunctions%2F76972122" anchor-label="getCacheStat" id="-1404366623%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-cache-stat.html"><span>get</span><wbr></wbr><span>Cache</span><wbr></wbr><span><span>Stat</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1404366623%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="com.google.common.cache/CacheStats///PointingToDeclaration/">CacheStats</span> <a href="get-cache-stat.html"><span class="token function">getCacheStat</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-734364389%2FFunctions%2F76972122" anchor-label="getConfig" id="-734364389%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-734364389%2FFunctions%2F76972122"><span>get</span><wbr></wbr><span><span>Config</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-734364389%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/ConfigurationSection///PointingToDeclaration/">ConfigurationSection</span> <a href="index.html#-734364389%2FFunctions%2F76972122"><span class="token function">getConfig</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1417466506%2FFunctions%2F76972122" anchor-label="getConfigPath" id="-1417466506%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1417466506%2FFunctions%2F76972122"><span>get</span><wbr></wbr><span>Config</span><wbr></wbr><span><span>Path</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1417466506%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html">File</a> <a href="index.html#-1417466506%2FFunctions%2F76972122"><span class="token function">getConfigPath</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="344727063%2FFunctions%2F76972122" anchor-label="getDefaultPath" id="344727063%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#344727063%2FFunctions%2F76972122"><span>get</span><wbr></wbr><span>Default</span><wbr></wbr><span><span>Path</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="344727063%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a> <a href="index.html#344727063%2FFunctions%2F76972122"><span class="token function">getDefaultPath</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-351793024%2FFunctions%2F76972122" anchor-label="getEnable" id="-351793024%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-enable.html"><span>get</span><wbr></wbr><span><span>Enable</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-351793024%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="get-enable.html"><span class="token function">getEnable</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1513792718%2FFunctions%2F76972122" anchor-label="getOnClick" id="1513792718%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-click.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span><span>Click</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1513792718%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="get-on-click.html"><span class="token function">getOnClick</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-88255302%2FFunctions%2F76972122" anchor-label="getOnClickMatcher" id="-88255302%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-click-matcher.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span>Click</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-88255302%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> <a href="get-on-click-matcher.html"><span class="token function">getOnClickMatcher</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1492065895%2FFunctions%2F76972122" anchor-label="getOnClickSection" id="1492065895%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-click-section.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span>Click</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1492065895%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> <a href="get-on-click-section.html"><span class="token function">getOnClickSection</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-613598475%2FFunctions%2F76972122" anchor-label="getOnDrop" id="-613598475%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-drop.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span><span>Drop</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-613598475%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="get-on-drop.html"><span class="token function">getOnDrop</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-521939789%2FFunctions%2F76972122" anchor-label="getOnDropMatcher" id="-521939789%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-drop-matcher.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span>Drop</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-521939789%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> <a href="get-on-drop-matcher.html"><span class="token function">getOnDropMatcher</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1058381408%2FFunctions%2F76972122" anchor-label="getOnDropSection" id="1058381408%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-drop-section.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span>Drop</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1058381408%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> <a href="get-on-drop-section.html"><span class="token function">getOnDropSection</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-378806297%2FFunctions%2F76972122" anchor-label="getOnEquipWear" id="-378806297%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-equip-wear.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span>Equip</span><wbr></wbr><span><span>Wear</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-378806297%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="get-on-equip-wear.html"><span class="token function">getOnEquipWear</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="750852993%2FFunctions%2F76972122" anchor-label="getOnEquipWearMatcher" id="750852993%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-equip-wear-matcher.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span>Equip</span><wbr></wbr><span>Wear</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="750852993%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> <a href="get-on-equip-wear-matcher.html"><span class="token function">getOnEquipWearMatcher</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1963793106%2FFunctions%2F76972122" anchor-label="getOnEquipWearSection" id="-1963793106%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-equip-wear-section.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span>Equip</span><wbr></wbr><span>Wear</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1963793106%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> <a href="get-on-equip-wear-section.html"><span class="token function">getOnEquipWearSection</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-287656739%2FFunctions%2F76972122" anchor-label="getOnLeft" id="-287656739%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-left.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span><span>Left</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-287656739%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="get-on-left.html"><span class="token function">getOnLeft</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="454878667%2FFunctions%2F76972122" anchor-label="getOnLeftMatcher" id="454878667%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-left-matcher.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span>Left</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="454878667%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> <a href="get-on-left-matcher.html"><span class="token function">getOnLeftMatcher</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2035199864%2FFunctions%2F76972122" anchor-label="getOnLeftSection" id="2035199864%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-left-section.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span>Left</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2035199864%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> <a href="get-on-left-section.html"><span class="token function">getOnLeftSection</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="512283208%2FFunctions%2F76972122" anchor-label="getOnPickup" id="512283208%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-pickup.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span><span>Pickup</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="512283208%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="get-on-pickup.html"><span class="token function">getOnPickup</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2028071424%2FFunctions%2F76972122" anchor-label="getOnPickupMatcher" id="2028071424%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-pickup-matcher.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span>Pickup</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2028071424%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> <a href="get-on-pickup-matcher.html"><span class="token function">getOnPickupMatcher</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-686574675%2FFunctions%2F76972122" anchor-label="getOnPickupSection" id="-686574675%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-pickup-section.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span>Pickup</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-686574675%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> <a href="get-on-pickup-section.html"><span class="token function">getOnPickupSection</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="905983674%2FFunctions%2F76972122" anchor-label="getOnRight" id="905983674%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-right.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span><span>Right</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="905983674%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="get-on-right.html"><span class="token function">getOnRight</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1789394610%2FFunctions%2F76972122" anchor-label="getOnRightMatcher" id="-1789394610%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-right-matcher.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span>Right</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1789394610%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> <a href="get-on-right-matcher.html"><span class="token function">getOnRightMatcher</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-209073413%2FFunctions%2F76972122" anchor-label="getOnRightSection" id="-209073413%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-right-section.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span>Right</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-209073413%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> <a href="get-on-right-section.html"><span class="token function">getOnRightSection</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1751989544%2FFunctions%2F76972122" anchor-label="getOnScanner" id="-1751989544%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-scanner.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span><span>Scanner</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1751989544%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="get-on-scanner.html"><span class="token function">getOnScanner</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-59558032%2FFunctions%2F76972122" anchor-label="getOnScannerMatcher" id="-59558032%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-scanner-matcher.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span>Scanner</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-59558032%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> <a href="get-on-scanner-matcher.html"><span class="token function">getOnScannerMatcher</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1520763165%2FFunctions%2F76972122" anchor-label="getOnScannerSection" id="1520763165%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-scanner-section.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span>Scanner</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1520763165%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> <a href="get-on-scanner-section.html"><span class="token function">getOnScannerSection</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-5643281%2FFunctions%2F76972122" anchor-label="getOnUse" id="-5643281%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-use.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span><span>Use</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-5643281%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="get-on-use.html"><span class="token function">getOnUse</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-125829511%2FFunctions%2F76972122" anchor-label="getOnUseMatcher" id="-125829511%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-use-matcher.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span>Use</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-125829511%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> <a href="get-on-use-matcher.html"><span class="token function">getOnUseMatcher</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1454491686%2FFunctions%2F76972122" anchor-label="getOnUseSection" id="1454491686%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-on-use-section.html"><span>get</span><wbr></wbr><span>On</span><wbr></wbr><span>Use</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1454491686%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> <a href="get-on-use-section.html"><span class="token function">getOnUseSection</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="263934645%2FFunctions%2F76972122" anchor-label="getReadme" id="263934645%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-readme.html"><span>get</span><wbr></wbr><span><span>Readme</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="263934645%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a> <a href="get-readme.html"><span class="token function">getReadme</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1830276331%2FFunctions%2F76972122" anchor-label="getUpdateNotify" id="1830276331%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1830276331%2FFunctions%2F76972122"><span>get</span><wbr></wbr><span>Update</span><wbr></wbr><span><span>Notify</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1830276331%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="index.html#1830276331%2FFunctions%2F76972122"><span class="token function">getUpdateNotify</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="170751911%2FFunctions%2F76972122" anchor-label="getUpdateTime" id="170751911%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#170751911%2FFunctions%2F76972122"><span>get</span><wbr></wbr><span>Update</span><wbr></wbr><span><span>Time</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="170751911%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html">Long</a> <a href="index.html#170751911%2FFunctions%2F76972122"><span class="token function">getUpdateTime</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1439199867%2FFunctions%2F76972122" anchor-label="isAutoUpdate" id="-1439199867%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1439199867%2FFunctions%2F76972122"><span>is</span><wbr></wbr><span>Auto</span><wbr></wbr><span><span>Update</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1439199867%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> <a href="index.html#-1439199867%2FFunctions%2F76972122"><span class="token function">isAutoUpdate</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1328060614%2FFunctions%2F76972122" anchor-label="load" id="1328060614%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1328060614%2FFunctions%2F76972122"><span><span>load</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1328060614%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="index.html#1328060614%2FFunctions%2F76972122"><span class="token function">load</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> notify</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1832407138%2FFunctions%2F76972122" anchor-label="loadAsync" id="1832407138%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1832407138%2FFunctions%2F76972122"><span>load</span><wbr></wbr><span><span>Async</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1832407138%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="index.html#1832407138%2FFunctions%2F76972122"><span class="token function">loadAsync</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> notify</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1658152200%2FFunctions%2F76972122" anchor-label="onLoaded" id="-1658152200%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-loaded.html"><span>on</span><wbr></wbr><span><span>Loaded</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1658152200%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-loaded.html"><span class="token function">onLoaded</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/ConfigurationSection///PointingToDeclaration/">ConfigurationSection</span> section</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1595717206%2FFunctions%2F76972122" anchor-label="onSaved" id="-1595717206%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1595717206%2FFunctions%2F76972122"><span>on</span><wbr></wbr><span><span>Saved</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1595717206%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="index.html#-1595717206%2FFunctions%2F76972122"><span class="token function">onSaved</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/ConfigurationSection///PointingToDeclaration/">ConfigurationSection</span> section</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="212545615%2FFunctions%2F76972122" anchor-label="save" id="212545615%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#212545615%2FFunctions%2F76972122"><span><span>save</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="212545615%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="index.html#212545615%2FFunctions%2F76972122"><span class="token function">save</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> notify</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1719928441%2FFunctions%2F76972122" anchor-label="saveAsync" id="1719928441%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1719928441%2FFunctions%2F76972122"><span>save</span><wbr></wbr><span><span>Async</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1719928441%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="index.html#1719928441%2FFunctions%2F76972122"><span class="token function">saveAsync</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> notify</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2132460323%2FFunctions%2F76972122" anchor-label="saveYaml" id="2132460323%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#2132460323%2FFunctions%2F76972122"><span>save</span><wbr></wbr><span><span>Yaml</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2132460323%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="index.html#2132460323%2FFunctions%2F76972122"><span class="token function">saveYaml</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-597206850%2FFunctions%2F76972122" anchor-label="setAutoUpdate" id="-597206850%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-597206850%2FFunctions%2F76972122"><span>set</span><wbr></wbr><span>Auto</span><wbr></wbr><span><span>Update</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-597206850%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="index.html#-597206850%2FFunctions%2F76972122"><span class="token function">setAutoUpdate</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> isAutoUpdate</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-385253031%2FFunctions%2F76972122" anchor-label="setCacheSize" id="-385253031%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-cache-size.html"><span>set</span><wbr></wbr><span>Cache</span><wbr></wbr><span><span>Size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-385253031%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-cache-size.html"><span class="token function">setCacheSize</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html">Long</a> cacheSize</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-87249351%2FFunctions%2F76972122" anchor-label="setEnable" id="-87249351%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-enable.html"><span>set</span><wbr></wbr><span><span>Enable</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-87249351%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-enable.html"><span class="token function">setEnable</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> enable</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1773814687%2FFunctions%2F76972122" anchor-label="setOnClick" id="1773814687%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-click.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span><span>Click</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1773814687%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-click.html"><span class="token function">setOnClick</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> onClick</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1400623662%2FFunctions%2F76972122" anchor-label="setOnClickMatcher" id="1400623662%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-click-matcher.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span>Click</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1400623662%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-click-matcher.html"><span class="token function">setOnClickMatcher</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> onClickMatcher</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1985478190%2FFunctions%2F76972122" anchor-label="setOnClickSection" id="1985478190%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-click-section.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span>Click</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1985478190%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-click-section.html"><span class="token function">setOnClickSection</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> onClickSection</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-416815122%2FFunctions%2F76972122" anchor-label="setOnDrop" id="-416815122%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-drop.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span><span>Drop</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-416815122%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-drop.html"><span class="token function">setOnDrop</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> onDrop</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2019940543%2FFunctions%2F76972122" anchor-label="setOnDropMatcher" id="2019940543%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-drop-matcher.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span>Drop</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2019940543%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-drop-matcher.html"><span class="token function">setOnDropMatcher</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> onDropMatcher</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="164144765%2FFunctions%2F76972122" anchor-label="setOnDropSection" id="164144765%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-drop-section.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span>Drop</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="164144765%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-drop-section.html"><span class="token function">setOnDropSection</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> onDropSection</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="191019256%2FFunctions%2F76972122" anchor-label="setOnEquipWear" id="191019256%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-equip-wear.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span>Equip</span><wbr></wbr><span><span>Wear</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="191019256%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-equip-wear.html"><span class="token function">setOnEquipWear</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> onEquipWear</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-564412683%2FFunctions%2F76972122" anchor-label="setOnEquipWearMatcher" id="-564412683%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-equip-wear-matcher.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span>Equip</span><wbr></wbr><span>Wear</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-564412683%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-equip-wear-matcher.html"><span class="token function">setOnEquipWearMatcher</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> onEquipWearMatcher</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-789786745%2FFunctions%2F76972122" anchor-label="setOnEquipWearSection" id="-789786745%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-equip-wear-section.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span>Equip</span><wbr></wbr><span>Wear</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-789786745%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-equip-wear-section.html"><span class="token function">setOnEquipWearSection</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> onEquipWearSection</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="468052950%2FFunctions%2F76972122" anchor-label="setOnLeft" id="468052950%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-left.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span><span>Left</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="468052950%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-left.html"><span class="token function">setOnLeft</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> onLeft</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1298208297%2FFunctions%2F76972122" anchor-label="setOnLeftMatcher" id="-1298208297%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-left-matcher.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span>Left</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1298208297%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-left-matcher.html"><span class="token function">setOnLeftMatcher</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> onLeftMatcher</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1497172581%2FFunctions%2F76972122" anchor-label="setOnLeftSection" id="1497172581%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-left-section.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span>Left</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1497172581%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-left-section.html"><span class="token function">setOnLeftSection</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> onLeftSection</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1262937345%2FFunctions%2F76972122" anchor-label="setOnPickup" id="1262937345%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-pickup.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span><span>Pickup</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1262937345%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-pickup.html"><span class="token function">setOnPickup</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> onPickup</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="938679052%2FFunctions%2F76972122" anchor-label="setOnPickupMatcher" id="938679052%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-pickup-matcher.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span>Pickup</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="938679052%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-pickup-matcher.html"><span class="token function">setOnPickupMatcher</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> onPickupMatcher</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="28743568%2FFunctions%2F76972122" anchor-label="setOnPickupSection" id="28743568%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-pickup-section.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span>Pickup</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="28743568%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-pickup-section.html"><span class="token function">setOnPickupSection</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> onPickupSection</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-432797557%2FFunctions%2F76972122" anchor-label="setOnRight" id="-432797557%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-right.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span><span>Right</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-432797557%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-right.html"><span class="token function">setOnRight</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> onRight</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-300515646%2FFunctions%2F76972122" anchor-label="setOnRightMatcher" id="-300515646%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-right-matcher.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span>Right</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-300515646%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-right-matcher.html"><span class="token function">setOnRightMatcher</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> onRightMatcher</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-39644390%2FFunctions%2F76972122" anchor-label="setOnRightSection" id="-39644390%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-right-section.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span>Right</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-39644390%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-right-section.html"><span class="token function">setOnRightSection</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> onRightSection</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-701876951%2FFunctions%2F76972122" anchor-label="setOnScanner" id="-701876951%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-scanner.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span><span>Scanner</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-701876951%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-scanner.html"><span class="token function">setOnScanner</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> onScanner</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="529016804%2FFunctions%2F76972122" anchor-label="setOnScannerMatcher" id="529016804%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-scanner-matcher.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span>Scanner</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="529016804%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-scanner-matcher.html"><span class="token function">setOnScannerMatcher</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> onScannerMatcher</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1427064760%2FFunctions%2F76972122" anchor-label="setOnScannerSection" id="1427064760%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-scanner-section.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span>Scanner</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1427064760%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-scanner-section.html"><span class="token function">setOnScannerSection</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> onScannerSection</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2090764288%2FFunctions%2F76972122" anchor-label="setOnUse" id="2090764288%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-use.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span><span>Use</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2090764288%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-use.html"><span class="token function">setOnUse</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> onUse</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="233261293%2FFunctions%2F76972122" anchor-label="setOnUseMatcher" id="233261293%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-use-matcher.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span>Use</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="233261293%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-use-matcher.html"><span class="token function">setOnUseMatcher</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span> onUseMatcher</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-169181553%2FFunctions%2F76972122" anchor-label="setOnUseSection" id="-169181553%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-on-use-section.html"><span>set</span><wbr></wbr><span>On</span><wbr></wbr><span>Use</span><wbr></wbr><span><span>Section</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-169181553%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-on-use-section.html"><span class="token function">setOnUseSection</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> onUseSection</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1834964859%2FFunctions%2F76972122" anchor-label="setReadme" id="1834964859%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-readme.html"><span>set</span><wbr></wbr><span><span>Readme</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1834964859%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="set-readme.html"><span class="token function">setReadme</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a> readme</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1031593939%2FFunctions%2F76972122" anchor-label="setUpdate" id="-1031593939%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1031593939%2FFunctions%2F76972122"><span>set</span><wbr></wbr><span><span>Update</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1031593939%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="index.html#-1031593939%2FFunctions%2F76972122"><span class="token function">setUpdate</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> enable</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1797467236%2FFunctions%2F76972122" anchor-label="setUpdateNotify" id="1797467236%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1797467236%2FFunctions%2F76972122"><span>set</span><wbr></wbr><span>Update</span><wbr></wbr><span><span>Notify</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1797467236%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="index.html#1797467236%2FFunctions%2F76972122"><span class="token function">setUpdateNotify</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a> updateNotify</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1292657346%2FFunctions%2F76972122" anchor-label="setUpdateTime" id="-1292657346%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1292657346%2FFunctions%2F76972122"><span>set</span><wbr></wbr><span>Update</span><wbr></wbr><span><span>Time</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1292657346%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="index.html#-1292657346%2FFunctions%2F76972122"><span class="token function">setUpdateTime</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html">Long</a> updateTime</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="938507515%2FFunctions%2F76972122" anchor-label="setupMatcher" id="938507515%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="setup-matcher.html"><span>setup</span><wbr></wbr><span><span>Matcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="938507515%2FFunctions%2F76972122"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="setup-matcher.html"><span class="token function">setupMatcher</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a> keyName<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.configuration/MemorySection///PointingToDeclaration/">MemorySection</span> section<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html">Map</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../../top.iseason.bukkit.sakurabind.config/-item-setting/index.html">ItemSetting</a><span class="token operator">&gt;</span> matcherMap</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2025 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
