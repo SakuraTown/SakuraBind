@@ -198,13 +198,13 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 }
 
                 "MariaDB" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependency("org.mariadb.jdbc:mariadb-java-client:3.5.1")
+                    runtimeManager.downloadADependency("org.mariadb.jdbc:mariadb-java-client:3.5.5")
                     jdbcUrl = "jdbc:mariadb://$address/$database_name$params"
                     driverClassName = "org.mariadb.jdbc.Driver"
                 }
 
                 "SQLite" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependencyAssembly("org.xerial:sqlite-jdbc:3.49.0.0")
+                    runtimeManager.downloadADependencyAssembly("org.xerial:sqlite-jdbc:3.50.3.0")
                     jdbcUrl = "jdbc:sqlite:$address$params"
                     driverClassName = "org.sqlite.JDBC"
                 }
@@ -226,7 +226,7 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 }
 
                 "Oracle" -> HikariConfig(props).apply {
-                    val oracleVersion = "23.7.0.25.01"
+                    val oracleVersion = "23.9.0.25.07"
                     if (JavaVersion.isGreaterOrEqual(17)) {
                         runtimeManager.downloadADependency("com.oracle.database.jdbc:ojdbc17:$oracleVersion")
                     } else if (JavaVersion.isGreaterOrEqual(11)) {
@@ -240,9 +240,9 @@ object DatabaseConfig : SimpleYAMLConfig() {
 
                 "SQLServer" -> HikariConfig(props).apply {
                     if (JavaVersion.isGreaterOrEqual(11)) {
-                        runtimeManager.downloadADependency("com.microsoft.sqlserver:mssql-jdbc:12.8.1.jre11")
+                        runtimeManager.downloadADependency("com.microsoft.sqlserver:mssql-jdbc:12.10.1.jre11")
                     } else {
-                        runtimeManager.downloadADependency("com.microsoft.sqlserver:mssql-jdbc:12.8.1.jre8")
+                        runtimeManager.downloadADependency("com.microsoft.sqlserver:mssql-jdbc:12.10.1.jre8")
                     }
                     jdbcUrl = "jdbc:sqlserver://$address;DatabaseName=$database_name$params"
                     driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"

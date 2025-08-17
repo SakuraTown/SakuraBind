@@ -44,6 +44,7 @@ runtime-libraries:
     - org.glassfish.jaxb:jaxb-runtime:2.3.8,1
     - org.ehcache:ehcache:3.10.8,1
   assembly:
+    - org.jetbrains.kotlin:kotlin-stdlib-common
     - org.apache.logging.log4j:log4j-api
     - org.slf4j:slf4j-api
   excludes:
