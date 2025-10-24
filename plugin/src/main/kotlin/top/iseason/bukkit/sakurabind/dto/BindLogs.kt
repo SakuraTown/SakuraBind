@@ -6,9 +6,13 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 import top.iseason.bukkit.sakurabind.utils.BindType
+import top.iseason.bukkittemplate.config.DatabaseConfig
 
 object BindLogs : IntIdTable() {
-    var uuid = uuid("owner")
+
+    override val tableName: String get() = "${DatabaseConfig.table_prefix}${super.tableName}_v2"
+
+    var uuid = char("uuid", 36)
     var bindType = enumeration<BindType>("type")
     var setting = varchar("setting", 255)
     var time = datetime("time")

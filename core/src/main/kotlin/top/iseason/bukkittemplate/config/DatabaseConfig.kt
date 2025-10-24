@@ -34,8 +34,8 @@ object DatabaseConfig : SimpleYAMLConfig() {
 
     @Comment(
         "",
-        "数据库驱动类型: 支持 MySQL、MariaDB、H2、SQLite、Oracle、PostgreSQL、SQLServer",
-        "如果你的 MySQL 总是连不上请将驱动类型改为 MariaDB，它支持连接到mysql"
+        "数据库驱动类型: 支持 MySQL、MySQL5、MySQL8、MariaDB、H2、SQLite、Oracle、PostgreSQL、SQLServer",
+        "默认 MySQL = MySQL5，如果你的 MySQL 总是连不上请将驱动类型改为 MariaDB，它支持连接到mysql"
     )
     @Key
     var database_type = "H2"
@@ -71,6 +71,14 @@ object DatabaseConfig : SimpleYAMLConfig() {
     @Comment("", "数据库密码，如果有的话")
     @Key
     var password = "password"
+
+    @Comment(
+        "",
+        "数据表名前缀，如果与其他插件共用数据库可以修改表名前缀避免冲突, 重载生效",
+        "请注意，这意味着将创建新的数据表，旧的数据不会删除，但不会将数据转移到新的表中"
+    )
+    @Key
+    var table_prefix = ""
 
     @Key
     @Comment("", "连接池设置，不懂不要乱调, 配置解释: https://github.com/brettwooldridge/HikariCP")
@@ -190,15 +198,21 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 setProperty("leakDetectionThreshold", data_source__leakDetectionThreshold.toString())
             }
             val config = when (database_type) {
-                "MySQL" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependency("mysql:mysql-connector-java:8.0.33")
+                "MySQL",
+                "MySQL5" -> HikariConfig(props).apply {
+                    runtimeManager.downloadADependency("mysql:mysql-connector-java:5.1.49")
                     jdbcUrl = "jdbc:mysql://$address/$database_name$params"
-                    //可能兼容旧的mysql驱动
                     driverClassName = "com.mysql.jdbc.Driver"
                 }
 
+                "MySQL8" -> HikariConfig(props).apply {
+                    runtimeManager.downloadADependency("mysql:mysql-connector-java:8.0.30")
+                    jdbcUrl = "jdbc:mysql://$address/$database_name$params"
+                    driverClassName = "com.mysql.cj.jdbc.Driver"
+                }
+
                 "MariaDB" -> HikariConfig(props).apply {
-                    runtimeManager.downloadADependency("org.mariadb.jdbc:mariadb-java-client:3.5.5")
+                    runtimeManager.downloadADependency("org.mariadb.jdbc:mariadb-java-client:3.5.6")
                     jdbcUrl = "jdbc:mariadb://$address/$database_name$params"
                     driverClassName = "org.mariadb.jdbc.Driver"
                 }
@@ -300,7 +314,6 @@ object DatabaseConfig : SimpleYAMLConfig() {
         runCatching {
             dbTransaction {
                 SchemaUtils.create(*tables)
-//                SchemaUtils.createMissingTablesAndColumns(tables = tables, inBatch = false, withLogs = false)
             }
         }.getOrElse { it.printStackTrace() }
     }

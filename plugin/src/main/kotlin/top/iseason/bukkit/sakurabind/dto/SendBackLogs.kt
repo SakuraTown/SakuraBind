@@ -6,9 +6,12 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 import top.iseason.bukkit.sakurabind.utils.SendBackType
+import top.iseason.bukkittemplate.config.DatabaseConfig
 
 object SendBackLogs : IntIdTable() {
-    var uuid = uuid("owner")
+    override val tableName: String get() = "${DatabaseConfig.table_prefix}${super.tableName}_v2"
+
+    var uuid = char("uuid", 36)
     var type = enumeration<SendBackType>("type")
     var dest = varchar("dest", 255)
     var time = datetime("time")

@@ -113,6 +113,7 @@ object SendBackLogger : SimpleYAMLConfig() {
     fun log(owner: UUID, type: SendBackType, dest: String, items: Collection<ItemStack>) {
         if (!enable || filter.contains(type.name) || items.isEmpty()) return
         runAsync {
+            val ownerStr = owner.toString()
             val arrayList = if (database) ArrayList<String>(items.size) else null
             for (item in items) {
                 val name = item.getDisplayName() ?: ""
@@ -132,7 +133,7 @@ object SendBackLogger : SimpleYAMLConfig() {
             if (database) {
                 dbTransaction {
                     SendBackLogs.batchInsert(arrayList!!) { attach ->
-                        this[SendBackLogs.uuid] = owner
+                        this[SendBackLogs.uuid] = ownerStr
                         this[SendBackLogs.type] = type
                         this[SendBackLogs.dest] = dest
                         this[SendBackLogs.time] = LocalDateTime.now()

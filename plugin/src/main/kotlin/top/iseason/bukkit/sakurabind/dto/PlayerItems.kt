@@ -5,10 +5,13 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils
 
 
 object PlayerItems : IntIdTable() {
+    override val tableName: String get() = "${DatabaseConfig.table_prefix}${super.tableName}"
+
     var uuid = uuid("uuid").index()
     var item = blob("item")
 }

@@ -169,6 +169,7 @@ object BindLogger : SimpleYAMLConfig() {
 
     private fun log(owner: UUID, type: BindType, setting: BaseSetting, attach: String) {
         runAsync {
+            val ownerStr = owner.toString()
             var message: String? = null
             if (console) {
                 message = format.formatBy(owner, type.description, setting.keyPath, attach)
@@ -182,7 +183,7 @@ object BindLogger : SimpleYAMLConfig() {
             if (database) {
                 dbTransaction {
                     BindLog.new {
-                        this.uuid = owner
+                        this.uuid = ownerStr
                         this.bindType = type
                         this.setting = setting.keyPath
                         this.time = LocalDateTime.now()
