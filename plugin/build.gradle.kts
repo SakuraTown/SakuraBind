@@ -60,6 +60,7 @@ dependencies {
 
 // 插件名称，请在gradle.properties 修改
 val pluginName: String by rootProject
+val version: String by rootProject
 //包名，请在gradle.properties 修改
 val groupS = project.group as String
 // 作者，请在gradle.properties 修改
@@ -110,9 +111,6 @@ tasks {
         relocate("com.github.mgunlogson.cuckoofilter4j", "$groupS.libs.cuckoofilter")
 //        relocate("net.cinnom:nano-cuckoo", "$groupS.libs.nanocuckoo")
     }
-    build {
-        dependsOn("buildPlugin")
-    }
     processResources {
         filesMatching("plugin.yml") {
             // 删除注释,你可以返回null以删除整行，但是IDEA有bug会报错，故而返回了""
@@ -122,7 +120,7 @@ tasks {
             expand(
                 "main" to if (isObfuscated) obfuscatedMainClass else "$groupS.libs.core.BukkitTemplate",
                 "name" to pluginName,
-                "version" to project.version,
+                "version" to version,
                 "author" to author,
                 "kotlinVersion" to getProperties("kotlinVersion"),
                 "exposedVersion" to getProperties("exposedVersion"),
@@ -137,6 +135,9 @@ tasks {
             }
         }
     }
+}
+tasks.named("build") {
+    dependsOn("buildPlugin")
 }
 tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     group = "minecraft"
