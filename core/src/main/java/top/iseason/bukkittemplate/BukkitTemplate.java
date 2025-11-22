@@ -3,6 +3,7 @@ package top.iseason.bukkittemplate;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+import top.iseason.bukkittemplate.hook.BungeeCordHook;
 import top.iseason.bukkittemplate.runtime.RuntimeManager;
 
 import java.io.File;
@@ -139,6 +140,11 @@ public class BukkitTemplate extends JavaPlugin {
     public void onEnable() {
         try {
             bukkitPlugin.onEnable();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            BungeeCordHook.check();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -3,6 +3,7 @@ package top.iseason.bukkittemplate.hook
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerLoginEvent
 import org.bukkit.plugin.messaging.PluginMessageListener
@@ -12,7 +13,7 @@ import top.iseason.bukkittemplate.debug.debug
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
 
-object BungeeCordHook : Listener {
+object BungeeCordHook : Listener, PluginMessageListener {
 
     private const val BUNGEE_CORD_CHANNEL = "BungeeCord"
 
@@ -20,25 +21,28 @@ object BungeeCordHook : Listener {
     var bungeeCordEnabled = false
         private set
 
-    private val bcListener: PluginMessageListener =
-        PluginMessageListener { channel: String, _: Player?, _: ByteArray? ->
-            if (bungeeCordEnabled) return@PluginMessageListener
-            if (channel != BUNGEE_CORD_CHANNEL) {
-                return@PluginMessageListener
-            }
-            debug { "BungeeCord mode was enabled!" }
-            bungeeCordEnabled = true
-        }
-
-    init {
-        Bukkit.getScheduler().runTaskAsynchronously(BukkitTemplate.getPlugin(), Runnable {
-            Bukkit.getMessenger().registerOutgoingPluginChannel(BukkitTemplate.getPlugin(), "BungeeCord")
-            registerListener(bcListener)
-            val player = Bukkit.getOnlinePlayers().firstOrNull()
-            if (player != null) check(player)
-            Bukkit.getPluginManager().registerEvents(this, BukkitTemplate.getPlugin())
-        })
+    @JvmStatic
+    fun check() {
+        Bukkit.getMessenger().registerOutgoingPluginChannel(BukkitTemplate.getPlugin(), BUNGEE_CORD_CHANNEL)
+        registerListener(this)
+        val player = Bukkit.getOnlinePlayers().firstOrNull()
+        if (player != null) check(player)
+        Bukkit.getPluginManager().registerEvents(this, BukkitTemplate.getPlugin())
         DisableHook.addTask(this::onDisable)
+    }
+
+    override fun onPluginMessageReceived(
+        channel: String,
+        player: Player,
+        message: ByteArray?
+    ) {
+        if (bungeeCordEnabled) return
+        if (channel != BUNGEE_CORD_CHANNEL) {
+            return
+        }
+        debug { "BungeeCord mode was enabled!" }
+        bungeeCordEnabled = true
+        HandlerList.unregisterAll(this)
     }
 
     /**
@@ -83,6 +87,7 @@ object BungeeCordHook : Listener {
     }
 
     private fun broadcast(message: String, type: String) {
+        if (!bungeeCordEnabled) throw RuntimeException("BungeeCord mode was not enabled!")
         val stream = ByteArrayOutputStream()
         val out = DataOutputStream(stream)
         out.writeUTF(type)
