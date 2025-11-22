@@ -21,7 +21,6 @@ object BungeeCordHook : Listener, PluginMessageListener {
     var bungeeCordEnabled = false
         private set
 
-    @JvmStatic
     fun check() {
         Bukkit.getMessenger().registerOutgoingPluginChannel(BukkitTemplate.getPlugin(), BUNGEE_CORD_CHANNEL)
         registerListener(this)
