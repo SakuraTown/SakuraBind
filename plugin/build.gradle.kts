@@ -6,7 +6,8 @@ plugins {
 
 buildscript {
     dependencies {
-        classpath("com.guardsquare:proguard-gradle:7.7.0")
+        val proguardVersion: String by rootProject
+        classpath("com.guardsquare:proguard-gradle:$proguardVersion")
     }
 }
 repositories {
@@ -44,7 +45,7 @@ dependencies {
     dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.9.20")
 
 // 本地依赖放在libs文件夹内
-    implementation("org.bstats:bstats-bukkit:3.0.2")
+    implementation("org.bstats:bstats-bukkit:3.1.0")
     compileOnly(fileTree("libs") { include("*.jar") })
     compileOnly("org.ehcache:ehcache:3.10.8") { isTransitive = false }
     compileOnly("me.clip:placeholderapi:2.11.6") { isTransitive = false }
@@ -79,7 +80,7 @@ val obfuscatedMainClass =
 val isObfuscated = obfuscated == "true"
 val shrink: String by rootProject
 //val defaultFile = File("../build", "${rootProject.name}-${rootProject.version}.jar")
-val formatJarOutput = jarOutputFile.replace("\${root}", rootProject.projectDir.absolutePath)
+val formatJarOutput = jarOutputFile.replace($$"${root}", rootProject.projectDir.absolutePath)
 val output: File =
     if (isObfuscated)
         File(formatJarOutput, "${rootProject.name}-${rootProject.version}-obfuscated.jar").absoluteFile
