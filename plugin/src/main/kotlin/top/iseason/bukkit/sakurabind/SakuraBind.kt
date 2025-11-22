@@ -35,6 +35,7 @@ import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.debug.SimpleLogger
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.debug.warn
+import top.iseason.bukkittemplate.hook.BungeeCordHook
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.registerListener
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
@@ -99,6 +100,7 @@ object SakuraBind : BukkitPlugin {
      * 检查插件钩子
      */
     private fun checkHooks() {
+        BungeeCordHook.check()
         PlaceHolderHook.checkHooked()
         AuthMeHook.checkHooked()
         MMOItemsHook.checkHooked()
