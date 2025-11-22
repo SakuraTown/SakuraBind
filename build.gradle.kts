@@ -63,7 +63,7 @@ subprojects {
 
         // 数据库
         compileOnly("org.jetbrains.exposed:exposed-core:$exposedVersion")
-        compileOnly("org.jetbrains.exposed:exposed-dao:$exposedVersion")
+//        compileOnly("org.jetbrains.exposed:exposed-dao:$exposedVersion")
         compileOnly("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
         compileOnly("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
         compileOnly("com.zaxxer:HikariCP:4.0.3")

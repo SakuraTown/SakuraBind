@@ -3,9 +3,11 @@ package top.iseason.bukkit.sakurabind.command
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.PermissionDefault
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
+import org.jetbrains.exposed.sql.update
 import top.iseason.bukkit.sakurabind.config.Lang
-import top.iseason.bukkit.sakurabind.dto.PlayerItem
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkit.sakurabind.listener.SelectListener
 import top.iseason.bukkittemplate.command.CommandNode
@@ -13,6 +15,7 @@ import top.iseason.bukkittemplate.command.CommandNodeExecutor
 import top.iseason.bukkittemplate.command.ParmaException
 import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.dbTransaction
+import top.iseason.bukkittemplate.utils.bukkit.ItemUtils
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toByteArray
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
@@ -39,14 +42,16 @@ object GetLostCommand : CommandNode(
         var totalCount = 0
         dbTransaction {
             while (true) {
-                val items =
-                    PlayerItem.find { PlayerItems.uuid eq uniqueId }
-                        .limit(10)
-                        .offset((page * 10).toLong())
-                        .toList()
-                if (items.isEmpty()) break
-                for (item in items) {
-                    val itemStacks = item.getItemStacks()
+                val results = PlayerItems
+                    .select(PlayerItems.id, PlayerItems.item)
+                    .where { PlayerItems.uuid eq uniqueId }
+                    .limit(10)
+                    .offset((page * 10).toLong())
+                    .toList()
+
+                if (results.isEmpty()) break
+                for (result in results) {
+                    val itemStacks = ItemUtils.fromByteArrays(result[PlayerItems.item].bytes)
                     val release = mutableListOf<ItemStack>()
                     for (itemStack in itemStacks) {
                         val amount = itemStack.amount
@@ -65,9 +70,13 @@ object GetLostCommand : CommandNode(
                         }
                     }
                     if (release.isEmpty()) {
-                        item.delete()
+                        PlayerItems.deleteWhere { PlayerItems.id eq result[PlayerItems.id] }
                     } else {
-                        item.item = ExposedBlob(release.toByteArray())
+                        PlayerItems
+                            .update({ PlayerItems.id eq result[PlayerItems.id] })
+                            {
+                                it[PlayerItems.item] = ExposedBlob(release.toByteArray())
+                            }
                         break
                     }
                 }

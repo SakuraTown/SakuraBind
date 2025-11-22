@@ -3,9 +3,10 @@ package top.iseason.bukkit.sakurabind.task
 import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import top.iseason.bukkit.sakurabind.config.Lang
-import top.iseason.bukkit.sakurabind.dto.PlayerItem
+import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.dbTransaction
@@ -84,9 +85,9 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
 
         fun sendToDataBase(uid: UUID, items: List<ItemStack>) {
             dbTransaction {
-                PlayerItem.new {
-                    this.uuid = uid
-                    this.item = ExposedBlob(items.toByteArray())
+                PlayerItems.insert {
+                    it[PlayerItems.uuid] = uid
+                    it[PlayerItems.item] = ExposedBlob(items.toByteArray())
                 }
             }
         }

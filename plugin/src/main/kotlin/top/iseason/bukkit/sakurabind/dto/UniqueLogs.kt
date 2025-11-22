@@ -1,8 +1,5 @@
 package top.iseason.bukkit.sakurabind.dto
 
-import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.dao.IntEntityClass
-import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 import top.iseason.bukkittemplate.config.DatabaseConfig
@@ -19,15 +16,4 @@ object UniqueLogs : IntIdTable() {
     init {
         index(false, uuid, unique)
     }
-}
-
-class UniqueLog(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<UniqueLog>(UniqueLogs)
-
-    var uuid by UniqueLogs.uuid
-    var unique by UniqueLogs.unique
-    var type by UniqueLogs.type
-    var log by UniqueLogs.log
-    var time by UniqueLogs.time
-
 }

@@ -8,9 +8,10 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitTask
+import org.jetbrains.exposed.sql.insert
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.BindLogger.Formatter
-import top.iseason.bukkit.sakurabind.dto.UniqueLog
+import top.iseason.bukkit.sakurabind.dto.UniqueLogs
 import top.iseason.bukkit.sakurabind.module.UniqueItem
 import top.iseason.bukkit.sakurabind.module.UniqueItem.getUniqueKey
 import top.iseason.bukkittemplate.BukkitTemplate
@@ -247,12 +248,11 @@ object UniqueItemConfig : SimpleYAMLConfig() {
             }
             if (logger__database) {
                 dbTransaction {
-                    UniqueLog.new {
-                        this.uuid = owner
-                        this.unique = unique
-                        this.log = noColor
-                        this.type = type
-                        this.time = LocalDateTime.now()
+                    UniqueLogs.insert {
+                        it[UniqueLogs.uuid] = owner
+                        it[UniqueLogs.unique] = unique
+                        it[UniqueLogs.log] = noColor
+                        it[UniqueLogs.time] = LocalDateTime.now()
                     }
                 }
             }

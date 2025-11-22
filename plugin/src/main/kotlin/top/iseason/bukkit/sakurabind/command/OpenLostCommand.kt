@@ -6,17 +6,18 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.PermissionDefault
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.Lang
-import top.iseason.bukkit.sakurabind.dto.PlayerItem
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkittemplate.command.*
 import top.iseason.bukkittemplate.config.DatabaseConfig
 import top.iseason.bukkittemplate.config.dbTransaction
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.IOUtils.onItemInput
+import top.iseason.bukkittemplate.utils.bukkit.ItemUtils
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toByteArray
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
@@ -40,7 +41,9 @@ object OpenLostCommand : CommandNode(
         val page = params.nextOrNull<Int>() ?: 1
         val silent = params.hasParma("-silent")
         if (!DatabaseConfig.isConnected) throw ParmaException("数据库异常")
-        val items = dbTransaction { PlayerItem.find { PlayerItems.uuid eq uuid }.toList() }
+        val items = dbTransaction {
+            PlayerItems.select(PlayerItems.item).where { PlayerItems.uuid eq uuid }.toList()
+        }
         if (!Config.command_openLost_open_empty && items.isEmpty()) throw ParmaException(Lang.command__openLost_empty)
         val senderPlayer = sender as Player
         val tempChestTitle = PlaceHolderHook.setPlaceHolder(Config.temp_chest_title.formatBy(name), player)
@@ -48,7 +51,7 @@ object OpenLostCommand : CommandNode(
         var temp: Array<ItemStack>
         var index: Int
         for (item in items) {
-            temp = item.getItemStacks().toTypedArray()
+            temp = ItemUtils.fromByteArrays(item[PlayerItems.item].bytes).toTypedArray()
             index = 0
             while (temp.isNotEmpty()) {
                 var inventory = inventories.getOrNull(index)
@@ -68,13 +71,15 @@ object OpenLostCommand : CommandNode(
         senderPlayer.onItemInput(inv, true) {
             dbTransaction {
                 PlayerItems.deleteWhere { this.uuid eq uuid }
-                for (inventory in inventories) {
-                    val itemStacks = inventory.filter { !it.checkAir() }
-                    if (itemStacks.isEmpty()) continue
-                    PlayerItem.new {
-                        this.uuid = uuid
-                        this.item = ExposedBlob(itemStacks.toByteArray())
-                    }
+                val itemStacks = inventories.mapNotNull { inv ->
+                    val filter = inv.filter { !it.checkAir() }
+                    if (filter.isEmpty()) return@mapNotNull null
+                    filter
+                }
+                if (itemStacks.isEmpty()) return@dbTransaction
+                PlayerItems.batchInsert(itemStacks, shouldReturnGeneratedValues = false) { items ->
+                    this[PlayerItems.uuid] = uuid
+                    this[PlayerItems.item] = ExposedBlob(items.toByteArray())
                 }
             }
             if (!silent)

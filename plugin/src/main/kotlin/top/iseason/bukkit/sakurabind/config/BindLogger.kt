@@ -6,7 +6,8 @@ import org.bukkit.block.Block
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Entity
 import org.bukkit.inventory.ItemStack
-import top.iseason.bukkit.sakurabind.dto.BindLog
+import org.jetbrains.exposed.sql.insert
+import top.iseason.bukkit.sakurabind.dto.BindLogs
 import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.DisableHook
@@ -182,12 +183,12 @@ object BindLogger : SimpleYAMLConfig() {
             }
             if (database) {
                 dbTransaction {
-                    BindLog.new {
-                        this.uuid = ownerStr
-                        this.bindType = type
-                        this.setting = setting.keyPath
-                        this.time = LocalDateTime.now()
-                        this.attach = attach
+                    BindLogs.insert {
+                        it[BindLogs.uuid] = ownerStr
+                        it[BindLogs.bindType] = type
+                        it[BindLogs.setting] = setting.keyPath
+                        it[BindLogs.time] = LocalDateTime.now()
+                        it[BindLogs.attach] = attach
                     }
                 }
             }
