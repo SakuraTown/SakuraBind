@@ -19,9 +19,9 @@ import top.iseason.bukkit.sakurabind.SakuraBindAPI.filterItem
 import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.module.UniqueItemConfig
 import top.iseason.bukkit.sakurabind.event.BlockBindFromItemEvent
-import top.iseason.bukkit.sakurabind.event.ItemBindEvent
 import top.iseason.bukkit.sakurabind.event.ItemBindFromBlockEvent
-import top.iseason.bukkit.sakurabind.event.ItemUnBIndEvent
+import top.iseason.bukkit.sakurabind.event.ItemBoundEvent
+import top.iseason.bukkit.sakurabind.event.ItemUnBoundEvent
 import top.iseason.bukkit.sakurabind.listener.SelectListener
 import top.iseason.bukkit.sakurabind.task.DropItemList
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
@@ -35,8 +35,8 @@ import kotlin.math.min
  */
 object UniqueItem : org.bukkit.event.Listener {
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    fun onItemBindEvent(event: ItemBindEvent) {
+    @EventHandler
+    fun onItemBoundEvent(event: ItemBoundEvent) {
         val maxNum = event.setting.getInt("module.unique-item")
         if (maxNum < 0) return
         val item = event.item
@@ -69,7 +69,7 @@ object UniqueItem : org.bukkit.event.Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun onItemUnBIndEvent(event: ItemUnBIndEvent) {
+    fun onItemUnBIndEvent(event: ItemUnBoundEvent) {
         NBT.modify(event.item) {
             it.removeKey(UniqueItemConfig.unique_nbt_path)
         }

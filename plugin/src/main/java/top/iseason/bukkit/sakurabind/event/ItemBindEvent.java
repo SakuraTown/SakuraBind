@@ -7,6 +7,9 @@ import top.iseason.bukkit.sakurabind.utils.BindType;
 
 import java.util.UUID;
 
+/**
+ * 物品绑定事件，可以取消
+ */
 public class ItemBindEvent extends BindEvent {
     private static final HandlerList handlers = new HandlerList();
     /**

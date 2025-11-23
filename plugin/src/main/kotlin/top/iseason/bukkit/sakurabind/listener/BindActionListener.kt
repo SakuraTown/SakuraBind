@@ -2,17 +2,16 @@ package top.iseason.bukkit.sakurabind.listener
 
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
-import top.iseason.bukkit.sakurabind.event.BlockBindEvent
-import top.iseason.bukkit.sakurabind.event.ItemBindEvent
+import top.iseason.bukkit.sakurabind.event.BlockBoundEvent
+import top.iseason.bukkit.sakurabind.event.ItemBoundEvent
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.getDisplayName
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessages
 
 object BindActionListener : org.bukkit.event.Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun onItemBindEvent(event: ItemBindEvent) {
+    @EventHandler
+    fun onItemBoundEvent(event: ItemBoundEvent) {
         val setting = event.setting
         val stringList = setting.getStringList("on-bind.item-msg")
         if (stringList.isEmpty()) return
@@ -25,8 +24,8 @@ object BindActionListener : org.bukkit.event.Listener {
         (Bukkit.getPlayer(event.owner) ?: Bukkit.getConsoleSender()).sendColorMessages(map)
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun onBlockBindEvent(event: BlockBindEvent) {
+    @EventHandler
+    fun onBlockBoundEvent(event: BlockBoundEvent) {
         val setting = event.setting
         val stringList = setting.getStringList("on-bind.block-msg")
         if (stringList.isEmpty()) return

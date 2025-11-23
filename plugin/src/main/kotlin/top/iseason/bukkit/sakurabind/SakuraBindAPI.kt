@@ -93,6 +93,7 @@ object SakuraBindAPI {
      * @param showLore 是否显示lore
      * @param type 绑定的类型
      * @param setting 绑定的设置
+     * @param silent 是否不触发相关事件
      */
     @JvmStatic
     @JvmOverloads
@@ -104,28 +105,41 @@ object SakuraBindAPI {
         setting: BaseSetting? = null,
         silent: Boolean = false
     ) {
-        val realSet = setting ?: ItemSettings.getSetting(item)
-        val itemBindEvent = ItemBindEvent(item, realSet, uuid, type)
-        if (!silent) Bukkit.getPluginManager().callEvent(itemBindEvent)
-        if (itemBindEvent.isCancelled) return
-        val eventItem = itemBindEvent.item
-        if (item.type != eventItem.type) {
-            item.type = eventItem.type
+        var eventSetting = setting ?: ItemSettings.getSetting(item)
+        var eventItem = item
+        var owner = uuid
+        var bindType = type
+        if (!silent) {
+            val itemBindEvent = ItemBindEvent(item, eventSetting, owner, bindType)
+            Bukkit.getPluginManager().callEvent(itemBindEvent)
+            if (itemBindEvent.isCancelled) return
+            eventItem = itemBindEvent.item
+            eventSetting = itemBindEvent.setting
+            owner = itemBindEvent.owner
+            bindType = itemBindEvent.bindType
+            if (item.type != eventItem.type) {
+                item.type = eventItem.type
+            }
         }
         if (eventItem.checkAir()) return
-        val eventSetting = itemBindEvent.setting
+
         NBT.modify(eventItem) {
-            it.setString(Config.nbt_path_uuid, itemBindEvent.owner.toString())
-            if (eventSetting != null)
-                it.setString(ItemSettings.nbt_cache_path, eventSetting.keyPath)
+            it.setString(Config.nbt_path_uuid, owner.toString())
+            it.setString(ItemSettings.nbt_cache_path, eventSetting.keyPath)
         }
         if (showLore) updateLore(eventItem, eventSetting)
+
         BindLogger.log(
-            itemBindEvent.owner,
-            itemBindEvent.bindType,
+            owner,
+            bindType,
             eventSetting,
             item
         )
+        if (!silent) {
+            val itemBoundEvent = ItemBoundEvent(eventItem, eventSetting, owner, bindType)
+            Bukkit.getPluginManager().callEvent(itemBoundEvent)
+        }
+
     }
 
     /**
@@ -134,24 +148,37 @@ object SakuraBindAPI {
      */
     @JvmStatic
     @JvmOverloads
-    fun unBind(item: ItemStack, type: BindType = BindType.API_UNBIND_ITEM, silent: Boolean = false) {
+    fun unBind(
+        item: ItemStack,
+        type: BindType = BindType.API_UNBIND_ITEM,
+        silent: Boolean = false
+    ) {
         val owner = getOwner(item) ?: return
-        val itemUnBIndEvent = ItemUnBIndEvent(item, owner, ItemSettings.getSetting(item), type)
-        if (!silent) Bukkit.getPluginManager().callEvent(itemUnBIndEvent)
-        if (itemUnBIndEvent.isCancelled) return
-        val eventItem = itemUnBIndEvent.item
-        NBT.modify(eventItem) {
+        var eventSetting = ItemSettings.getSetting(item)
+        var eventType = type
+        if (!silent) {
+            val itemUnBIndEvent = ItemUnBindEvent(item, eventSetting, owner, eventType)
+            Bukkit.getPluginManager().callEvent(itemUnBIndEvent)
+            if (itemUnBIndEvent.isCancelled) return
+            eventSetting = itemUnBIndEvent.setting
+            eventType = itemUnBIndEvent.bindType
+        }
+
+        NBT.modify(item) {
             it.removeKey(Config.nbt_path_uuid)
             it.removeKey(ItemSettings.nbt_cache_path)
         }
-        val setting = itemUnBIndEvent.setting
-        updateLore(eventItem, setting)
+
+        updateLore(item, eventSetting)
         BindLogger.log(
-            itemUnBIndEvent.owner,
-            itemUnBIndEvent.bindType,
-            setting,
-            eventItem
+            owner,
+            eventType,
+            eventSetting,
+            item
         )
+        if (!silent) {
+            ItemUnBoundEvent(item, eventSetting, owner, eventType)
+        }
     }
 
     /**
@@ -188,23 +215,38 @@ object SakuraBindAPI {
         silent: Boolean = false
     ) {
         if (!isBlockEnable()) return
-        val blockBindEvent = BlockBindEvent(block, setting, uuid, type)
-        blockBindEvent.extraData = extraData
-        if (!silent) Bukkit.getPluginManager().callEvent(blockBindEvent)
-        if (blockBindEvent.isCancelled) return
+        var eventSetting = setting
+        var eventBlock = block
+        var owner = uuid
+        var bindType = type
+        var eventExtraData = extraData
+        if (!silent) {
+            val blockBindEvent = BlockBindEvent(eventBlock, eventSetting, owner, bindType)
+            blockBindEvent.extraData = eventExtraData
+            Bukkit.getPluginManager().callEvent(blockBindEvent)
+            if (blockBindEvent.isCancelled) return
+            eventBlock = blockBindEvent.block
+            eventSetting = blockBindEvent.setting
+            owner = blockBindEvent.owner
+            bindType = blockBindEvent.bindType
+            eventExtraData = blockBindEvent.extraData
+        }
         BlockCache.addBlock(
-            block,
-            blockBindEvent.owner,
-            blockBindEvent.setting.keyPath,
-            blockBindEvent.extraData
+            eventBlock,
+            owner,
+            eventSetting.keyPath,
+            eventExtraData
         )
         BindLogger.log(
-            blockBindEvent.owner,
-            blockBindEvent.bindType,
-            blockBindEvent.setting,
-            block
+            owner,
+            bindType,
+            eventSetting,
+            eventBlock
         )
-
+        if (!silent) {
+            val blockBoundEvent = BlockBoundEvent(eventBlock, eventSetting, owner, bindType, eventExtraData)
+            Bukkit.getPluginManager().callEvent(blockBoundEvent)
+        }
     }
 
     /**

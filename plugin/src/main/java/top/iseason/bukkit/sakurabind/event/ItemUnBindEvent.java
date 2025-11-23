@@ -7,11 +7,14 @@ import top.iseason.bukkit.sakurabind.utils.BindType;
 
 import java.util.UUID;
 
-public class ItemUnBIndEvent extends UnBindEvent {
+/**
+ * 物品解绑事件，可以取消
+ */
+public class ItemUnBindEvent extends UnBindEvent {
     private static final HandlerList handlers = new HandlerList();
     private final ItemStack item;
 
-    public ItemUnBIndEvent(ItemStack item, UUID uuid, BaseSetting setting, BindType bindType) {
+    public ItemUnBindEvent(ItemStack item, BaseSetting setting, UUID uuid, BindType bindType) {
         super(setting, uuid, bindType);
         this.item = item;
     }
