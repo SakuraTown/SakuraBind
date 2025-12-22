@@ -186,29 +186,37 @@ object ItemListener : Listener {
         }
         //处理召回
         if (CallbackCommand.isCallback(owner)) {
-            EntityRemoveQueue.syncRemove(itemDrop)
-            SakuraBindAPI.sendBackItem(owner, listOf(item), type = SendBackType.COMMON_CALLBACK)
-            MessageTool.messageCoolDown(player, Lang.command__callback)
+            submit {
+                if (event.isCancelled || itemDrop.isDead || !itemDrop.isValid) return@submit
+                val itemStack = itemDrop.itemStack
+                EntityRemoveQueue.syncRemove(itemDrop)
+                SakuraBindAPI.sendBackItem(owner, listOf(itemStack), type = SendBackType.COMMON_CALLBACK)
+                MessageTool.messageCoolDown(player, Lang.command__callback)
+            }
             return
         }
         if (ItemSettings.getSetting(item).getBoolean("item-deny.drop", owner.toString(), player)) {
-            EntityRemoveQueue.syncRemove(itemDrop)
-            val openInventory = event.player.openInventory
-            val cursor = openInventory.cursor
-            val release = event.player.inventory.addItem(item)
-            if (cursor != null && cursor != item && !cursor.checkAir()) {
-                val releaseCursor = event.player.inventory.addItem(cursor)
-                release.putAll(releaseCursor)
-                openInventory.cursor = null
+            submit {
+                if (event.isCancelled || itemDrop.isDead || !itemDrop.isValid) return@submit
+                val itemStack = itemDrop.itemStack
+                EntityRemoveQueue.syncRemove(itemDrop)
+                val openInventory = event.player.openInventory
+                val cursor = openInventory.cursor
+                val release = event.player.inventory.addItem(itemStack)
+                if (cursor != null && cursor != itemStack && !cursor.checkAir()) {
+                    val releaseCursor = event.player.inventory.addItem(cursor)
+                    release.putAll(releaseCursor)
+                    openInventory.cursor = null
+                }
+                if (release.isNotEmpty()) {
+                    SakuraBindAPI.sendBackItem(
+                        SakuraBindAPI.getOwner(itemStack)!!,
+                        release.values.toList(),
+                        type = SendBackType.PLAYER_DROP
+                    )
+                }
+                MessageTool.denyMessageCoolDown(event.player, Lang.item__deny_drop, ItemSettings.getSetting(item), item)
             }
-            if (release.isNotEmpty()) {
-                SakuraBindAPI.sendBackItem(
-                    SakuraBindAPI.getOwner(item)!!,
-                    release.values.toList(),
-                    type = SendBackType.PLAYER_DROP
-                )
-            }
-            MessageTool.denyMessageCoolDown(event.player, Lang.item__deny_drop, ItemSettings.getSetting(item), item)
         }
     }
 
