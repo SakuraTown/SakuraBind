@@ -167,48 +167,61 @@ object ItemListener : Listener {
     /**
      * 不能丢
      */
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerDropItemEvent(event: PlayerDropItemEvent) {
         val player = event.player
-        if (!player.isDead && Config.checkByPass(player)) return
         val itemDrop = event.itemDrop
         val item = itemDrop.itemStack
-        val owner = SakuraBindAPI.getOwner(item) ?: return
-        // 有些端是真死亡-->掉落 无语
-        if (player.isDead) {
-            if (ItemSettings.getSetting(item)
-                    .getBoolean("item-deny.drop-on-death", owner.toString(), player)
-            ) {
-                EntityRemoveQueue.syncRemove(itemDrop)
+        var owner = SakuraBindAPI.getOwner(item)
+        if (!event.isCancelled) run {
+            if (owner == null) return@run
+            if (!player.isDead && Config.checkByPass(player)) return@run
+            val setting by lazy { ItemSettings.getSetting(item) }
+            // 有些端是真死亡-->掉落 无语
+            if (player.isDead) {
+                if (setting.getBoolean("item-deny.drop-on-death", owner.toString(), player)
+                ) {
+                    EntityRemoveQueue.syncRemove(itemDrop)
+                }
+                return@run
             }
-            return
-        }
-        //处理召回
-        if (CallbackCommand.isCallback(owner)) {
-            EntityRemoveQueue.syncRemove(itemDrop)
-            SakuraBindAPI.sendBackItem(owner, listOf(item), type = SendBackType.COMMON_CALLBACK)
-            MessageTool.messageCoolDown(player, Lang.command__callback)
-            return
-        }
-        if (ItemSettings.getSetting(item).getBoolean("item-deny.drop", owner.toString(), player)) {
-            EntityRemoveQueue.syncRemove(itemDrop)
-            val openInventory = event.player.openInventory
-            val cursor = openInventory.cursor
-            val release = event.player.inventory.addItem(item)
-            if (cursor != null && cursor != item && !cursor.checkAir()) {
-                val releaseCursor = event.player.inventory.addItem(cursor)
-                release.putAll(releaseCursor)
-                openInventory.cursor = null
+            //处理召回
+            if (CallbackCommand.isCallback(owner)) {
+                event.isCancelled = true
+                MessageTool.messageCoolDown(player, Lang.command__callback)
+                return@run
             }
-            if (release.isNotEmpty()) {
+
+            if (setting.getBoolean("item-deny.drop", owner.toString(), player)) {
+                event.isCancelled = true
+                MessageTool.denyMessageCoolDown(player, Lang.item__deny_drop, setting, item)
+            }
+        }
+        if (!event.isCancelled) return
+        // 接管核心原有的禁止丢弃逻辑，修复背包满时丢弃物品卡消失的bug
+        val config = Config.replace_cancel_drop_event
+        if (config == "none") return
+        if (config != "all" && !(config == "bind-item" && owner != null)) return
+        val inventory = player.inventory
+        val heldItemSlot = inventory.heldItemSlot
+        val heldItem = inventory.getItem(heldItemSlot)
+        if (heldItem.checkAir()) {
+            inventory.setItem(heldItemSlot, item)
+        } else if (item.isSimilar(heldItem) && heldItem!!.amount + item.amount <= heldItem.maxStackSize) {
+            heldItem.amount += item.amount
+            inventory.setItem(heldItemSlot, heldItem)
+        } else {
+            val addItem = player.inventory.addItem(item)
+            if (owner == null) owner = event.player.uniqueId
+            if (addItem.isNotEmpty()) {
                 SakuraBindAPI.sendBackItem(
-                    SakuraBindAPI.getOwner(item)!!,
-                    release.values.toList(),
+                    owner,
+                    addItem.values.toList(),
                     type = SendBackType.PLAYER_DROP
                 )
             }
-            MessageTool.denyMessageCoolDown(event.player, Lang.item__deny_drop, ItemSettings.getSetting(item), item)
         }
+        itemDrop.itemStack = item.apply { amount = 0 }
     }
 
 

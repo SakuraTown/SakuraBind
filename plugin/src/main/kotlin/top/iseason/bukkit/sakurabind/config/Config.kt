@@ -168,6 +168,16 @@ object Config : SimpleYAMLConfig() {
     @Comment("", "物品读取设置的缓存时间(毫秒),建议值大于 扫描器时间")
     var setting_cache_time = 3500L
 
+    @Key
+    @Comment(
+        "",
+        "大部分服务端核心在取消物品丢弃事件时没有对背包已满进行容错，会导致物品没有返回的空间而丢失",
+        "本插件提供在这种情况将物品找回的功能（按照send-back-queue的顺序）",
+        "有以下几种模式:",
+        "none：关闭功能  bind-item：仅绑定物品  all：全部物品(有些插件取消事件的优先级较高可能会失效)"
+    )
+    var replace_cancel_drop_event = "bind-item"
+
     override fun onLoaded(section: ConfigurationSection) {
         setupScanner()
         BasePicker.configPickers.clear()
