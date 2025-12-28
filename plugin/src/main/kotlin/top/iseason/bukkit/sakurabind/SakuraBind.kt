@@ -3,7 +3,6 @@ package top.iseason.bukkit.sakurabind
 
 import de.tr7zw.nbtapi.utils.MinecraftVersion
 import org.bstats.bukkit.Metrics
-import org.bukkit.event.block.BlockPhysicsEvent
 import top.iseason.bukkit.sakurabind.cache.BlockCache
 import top.iseason.bukkit.sakurabind.cache.CacheManager
 import top.iseason.bukkit.sakurabind.cache.EntityCache
@@ -159,11 +158,6 @@ object SakuraBind : BukkitPlugin {
         }
         if (Config.block_listener) {
             BlockListener.registerListener()
-            try {
-                BlockPhysicsEvent::class.java.getMethod("getSourceBlock")
-                BlockListener1132.registerListener()
-            } catch (_: Exception) {
-            }
             info("&a已启用方块监听器!")
         }
         if (Config.entity_listener) {
