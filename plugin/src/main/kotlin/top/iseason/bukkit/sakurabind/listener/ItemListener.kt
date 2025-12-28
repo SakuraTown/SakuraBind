@@ -164,6 +164,28 @@ object ItemListener : Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    fun denyDropInventoryClickEvent(event: InventoryClickEvent) {
+        val item = when (event.action) {
+            InventoryAction.DROP_ALL_SLOT,
+            InventoryAction.DROP_ONE_SLOT -> event.currentItem
+
+            InventoryAction.DROP_ALL_CURSOR,
+            InventoryAction.DROP_ONE_CURSOR -> event.cursor
+
+            else -> null
+        } ?: return
+        if (item.checkAir()) return
+        val player = event.whoClicked
+        if (Config.checkByPass(player)) return
+        val owner = SakuraBindAPI.getOwner(item) ?: return
+        val setting = ItemSettings.getSetting(item)
+        if (setting.getBoolean("item-deny.drop", owner.toString(), player)) {
+            event.isCancelled = true
+            MessageTool.denyMessageCoolDown(player, Lang.item__deny_drop, setting, item)
+        }
+    }
+
     /**
      * 不能丢
      */
@@ -211,7 +233,7 @@ object ItemListener : Listener {
             heldItem.amount += item.amount
             inventory.setItem(heldItemSlot, heldItem)
         } else {
-            val addItem = player.inventory.addItem(item)
+            val addItem = inventory.addItem(item)
             if (owner == null) owner = event.player.uniqueId
             if (addItem.isNotEmpty()) {
                 SakuraBindAPI.sendBackItem(
