@@ -17,6 +17,8 @@ import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.toByteArray
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.other.EasyCoolDown
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 object GetLostCommand : CommandNode(
     name = "getLost",
@@ -25,6 +27,8 @@ object GetLostCommand : CommandNode(
     async = true,
     isPlayerOnly = true
 ) {
+    val syncing: MutableSet<UUID> = ConcurrentHashMap.newKeySet()
+
     override var onExecute: CommandNodeExecutor? = CommandNodeExecutor { params, sender ->
         val player = sender as Player
         var page = 0
@@ -36,44 +40,53 @@ object GetLostCommand : CommandNode(
         if (!DatabaseConfig.isConnected) throw ParmaException("数据库异常")
         val uniqueId = player.uniqueId
         if (SelectListener.noScanning.contains(uniqueId)) throw ParmaException("数据同步中，请稍后")
+        if (syncing.contains(uniqueId)) throw ParmaException("请等待上一个操作完成")
+
         var totalCount = 0
-        dbTransaction {
-            while (true) {
-                val items =
-                    PlayerItem.find { PlayerItems.uuid eq uniqueId }
-                        .limit(10)
-                        .offset((page * 10).toLong())
-                        .toList()
-                if (items.isEmpty()) break
-                for (item in items) {
-                    val itemStacks = item.getItemStacks()
-                    val release = mutableListOf<ItemStack>()
-                    for (itemStack in itemStacks) {
-                        val amount = itemStack.amount
-                        val addItem = player.inventory.addItem(itemStack)
-//                                println("size = ${addItem.size}")
-                        //放不下了
-                        if (addItem.isNotEmpty()) {
-                            val first = addItem.values.first()
-                            release.add(first)
-                            isEmpty = false
-//                                    println("not empty ${amount} - ${first.amount}")
-                            totalCount += (amount - first.amount)
+        try {
+            dbTransaction {
+                syncing.add(uniqueId)
+                while (true) {
+                    val items =
+                        PlayerItem.find { PlayerItems.uuid eq uniqueId }
+                            .limit(10)
+                            .offset((page * 10).toLong())
+                            .toList()
+                    if (items.isEmpty()) break
+                    for (item in items) {
+                        val itemStacks = item.getItemStacks()
+                        val release = mutableListOf<ItemStack>()
+                        for (itemStack in itemStacks) {
+                            val amount = itemStack.amount
+                            val addItem = player.inventory.addItem(itemStack)
+                            //                                println("size = ${addItem.size}")
+                            //放不下了
+                            if (addItem.isNotEmpty()) {
+                                val first = addItem.values.first()
+                                release.add(first)
+                                isEmpty = false
+                                //                                    println("not empty ${amount} - ${first.amount}")
+                                totalCount += (amount - first.amount)
+                            } else {
+                                //                                    println("empty ${amount}")
+                                totalCount += amount
+                            }
+                        }
+                        if (release.isEmpty()) {
+                            item.delete()
                         } else {
-//                                    println("empty ${amount}")
-                            totalCount += amount
+                            item.item = ExposedBlob(release.toByteArray())
+                            break
                         }
                     }
-                    if (release.isEmpty()) {
-                        item.delete()
-                    } else {
-                        item.item = ExposedBlob(release.toByteArray())
-                        break
-                    }
+                    page++
                 }
-                page++
             }
+        } catch (e: Exception) {
+            syncing.remove(uniqueId)
+            e.printStackTrace()
         }
+        syncing.remove(uniqueId)
         if (params.hasParma("-silent")) return@CommandNodeExecutor
 //                println(totalCount)
         if (totalCount == 0 && !isEmpty) {
