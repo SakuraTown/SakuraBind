@@ -396,7 +396,10 @@ object ItemListener : Listener {
         val itemStack = item.itemStack
         val filterItem = SakuraBindAPI.filterItem(itemStack) { it.getBoolean("item.send-when-lost", null, null) }
         if (filterItem.isEmpty()) return
-        if (itemStack.type == Material.AIR) item.remove()
+        if (itemStack.type == Material.AIR) {
+            item.remove()
+            event.isCancelled = true
+        }
         for ((uuid, bindItems) in filterItem) {
             SakuraBindAPI.sendBackItem(uuid, bindItems, type = SendBackType.ITEM_DAMAGE)
         }
