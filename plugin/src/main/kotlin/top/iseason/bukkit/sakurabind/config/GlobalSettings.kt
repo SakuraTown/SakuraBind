@@ -200,8 +200,12 @@ object GlobalSettings : SimpleYAMLConfig() {
     var block_deny__piston = false
 
     @Key
-    @Comment("", "禁止流水/岩浆破坏, 被岩浆破坏的物品将不会有掉落物,故而设置为false时将会把物品直接送回物主")
+    @Comment("", "禁止流水/岩浆破坏")
     var block_deny__flow = false
+
+    @Key
+    @Comment("", "将流水/岩浆破坏的方块直接送回物主不掉落")
+    var block_deny__flow_send_back = false
 
     @Key
     @Comment("", "禁止绑定的方块转化为实体，比如重力方块变成下落方块，tnt被点燃")

@@ -165,59 +165,86 @@ object ItemListener : Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    fun denyDropInventoryClickEvent(event: InventoryClickEvent) {
+        val item = when (event.action) {
+            InventoryAction.DROP_ALL_SLOT,
+            InventoryAction.DROP_ONE_SLOT -> event.currentItem
+
+            InventoryAction.DROP_ALL_CURSOR,
+            InventoryAction.DROP_ONE_CURSOR -> event.cursor
+
+            else -> null
+        } ?: return
+        if (item.checkAir()) return
+        val player = event.whoClicked
+        if (Config.checkByPass(player)) return
+        val owner = SakuraBindAPI.getOwner(item) ?: return
+        val setting = ItemSettings.getSetting(item)
+        if (setting.getBoolean("item-deny.drop", owner.toString(), player)) {
+            event.isCancelled = true
+            MessageTool.denyMessageCoolDown(player, Lang.item__deny_drop, setting, item)
+        }
+    }
+
     /**
      * 不能丢
      */
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerDropItemEvent(event: PlayerDropItemEvent) {
         val player = event.player
-        if (!player.isDead && Config.checkByPass(player)) return
         val itemDrop = event.itemDrop
         val item = itemDrop.itemStack
-        val owner = SakuraBindAPI.getOwner(item) ?: return
-        // 有些端是真死亡-->掉落 无语
-        if (player.isDead) {
-            if (ItemSettings.getSetting(item)
-                    .getBoolean("item-deny.drop-on-death", owner.toString(), player)
-            ) {
-                EntityRemoveQueue.syncRemove(itemDrop)
+        var owner = SakuraBindAPI.getOwner(item)
+        if (!event.isCancelled) run {
+            if (owner == null) return@run
+            if (!player.isDead && Config.checkByPass(player)) return@run
+            val setting by lazy { ItemSettings.getSetting(item) }
+            // 有些端是真死亡-->掉落 无语
+            if (player.isDead) {
+                if (setting.getBoolean("item-deny.drop-on-death", owner.toString(), player)
+                ) {
+                    EntityRemoveQueue.syncRemove(itemDrop)
+                }
+                return@run
             }
-            return
-        }
-        //处理召回
-        if (CallbackCommand.isCallback(owner)) {
-            submit {
-                if (event.isCancelled || itemDrop.isDead || !itemDrop.isValid) return@submit
-                val itemStack = itemDrop.itemStack
-                EntityRemoveQueue.syncRemove(itemDrop)
-                SakuraBindAPI.sendBackItem(owner, listOf(itemStack), type = SendBackType.COMMON_CALLBACK)
+            //处理召回
+            if (CallbackCommand.isCallback(owner)) {
+                event.isCancelled = true
                 MessageTool.messageCoolDown(player, Lang.command__callback)
+                return@run
             }
-            return
-        }
-        if (ItemSettings.getSetting(item).getBoolean("item-deny.drop", owner.toString(), player)) {
-            submit {
-                if (event.isCancelled || itemDrop.isDead || !itemDrop.isValid) return@submit
-                val itemStack = itemDrop.itemStack
-                EntityRemoveQueue.syncRemove(itemDrop)
-                val openInventory = event.player.openInventory
-                val cursor = openInventory.cursor
-                val release = event.player.inventory.addItem(itemStack)
-                if (cursor != null && cursor != itemStack && !cursor.checkAir()) {
-                    val releaseCursor = event.player.inventory.addItem(cursor)
-                    release.putAll(releaseCursor)
-                    openInventory.cursor = null
-                }
-                if (release.isNotEmpty()) {
-                    SakuraBindAPI.sendBackItem(
-                        SakuraBindAPI.getOwner(itemStack)!!,
-                        release.values.toList(),
-                        type = SendBackType.PLAYER_DROP
-                    )
-                }
-                MessageTool.denyMessageCoolDown(event.player, Lang.item__deny_drop, ItemSettings.getSetting(item), item)
+
+            if (setting.getBoolean("item-deny.drop", owner.toString(), player)) {
+                event.isCancelled = true
+                MessageTool.denyMessageCoolDown(player, Lang.item__deny_drop, setting, item)
             }
         }
+        if (!event.isCancelled) return
+        // 接管核心原有的禁止丢弃逻辑，修复背包满时丢弃物品卡消失的bug
+        val config = Config.replace_cancel_drop_event
+        if (config == "none") return
+        if (config != "all" && !(config == "bind-item" && owner != null)) return
+        val inventory = player.inventory
+        val heldItemSlot = inventory.heldItemSlot
+        val heldItem = inventory.getItem(heldItemSlot)
+        if (heldItem.checkAir()) {
+            inventory.setItem(heldItemSlot, item)
+        } else if (item.isSimilar(heldItem) && heldItem!!.amount + item.amount <= heldItem.maxStackSize) {
+            heldItem.amount += item.amount
+            inventory.setItem(heldItemSlot, heldItem)
+        } else {
+            val addItem = inventory.addItem(item)
+            if (owner == null) owner = event.player.uniqueId
+            if (addItem.isNotEmpty()) {
+                SakuraBindAPI.sendBackItem(
+                    owner,
+                    addItem.values.toList(),
+                    type = SendBackType.PLAYER_DROP
+                )
+            }
+        }
+        itemDrop.itemStack = item.apply { amount = 0 }
     }
 
 
@@ -370,7 +397,10 @@ object ItemListener : Listener {
         val itemStack = item.itemStack
         val filterItem = SakuraBindAPI.filterItem(itemStack) { it.getBoolean("item.send-when-lost", null, null) }
         if (filterItem.isEmpty()) return
-        if (itemStack.type == Material.AIR) item.remove()
+        if (itemStack.type == Material.AIR) {
+            item.remove()
+            event.isCancelled = true
+        }
         for ((uuid, bindItems) in filterItem) {
             SakuraBindAPI.sendBackItem(uuid, bindItems, type = SendBackType.ITEM_DAMAGE)
         }

@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BlockStateMeta
+import org.bukkit.material.Attachable
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.cache.BlockCache
 import top.iseason.bukkit.sakurabind.cache.FallingBlockCache
@@ -154,7 +155,7 @@ object BlockListener : Listener {
             val state = block.state
             if (state is InventoryHolder && !state.inventory.all { it.checkAir() }) {
                 val containerCache = BlockCache.containerCache
-                containerCache.put(blockToString, block.type.name)
+                containerCache[blockToString] = block.type.name
                 runSync {
                     containerCache.remove(blockToString)
                 }
@@ -188,24 +189,49 @@ object BlockListener : Listener {
         }
     }
 
+    val canGetSourceBlock: Boolean = try {
+        BlockPhysicsEvent::class.java.getMethod("getSourceBlock")
+        true
+    } catch (_: Exception) {
+        false
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockPhysicsEvent(event: BlockPhysicsEvent) {
         val block = event.block
         //只检查变成空气的
-        if (!block.isEmpty) return
-        val blockToString = BlockCache.blockToString(block)
+        if (block.isEmpty) {
+            val blockToString = BlockCache.blockToString(block)
+            val blockInfo = BlockCache.getBlockInfo(blockToString) ?: return
+            SakuraBindAPI.unbindBlock(block, BindType.BLOCK_TO_ITEM_UNBIND)
+            BlockCache.addBreakingCache(blockToString, blockInfo)
+        }
+        val source = if (canGetSourceBlock) {
+            event.sourceBlock
+        } else {
+            val blockData = block.state.data as? Attachable ?: return
+            block.getRelative(blockData.attachedFace)
+        }
+        if (!source.isEmpty) return
+        val blockToString = BlockCache.blockToString(source)
         val blockInfo = BlockCache.getBlockInfo(blockToString) ?: return
-        SakuraBindAPI.unbindBlock(block, BindType.BLOCK_TO_ITEM_UNBIND)
-//        println("${event.block.type} -> ${event.changedType} ${event.block.location}")
-//        if(event.changedType==Material.AIR)
+        SakuraBindAPI.unbindBlock(source, BindType.BLOCK_TO_ITEM_UNBIND)
         BlockCache.addBreakingCache(blockToString, blockInfo)
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockFrom(event: BlockFromToEvent) {
         val toBlock = event.toBlock
+        if (toBlock.isEmpty) return
         val blockInfo = SakuraBindAPI.getBlockInfo(toBlock) ?: return
-        if (!blockInfo.setting.getBoolean("block-deny.flow", null, null)) {
+        val setting = blockInfo.setting
+
+        if (setting.getBoolean("block-deny.flow", null, null)) {
+            event.isCancelled = true
+            return
+        }
+
+        if (setting.getBoolean("block-deny.flow-send-back", null, null)) {
             SakuraBindAPI.unbindBlock(toBlock, BindType.BLOCK_TO_ITEM_UNBIND)
             val first = toBlock.drops.firstOrNull()
             if (first != null) {
@@ -214,8 +240,14 @@ object BlockListener : Listener {
                 SakuraBindAPI.sendBackItem(uuid, listOf(first), type = SendBackType.BLOCK_FROM_TO)
             }
             event.toBlock.type = Material.AIR
+            event.isCancelled = true
+            return
         }
-        event.isCancelled = true
+
+        SakuraBindAPI.unbindBlock(toBlock, BindType.BLOCK_TO_ITEM_UNBIND)
+        val blockToString = BlockCache.blockToString(toBlock)
+        BlockCache.addBreakingCache(blockToString, blockInfo)
+
         // 由BlockPhysicEvent 处理方块绑定
     }
 
