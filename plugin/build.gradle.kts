@@ -47,7 +47,7 @@ dependencies {
 // 本地依赖放在libs文件夹内
     implementation("org.bstats:bstats-bukkit:3.1.0")
     compileOnly(fileTree("libs") { include("*.jar") })
-    compileOnly("org.ehcache:ehcache:3.10.8") { isTransitive = false }
+    compileOnly("org.ehcache:ehcache:3.11.1") { isTransitive = false }
     compileOnly("me.clip:placeholderapi:2.11.6") { isTransitive = false }
     compileOnly("fr.xephi:authme:5.6.0-SNAPSHOT") { isTransitive = false }
     compileOnly("net.Indyuce:MMOItems-API:6.9.4-SNAPSHOT") { isTransitive = false }
@@ -191,8 +191,7 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     keepclassmembers("class * implements $groupS.libs.core.ui.container.BaseUI {*;}")
     keepclassmembers(allowObf, "class * implements org.bukkit.event.Listener {*;}")
     keepclassmembers(allowObf, "class * extends org.bukkit.event.Event {*;}")
-    keepclassmembers(allowObf, "class * extends org.jetbrains.exposed.dao.id.IdTable {*;}")
-    keepclassmembers(allowObf, "class * extends org.jetbrains.exposed.dao.Entity {*;}")
+    keepclassmembers(allowObf, "class * extends org.jetbrains.exposed.v1.core.dao.id.IdTable {*;}")
     keepattributes("Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*")
     keepclassmembers("enum * {public static **[] values();public static ** valueOf(java.lang.String);}")
     repackageclasses()

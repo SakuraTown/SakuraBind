@@ -42,7 +42,7 @@ runtime-libraries:
     - org.jetbrains.exposed:exposed-jdbc:${exposedVersion}
     - org.jetbrains.exposed:exposed-java-time:${exposedVersion}
     - org.glassfish.jaxb:jaxb-runtime:2.3.8,1
-    - org.ehcache:ehcache:3.10.8,1
+    - org.ehcache:ehcache:3.11.1,1
   assembly:
     - org.apache.logging.log4j:log4j-api
     - org.slf4j:slf4j-api

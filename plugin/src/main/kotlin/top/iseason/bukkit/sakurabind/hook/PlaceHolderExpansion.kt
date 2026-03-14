@@ -3,7 +3,9 @@ package top.iseason.bukkit.sakurabind.hook
 import me.clip.placeholderapi.expansion.PlaceholderExpansion
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.count
+import org.jetbrains.exposed.v1.core.count
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.select
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkittemplate.BukkitTemplate

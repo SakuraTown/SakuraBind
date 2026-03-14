@@ -6,7 +6,8 @@ import org.bukkit.block.Block
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Entity
 import org.bukkit.inventory.ItemStack
-import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.v1.jdbc.insert
+
 import top.iseason.bukkit.sakurabind.dto.BindLogs
 import top.iseason.bukkit.sakurabind.utils.BindType
 import top.iseason.bukkittemplate.BukkitTemplate

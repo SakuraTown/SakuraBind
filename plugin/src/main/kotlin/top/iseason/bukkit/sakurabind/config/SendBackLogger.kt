@@ -3,7 +3,8 @@ package top.iseason.bukkit.sakurabind.config
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.inventory.ItemStack
-import org.jetbrains.exposed.sql.batchInsert
+import org.jetbrains.exposed.v1.jdbc.batchInsert
+
 import top.iseason.bukkit.sakurabind.config.BindLogger.Formatter
 import top.iseason.bukkit.sakurabind.dto.SendBackLogs
 import top.iseason.bukkit.sakurabind.utils.SendBackType

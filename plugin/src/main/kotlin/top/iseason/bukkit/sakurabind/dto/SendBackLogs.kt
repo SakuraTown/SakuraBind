@@ -1,7 +1,7 @@
 package top.iseason.bukkit.sakurabind.dto
 
-import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.javatime.datetime
+import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
+import org.jetbrains.exposed.v1.javatime.datetime
 import top.iseason.bukkit.sakurabind.utils.SendBackType
 import top.iseason.bukkittemplate.config.DatabaseConfig
 

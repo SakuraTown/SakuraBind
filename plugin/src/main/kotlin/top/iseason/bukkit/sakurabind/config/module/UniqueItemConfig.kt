@@ -8,7 +8,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitTask
-import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.v1.jdbc.insert
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.config.BindLogger.Formatter
 import top.iseason.bukkit.sakurabind.dto.UniqueLogs

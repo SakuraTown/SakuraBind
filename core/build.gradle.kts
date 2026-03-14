@@ -25,7 +25,7 @@ dependencies {
 //    compileOnly("org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT")
 //    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.9.20")
 
-    compileOnly("net.kyori:adventure-text-minimessage:4.25.0")
+    compileOnly("net.kyori:adventure-text-minimessage:4.26.1")
     compileOnly("net.kyori:adventure-platform-bukkit:4.4.1")
 
     compileOnly("net.Indyuce:MMOItems-API:6.10.1-SNAPSHOT") { isTransitive = false }
