@@ -736,7 +736,7 @@ object ItemListener : Listener {
     fun onPlayerDeathEvent(event: PlayerDeathEvent) {
         //item_deny__drop_on_death
         val entity = event.entity
-        if (entity.world.getGameRuleValue("keepInventory") == "true") {
+        if (isKeepInventoryEnabled(entity.world)) {
             return
         }
         val iterator = event.drops.iterator()
@@ -757,6 +757,18 @@ object ItemListener : Listener {
             submit(async = true) {
                 SakuraBindAPI.sendBackItem(entity.uniqueId, sendBackList, type = SendBackType.PLAYER_DEATH)
             }
+        }
+    }
+
+    private fun isKeepInventoryEnabled(world: World): Boolean {
+        return isGameRuleEnabled(world, "keepInventory") || isGameRuleEnabled(world, "keep_inventory")
+    }
+
+    private fun isGameRuleEnabled(world: World, gameRule: String): Boolean {
+        return try {
+            world.getGameRuleValue(gameRule).equals("true", ignoreCase = true)
+        } catch (_: IllegalArgumentException) {
+            false
         }
     }
 
