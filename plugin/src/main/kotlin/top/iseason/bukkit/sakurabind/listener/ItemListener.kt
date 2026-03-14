@@ -739,12 +739,12 @@ object ItemListener : Listener {
         //item_deny__drop_on_death
         val entity = event.entity
         val world = entity.world
-        if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1)) {
-            if (world.getGameRuleValue(GameRule.KEEP_INVENTORY) == true) return
+        val keepInv = if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1)) {
+            world.getGameRuleValue(GameRule.KEEP_INVENTORY) == true
         } else {
-            if (world.getGameRuleValue("keepInventory").equals("true", ignoreCase = true))
-                return
+            world.getGameRuleValue("keepInventory").equals("true", ignoreCase = true)
         }
+        if (keepInv) return
         val iterator = event.drops.iterator()
         val sendBackList = mutableListOf<ItemStack>()
 
