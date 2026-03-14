@@ -1,7 +1,9 @@
 package top.iseason.bukkit.sakurabind.listener
 
+import de.tr7zw.nbtapi.utils.MinecraftVersion
 import fr.xephi.authme.api.v3.AuthMeApi
 import org.bukkit.Bukkit
+import org.bukkit.GameRule
 import org.bukkit.Material
 import org.bukkit.entity.Item
 import org.bukkit.entity.ItemFrame
@@ -736,8 +738,12 @@ object ItemListener : Listener {
     fun onPlayerDeathEvent(event: PlayerDeathEvent) {
         //item_deny__drop_on_death
         val entity = event.entity
-        if (isKeepInventoryEnabled(entity.world)) {
-            return
+        val world = entity.world
+        if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1)) {
+            if (world.getGameRuleValue(GameRule.KEEP_INVENTORY) == true) return
+        } else {
+            if (world.getGameRuleValue("keepInventory").equals("true", ignoreCase = true))
+                return
         }
         val iterator = event.drops.iterator()
         val sendBackList = mutableListOf<ItemStack>()
@@ -757,18 +763,6 @@ object ItemListener : Listener {
             submit(async = true) {
                 SakuraBindAPI.sendBackItem(entity.uniqueId, sendBackList, type = SendBackType.PLAYER_DEATH)
             }
-        }
-    }
-
-    private fun isKeepInventoryEnabled(world: World): Boolean {
-        return isGameRuleEnabled(world, "keepInventory") || isGameRuleEnabled(world, "keep_inventory")
-    }
-
-    private fun isGameRuleEnabled(world: World, gameRule: String): Boolean {
-        return try {
-            world.getGameRuleValue(gameRule).equals("true", ignoreCase = true)
-        } catch (_: IllegalArgumentException) {
-            false
         }
     }
 
