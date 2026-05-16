@@ -37,25 +37,25 @@ object GetLostCommand : CommandNode(
         val player = sender as Player
         var page = 0
         var isEmpty = true
-        if (EasyCoolDown.check(player, 1000)) {
+        val uniqueId = player.uniqueId
+        if (!player.isOnline) return@CommandNodeExecutor
+        if (EasyCoolDown.check(uniqueId, 1000)) {
             sender.sendColorMessage(Lang.command__getLost_coolDown)
             return@CommandNodeExecutor
         }
         if (!DatabaseConfig.isConnected) throw ParmaException("数据库异常")
-        val uniqueId = player.uniqueId
         if (SelectListener.noScanning.contains(uniqueId)) throw ParmaException("数据同步中，请稍后")
-        if (syncing.contains(uniqueId)) throw ParmaException("请等待上一个操作完成")
+        if (!syncing.add(uniqueId)) throw ParmaException("请等待上一个操作完成")
 
         var totalCount = 0
         try {
             dbTransaction {
-                syncing.add(uniqueId)
                 while (true) {
                     val results = PlayerItems
                         .select(PlayerItems.id, PlayerItems.item)
                         .where { PlayerItems.uuid eq uniqueId }
-                        .limit(10)
-                        .offset((page * 10).toLong())
+                        .limit(30)
+                        .offset((page * 30).toLong())
                         .toList()
 
                     if (results.isEmpty()) break
@@ -93,10 +93,10 @@ object GetLostCommand : CommandNode(
                 }
             }
         } catch (e: Exception) {
-            syncing.remove(uniqueId)
             e.printStackTrace()
+        } finally {
+            syncing.remove(uniqueId)
         }
-        syncing.remove(uniqueId)
         if (params.hasParma("-silent")) return@CommandNodeExecutor
 //                println(totalCount)
         if (totalCount == 0 && !isEmpty) {
