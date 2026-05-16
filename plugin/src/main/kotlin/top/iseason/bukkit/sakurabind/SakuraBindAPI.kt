@@ -671,7 +671,8 @@ object SakuraBindAPI {
         notify: Boolean = true,
         type: SendBackType = SendBackType.API
     ) {
-        val toTypedArray = items.toTypedArray()
+        val toTypedArray = items.filter { !it.checkAir() }.toTypedArray()
+        if (toTypedArray.isEmpty()) return
         val event = ItemSendBackEvent(uuid, type, toTypedArray)
         Bukkit.getPluginManager().callEvent(event)
         if (event.isCancelled) return
