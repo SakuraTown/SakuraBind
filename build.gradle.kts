@@ -46,7 +46,7 @@ subprojects {
     dependencies {
         val kotlinVersion: String by rootProject
         val exposedVersion: String by rootProject
-        compileOnly("de.tr7zw:item-nbt-api-plugin:2.15.5")
+        compileOnly("de.tr7zw:item-nbt-api-plugin:2.15.7")
         compileOnly(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
         //基础库
         compileOnly(kotlin("stdlib"))
