@@ -10,7 +10,10 @@ import top.iseason.bukkit.sakurabind.cache.FallingBlockCache
 import top.iseason.bukkit.sakurabind.command.*
 import top.iseason.bukkit.sakurabind.config.*
 import top.iseason.bukkit.sakurabind.config.matcher.MatcherManager
-import top.iseason.bukkit.sakurabind.config.module.*
+import top.iseason.bukkit.sakurabind.config.module.AutoUnBindConfig
+import top.iseason.bukkit.sakurabind.config.module.BindItemConfig
+import top.iseason.bukkit.sakurabind.config.module.MigrationConfig
+import top.iseason.bukkit.sakurabind.config.module.UniqueItemConfig
 import top.iseason.bukkit.sakurabind.dto.BindLogs
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkit.sakurabind.dto.SendBackLogs
@@ -18,7 +21,6 @@ import top.iseason.bukkit.sakurabind.dto.UniqueLogs
 import top.iseason.bukkit.sakurabind.hook.*
 import top.iseason.bukkit.sakurabind.listener.*
 import top.iseason.bukkit.sakurabind.module.BindItem
-import top.iseason.bukkit.sakurabind.module.Retrieve
 import top.iseason.bukkit.sakurabind.module.UniqueItem
 import top.iseason.bukkit.sakurabind.pickers.BasePicker
 import top.iseason.bukkit.sakurabind.task.DropItemList
@@ -89,7 +91,7 @@ object SakuraBind : BukkitPlugin {
         BindItemConfig.load(false)
         MigrationConfig.load(false)
         AutoUnBindConfig.load(false)
-        RetrieveConfig.load(false)
+//        RetrieveConfig.load(false)
         info("&a配置初始化完毕!")
         Config.setupScanner()
     }
@@ -174,10 +176,10 @@ object SakuraBind : BukkitPlugin {
         if (BindItemConfig.enable) {
             BindItem.registerListener()
         }
-        if (RetrieveConfig.enable) {
-            Retrieve.registerListener()
-            BungeeCordHook.registerListener(Retrieve)
-        }
+//        if (RetrieveConfig.enable) {
+//            Retrieve.registerListener()
+//            BungeeCordHook.registerListener(Retrieve)
+//        }
         if (PaperListener.isPaper()) {
             info("&a当前为 Paper 或下游服务端,已开启装备穿戴检测功能")
             PaperListener.registerListener()
