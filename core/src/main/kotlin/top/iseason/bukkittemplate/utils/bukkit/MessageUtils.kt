@@ -177,7 +177,7 @@ object MessageUtils {
         if (isNativeMiniMessage) {
             Bukkit.getConsoleSender().sendMessage("Native MiniMessage is enabled")
         } else {
-            if (MinecraftVersion.getVersion().versionId >= 2601) {
+            if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC26_1)) {
                 miniMessageLoading = false
                 Bukkit.getConsoleSender()
                     .sendMessage("${ChatColor.YELLOW}unsupported server version!! please use paper or downstream server core")
