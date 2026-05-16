@@ -453,10 +453,26 @@ public class RuntimeManager {
      * @param dependency 依赖
      * @return true if success
      */
+    public boolean downloadADependency(String dependency, Integer maxDepth) {
+        return downloadDependency(dependency, 1, maxDepth, repositories, null, false);
+    }
+
+    /**
+     * 直接下载并加载依赖
+     *
+     * @param dependency 依赖
+     * @return true if success
+     */
     public boolean downloadADependencyAssembly(String dependency) {
         int i = dependency.lastIndexOf(':');
         assembly.add(dependency.substring(0, i));
         return downloadDependency(dependency, 1, 1, repositories, null, false);
+    }
+
+    public boolean downloadADependencyAssembly(String dependency, Integer maxDepth) {
+        int i = dependency.lastIndexOf(':');
+        assembly.add(dependency.substring(0, i));
+        return downloadDependency(dependency, 1, maxDepth, repositories, null, false);
     }
 
     public ClassAppender getClassAppender() {

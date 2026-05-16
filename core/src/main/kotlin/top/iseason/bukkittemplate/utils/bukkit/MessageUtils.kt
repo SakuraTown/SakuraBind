@@ -2,6 +2,8 @@
 
 package top.iseason.bukkittemplate.utils.bukkit
 
+import de.tr7zw.nbtapi.utils.MinecraftVersion
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -34,8 +36,9 @@ object MessageUtils {
      */
     val messageHandlers = LinkedList<MessageConsumer>()
     private var miniMessageSupport = false
-    private var miniMessageLoaded = false
-    lateinit var audiences: BukkitAudiences
+    private var miniMessageLoading = false
+    private var isNativeMiniMessage = false
+    var audiences: BukkitAudiences? = null
     private val HEX_PATTERN = Pattern.compile("#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})")
     private val hexColorSupport = try {
         net.md_5.bungee.api.ChatColor.of("#66ccff")
@@ -130,25 +133,76 @@ object MessageUtils {
         }
     }
 
-    fun enableMiniMessage() {
-        if (miniMessageSupport) return
-        miniMessageSupport = true
-        if (miniMessageLoaded) return
-        val dd = BukkitTemplate.getRuntimeManager()
-            .addRepository("https://maven.aliyun.com/repository/public")
-            .addRepository("https://repo.maven.apache.org/maven2/")
-        dd.addDependency("net.kyori:adventure-text-minimessage:4.26.1", 1)
-        dd.addDependency("net.kyori:adventure-platform-bukkit:4.4.1", 4)
-        dd.downloadAll()
-        audiences = BukkitAudiences.create(BukkitTemplate.getPlugin())
-        miniMessageLoaded = true
-        DisableHook.addTask {
-            audiences.close()
+    fun miniAudience(sender: Player): Audience {
+        return if (isNativeMiniMessage) {
+            sender as Audience
+        } else
+            audiences!!.player(sender)
+    }
+
+    fun miniAudience(sender: CommandSender): Audience {
+        return if (isNativeMiniMessage) {
+            sender as Audience
+        } else
+            audiences!!.sender(sender)
+    }
+
+    fun miniSendAll(message: Component) {
+        if (isNativeMiniMessage) {
+            Bukkit.getOnlinePlayers().forEach { player ->
+                if (player is Audience) {
+                    player.sendMessage(message)
+                }
+            }
+            val consoleSender = Bukkit.getConsoleSender()
+            if (consoleSender is Audience) {
+                consoleSender.sendMessage(message)
+            }
+        } else {
+            audiences!!.all().sendMessage(message)
         }
+    }
+
+    fun enableMiniMessage() {
+        if (miniMessageSupport || miniMessageLoading) return
+        miniMessageLoading = true
+        try {
+            val audienceClass = Class.forName("net.kyori.adventure.audience.Audience")
+            val senderClass = Class.forName("org.bukkit.command.CommandSender")
+            isNativeMiniMessage = audienceClass.classLoader == senderClass.classLoader &&
+                    audienceClass.isAssignableFrom(senderClass)
+        } catch (_: ClassNotFoundException) {
+        }
+
+        if (isNativeMiniMessage) {
+            Bukkit.getConsoleSender().sendMessage("Native MiniMessage is enabled")
+        } else {
+            if (MinecraftVersion.getVersion().versionId >= 2601) {
+                miniMessageLoading = false
+                Bukkit.getConsoleSender()
+                    .sendMessage("${ChatColor.YELLOW}unsupported server version!! please use paper or downstream server core")
+                return
+            }
+
+            val dd = BukkitTemplate.getRuntimeManager()
+            dd.downloadADependency("net.kyori:adventure-text-minimessage:4.26.1", 9)
+            dd.downloadADependency("net.kyori:adventure-platform-bukkit:4.4.1", 9)
+
+            if (audiences == null) {
+                audiences = BukkitAudiences.create(BukkitTemplate.getPlugin())
+                DisableHook.addTask {
+                    audiences!!.close()
+                }
+            }
+            Bukkit.getConsoleSender().sendMessage("MiniMessage is enabled")
+        }
+        miniMessageSupport = true
+        miniMessageLoading = false
     }
 
     fun disableMiniMessage() {
         miniMessageSupport = false
+        Bukkit.getConsoleSender().sendMessage("MiniMessage is disabled")
     }
 
 
@@ -208,7 +262,7 @@ object MessageUtils {
         val messageList = if (message is Collection<*>) {
             message.mapNotNull { it?.toString() }
         } else if (message?.toString().isNullOrEmpty()) return
-        else message!!.toString().split("\n")
+        else message.toString().split("\n")
         if (messageList.isEmpty()) return
         //是否传递消息,为了引用传递
         //每个消息都由消费者消费
@@ -231,7 +285,7 @@ object MessageUtils {
      */
     private fun CommandSender.sendMsg(msg: String) {
         if (miniMessageSupport)
-            audiences.sender(this).sendMessage(MiniMessage.miniMessage().deserialize(msg.noColor()))
+            miniAudience(this).sendMessage(MiniMessage.miniMessage().deserialize(msg.noColor()))
         else sendMessage(msg)
     }
 
@@ -272,7 +326,7 @@ object MessageUtils {
         } else {
             if (miniMessageSupport) {
                 val component = MiniMessage.miniMessage().deserialize(finalMessage)
-                audiences.all().sendMessage(component)
+                miniSendAll(component)
             } else {
                 Bukkit.broadcastMessage(finalMessage)
             }
@@ -324,12 +378,12 @@ object MessageUtils {
      * 发送 actionbar 消息
      */
     fun Player.sendActionBar(message: String?, prefix: String = defaultPrefix) {
-        if (message == null || message.toString().isEmpty()) return
+        if (message.isNullOrEmpty()) return
         val finalMessage = PlaceHolderHook.setPlaceHolder("$prefix$message", this)
         try {
             if (miniMessageSupport) {
                 val component = MiniMessage.miniMessage().deserialize(finalMessage)
-                audiences.player(this).sendActionBar(component)
+                miniAudience(this).sendActionBar(component)
             } else {
                 this.spigot()
                     .sendMessage(ChatMessageType.ACTION_BAR, *TextComponent.fromLegacyText(finalMessage))
@@ -344,11 +398,11 @@ object MessageUtils {
      * 发送 title 消息
      */
     fun Player.sendMainTitle(message: String?, prefix: String = defaultPrefix) {
-        if (message == null || message.toString().isEmpty()) return
+        if (message.isNullOrEmpty()) return
         val finalMessage = PlaceHolderHook.setPlaceHolder("$prefix$message", this)
         if (miniMessageSupport) {
             val component = MiniMessage.miniMessage().deserialize(finalMessage)
-            audiences.player(this).showTitle(Title.title(component, Component.empty()))
+            miniAudience(this).showTitle(Title.title(component, Component.empty()))
         } else {
             this.sendTitle(finalMessage, "")
         }
@@ -358,11 +412,11 @@ object MessageUtils {
      * 发送 subtitle 消息
      */
     fun Player.sendSubTitle(message: String?, prefix: String = defaultPrefix) {
-        if (message == null || message.toString().isEmpty()) return
+        if (message.isNullOrEmpty()) return
         val finalMessage = PlaceHolderHook.setPlaceHolder("$prefix$message", this)
         if (miniMessageSupport) {
             val component = MiniMessage.miniMessage().deserialize(finalMessage)
-            audiences.player(this).showTitle(Title.title(Component.empty(), component))
+            miniAudience(this).showTitle(Title.title(Component.empty(), component))
         } else {
             this.sendTitle("", finalMessage)
         }
@@ -380,7 +434,7 @@ object MessageUtils {
                 if (mainColor != null) MiniMessage.miniMessage().deserialize(mainColor) else Component.empty()
             val subComponent =
                 if (subColor != null) MiniMessage.miniMessage().deserialize(subColor) else Component.empty()
-            audiences.player(this).showTitle(Title.title(mainComponent, subComponent))
+            miniAudience(this).showTitle(Title.title(mainComponent, subComponent))
         } else {
             this.sendTitle(mainColor, subColor)
         }
