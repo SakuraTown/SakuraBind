@@ -15,12 +15,12 @@ subprojects {
 //            name = "aliyun"
 //            url = uri("https://maven.aliyun.com/repository/public")
 //        }
-        maven {
-            name = "aliyun-google"
-            url = uri("https://maven.aliyun.com/repository/google")
-        }
+//        maven {
+//            name = "aliyun-google"
+//            url = uri("https://maven.aliyun.com/repository/google")
+//        }
         mavenCentral()
-//        google()
+        google()
         maven {
             name = "spigot"
             url = uri("https://hub.spigotmc.org/nexus/content/repositories/public/")
