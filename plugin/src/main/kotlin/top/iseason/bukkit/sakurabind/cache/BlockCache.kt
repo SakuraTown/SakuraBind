@@ -2,10 +2,10 @@ package top.iseason.bukkit.sakurabind.cache
 
 import com.github.mgunlogson.cuckoofilter4j.CuckooFilter
 import com.google.common.cache.CacheBuilder
+import org.bukkit.Bukkit
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 import org.bukkit.entity.Item
-import org.bukkit.scheduler.BukkitTask
 import org.ehcache.Cache
 import org.ehcache.PersistentCacheManager
 import org.ehcache.config.builders.CacheConfigurationBuilder
@@ -16,7 +16,6 @@ import org.ehcache.config.units.EntryUnit
 import org.ehcache.config.units.MemoryUnit
 import top.iseason.bukkit.sakurabind.config.DefaultItemSetting
 import top.iseason.bukkittemplate.BukkitTemplate
-import top.iseason.bukkittemplate.utils.other.runSync
 import java.io.File
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -34,7 +33,12 @@ object BlockCache : BaseCache() {
         .expireAfterAccess(3000L, TimeUnit.MILLISECONDS)
         .build<String, BlockInfo>()
 
-    private val breakingCache: MutableMap<String, Pair<BlockInfo, BukkitTask>> = ConcurrentHashMap()
+    private val breakingCache: MutableMap<String, BlockInfo> = HashMap()
+
+    init {
+        Bukkit.getScheduler()
+            .runTaskTimer(BukkitTemplate.getPlugin(), Runnable { breakingCache.clear() }, 0, 1)
+    }
 
     val containerCache: MutableMap<String, String> = ConcurrentHashMap()
 
@@ -183,24 +187,13 @@ object BlockCache : BaseCache() {
     }
 
     fun addBreakingCache(loc: String, blockInfo: BlockInfo) {
-        val task = runSync {
-            breakingCache.remove(loc)
-        }
-        val cache = breakingCache.put(loc, blockInfo to task)
-        if (cache != null) {
-            val oldTask = cache.second
-            if (!oldTask.isCancelled) oldTask.cancel()
-        }
+        breakingCache[loc] = blockInfo
     }
 
-    fun getBreakingCache(loc: String): BlockInfo? = breakingCache[loc]?.first
+    fun getBreakingCache(loc: String): BlockInfo? = breakingCache[loc]
 
     fun removeBreakingCache(loc: String) {
-        val cache = breakingCache.remove(loc)
-        if (cache != null) {
-            val oldTask = cache.second
-            if (!oldTask.isCancelled) oldTask.cancel()
-        }
+        breakingCache.remove(loc)
     }
 
 }

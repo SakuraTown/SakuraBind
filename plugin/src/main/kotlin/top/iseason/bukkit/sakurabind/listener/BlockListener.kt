@@ -11,11 +11,11 @@ import org.bukkit.event.block.*
 import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.ItemSpawnEvent
+import org.bukkit.event.player.PlayerBucketEmptyEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BlockStateMeta
-import org.bukkit.material.Attachable
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.cache.BlockCache
 import top.iseason.bukkit.sakurabind.cache.FallingBlockCache
@@ -189,35 +189,23 @@ object BlockListener : Listener {
         }
     }
 
-    val canGetSourceBlock: Boolean = try {
-        BlockPhysicsEvent::class.java.getMethod("getSourceBlock")
-        true
-    } catch (_: Exception) {
-        false
-    }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockPhysicsEvent(event: BlockPhysicsEvent) {
         val block = event.block
-        //只检查变成空气的
-        if (block.isEmpty) {
-            val blockToString = BlockCache.blockToString(block)
-            val blockInfo = BlockCache.getBlockInfo(blockToString) ?: return
-            SakuraBindAPI.unbindBlock(block, BindType.BLOCK_TO_ITEM_UNBIND)
-            BlockCache.addBreakingCache(blockToString, blockInfo)
-        }
-        val source = if (canGetSourceBlock) {
-            event.sourceBlock
-        } else {
-            val blockData = block.state.data as? Attachable ?: return
-            block.getRelative(blockData.attachedFace)
-        }
-        if (!source.isEmpty) return
-        val blockToString = BlockCache.blockToString(source)
+        val blockToString = BlockCache.blockToString(block)
         val blockInfo = BlockCache.getBlockInfo(blockToString) ?: return
-        SakuraBindAPI.unbindBlock(source, BindType.BLOCK_TO_ITEM_UNBIND)
         BlockCache.addBreakingCache(blockToString, blockInfo)
     }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    fun onPlayerBucketEmpty(event: PlayerBucketEmptyEvent) {
+        val block = event.blockClicked.getRelative(event.blockFace)
+        val blockToString = BlockCache.blockToString(block)
+        val blockInfo = BlockCache.getBlockInfo(blockToString) ?: return
+        BlockCache.addBreakingCache(blockToString, blockInfo)
+    }
+
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockFrom(event: BlockFromToEvent) {
@@ -255,7 +243,13 @@ object BlockListener : Listener {
     fun onBlockPistonExtendEvent(event: BlockPistonExtendEvent) {
         val direction = event.direction
         val cancel = event.blocks.reversed().any {
-            if (it.pistonMoveReaction == PistonMoveReaction.BREAK) return@any false
+            if (it.pistonMoveReaction == PistonMoveReaction.BREAK) {
+                val blockToString = BlockCache.blockToString(it)
+                val blockInfo = BlockCache.getBlockInfo(blockToString) ?: return
+                SakuraBindAPI.unbindBlock(it, BindType.BLOCK_TO_ITEM_UNBIND)
+                BlockCache.addBreakingCache(blockToString, blockInfo)
+                return@any false
+            }
             val blockInfo = SakuraBindAPI.getBlockInfo(it) ?: return@any false
             val denyMove = blockInfo.setting.getBoolean("block-deny.piston", null, null)
             //可以移动
@@ -285,7 +279,13 @@ object BlockListener : Listener {
     fun onBlockPistonRetractEvent(event: BlockPistonRetractEvent) {
         val direction = event.direction
         val cancel = event.blocks.reversed().any {
-            if (it.pistonMoveReaction == PistonMoveReaction.BREAK) return@any false
+            if (it.pistonMoveReaction == PistonMoveReaction.BREAK) {
+                val blockToString = BlockCache.blockToString(it)
+                val blockInfo = BlockCache.getBlockInfo(blockToString) ?: return
+                SakuraBindAPI.unbindBlock(it, BindType.BLOCK_TO_ITEM_UNBIND)
+                BlockCache.addBreakingCache(blockToString, blockInfo)
+                return@any false
+            }
             val blockInfo = SakuraBindAPI.getBlockInfo(it) ?: return@any false
             val denyMove = blockInfo.setting.getBoolean("block-deny.piston", null, null)
             //可以移动
