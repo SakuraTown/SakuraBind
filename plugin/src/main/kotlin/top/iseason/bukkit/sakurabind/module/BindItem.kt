@@ -1,6 +1,5 @@
 package top.iseason.bukkit.sakurabind.module
 
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -18,6 +17,19 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.other.RandomUtils
 
 object BindItem : org.bukkit.event.Listener {
+
+    private fun hasEnough(cursor: org.bukkit.inventory.ItemStack, amount: Int): Boolean {
+        return !BindItemConfig.syncAmount || cursor.amount >= amount
+    }
+
+    private fun consumeCursor(event: InventoryClickEvent, cursor: org.bukkit.inventory.ItemStack, amount: Int) {
+        val cost = if (BindItemConfig.syncAmount) amount else 1
+        if (cursor.amount <= cost) {
+            event.cursor = null
+        } else {
+            cursor.decrease(cost)
+        }
+    }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun onInventoryClickEvent(event: InventoryClickEvent) {
@@ -41,22 +53,10 @@ object BindItem : org.bukkit.event.Listener {
                 event.isCancelled = true
                 return
             }
-            if (BindItemConfig.syncAmount) {
-                if (cursor.amount >= amount) {
-                    cursor.decrease(amount)
-                    if (cursor.type == Material.AIR) {
-                        event.cursor = null
-                    }
-                } else {
-                    MessageTool.messageCoolDown(player, Lang.bind_item__no_amount)
-                    event.isCancelled = true
-                    return
-                }
-            } else {
-                if (cursor.amount == 1) {
-                    event.cursor = null
-                } else
-                    cursor.decrease(1)
+            if (!hasEnough(cursor, amount)) {
+                MessageTool.messageCoolDown(player, Lang.bind_item__no_amount)
+                event.isCancelled = true
+                return
             }
             var success = 0
             repeat(amount) {
@@ -66,13 +66,23 @@ object BindItem : org.bukkit.event.Listener {
             }
             if (success > 0) {
                 if (success == amount) { // 全部解绑
-                    SakuraBindAPI.unBind(currentItem, type = BindType.BIND_ITEM_UNBIND_ITEM)
+                    if (!SakuraBindAPI.tryUnBind(currentItem, type = BindType.BIND_ITEM_UNBIND_ITEM)) {
+                        MessageTool.messageCoolDown(event.whoClicked, Lang.bind_item__unbind_failure)
+                        event.isCancelled = true
+                        return
+                    }
+                    consumeCursor(event, cursor, amount)
                     MessageTool.messageCoolDown(event.whoClicked, Lang.bind_item__unbind_success)
                 } else { //部分解绑
-                    currentItem.amount = amount - success
                     val clone = currentItem.clone()
                     clone.amount = success
-                    SakuraBindAPI.unBind(clone, type = BindType.BIND_ITEM_UNBIND_ITEM)
+                    if (!SakuraBindAPI.tryUnBind(clone, type = BindType.BIND_ITEM_UNBIND_ITEM)) {
+                        MessageTool.messageCoolDown(event.whoClicked, Lang.bind_item__unbind_failure)
+                        event.isCancelled = true
+                        return
+                    }
+                    currentItem.amount = amount - success
+                    consumeCursor(event, cursor, amount)
                     player.giveItem(clone)
                     MessageTool.messageCoolDown(
                         event.whoClicked,
@@ -80,27 +90,16 @@ object BindItem : org.bukkit.event.Listener {
                     )
                 }
             } else { //没解绑
+                consumeCursor(event, cursor, amount)
                 MessageTool.messageCoolDown(event.whoClicked, Lang.bind_item__unbind_failure)
             }
             event.isCancelled = true
         } else {
             val (key, rate) = BindItemConfig.getBind(cursor) ?: return
-            if (BindItemConfig.syncAmount) {
-                if (cursor.amount >= amount) {
-                    cursor.decrease(amount)
-                    if (cursor.type == Material.AIR) {
-                        event.cursor = null
-                    }
-                } else {
-                    MessageTool.messageCoolDown(event.whoClicked, Lang.bind_item__no_amount)
-                    event.isCancelled = true
-                    return
-                }
-            } else {
-                if (cursor.amount == 1) {
-                    event.cursor = null
-                } else
-                    cursor.decrease(1)
+            if (!hasEnough(cursor, amount)) {
+                MessageTool.messageCoolDown(event.whoClicked, Lang.bind_item__no_amount)
+                event.isCancelled = true
+                return
             }
             var success = 0
             repeat(amount) {
@@ -111,21 +110,33 @@ object BindItem : org.bukkit.event.Listener {
             if (success > 0) {
                 val settingNullable = ItemSettings.getSettingNullable(key)
                 if (success == amount) { // 全部绑定
-                    SakuraBindAPI.bind(
-                        currentItem, event.whoClicked.uniqueId,
+                    if (!SakuraBindAPI.tryBind(
+                            currentItem, event.whoClicked.uniqueId,
                         type = BindType.BIND_ITEM_BIND_ITEM,
                         setting = settingNullable
-                    )
+                        )
+                    ) {
+                        MessageTool.messageCoolDown(event.whoClicked, Lang.bind_item__bind_failure)
+                        event.isCancelled = true
+                        return
+                    }
+                    consumeCursor(event, cursor, amount)
                     MessageTool.messageCoolDown(event.whoClicked, Lang.bind_item__bind_success)
                 } else { //部分绑定
-                    currentItem.amount = amount - success
                     val clone = currentItem.clone()
                     clone.amount = success
-                    SakuraBindAPI.bind(
-                        clone, event.whoClicked.uniqueId,
+                    if (!SakuraBindAPI.tryBind(
+                            clone, event.whoClicked.uniqueId,
                         type = BindType.BIND_ITEM_BIND_ITEM,
                         setting = settingNullable
-                    )
+                        )
+                    ) {
+                        MessageTool.messageCoolDown(event.whoClicked, Lang.bind_item__bind_failure)
+                        event.isCancelled = true
+                        return
+                    }
+                    currentItem.amount = amount - success
+                    consumeCursor(event, cursor, amount)
                     player.giveItem(clone)
                     MessageTool.messageCoolDown(
                         event.whoClicked,
@@ -133,6 +144,7 @@ object BindItem : org.bukkit.event.Listener {
                     )
                 }
             } else { //没绑定
+                consumeCursor(event, cursor, amount)
                 MessageTool.messageCoolDown(event.whoClicked, Lang.bind_item__bind_failure)
             }
             event.isCancelled = true

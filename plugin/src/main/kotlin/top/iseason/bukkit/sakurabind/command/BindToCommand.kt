@@ -39,7 +39,10 @@ object BindToCommand : CommandNode(
         when (type.lowercase()) {
             "item" -> {
                 val itemInMainHand = player.getHeldItem() ?: throw ParmaException("请拿着物品")
-                SakuraBindAPI.bind(itemInMainHand, target, showLore, BindType.COMMAND_BIND_ITEM, setting)
+                if (!SakuraBindAPI.tryBind(itemInMainHand, target, showLore, BindType.COMMAND_BIND_ITEM, setting)) {
+                    if (!isSilent) throw ParmaException("绑定被取消或失败")
+                    return@CommandNodeExecutor
+                }
                 if (!isSilent) {
                     MessageTool.bindMessageCoolDown(
                         player,
@@ -51,14 +54,19 @@ object BindToCommand : CommandNode(
             }
 
             "block" -> {
+                if (!SakuraBindAPI.isBlockEnable()) throw ParmaException("方块监听器未启用，请在config.yml中打开 'block-listener'")
                 val targetBlock = player.getTargetBlock(null, 5)
                 if (targetBlock == null || targetBlock.isEmpty) throw ParmaException("目标前方没有一个有效的方块")
                 if (setting == null) setting = DefaultItemSetting
-                SakuraBindAPI.bindBlock(targetBlock, target.uniqueId, setting, BindType.COMMAND_BIND_BLOCK)
-                MessageTool.messageCoolDown(player, Lang.command__bindTo_block.formatBy(target.name))
+                if (!SakuraBindAPI.tryBindBlock(targetBlock, target.uniqueId, setting, BindType.COMMAND_BIND_BLOCK)) {
+                    if (!isSilent) throw ParmaException("绑定被取消或失败")
+                    return@CommandNodeExecutor
+                }
+                if (!isSilent) MessageTool.messageCoolDown(player, Lang.command__bindTo_block.formatBy(target.name))
             }
 
             "entity" -> {
+                if (!SakuraBindAPI.isEntityEnable()) throw ParmaException("实体监听器未启用，请在config.yml中打开 'entity-listener'")
                 if (!MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1)) {
                     throw ParmaException("实体绑定命令只在1.13或以上生效")
                 }
@@ -70,8 +78,14 @@ object BindToCommand : CommandNode(
                             ?: return@submit
                     val hitEntity = rayTraceEntities.hitEntity ?: return@submit
                     if (setting == null) setting = DefaultItemSetting
-                    SakuraBindAPI.bindEntity(hitEntity, target, setting, BindType.COMMAND_BIND_ENTITY)
-                    MessageTool.messageCoolDown(player, Lang.command__bindTo_entity.formatBy(target.name))
+                    if (!SakuraBindAPI.tryBindEntity(hitEntity, target, setting, BindType.COMMAND_BIND_ENTITY)) {
+                        if (!isSilent) MessageTool.messageCoolDown(player, "&c绑定被取消或失败")
+                        return@submit
+                    }
+                    if (!isSilent) MessageTool.messageCoolDown(
+                        player,
+                        Lang.command__bindTo_entity.formatBy(target.name)
+                    )
                 }
             }
 

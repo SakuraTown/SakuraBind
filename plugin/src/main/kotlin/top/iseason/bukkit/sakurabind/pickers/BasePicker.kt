@@ -108,15 +108,19 @@ abstract class BasePicker(val name: String) {
         ) {
             val cache = cacheMap.computeIfAbsent(uuid) {
                 if (!plugin.isEnabled) {
-                    sendBackFun.invoke(uuid, type)
-                    return@computeIfAbsent isInit
+                    return@computeIfAbsent LinkedList()
                 } else {
                     DelayPicker(uuid, type, sendBackFun).runTaskLaterAsynchronously(BukkitTemplate.getPlugin(), 60L)
                 }
                 LinkedList()
             }
             if (cache === isInit) return
-            cache.addAll(items)
+            synchronized(cache) {
+                cache.addAll(items)
+            }
+            if (!plugin.isEnabled) {
+                sendBackFun.invoke(uuid, type)
+            }
         }
     }
 }

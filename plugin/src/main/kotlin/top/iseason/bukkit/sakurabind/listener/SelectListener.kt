@@ -61,6 +61,10 @@ object SelectListener : Listener {
         if (coolDown.check(player, 1000)) {
             return
         }
+        if (!SakuraBindAPI.isBlockEnable()) {
+            player.sendColorMessage("方块监听器未启用，请在config.yml中打开 'block-listener'")
+            return
+        }
         if (SakuraBindAPI.getBlockOwner(block) != null) {
             player.sendColorMessage(Lang.command__select_has_bind)
             return
@@ -79,8 +83,14 @@ object SelectListener : Listener {
         if (coolDown.check(player, 1000)) {
             return
         }
-        if (SakuraBindAPI.getEntityOwner(rightClicked) != null)
+        if (!SakuraBindAPI.isEntityEnable()) {
+            player.sendColorMessage("实体监听器未启用，请在config.yml中打开 'entity-listener'")
+            return
+        }
+        if (SakuraBindAPI.getEntityOwner(rightClicked) != null) {
             player.sendColorMessage(Lang.command__select_has_bind)
+            return
+        }
         selecting[player] = rightClicked
         player.sendColorMessage(
             Lang.command__select_select_entity.formatBy(

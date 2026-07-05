@@ -251,6 +251,7 @@ object UniqueItemConfig : SimpleYAMLConfig() {
                     UniqueLogs.insert {
                         it[UniqueLogs.uuid] = owner
                         it[UniqueLogs.unique] = unique
+                        it[UniqueLogs.type] = type
                         it[UniqueLogs.log] = noColor
                         it[UniqueLogs.time] = LocalDateTime.now()
                     }

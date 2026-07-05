@@ -33,7 +33,7 @@ object GermHook : BaseHook("GermPlugin") {
                     if ((setting.getBoolean("auto-unbind.enable", ownerStr, player) &&
                                 setting.getBoolean("auto-unbind.onScanner", ownerStr, player))
                         ||
-                        (AutoUnBindConfig.onScanner && AutoUnBindConfig.check(item, AutoUnBindConfig.onScannerMatcher))
+                        (AutoUnBindConfig.onScanner && AutoUnBindConfig.checkOnScanner(item))
                     ) {
                         debug { "萌芽: 解绑物品 ${item.type}" }
                         SakuraBindAPI.unBind(item, BindType.SCANNER_UNBIND_ITEM)

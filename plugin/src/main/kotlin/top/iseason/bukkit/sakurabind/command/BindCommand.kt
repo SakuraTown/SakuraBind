@@ -37,7 +37,10 @@ object BindCommand : CommandNode(
         when (type.lowercase()) {
             "item" -> {
                 val itemInMainHand = player.getHeldItem() ?: return@CommandNodeExecutor
-                SakuraBindAPI.bind(itemInMainHand, player, showLore, BindType.COMMAND_BIND_ITEM, setting)
+                if (!SakuraBindAPI.tryBind(itemInMainHand, player, showLore, BindType.COMMAND_BIND_ITEM, setting)) {
+                    if (!isSilent) throw ParmaException("绑定被取消或失败")
+                    return@CommandNodeExecutor
+                }
                 if (!isSilent) {
                     sender.sendColorMessages(Lang.command__bind_item.formatBy(player.name))
                     MessageTool.bindMessageCoolDown(
@@ -50,11 +53,15 @@ object BindCommand : CommandNode(
             }
 
             "block" -> {
+                if (!SakuraBindAPI.isBlockEnable()) throw ParmaException("方块监听器未启用，请在config.yml中打开 'block-listener'")
                 val targetBlock = player.getTargetBlock(null, 5)
                 if (targetBlock == null || targetBlock.isEmpty) throw ParmaException("目标前方没有一个有效的方块")
 
                 if (setting == null) setting = DefaultItemSetting
-                SakuraBindAPI.bindBlock(targetBlock, player.uniqueId, setting, BindType.COMMAND_BIND_BLOCK)
+                if (!SakuraBindAPI.tryBindBlock(targetBlock, player.uniqueId, setting, BindType.COMMAND_BIND_BLOCK)) {
+                    if (!isSilent) throw ParmaException("绑定被取消或失败")
+                    return@CommandNodeExecutor
+                }
                 if (!isSilent) {
                     sender.sendColorMessages(Lang.command__bind_block.formatBy(player.name))
                     MessageTool.messageCoolDown(player, Lang.block_bind)
@@ -62,6 +69,7 @@ object BindCommand : CommandNode(
             }
 
             "entity" -> {
+                if (!SakuraBindAPI.isEntityEnable()) throw ParmaException("实体监听器未启用，请在config.yml中打开 'entity-listener'")
                 if (!MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1)) {
                     throw ParmaException("实体绑定命令只在1.13或以上生效")
                 }
@@ -74,7 +82,10 @@ object BindCommand : CommandNode(
                             ?: return@runSync
                     val hitEntity = rayTraceEntities.hitEntity ?: return@runSync
                     if (setting == null) setting = DefaultItemSetting
-                    SakuraBindAPI.bindEntity(hitEntity, player, setting, BindType.COMMAND_BIND_ENTITY)
+                    if (!SakuraBindAPI.tryBindEntity(hitEntity, player, setting, BindType.COMMAND_BIND_ENTITY)) {
+                        if (!isSilent) sender.sendColorMessages(listOf("&c绑定被取消或失败"))
+                        return@runSync
+                    }
                     if (!isSilent) {
                         sender.sendColorMessages(Lang.command__bind_entity.formatBy(player.name))
                         MessageTool.messageCoolDown(player, Lang.entity_bind)

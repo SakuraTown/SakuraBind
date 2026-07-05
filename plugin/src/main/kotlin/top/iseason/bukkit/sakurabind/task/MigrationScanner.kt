@@ -7,7 +7,6 @@ import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
-import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.ItemSetting
 import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.module.MigrationConfig
@@ -23,10 +22,11 @@ import kotlin.jvm.optionals.getOrNull
 
 
 class MigrationScanner : BukkitRunnable() {
+    private data class MigrationMatch(val player: String, val start: Int, val end: Int)
 
-    val cache: Cache<ItemStack, Any> = CacheBuilder.newBuilder()
+    val cache: Cache<ItemStack, Any> = MigrationConfig.cache ?: CacheBuilder.newBuilder()
         .recordStats()
-        .maximumSize(Config.setting_cache_size)
+        .maximumSize(MigrationConfig.cache_size)
         .build()
 
     override fun run() {
@@ -42,14 +42,18 @@ class MigrationScanner : BukkitRunnable() {
                     if (cache.getIfPresent(item) != null) {
                         continue
                     }
-                    val pair = checkMigration(item)
-                    if (pair == null) {
+                    val migrationMatch = checkMigration(item)
+                    if (migrationMatch == null) {
                         cache.put(item, true)
                         continue
                     }
-                    val (playerStr, start) = pair
+                    val playerStr = migrationMatch.player
+                    val start = migrationMatch.start
                     val player = playerStr.trim()
-                    if (MigrationConfig.dont_bind) continue
+                    if (MigrationConfig.dont_bind) {
+                        if (MigrationConfig.remove_lore) removeMigrationLore(item, migrationMatch)
+                        continue
+                    }
                     var setting = MigrationConfig.bindSetting ?: ItemSettings.getSetting(item)
                     val uuid =
                         if (MigrationConfig.lore_is_uuid) {
@@ -73,6 +77,8 @@ class MigrationScanner : BukkitRunnable() {
                         }
                     if (uuid == null) {
                         warn("数据迁移功能在 ${onlinePlayer.name} 身上检测到物品 ${item.getDisplayName() ?: item.type} 的lore里存在玩家名:$player，但它不是一个有效的玩家名字或者uuid, 已忽略")
+                        if (MigrationConfig.remove_lore) removeMigrationLore(item, migrationMatch)
+                        cache.put(item, true)
                         continue
                     }
                     // 兼容位置选择
@@ -85,19 +91,21 @@ class MigrationScanner : BukkitRunnable() {
                         setting = setting.clone()
                         (setting as? ItemSetting)?.setting?.set("item.lore-index", start)
                     }
-                    SakuraBindAPI.bind(
+                    val oldLore = if (MigrationConfig.remove_lore) removeMigrationLore(item, migrationMatch) else null
+                    val bound = SakuraBindAPI.tryBind(
                         item,
                         uuid,
                         setting = setting,
                         type = BindType.MIGRATION_FROM_LORE_ITEM
                     )
+                    if (!bound && oldLore != null) restoreLore(item, oldLore)
                 }
             } catch (_: Exception) {
             }
         }
     }
 
-    private fun checkMigration(item: ItemStack): Pair<String, Int>? {
+    private fun checkMigration(item: ItemStack): MigrationMatch? {
         if (!item.hasItemMeta()) return null
         if (SakuraBindAPI.hasBind(item)) {
             return null
@@ -106,6 +114,7 @@ class MigrationScanner : BukkitRunnable() {
         val removeLore = MigrationConfig.remove_lore
         val itemMeta = item.itemMeta!!
         var start = -1
+        var end = -1
         with(itemMeta) {
             if (!hasLore()) return null
             val lore = lore!!
@@ -113,7 +122,6 @@ class MigrationScanner : BukkitRunnable() {
             if (dataMigrationLore.isEmpty() || dataMigrationLore.size > lore.size) return null
             val patternIterator = MigrationConfig.dataMigrationLore.iterator()
             var pattern = patternIterator.next()
-            var end = -1
             for ((i, s) in lore.withIndex()) {
                 val matcher = pattern.matcher(if (MigrationConfig.remove_color) s.noColor() else s)
                 if (matcher.find()) {
@@ -130,16 +138,27 @@ class MigrationScanner : BukkitRunnable() {
                     break
                 }
             }
-            if (removeLore && player != null) {
-                repeat(end - start + 1) {
-                    lore.removeAt(start)
-                }
-                itemMeta.lore = lore
-            }
         }
-        if (removeLore && player != null) item.itemMeta = itemMeta
         if (player != null)
             debug { "&7从物品 &f${item.getDisplayName() ?: item.type} &7中检测到 &6$player &7的可迁移绑定的数据，已迁移。" }
-        return if (player == null) null else player to start
+        return if (player == null) null else MigrationMatch(player, start, end)
+    }
+
+    private fun removeMigrationLore(item: ItemStack, migrationMatch: MigrationMatch): List<String>? {
+        val itemMeta = item.itemMeta ?: return null
+        val lore = itemMeta.lore?.toMutableList() ?: return null
+        val oldLore = lore.toList()
+        repeat(migrationMatch.end - migrationMatch.start + 1) {
+            lore.removeAt(migrationMatch.start)
+        }
+        itemMeta.lore = lore
+        item.itemMeta = itemMeta
+        return oldLore
+    }
+
+    private fun restoreLore(item: ItemStack, lore: List<String>) {
+        val itemMeta = item.itemMeta ?: return
+        itemMeta.lore = lore
+        item.itemMeta = itemMeta
     }
 }

@@ -8,6 +8,7 @@ import org.jetbrains.exposed.v1.core.statements.api.ExposedBlob
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.update
+import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkit.sakurabind.listener.SelectListener
@@ -35,7 +36,6 @@ object GetLostCommand : CommandNode(
 
     override var onExecute: CommandNodeExecutor? = CommandNodeExecutor { params, sender ->
         val player = sender as Player
-        var page = 0
         var isEmpty = true
         val uniqueId = player.uniqueId
         if (!player.isOnline) return@CommandNodeExecutor
@@ -43,7 +43,7 @@ object GetLostCommand : CommandNode(
             sender.sendColorMessage(Lang.command__getLost_coolDown)
             return@CommandNodeExecutor
         }
-        if (!DatabaseConfig.isConnected) throw ParmaException("数据库异常")
+        if (!Config.send_back_database || !DatabaseConfig.isConnected) throw ParmaException("暂存箱数据库未启用")
         if (SelectListener.noScanning.contains(uniqueId)) throw ParmaException("数据同步中，请稍后")
         if (!syncing.add(uniqueId)) throw ParmaException("请等待上一个操作完成")
 
@@ -55,10 +55,10 @@ object GetLostCommand : CommandNode(
                         .select(PlayerItems.id, PlayerItems.item)
                         .where { PlayerItems.uuid eq uniqueId }
                         .limit(30)
-                        .offset((page * 30).toLong())
                         .toList()
 
                     if (results.isEmpty()) break
+                    var inventoryFull = false
                     for (result in results) {
                         val itemStacks = ItemUtils.fromByteArrays(result[PlayerItems.item].bytes)
                         val release = mutableListOf<ItemStack>()
@@ -86,10 +86,11 @@ object GetLostCommand : CommandNode(
                                 {
                                     it[PlayerItems.item] = ExposedBlob(release.toByteArray())
                                 }
+                            inventoryFull = true
                             break
                         }
                     }
-                    page++
+                    if (inventoryFull) break
                 }
             }
         } catch (e: Exception) {

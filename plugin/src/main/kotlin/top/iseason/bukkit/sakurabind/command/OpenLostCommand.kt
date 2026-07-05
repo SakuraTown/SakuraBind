@@ -42,7 +42,7 @@ object OpenLostCommand : CommandNode(
         val name = player?.name ?: uuid.toString()
         val page = params.nextOrNull<Int>() ?: 1
         val silent = params.hasParma("-silent")
-        if (!DatabaseConfig.isConnected) throw ParmaException("数据库异常")
+        if (!Config.send_back_database || !DatabaseConfig.isConnected) throw ParmaException("暂存箱数据库未启用")
         val items = dbTransaction {
             PlayerItems.select(PlayerItems.item).where { PlayerItems.uuid eq uuid }.toList()
         }

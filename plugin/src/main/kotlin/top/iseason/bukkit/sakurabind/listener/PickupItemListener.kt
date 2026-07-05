@@ -91,7 +91,7 @@ object PickupItemListener : Listener {
             val setting = ItemSettings.getSetting(item)
             if ((setting.getBoolean("auto-unbind.enable", owner, player) &&
                         setting.getBoolean("auto-unbind.onPickup", owner, player))
-                || (AutoUnBindConfig.onPickup && AutoUnBindConfig.check(item, AutoUnBindConfig.onPickupMatcher))
+                || (AutoUnBindConfig.onPickup && AutoUnBindConfig.checkOnPickup(item))
             ) {
                 SakuraBindAPI.unBind(item, BindType.PICKUP_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onPickup)

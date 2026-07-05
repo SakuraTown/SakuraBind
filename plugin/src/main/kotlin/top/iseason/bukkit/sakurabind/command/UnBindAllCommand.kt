@@ -29,8 +29,9 @@ object UnBindAllCommand : CommandNode(
             SakuraBindAPI.unBind(itemStack, BindType.COMMAND_UNBIND_ITEM)
         }
         player.updateInventory()
-        if (!params.hasParma("-silent"))
+        if (!params.hasParma("-silent")) {
             sender.sendColorMessages(Lang.command__unbindAll.formatBy(player.name))
-        MessageTool.messageCoolDown(player, Lang.item_unbind_all)
+            MessageTool.messageCoolDown(player, Lang.item_unbind_all)
+        }
     }
 }

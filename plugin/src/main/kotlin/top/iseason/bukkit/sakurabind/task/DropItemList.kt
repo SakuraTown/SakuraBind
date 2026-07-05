@@ -2,13 +2,10 @@ package top.iseason.bukkit.sakurabind.task
 
 
 import de.tr7zw.nbtapi.utils.MinecraftVersion
-import org.bukkit.block.BlockState
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
 import org.bukkit.entity.ThrowableProjectile
-import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.scheduler.BukkitRunnable
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.task.EntityRemoveQueue.syncRemove
@@ -31,13 +28,19 @@ object DropItemList : BukkitRunnable() {
     }
 
     fun putDropInnerItem(item: Item) {
-        for ((uuid, items) in SakuraBindAPI.filterItem(item.itemStack, remove = false)) {
+        val rawStack = item.itemStack
+        val filterItem = SakuraBindAPI.filterItem(rawStack, remove = true) {
+            it.getInt("item.send-back-delay") >= 0
+        }
+        if (filterItem.isEmpty()) return
+        item.itemStack = rawStack
+        for ((uuid, items) in filterItem) {
             for (itemStack in items) {
                 val delay = SakuraBindAPI.getItemSetting(itemStack).getInt("item.send-back-delay")
                 if (delay == 0) {
-                    InnerItemSender(item, itemStack, uuid, delay).sendBack()
+                    CachedInnerItemSender(item, itemStack, uuid, delay).sendBack()
                 } else {
-                    drops.add(InnerItemSender(item, itemStack, uuid, delay))
+                    drops.add(CachedInnerItemSender(item, itemStack, uuid, delay))
                 }
             }
         }
@@ -51,18 +54,22 @@ object DropItemList : BukkitRunnable() {
         while (iterator.hasNext()) {
             val sender = iterator.next()
             val item = sender.entity
-            val location = item.location
-            if (item.isDead || sender.markAsRemoved || !item.isValid) {
+            val useEntityState = sender.useEntityState()
+            val invalidEntity = useEntityState && (item.isDead || sender.markAsRemoved || !item.isValid)
+            if (invalidEntity) {
                 iterator.remove()
                 continue
             }
             val delay = sender.delay
             // 检查掉虚空
-            val minHeight = if (hasMinHeight && location.world != null) location.world!!.minHeight else 0
-            if (location.y < minHeight) {
-                sender.sendBack()
-                iterator.remove()
-                continue
+            if (useEntityState && sender.checkVoid()) {
+                val location = item.location
+                val minHeight = if (hasMinHeight && location.world != null) location.world!!.minHeight else 0
+                if (location.y < minHeight) {
+                    sender.sendBack()
+                    iterator.remove()
+                    continue
+                }
             }
             // 延迟返还
             if (delay > 0) {
@@ -78,14 +85,14 @@ object DropItemList : BukkitRunnable() {
     // 送回物品
     override fun cancel() {
 //        println("cancel")
-        val hashMap = HashMap<UUID, MutableList<ItemStack>>()
+        val hashMap = HashMap<Pair<UUID, SendBackType>, MutableList<ItemStack>>()
         drops.forEach {
-            val entity = it.entity
-            if (!entity.isValid) return@forEach
-            hashMap.computeIfAbsent(it.owner) { mutableListOf() }.add(it.getItemStack())
-            entity.remove()
+            if (!it.shouldReturnOnCancel()) return@forEach
+            hashMap.computeIfAbsent(it.owner to it.getSendBackType()) { mutableListOf() }.add(it.getItemStack())
+            it.removeOnCancel()
         }
-        hashMap.forEach { (uuid, items) -> SakuraBindAPI.sendBackItem(uuid, items, type = SendBackType.DROP) }
+        drops.clear()
+        hashMap.forEach { (key, items) -> SakuraBindAPI.sendBackItem(key.first, items, type = key.second) }
     }
 
     abstract class ItemSender(val entity: Entity, val owner: UUID, var delay: Int) {
@@ -99,11 +106,25 @@ object DropItemList : BukkitRunnable() {
 
         abstract fun getItemStack(): ItemStack
 
+        open fun getSendBackType(): SendBackType = SendBackType.DROP
+
+        open fun shouldReturnOnCancel(): Boolean = entity.isValid
+
+        open fun removeOnCancel() {
+            if (entity.isValid) entity.remove()
+        }
+
         open fun remove() {
             if (entity.isDead) return
             markAsRemoved = true
             syncRemove(entity)
         }
+
+        open fun keepWhenEntityInvalid(): Boolean = false
+
+        open fun checkVoid(): Boolean = true
+
+        open fun useEntityState(): Boolean = !keepWhenEntityInvalid()
     }
 
     open class DropItemSender(val item: Item, owner: UUID, delay: Int) :
@@ -116,8 +137,8 @@ object DropItemList : BukkitRunnable() {
         override fun getItemStack(): ItemStack = item.item
     }
 
-    // 不删除实体, 从物品容器中删除
-    private class InnerItemSender(
+    // 内部绑定物在掉落时已经从容器物品中剥离，这里只保留待返还的克隆。
+    private class CachedInnerItemSender(
         item: Item,
         val slotItem: ItemStack,
         owner: UUID,
@@ -126,18 +147,23 @@ object DropItemList : BukkitRunnable() {
 
         override fun sendBack() {
             SakuraBindAPI.sendBackItem(owner, listOf(slotItem), type = SendBackType.CONTAINER_DROP)
-            remove()
+        }
+
+        override fun getItemStack(): ItemStack = slotItem
+
+        override fun getSendBackType(): SendBackType = SendBackType.CONTAINER_DROP
+
+        override fun shouldReturnOnCancel(): Boolean = true
+
+        override fun removeOnCancel() {
         }
 
         override fun remove() {
             markAsRemoved = true
-            val rawStack = super.getItemStack()
-            val itemMeta = rawStack.itemMeta as BlockStateMeta
-            if (!itemMeta.hasBlockState()) return
-            val inventoryHolder = itemMeta.blockState as InventoryHolder
-            inventoryHolder.inventory.remove(slotItem)
-            itemMeta.blockState = inventoryHolder as BlockState
-            rawStack.itemMeta = itemMeta
         }
+
+        override fun keepWhenEntityInvalid(): Boolean = true
+
+        override fun checkVoid(): Boolean = false
     }
 }

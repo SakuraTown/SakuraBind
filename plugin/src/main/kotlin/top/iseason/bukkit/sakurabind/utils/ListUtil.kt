@@ -32,16 +32,19 @@ internal fun <T> indexOfList(
     collection: Collection<T>,
     op: (String, T) -> Boolean
 ): Int {
-    var index = -1
-    if (collection.size > list1.size) return index
-    var iterator = collection.iterator()
-    first@ for ((i, raw) in list1.withIndex()) {
-        if (!iterator.hasNext()) break@first
-        val next = iterator.next()
-        if (!op(raw, next)) {
-            index = -1
-            iterator = collection.iterator()
-        } else if (index == -1) index = i
+    if (collection.isEmpty() || collection.size > list1.size) return -1
+    val patterns = collection as? List<T> ?: collection.toList()
+    for (start in 0..(list1.size - patterns.size)) {
+        var matched = true
+        for (offset in patterns.indices) {
+            if (!op(list1[start + offset], patterns[offset])) {
+                matched = false
+                break
+            }
+        }
+        if (matched) {
+            return start
+        }
     }
-    return index
+    return -1
 }

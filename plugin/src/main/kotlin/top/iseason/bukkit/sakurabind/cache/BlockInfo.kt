@@ -22,7 +22,7 @@ data class BlockInfo(
 
     fun serialize(): String {
         val value = if (setting.keyPath != "global-setting")
-            "$owner,$setting"
+            "$owner,${setting.keyPath}"
         else owner
         if (extraData.isEmpty()) {
             return value

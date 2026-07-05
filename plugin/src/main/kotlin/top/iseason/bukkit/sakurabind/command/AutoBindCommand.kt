@@ -27,20 +27,21 @@ object AutoBindCommand : CommandNode(
 ) {
     override var onExecute: CommandNodeExecutor? = CommandNodeExecutor { params, sender ->
         val player = sender as Player
+        val isSilent = params.hasParma("-silent")
         val nbt = params.nextOrNull<String>()
-        val value = params.nextOrNull<String>() ?: ""
+        val value = params.nextOrNull<String>()?.takeUnless { it.equals("-silent", true) } ?: ""
         val heldItem = player.getHeldItem() ?: throw ParmaException("请拿着物品")
         if (nbt == null) {
             NBT.modify(heldItem) {
                 it.setString(Config.auto_bind_nbt, value)
             }
-            if (!params.hasParma("-silent"))
+            if (!isSilent)
                 player.sendColorMessage(Lang.command__autoBind.formatBy(Config.auto_bind_nbt))
         } else {
             NBT.modify(heldItem) {
                 it.setString(nbt, value)
             }
-            player.sendColorMessage(Lang.command__autoBind.formatBy(nbt))
+            if (!isSilent) player.sendColorMessage(Lang.command__autoBind.formatBy(nbt))
         }
 
     }

@@ -105,11 +105,57 @@ object AutoUnBindConfig : SimpleYAMLConfig() {
     var onScannerMatcher = HashMap<String, ItemSetting>()
 
     @Key
-    @Comment("", "匹配完的物品会缓存结果, 此处设置最大缓存的数量, 重启生效")
+    @Comment("", "匹配完的物品会缓存结果, 此处设置最大缓存的数量, 重载生效")
     var cacheSize = 800L
 
-    private var cache: Cache<ItemStack, Boolean>? = null
-    fun getCacheStat(): CacheStats? = cache?.stats()
+    private fun buildCache(): Cache<ItemStack, Boolean> = CacheBuilder.newBuilder()
+        .recordStats()
+        .maximumSize(cacheSize)
+        .weakKeys()
+        .expireAfterAccess(30000L, TimeUnit.MILLISECONDS)
+        .build()
+
+    var onClickCache: Cache<ItemStack, Boolean> = buildCache()
+    var onPickupCache: Cache<ItemStack, Boolean> = buildCache()
+    var onDropCache: Cache<ItemStack, Boolean> = buildCache()
+    var onUseCache: Cache<ItemStack, Boolean> = buildCache()
+    var onLeftCache: Cache<ItemStack, Boolean> = buildCache()
+    var onRightCache: Cache<ItemStack, Boolean> = buildCache()
+    var onEquipWearCache: Cache<ItemStack, Boolean> = buildCache()
+    var onScannerCache: Cache<ItemStack, Boolean> = buildCache()
+
+    fun getCacheStat(): CacheStats? = listOf(
+        onClickCache,
+        onPickupCache,
+        onDropCache,
+        onUseCache,
+        onLeftCache,
+        onRightCache,
+        onEquipWearCache,
+        onScannerCache
+    ).map { it.stats() }.reduceOrNull { acc, stats -> acc.plus(stats) }
+
+    private fun resetCaches() {
+        onClickCache = buildCache()
+        onPickupCache = buildCache()
+        onDropCache = buildCache()
+        onUseCache = buildCache()
+        onLeftCache = buildCache()
+        onRightCache = buildCache()
+        onEquipWearCache = buildCache()
+        onScannerCache = buildCache()
+    }
+
+    private fun clearMatchers() {
+        onClickMatcher.clear()
+        onPickupMatcher.clear()
+        onDropMatcher.clear()
+        onUseMatcher.clear()
+        onLeftMatcher.clear()
+        onRightMatcher.clear()
+        onEquipWearMatcher.clear()
+        onScannerMatcher.clear()
+    }
 
     fun setupMatcher(keyName: String, section: MemorySection?, matcherMap: MutableMap<String, ItemSetting>) {
         matcherMap.clear()
@@ -121,22 +167,12 @@ object AutoUnBindConfig : SimpleYAMLConfig() {
                 warn("配置 modules/auto-unbind.yml $keyName.$it 格式错误，请检查!")
             }
         }
-
     }
 
     override fun onLoaded(section: ConfigurationSection) {
+        clearMatchers()
+        resetCaches()
         if (!enable) return
-        if (cache == null) {
-            cache = CacheBuilder.newBuilder()
-                .recordStats()
-                .maximumSize(cacheSize)
-                .weakKeys()
-                .expireAfterAccess(30000L, TimeUnit.MILLISECONDS)
-                .build()
-        } else {
-            cache!!.invalidateAll()
-            cache!!.cleanUp()
-        }
         if (onClick) setupMatcher("onClick", onClickSection, onClickMatcher)
         if (onPickup) setupMatcher("onPickup", onPickupSection, onPickupMatcher)
         if (onDrop) setupMatcher("onDrop", onDropSection, onDropMatcher)
@@ -147,9 +183,29 @@ object AutoUnBindConfig : SimpleYAMLConfig() {
         if (onScanner) setupMatcher("onScanner", onScannerSection, onScannerMatcher)
     }
 
-    fun check(itemStack: ItemStack, matcherMap: MutableMap<String, ItemSetting>): Boolean {
-        return cache?.get(itemStack) {
+    private fun check(
+        itemStack: ItemStack,
+        matcherMap: Map<String, ItemSetting>,
+        cache: Cache<ItemStack, Boolean>
+    ): Boolean {
+        return cache.get(itemStack) {
             matcherMap.any { (_, matcher) -> matcher.match(itemStack) }
-        } ?: matcherMap.any { (_, matcher) -> matcher.match(itemStack) }
+        }
     }
+
+    fun checkOnClick(itemStack: ItemStack): Boolean = check(itemStack, onClickMatcher, onClickCache)
+
+    fun checkOnPickup(itemStack: ItemStack): Boolean = check(itemStack, onPickupMatcher, onPickupCache)
+
+    fun checkOnDrop(itemStack: ItemStack): Boolean = check(itemStack, onDropMatcher, onDropCache)
+
+    fun checkOnUse(itemStack: ItemStack): Boolean = check(itemStack, onUseMatcher, onUseCache)
+
+    fun checkOnLeft(itemStack: ItemStack): Boolean = check(itemStack, onLeftMatcher, onLeftCache)
+
+    fun checkOnRight(itemStack: ItemStack): Boolean = check(itemStack, onRightMatcher, onRightCache)
+
+    fun checkOnEquipWear(itemStack: ItemStack): Boolean = check(itemStack, onEquipWearMatcher, onEquipWearCache)
+
+    fun checkOnScanner(itemStack: ItemStack): Boolean = check(itemStack, onScannerMatcher, onScannerCache)
 }

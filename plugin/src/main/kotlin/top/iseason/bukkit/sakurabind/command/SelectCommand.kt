@@ -12,10 +12,7 @@ import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.listener.SelectListener
 import top.iseason.bukkit.sakurabind.utils.BindType
-import top.iseason.bukkittemplate.command.CommandNode
-import top.iseason.bukkittemplate.command.CommandNodeExecutor
-import top.iseason.bukkittemplate.command.Param
-import top.iseason.bukkittemplate.command.ParamSuggestCache
+import top.iseason.bukkittemplate.command.*
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.other.submit
 
@@ -37,20 +34,23 @@ object SelectCommand : CommandNode(
         if ("bind" == next) {
             when (val any = SelectListener.selecting[player]) {
                 is ItemStack -> {
-                    SakuraBindAPI.bind(any, player, type = BindType.COMMAND_BIND_ITEM)
+                    if (!SakuraBindAPI.tryBind(any, player, type = BindType.COMMAND_BIND_ITEM))
+                        throw ParmaException("绑定被取消或失败")
                 }
 
                 is Block -> {
-                    SakuraBindAPI.bindBlock(
-                        any,
-                        player.uniqueId,
-                        ItemSettings.getSetting(any.drops.first()),
-                        BindType.COMMAND_BIND_BLOCK
-                    )
+                    if (!SakuraBindAPI.tryBindBlock(
+                            any,
+                            player.uniqueId,
+                            ItemSettings.getSetting(any.drops.first()),
+                            BindType.COMMAND_BIND_BLOCK
+                        )
+                    ) throw ParmaException("绑定被取消或功能未启用")
                 }
 
                 is Entity -> {
-                    SakuraBindAPI.bindEntity(any, player, DefaultItemSetting, BindType.COMMAND_BIND_ENTITY)
+                    if (!SakuraBindAPI.tryBindEntity(any, player, DefaultItemSetting, BindType.COMMAND_BIND_ENTITY))
+                        throw ParmaException("绑定被取消或功能未启用")
                 }
 
                 else -> {

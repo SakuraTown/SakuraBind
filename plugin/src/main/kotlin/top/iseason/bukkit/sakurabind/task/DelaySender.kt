@@ -44,9 +44,11 @@ class DelaySender private constructor(private val uuid: UUID) : BukkitRunnable()
         sendItem(false)
     }
 
+    @Synchronized
     private fun sendItem(async: Boolean) {
         val itemStacks = inv.filterNotNull()
         inv.clear()
+        if (itemStacks.isEmpty()) return
         if (DatabaseConfig.isConnected) {
             if (async) runAsync {
                 sendToDataBase(uuid, itemStacks)

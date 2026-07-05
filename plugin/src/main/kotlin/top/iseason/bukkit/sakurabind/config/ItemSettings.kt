@@ -97,21 +97,18 @@ object ItemSettings : SimpleYAMLConfig() {
     private var settings = LinkedHashMap<String, BaseSetting>()
 
     override fun onLoaded(section: ConfigurationSection) {
-        if (settingCache == null) {
-            settingCache = CacheBuilder.newBuilder()
-                .initialCapacity(max((Config.setting_cache_size / 8L).toInt(), 200))
-                .maximumSize(Config.setting_cache_size)
-                .expireAfterAccess(Config.setting_cache_time, TimeUnit.MILLISECONDS)
-                .concurrencyLevel(1)
-                .weakKeys()
+        settingCache?.invalidateAll()
+        settingCache?.cleanUp()
+        settingCache = CacheBuilder.newBuilder()
+            .initialCapacity(max((Config.setting_cache_size / 8L).toInt(), 200))
+            .maximumSize(Config.setting_cache_size)
+            .expireAfterAccess(Config.setting_cache_time, TimeUnit.MILLISECONDS)
+            .concurrencyLevel(1)
+            .weakKeys()
 //        .weakValues()
 //        .softValues()
-                .recordStats()
-                .build<ItemStack, BaseSetting>()
-        } else {
-            settingCache!!.invalidateAll()
-            settingCache!!.cleanUp()
-        }
+            .recordStats()
+            .build<ItemStack, BaseSetting>()
         settings.clear()
         if (nbt_cache_path.isBlank()) {
             nbt_cache_path = "sakura_bind_setting_cache"
@@ -163,6 +160,7 @@ object ItemSettings : SimpleYAMLConfig() {
             if (s.match(item)) {
                 val itemMatchedEvent = ItemMatchedEvent(item, s)
                 Bukkit.getPluginManager().callEvent(itemMatchedEvent)
+                if (itemMatchedEvent.isCancelled) continue
                 return itemMatchedEvent.matchSetting ?: DefaultItemSetting
             }
         }

@@ -37,7 +37,6 @@ import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.applyMeta
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.noColor
-import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 import java.util.*
 import java.util.function.BiPredicate
 import java.util.function.Predicate
@@ -66,7 +65,20 @@ object SakuraBindAPI {
         type: BindType = BindType.API_BIND_ITEM,
         setting: BaseSetting? = null,
         silent: Boolean = false
-    ) = bind(item, player.uniqueId, showLore, type, setting, silent)
+    ) {
+        tryBind(item, player, showLore, type, setting, silent)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun tryBind(
+        item: ItemStack,
+        player: Player,
+        showLore: Boolean = true,
+        type: BindType = BindType.API_BIND_ITEM,
+        setting: BaseSetting? = null,
+        silent: Boolean = false
+    ): Boolean = tryBind(item, player.uniqueId, showLore, type, setting, silent)
 
     /**
      * 物品从方块掉落物绑定
@@ -80,10 +92,22 @@ object SakuraBindAPI {
         showLore: Boolean = true,
         silent: Boolean = false
     ) {
+        tryBind(item, blockInfo, type, showLore, silent)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun tryBind(
+        item: ItemStack,
+        blockInfo: BlockInfo,
+        type: BindType = BindType.BLOCK_TO_ITEM_BIND,
+        showLore: Boolean = true,
+        silent: Boolean = false
+    ): Boolean {
         val event = ItemBindFromBlockEvent(item, blockInfo, type)
         if (!silent) Bukkit.getPluginManager().callEvent(event)
-        if (event.isCancelled) return
-        return bind(item, event.owner, showLore, event.bindType, event.setting, silent)
+        if (event.isCancelled) return false
+        return tryBind(item, event.owner, showLore, event.bindType, event.setting, silent)
     }
 
     /**
@@ -105,6 +129,19 @@ object SakuraBindAPI {
         setting: BaseSetting? = null,
         silent: Boolean = false
     ) {
+        tryBind(item, uuid, showLore, type, setting, silent)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun tryBind(
+        item: ItemStack,
+        uuid: UUID,
+        showLore: Boolean = true,
+        type: BindType,
+        setting: BaseSetting? = null,
+        silent: Boolean = false
+    ): Boolean {
         var eventSetting = setting ?: ItemSettings.getSetting(item)
         var eventItem = item
         var owner = uuid
@@ -112,7 +149,7 @@ object SakuraBindAPI {
         if (!silent) {
             val itemBindEvent = ItemBindEvent(item, eventSetting, owner, bindType)
             Bukkit.getPluginManager().callEvent(itemBindEvent)
-            if (itemBindEvent.isCancelled) return
+            if (itemBindEvent.isCancelled) return false
             eventItem = itemBindEvent.item
             eventSetting = itemBindEvent.setting
             owner = itemBindEvent.owner
@@ -121,7 +158,7 @@ object SakuraBindAPI {
                 item.type = eventItem.type
             }
         }
-        if (eventItem.checkAir()) return
+        if (eventItem.checkAir()) return false
 
         NBT.modify(eventItem) {
             it.setString(Config.nbt_path_uuid, owner.toString())
@@ -139,7 +176,7 @@ object SakuraBindAPI {
             val itemBoundEvent = ItemBoundEvent(eventItem, eventSetting, owner, bindType)
             Bukkit.getPluginManager().callEvent(itemBoundEvent)
         }
-
+        return true
     }
 
     /**
@@ -153,13 +190,23 @@ object SakuraBindAPI {
         type: BindType = BindType.API_UNBIND_ITEM,
         silent: Boolean = false
     ) {
-        val owner = getOwner(item) ?: return
+        tryUnBind(item, type, silent)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun tryUnBind(
+        item: ItemStack,
+        type: BindType = BindType.API_UNBIND_ITEM,
+        silent: Boolean = false
+    ): Boolean {
+        val owner = getOwner(item) ?: return false
         var eventSetting = ItemSettings.getSetting(item)
         var eventType = type
         if (!silent) {
             val itemUnBIndEvent = ItemUnBindEvent(item, eventSetting, owner, eventType)
             Bukkit.getPluginManager().callEvent(itemUnBIndEvent)
-            if (itemUnBIndEvent.isCancelled) return
+            if (itemUnBIndEvent.isCancelled) return false
             eventSetting = itemUnBIndEvent.setting
             eventType = itemUnBIndEvent.bindType
         }
@@ -180,6 +227,7 @@ object SakuraBindAPI {
             val itemUnBoundEvent = ItemUnBoundEvent(item, eventSetting, owner, eventType)
             Bukkit.getPluginManager().callEvent(itemUnBoundEvent)
         }
+        return true
     }
 
     /**
@@ -196,11 +244,25 @@ object SakuraBindAPI {
         isMultiPlace: Boolean,
         silent: Boolean = false
     ) {
+        tryBindBlock(player, handItem, block, uuid, setting, isMultiPlace, silent)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun tryBindBlock(
+        player: Player,
+        handItem: ItemStack,
+        block: Block,
+        uuid: UUID,
+        setting: BaseSetting,
+        isMultiPlace: Boolean,
+        silent: Boolean = false
+    ): Boolean {
         val event =
             BlockBindFromItemEvent(block, setting, uuid, BindType.ITEM_TO_BLOCK_BIND, handItem, player, isMultiPlace)
         if (!silent) Bukkit.getPluginManager().callEvent(event)
-        if (event.isCancelled) return
-        bindBlock(event.block, event.owner, event.setting, event.bindType, event.extraData, silent)
+        if (event.isCancelled) return false
+        return tryBindBlock(event.block, event.owner, event.setting, event.bindType, event.extraData, silent)
     }
 
     /**
@@ -216,7 +278,20 @@ object SakuraBindAPI {
         extraData: List<String>? = null,
         silent: Boolean = false
     ) {
-        if (!isBlockEnable()) return
+        tryBindBlock(block, uuid, setting, type, extraData, silent)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun tryBindBlock(
+        block: Block,
+        uuid: UUID,
+        setting: BaseSetting,
+        type: BindType = BindType.API_BIND_BLOCK,
+        extraData: List<String>? = null,
+        silent: Boolean = false
+    ): Boolean {
+        if (!isBlockEnable()) return false
         var eventSetting = setting
         var eventBlock = block
         var owner = uuid
@@ -226,7 +301,7 @@ object SakuraBindAPI {
             val blockBindEvent = BlockBindEvent(eventBlock, eventSetting, owner, bindType)
             blockBindEvent.extraData = eventExtraData
             Bukkit.getPluginManager().callEvent(blockBindEvent)
-            if (blockBindEvent.isCancelled) return
+            if (blockBindEvent.isCancelled) return false
             eventBlock = blockBindEvent.block
             eventSetting = blockBindEvent.setting
             owner = blockBindEvent.owner
@@ -249,6 +324,7 @@ object SakuraBindAPI {
             val blockBoundEvent = BlockBoundEvent(eventBlock, eventSetting, owner, bindType, eventExtraData)
             Bukkit.getPluginManager().callEvent(blockBoundEvent)
         }
+        return true
     }
 
     /**
@@ -257,11 +333,17 @@ object SakuraBindAPI {
     @JvmStatic
     @JvmOverloads
     fun unbindBlock(block: Block, type: BindType = BindType.API_UNBIND_BLOCK, silent: Boolean = false) {
-        if (!isBlockEnable()) return
-        val blockOwner = BlockCache.getBlockInfo(block) ?: return
+        tryUnbindBlock(block, type, silent)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun tryUnbindBlock(block: Block, type: BindType = BindType.API_UNBIND_BLOCK, silent: Boolean = false): Boolean {
+        if (!isBlockEnable()) return false
+        val blockOwner = BlockCache.getBlockInfo(block) ?: return false
         val blockUnBindEvent = BlockUnBindEvent(block, blockOwner.setting, blockOwner.ownerUUID, type)
         if (!silent) Bukkit.getPluginManager().callEvent(blockUnBindEvent)
-        if (blockUnBindEvent.isCancelled) return
+        if (blockUnBindEvent.isCancelled) return false
         BlockCache.removeBlock(block)
         BindLogger.log(
             blockUnBindEvent.owner,
@@ -269,6 +351,7 @@ object SakuraBindAPI {
             blockUnBindEvent.setting,
             block
         )
+        return true
     }
 
     /**
@@ -283,11 +366,23 @@ object SakuraBindAPI {
         type: BindType = BindType.API_BIND_ENTITY,
         silent: Boolean = false
     ) {
-        if (!isEntityEnable()) return
+        tryBindEntity(entity, player, setting, type, silent)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun tryBindEntity(
+        entity: Entity,
+        player: Player,
+        setting: BaseSetting,
+        type: BindType = BindType.API_BIND_ENTITY,
+        silent: Boolean = false
+    ): Boolean {
+        if (!isEntityEnable()) return false
         val uniqueId = player.uniqueId
         val entityBindEvent = EntityBindEvent(entity, setting, uniqueId, type)
         if (!silent) Bukkit.getPluginManager().callEvent(entityBindEvent)
-        if (entityBindEvent.isCancelled) return
+        if (entityBindEvent.isCancelled) return false
         val toString = entityBindEvent.owner.toString()
         EntityCache.addEntity(entity, toString, entityBindEvent.setting.keyPath)
         // 1.9 才有这个API
@@ -312,6 +407,7 @@ object SakuraBindAPI {
             entityBindEvent.setting,
             entity
         )
+        return true
     }
 
     /**
@@ -320,11 +416,17 @@ object SakuraBindAPI {
     @JvmStatic
     @JvmOverloads
     fun unbindEntity(entity: Entity, type: BindType = BindType.API_UNBIND_ENTITY, silent: Boolean = false) {
-        if (!isEntityEnable()) return
-        val entityOwner = EntityCache.getEntityInfo(entity) ?: return
+        tryUnbindEntity(entity, type, silent)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun tryUnbindEntity(entity: Entity, type: BindType = BindType.API_UNBIND_ENTITY, silent: Boolean = false): Boolean {
+        if (!isEntityEnable()) return false
+        val entityOwner = EntityCache.getEntityInfo(entity) ?: return false
         val entityUnBindEvent = EntityUnBindEvent(entity, entityOwner.second, UUID.fromString(entityOwner.first), type)
         if (!silent) Bukkit.getPluginManager().callEvent(entityUnBindEvent)
-        if (entityUnBindEvent.isCancelled) return
+        if (entityUnBindEvent.isCancelled) return false
         EntityCache.removeEntity(entity)
         BindLogger.log(
             entityUnBindEvent.owner,
@@ -332,6 +434,7 @@ object SakuraBindAPI {
             entityUnBindEvent.setting,
             entity
         )
+        return true
     }
 
 
@@ -657,8 +760,13 @@ object SakuraBindAPI {
     fun getBindLore(item: ItemStack): List<String>? {
         val owner = getOwner(item) ?: return null
         val player = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
-        return ItemSettings.getSetting(item).getStringList("lore")
-            .map { it.replace("%player%", player.name!!).toColor() }
+        return ItemSettings.getSetting(item).getStringList("item.lore")
+            .map {
+                PlaceHolderHook.setPlaceHolder(
+                    it.replace("%player%", player.name ?: player.uniqueId.toString()),
+                    player
+                )
+            }
     }
 
 

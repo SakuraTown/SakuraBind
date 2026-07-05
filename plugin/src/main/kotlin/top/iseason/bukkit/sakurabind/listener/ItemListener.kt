@@ -127,15 +127,15 @@ object ItemListener : Listener {
     }
 
     fun checkRightAtEntity(player: Player, item: ItemStack, event: PlayerInteractEntityEvent, isItemFrame: Boolean) {
-        val ownerStr = SakuraBindAPI.getOwner(item)?.toString()
-        val setting = ItemSettings.getSetting(item)
+        var ownerStr = SakuraBindAPI.getOwner(item)?.toString()
+        var setting = ItemSettings.getSetting(item)
         if (ownerStr != null) {
             if ((setting.getBoolean(
                     "auto-unbind.enable",
                     ownerStr,
                     player
                 ) && setting.getBoolean("auto-unbind.onRight", ownerStr, player))
-                || (AutoUnBindConfig.onRight && AutoUnBindConfig.check(item, AutoUnBindConfig.onRightMatcher))
+                || (AutoUnBindConfig.onRight && AutoUnBindConfig.checkOnRight(item))
             ) {
                 SakuraBindAPI.unBind(item, BindType.RIGHT_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onRight)
@@ -147,8 +147,11 @@ object ItemListener : Listener {
                     player
                 ) || SakuraBindAPI.isAutoBind(item))
             ) {
-                SakuraBindAPI.bind(item, player, type = BindType.RIGHT_BIND_ITEM)
-                MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onRight, setting, item)
+                if (SakuraBindAPI.tryBind(item, player, type = BindType.RIGHT_BIND_ITEM)) {
+                    ownerStr = SakuraBindAPI.getOwner(item)?.toString()
+                    setting = ItemSettings.getSetting(item)
+                    MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onRight, setting, item)
+                }
             }
         }
         if (ownerStr == null || event.isCancelled) return
@@ -487,7 +490,7 @@ object ItemListener : Listener {
             if (
                 (setting.getBoolean("auto-unbind.enable", owner, player)
                         && setting.getBoolean("auto-unbind.onClick", owner, player))
-                || (AutoUnBindConfig.onClick && AutoUnBindConfig.check(item, AutoUnBindConfig.onClickMatcher))
+                || (AutoUnBindConfig.onClick && AutoUnBindConfig.checkOnClick(item))
             ) {
                 SakuraBindAPI.unBind(item, BindType.CLICK_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onClick)
@@ -539,7 +542,7 @@ object ItemListener : Listener {
             val setting = ItemSettings.getSetting(item)
             if ((setting.getBoolean("auto-unbind.enable", ownerStr, player) &&
                         (setting.getBoolean("auto-unbind.onDrop", ownerStr, player)))
-                || (AutoUnBindConfig.onDrop && AutoUnBindConfig.check(item, AutoUnBindConfig.onDropMatcher))
+                || (AutoUnBindConfig.onDrop && AutoUnBindConfig.checkOnDrop(item))
             ) {
                 SakuraBindAPI.unBind(item, BindType.DROP_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onDrop)
@@ -572,14 +575,14 @@ object ItemListener : Listener {
             val isUnbind = setting.getBoolean("auto-unbind.enable", ownerStr, player)
             if ((action == Action.LEFT_CLICK_BLOCK || action == Action.LEFT_CLICK_AIR) &&
                 ((isUnbind && setting.getBoolean("auto-unbind.onLeft", ownerStr, player))
-                        || (AutoUnBindConfig.onLeft && AutoUnBindConfig.check(item, AutoUnBindConfig.onLeftMatcher))
+                        || (AutoUnBindConfig.onLeft && AutoUnBindConfig.checkOnLeft(item))
                         )
             ) {
                 SakuraBindAPI.unBind(item, BindType.LEFT_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onLeft)
             } else if ((action == Action.RIGHT_CLICK_BLOCK || action == Action.RIGHT_CLICK_AIR) &&
                 ((isUnbind && setting.getBoolean("auto-unbind.onRight", ownerStr, player))
-                        || (AutoUnBindConfig.onRight && AutoUnBindConfig.check(item, AutoUnBindConfig.onRightMatcher)))
+                        || (AutoUnBindConfig.onRight && AutoUnBindConfig.checkOnRight(item)))
             ) {
                 SakuraBindAPI.unBind(item, BindType.RIGHT_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onRight)
@@ -625,7 +628,7 @@ object ItemListener : Listener {
             val setting = ItemSettings.getSetting(item)
             if ((setting.getBoolean("auto-unbind.enable", ownerStr, player)
                         && setting.getBoolean("auto-unbind.onRight", ownerStr, player))
-                || (AutoUnBindConfig.onRight && AutoUnBindConfig.check(item, AutoUnBindConfig.onRightMatcher))
+                || (AutoUnBindConfig.onRight && AutoUnBindConfig.checkOnRight(item))
             ) {
                 SakuraBindAPI.unBind(item, BindType.RIGHT_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onRight)
@@ -658,7 +661,7 @@ object ItemListener : Listener {
             val setting = ItemSettings.getSetting(item)
             if ((setting.getBoolean("auto-unbind.enable", ownerStr, player)
                         && setting.getBoolean("auto-unbind.onLeft", ownerStr, player))
-                || (AutoUnBindConfig.onLeft && AutoUnBindConfig.check(item, AutoUnBindConfig.onLeftMatcher))
+                || (AutoUnBindConfig.onLeft && AutoUnBindConfig.checkOnLeft(item))
             ) {
                 SakuraBindAPI.unBind(item, BindType.LEFT_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onLeft)
@@ -688,8 +691,7 @@ object ItemListener : Listener {
             val setting = ItemSettings.getSetting(item)
             if ((setting.getBoolean("auto-unbind.enable", owner, player) &&
                         setting.getBoolean("auto-unbind.onUse", owner, player))
-                || SakuraBindAPI.isAutoBind(item)
-                || (AutoUnBindConfig.onUse && AutoUnBindConfig.check(item, AutoUnBindConfig.onUseMatcher))
+                || (AutoUnBindConfig.onUse && AutoUnBindConfig.checkOnUse(item))
             ) {
                 SakuraBindAPI.unBind(item, BindType.USE_UNBIND_ITEM)
                 MessageTool.messageCoolDown(player, Lang.auto_unbind__onUse)
@@ -778,7 +780,7 @@ object ItemListener : Listener {
      * 玩家登录时检查暂存箱子是否有物品
      */
     fun onLogin(player: Player) {
-        if (!DatabaseConfig.isConnected || Config.login_message_delay < 0) return
+        if (!Config.send_back_database || !DatabaseConfig.isConnected || Config.login_message_delay < 0) return
         if (EasyCoolDown.check("${player.uniqueId}-login_message", 60000)
         ) {
             return
@@ -799,7 +801,7 @@ object ItemListener : Listener {
 
     @EventHandler
     fun onPlayerQuit(event: PlayerQuitEvent) {
-        if (!Config.temp_chest_purge_on_quit) return
+        if (!Config.send_back_database || !Config.temp_chest_purge_on_quit) return
         val uuid = event.player.uniqueId
         // 每人2小时冷却 5分钟只能一个
         if (EasyCoolDown.check("purge-database", 300000) ||

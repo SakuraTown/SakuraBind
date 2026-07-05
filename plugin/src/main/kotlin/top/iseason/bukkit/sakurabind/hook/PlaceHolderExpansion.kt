@@ -7,6 +7,7 @@ import org.jetbrains.exposed.v1.core.count
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.select
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
+import top.iseason.bukkit.sakurabind.config.Config
 import top.iseason.bukkit.sakurabind.dto.PlayerItems
 import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.config.DatabaseConfig
@@ -40,7 +41,7 @@ object PlaceHolderExpansion : PlaceholderExpansion() {
                 if (result != null && coolDown.check(key, 3000)) {
                     return result
                 }
-                if (!DatabaseConfig.isConnected) return null
+                if (!Config.send_back_database || !DatabaseConfig.isConnected) return null
                 result = dbTransaction {
                     val iterator =
                         PlayerItems.select(PlayerItems.id).where { PlayerItems.uuid eq player.uniqueId }.limit(1)
@@ -57,7 +58,7 @@ object PlaceHolderExpansion : PlaceholderExpansion() {
                 if (result != null && coolDown.check(key, 1000)) {
                     return result
                 }
-                if (!DatabaseConfig.isConnected) return null
+                if (!Config.send_back_database || !DatabaseConfig.isConnected) return null
                 result = dbTransaction {
                     PlayerItems
                         .select(PlayerItems.id.count())

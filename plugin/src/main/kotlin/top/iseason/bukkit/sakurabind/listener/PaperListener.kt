@@ -46,7 +46,7 @@ object PaperListener : Listener {
         } else {
             if ((setting.getBoolean("auto-unbind.enable", owner, player) &&
                         setting.getBoolean("auto-unbind.onEquipWear", owner, player))
-                || (AutoUnBindConfig.onEquipWear && AutoUnBindConfig.check(item, AutoUnBindConfig.onEquipWearMatcher))
+                || (AutoUnBindConfig.onEquipWear && AutoUnBindConfig.checkOnEquipWear(item))
             ) {
                 SakuraBindAPI.unBind(item, type = BindType.EQUIP_UNBIND_ITEM)
                 setEquip(event.slotType, player, item)

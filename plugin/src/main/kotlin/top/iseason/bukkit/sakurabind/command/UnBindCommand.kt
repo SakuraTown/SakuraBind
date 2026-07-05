@@ -35,7 +35,10 @@ object UnBindCommand : CommandNode(
                 val itemInMainHand = player.getHeldItem()
                 if (itemInMainHand.checkAir()) return@CommandNodeExecutor
                 if (!SakuraBindAPI.hasBind(itemInMainHand!!)) throw ParmaException(Lang.command__unbind_not_bind)
-                SakuraBindAPI.unBind(itemInMainHand, BindType.COMMAND_UNBIND_ITEM)
+                if (!SakuraBindAPI.tryUnBind(itemInMainHand, BindType.COMMAND_UNBIND_ITEM)) {
+                    if (!isSilent) throw ParmaException("解绑被取消或失败")
+                    return@CommandNodeExecutor
+                }
                 if (!isSilent) {
                     sender.sendColorMessage(Lang.command__unbind_item.formatBy(player.name))
                     MessageTool.messageCoolDown(player, Lang.item_unbind_hand)
@@ -47,7 +50,10 @@ object UnBindCommand : CommandNode(
                 val targetBlock = player.getTargetBlock(null, 5)
                 if (targetBlock == null || targetBlock.isEmpty) throw ParmaException("目标前方没有一个有效的方块")
                 if (SakuraBindAPI.getBlockOwner(targetBlock) == null) throw ParmaException(Lang.command__unbind_not_bind)
-                SakuraBindAPI.unbindBlock(targetBlock, BindType.COMMAND_UNBIND_BLOCK)
+                if (!SakuraBindAPI.tryUnbindBlock(targetBlock, BindType.COMMAND_UNBIND_BLOCK)) {
+                    if (!isSilent) throw ParmaException("解绑被取消或失败")
+                    return@CommandNodeExecutor
+                }
                 if (!isSilent) {
                     sender.sendColorMessage(Lang.command__unbind_block.formatBy(player.name))
                     MessageTool.messageCoolDown(player, Lang.block_unbind)
@@ -66,8 +72,14 @@ object UnBindCommand : CommandNode(
                         player.world.rayTraceEntities(eyeLocation.clone().add(direction), direction, 5.0)
                             ?: return@submit
                     val hitEntity = rayTraceEntities.hitEntity ?: return@submit
-                    if (SakuraBindAPI.getEntityOwner(hitEntity) == null) throw ParmaException(Lang.command__unbind_not_bind)
-                    SakuraBindAPI.unbindEntity(hitEntity, BindType.COMMAND_UNBIND_ENTITY)
+                    if (SakuraBindAPI.getEntityOwner(hitEntity) == null) {
+                        if (!isSilent) sender.sendColorMessage(Lang.command__unbind_not_bind)
+                        return@submit
+                    }
+                    if (!SakuraBindAPI.tryUnbindEntity(hitEntity, BindType.COMMAND_UNBIND_ENTITY)) {
+                        if (!isSilent) sender.sendColorMessage("解绑被取消或失败")
+                        return@submit
+                    }
                     if (!isSilent) {
                         sender.sendColorMessage(Lang.command__unbind_entity.formatBy(player.name))
                         MessageTool.messageCoolDown(player, Lang.entity_unbind)

@@ -17,7 +17,7 @@ class TypeMatcher : BaseMatcher() {
     private var ids: Set<String>? = null
     private var materialIds: Set<String>? = null
 
-    override fun getKeys(): Array<String> = arrayOf("material", "materials", "ids", "materialIds")
+    override fun getKeys(): Array<String> = arrayOf("material", "materials", "ids", "materialIds", "materialId")
 
     override fun fromSetting(key: String, any: Any): BaseMatcher? {
         val typeMatcher = TypeMatcher()
@@ -74,6 +74,7 @@ class TypeMatcher : BaseMatcher() {
         }
         if (materialIds != null) {
             var str = item.type.name
+            if (materialIds!!.contains(str)) return true
             val mData = item.data
             if (mData != null) {
                 var subId = mData.data.toInt()

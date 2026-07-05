@@ -58,7 +58,7 @@ object Retrieve : org.bukkit.event.Listener, PluginMessageListener {
         player: Player,
         message: ByteArray?
     ) {
-        TODO("Not yet implemented")
+        return
     }
 
 }

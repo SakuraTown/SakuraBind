@@ -314,11 +314,12 @@ object BlockListener : Listener {
         }
         val itemStack = entity.itemStack
         // 处理下落方块变成掉落物
-        val findEntity = FallingList.findFalling(entity.location)
         FallingList.check()
+        val findEntity = FallingList.findFalling(entity.location)
         if (findEntity != null) {
             val fallingInfo = FallingBlockCache.getFallingInfo(findEntity) ?: return
             FallingBlockCache.removeEntity(findEntity)
+            FallingList.removeFalling(findEntity)
             SakuraBindAPI.bind(itemStack, fallingInfo, BindType.ENTITY_TO_ITEM_BIND)
             return
         }
@@ -354,6 +355,7 @@ object BlockListener : Listener {
                 entityInfo.extraData
             )
             FallingBlockCache.removeEntity(entity)
+            FallingList.removeFalling(entity)
             return
         }
         //处理方块变实体
