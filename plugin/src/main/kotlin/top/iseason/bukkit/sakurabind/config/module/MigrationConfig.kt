@@ -54,6 +54,10 @@ object MigrationConfig : SimpleYAMLConfig() {
     var dataMigrationLore = listOf<Pattern>()
 
     @Key
+    @Comment("", "匹配lore前先将颜色代码删除,这样 match-lore 里的正则表达式不用考虑颜色代码的影响")
+    var remove_color = false
+
+    @Key
     @Comment("", "lore中不是玩家名，而是玩家的uuid")
     var lore_is_uuid = false
 

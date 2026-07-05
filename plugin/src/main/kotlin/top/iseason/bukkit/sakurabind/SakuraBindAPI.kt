@@ -177,7 +177,8 @@ object SakuraBindAPI {
             item
         )
         if (!silent) {
-            ItemUnBoundEvent(item, eventSetting, owner, eventType)
+            val itemUnBoundEvent = ItemUnBoundEvent(item, eventSetting, owner, eventType)
+            Bukkit.getPluginManager().callEvent(itemUnBoundEvent)
         }
     }
 

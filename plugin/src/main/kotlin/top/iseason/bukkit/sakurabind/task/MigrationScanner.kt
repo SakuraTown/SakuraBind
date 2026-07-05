@@ -17,6 +17,7 @@ import top.iseason.bukkittemplate.debug.debug
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.getDisplayName
+import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.noColor
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
@@ -114,7 +115,7 @@ class MigrationScanner : BukkitRunnable() {
             var pattern = patternIterator.next()
             var end = -1
             for ((i, s) in lore.withIndex()) {
-                val matcher = pattern.matcher(s)
+                val matcher = pattern.matcher(if (MigrationConfig.remove_color) s.noColor() else s)
                 if (matcher.find()) {
                     if (start < 0) start = i
                     end = i

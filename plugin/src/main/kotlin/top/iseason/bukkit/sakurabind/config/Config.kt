@@ -176,7 +176,7 @@ object Config : SimpleYAMLConfig() {
         "有以下几种模式:",
         "none：关闭功能  bind-item：仅绑定物品  all：全部物品(有些插件取消事件的优先级较高可能会失效)"
     )
-    var replace_cancel_drop_event = "bind-item"
+    var replace_cancel_drop_event = "none"
 
     override fun onLoaded(section: ConfigurationSection) {
         setupScanner()

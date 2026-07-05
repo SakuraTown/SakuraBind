@@ -229,16 +229,18 @@ object ItemListener : Listener {
         val config = Config.replace_cancel_drop_event
         if (config == "none") return
         if (config != "all" && !(config == "bind-item" && owner != null)) return
+        event.isCancelled = false
         val inventory = player.inventory
+        val returnItem = item.clone()
         val heldItemSlot = inventory.heldItemSlot
         val heldItem = inventory.getItem(heldItemSlot)
         if (heldItem.checkAir()) {
-            inventory.setItem(heldItemSlot, item)
-        } else if (item.isSimilar(heldItem) && heldItem!!.amount + item.amount <= heldItem.maxStackSize) {
-            heldItem.amount += item.amount
+            inventory.setItem(heldItemSlot, returnItem)
+        } else if (returnItem.isSimilar(heldItem) && heldItem!!.amount + returnItem.amount <= heldItem.maxStackSize) {
+            heldItem.amount += returnItem.amount
             inventory.setItem(heldItemSlot, heldItem)
         } else {
-            val addItem = inventory.addItem(item)
+            val addItem = inventory.addItem(returnItem)
             if (owner == null) owner = event.player.uniqueId
             if (addItem.isNotEmpty()) {
                 SakuraBindAPI.sendBackItem(
@@ -248,7 +250,9 @@ object ItemListener : Listener {
                 )
             }
         }
-        itemDrop.itemStack = item.apply { amount = 0 }
+//        itemDrop.itemStack = item.apply { amount = 0 }
+//        EntityRemoveQueue.syncRemove(itemDrop)
+        itemDrop.remove()
     }
 
 
@@ -748,7 +752,7 @@ object ItemListener : Listener {
         }
         if (keepInv) return
         val iterator = event.drops.iterator()
-        val sendBackList = mutableListOf<ItemStack>()
+        val sendBackMap = mutableMapOf<UUID, MutableList<ItemStack>>()
 
         while (iterator.hasNext()) {
             val next = iterator.next()
@@ -759,11 +763,13 @@ object ItemListener : Listener {
                 !setting.getBoolean("item-deny.drop-on-death", owner.toString(), entity)
             ) continue
             iterator.remove()
-            sendBackList.add(next)
+            sendBackMap.computeIfAbsent(owner) { mutableListOf() }.add(next)
         }
-        if (sendBackList.isNotEmpty()) {
+        if (sendBackMap.isNotEmpty()) {
             submit(async = true) {
-                SakuraBindAPI.sendBackItem(entity.uniqueId, sendBackList, type = SendBackType.PLAYER_DEATH)
+                sendBackMap.forEach { (owner, items) ->
+                    SakuraBindAPI.sendBackItem(owner, items, type = SendBackType.PLAYER_DEATH)
+                }
             }
         }
     }
