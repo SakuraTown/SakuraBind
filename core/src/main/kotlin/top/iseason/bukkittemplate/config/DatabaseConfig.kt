@@ -248,7 +248,7 @@ object DatabaseConfig : SimpleYAMLConfig() {
                     } else {
                         runtimeManager.downloadADependency("com.oracle.database.jdbc:ojdbc8:$version")
                     }
-                    jdbcUrl = "dbc:oracle:thin:@//$address/$database_name$params"
+                    jdbcUrl = "jdbc:oracle:thin:@//$address/$database_name$params"
                     driverClassName = "oracle.jdbc.OracleDriver"
                 }
 

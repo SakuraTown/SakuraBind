@@ -245,7 +245,7 @@ object BlockListener : Listener {
         val cancel = event.blocks.reversed().any {
             if (it.pistonMoveReaction == PistonMoveReaction.BREAK) {
                 val blockToString = BlockCache.blockToString(it)
-                val blockInfo = BlockCache.getBlockInfo(blockToString) ?: return
+                val blockInfo = BlockCache.getBlockInfo(blockToString) ?: return@any false
                 SakuraBindAPI.unbindBlock(it, BindType.BLOCK_TO_ITEM_UNBIND)
                 BlockCache.addBreakingCache(blockToString, blockInfo)
                 return@any false
@@ -281,7 +281,7 @@ object BlockListener : Listener {
         val cancel = event.blocks.reversed().any {
             if (it.pistonMoveReaction == PistonMoveReaction.BREAK) {
                 val blockToString = BlockCache.blockToString(it)
-                val blockInfo = BlockCache.getBlockInfo(blockToString) ?: return
+                val blockInfo = BlockCache.getBlockInfo(blockToString) ?: return@any false
                 SakuraBindAPI.unbindBlock(it, BindType.BLOCK_TO_ITEM_UNBIND)
                 BlockCache.addBreakingCache(blockToString, blockInfo)
                 return@any false

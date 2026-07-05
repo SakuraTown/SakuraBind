@@ -199,6 +199,7 @@ object SakuraBindAPI {
         val event =
             BlockBindFromItemEvent(block, setting, uuid, BindType.ITEM_TO_BLOCK_BIND, handItem, player, isMultiPlace)
         if (!silent) Bukkit.getPluginManager().callEvent(event)
+        if (event.isCancelled) return
         bindBlock(event.block, event.owner, event.setting, event.bindType, event.extraData, silent)
     }
 
@@ -379,7 +380,7 @@ object SakuraBindAPI {
             val player = Bukkit.getPlayer(owner) ?: Bukkit.getOfflinePlayer(owner)
             val loreStr = setting.getStringList("item.lore").map { str ->
                 var t = str
-                t = t.replace("%player%", player.name!!)
+                t = t.replace("%player%", player.name ?: player.uniqueId.toString())
                 t = PlaceHolderHook.setPlaceHolder(t, player)
                 t
             }
