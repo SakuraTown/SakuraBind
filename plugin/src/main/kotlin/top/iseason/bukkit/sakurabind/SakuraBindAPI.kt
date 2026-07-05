@@ -834,7 +834,7 @@ object SakuraBindAPI {
                 }
                 itemMeta.blockState = blockState
                 item.itemMeta = itemMeta
-                return filterInventory
+                return mutableMapOf
             }
         }
         return mutableMapOf
