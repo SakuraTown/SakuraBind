@@ -11,20 +11,46 @@ import top.iseason.bukkit.sakurabind.SakuraBindAPI
 import top.iseason.bukkit.sakurabind.task.EntityRemoveQueue.syncRemove
 import top.iseason.bukkit.sakurabind.utils.SendBackType
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 
 object DropItemList : BukkitRunnable() {
     private val hasMinHeight = MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_17_R1)
     val drops = ConcurrentLinkedQueue<ItemSender>()
+    private val entityIndex = ConcurrentHashMap<UUID, MutableSet<ItemSender>>()
+
+    private fun add(sender: ItemSender) {
+        entityIndex.computeIfAbsent(sender.entity.uniqueId) { ConcurrentHashMap.newKeySet() }.add(sender)
+        drops.add(sender)
+    }
+
+    fun markAsRemoved(entity: Entity) {
+        entityIndex[entity.uniqueId]
+            ?.filter { it.useEntityState() }
+            ?.forEach { it.markAsRemoved = true }
+    }
+
+    private fun removeIndex(sender: ItemSender) {
+        val uuid = sender.entity.uniqueId
+        val senders = entityIndex[uuid] ?: return
+        senders.remove(sender)
+        if (senders.isEmpty()) entityIndex.remove(uuid, senders)
+    }
+
+    private fun remove(sender: ItemSender): Boolean {
+        if (!drops.remove(sender)) return false
+        removeIndex(sender)
+        return true
+    }
 
     fun putDropItem(item: Item, owner: UUID, delay: Int) {
         if (delay == 0) EntityRemoveQueue.hide(item)
-        drops.add(DropItemSender(item, owner, delay))
+        add(DropItemSender(item, owner, delay))
     }
 
     fun putThrowableItem(item: ThrowableProjectile, owner: UUID, delay: Int) {
         if (delay == 0) EntityRemoveQueue.hide(item)
-        drops.add(ThrowableItemSender(item, owner, delay))
+        add(ThrowableItemSender(item, owner, delay))
     }
 
     fun putDropInnerItem(item: Item) {
@@ -40,7 +66,7 @@ object DropItemList : BukkitRunnable() {
                 if (delay == 0) {
                     CachedInnerItemSender(item, itemStack, uuid, delay).sendBack()
                 } else {
-                    drops.add(CachedInnerItemSender(item, itemStack, uuid, delay))
+                    add(CachedInnerItemSender(item, itemStack, uuid, delay))
                 }
             }
         }
@@ -55,9 +81,9 @@ object DropItemList : BukkitRunnable() {
             val sender = iterator.next()
             val item = sender.entity
             val useEntityState = sender.useEntityState()
-            val invalidEntity = useEntityState && (item.isDead || sender.markAsRemoved || !item.isValid)
+            val invalidEntity = sender.markAsRemoved || (useEntityState && (item.isDead || !item.isValid))
             if (invalidEntity) {
-                iterator.remove()
+                remove(sender)
                 continue
             }
             val delay = sender.delay
@@ -66,8 +92,7 @@ object DropItemList : BukkitRunnable() {
                 val location = item.location
                 val minHeight = if (hasMinHeight && location.world != null) location.world!!.minHeight else 0
                 if (location.y < minHeight) {
-                    sender.sendBack()
-                    iterator.remove()
+                    if (remove(sender)) sender.sendBack()
                     continue
                 }
             }
@@ -75,8 +100,7 @@ object DropItemList : BukkitRunnable() {
             if (delay > 0) {
                 sender.delay -= 1
             } else if (delay == 0) {// 计时结束
-                sender.sendBack()
-                iterator.remove()
+                if (remove(sender)) sender.sendBack()
             }
             // 剩下不计时的
         }
@@ -84,19 +108,23 @@ object DropItemList : BukkitRunnable() {
 
     // 送回物品
     override fun cancel() {
+        super.cancel()
 //        println("cancel")
         val hashMap = HashMap<Pair<UUID, SendBackType>, MutableList<ItemStack>>()
-        drops.forEach {
-            if (!it.shouldReturnOnCancel()) return@forEach
-            hashMap.computeIfAbsent(it.owner to it.getSendBackType()) { mutableListOf() }.add(it.getItemStack())
-            it.removeOnCancel()
+        while (true) {
+            val sender = drops.poll() ?: break
+            removeIndex(sender)
+            if (sender.markAsRemoved || !sender.shouldReturnOnCancel()) continue
+            hashMap.computeIfAbsent(sender.owner to sender.getSendBackType()) { mutableListOf() }
+                .add(sender.getItemStack())
+            sender.removeOnCancel()
         }
-        drops.clear()
         hashMap.forEach { (key, items) -> SakuraBindAPI.sendBackItem(key.first, items, type = key.second) }
     }
 
     abstract class ItemSender(val entity: Entity, val owner: UUID, var delay: Int) {
 
+        @Volatile
         var markAsRemoved = false
 
         open fun sendBack() {

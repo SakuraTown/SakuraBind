@@ -202,9 +202,6 @@ object UniqueItem : org.bukkit.event.Listener {
             val filterItem = filterItem(item, remove = true, deep = false, predicate)
             if (filterItem.isEmpty()) continue
             if (item.type == Material.AIR) {
-                if (iterator is MutableIterator) {
-                    iterator.remove()
-                }
                 next.remove()
             }
         }
