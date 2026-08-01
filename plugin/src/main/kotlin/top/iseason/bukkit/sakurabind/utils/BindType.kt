@@ -33,6 +33,7 @@ enum class BindType(var description: String) {
     PICKUP_UNBIND_ITEM("捡起物品解绑物品"),
 
     NEIGE_ITEMS_GIVE_BIND_ITEM("NeigeItems物品包给予时绑定物品"),
+    MMO_ITEMS_DROP_BIND_ITEM("MMOItems掉落表生成时绑定物品"),
 
     DROP_BIND_ITEM("丢弃物品绑定物品"),
     DROP_UNBIND_ITEM("丢弃物品解绑物品"),

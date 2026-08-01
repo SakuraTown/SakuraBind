@@ -320,6 +320,10 @@ object GlobalSettings : SimpleYAMLConfig() {
     var auto_bind__onNeigeItemsGive = false
 
     @Key
+    @Comment("", "通过 MMOItems 掉落表生成物品时绑定给挖掘者或击杀者")
+    var auto_bind__onMMOItemsDrop = false
+
+    @Key
     @Comment("", "", "自动解绑设置(前提是已经绑定)")
     var auto_unbind: MemorySection? = null
 

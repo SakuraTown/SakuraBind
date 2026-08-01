@@ -2,13 +2,21 @@ package top.iseason.bukkit.sakurabind.hook
 
 import net.Indyuce.mmoitems.MMOItems
 import net.Indyuce.mmoitems.api.event.ItemBuildEvent
+import net.Indyuce.mmoitems.api.event.ItemDropEvent
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
+import top.iseason.bukkit.sakurabind.config.Config
+import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.config.matcher.BaseMatcher
+import top.iseason.bukkit.sakurabind.utils.BindType
+import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.hook.BaseHook
+import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 
@@ -21,6 +29,25 @@ object MMOItemsHook : BaseHook("MMOItems"), org.bukkit.event.Listener {
             return
         }
         SakuraBindAPI.updateLore(itemStack)
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    fun onItemDrop(event: ItemDropEvent) {
+        val player = event.whoDropped as? Player ?: return
+        if (Config.checkByPass(player)) return
+
+        event.drops.forEach { item ->
+            if (item.checkAir() || SakuraBindAPI.hasBind(item)) return@forEach
+
+            val setting = ItemSettings.getSetting(item)
+            if (setting.getBoolean("auto-bind.enable", null, player) &&
+                (setting.getBoolean("auto-bind.onMMOItemsDrop", null, player) || SakuraBindAPI.isAutoBind(item))
+            ) {
+                if (SakuraBindAPI.tryBind(item, player, type = BindType.MMO_ITEMS_DROP_BIND_ITEM, setting = setting)) {
+                    MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onMMOItemsDrop, setting, item)
+                }
+            }
+        }
     }
 
     fun isMMOItemsItem(item: ItemStack): Boolean {

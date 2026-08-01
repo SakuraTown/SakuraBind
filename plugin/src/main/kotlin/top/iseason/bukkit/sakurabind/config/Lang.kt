@@ -59,6 +59,7 @@ object Lang : top.iseason.bukkittemplate.config.Lang() {
     var auto_bind__onRight = "&a此物品已绑定你的灵魂!"
     var auto_bind__onEquiped = "&a你刚刚装备的物品已绑定"
     var auto_bind__onNeigeItemsGive = "&a给予你的物品已绑定你的灵魂!"
+    var auto_bind__onMMOItemsDrop = "掉落表生成的物品已绑定你的灵魂!"
 
     var auto_unbind__onClick = "&6此物品已解除绑定!"
     var auto_unbind__onPickup = "&6此物品已解除绑定!"
