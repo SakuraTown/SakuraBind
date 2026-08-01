@@ -10,6 +10,7 @@ softdepend:
   - AuthMe
   - MMOItems
   - ItemsAdder
+  - NeigeItems
   - Oraxen
   - GermPlugin
   - BanItem

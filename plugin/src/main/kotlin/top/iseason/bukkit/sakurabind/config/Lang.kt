@@ -58,6 +58,7 @@ object Lang : top.iseason.bukkittemplate.config.Lang() {
     var auto_bind__onLeft = "&a此物品已绑定你的灵魂!"
     var auto_bind__onRight = "&a此物品已绑定你的灵魂!"
     var auto_bind__onEquiped = "&a你刚刚装备的物品已绑定"
+    var auto_bind__onNeigeItemsGive = "&a给予你的物品已绑定你的灵魂!"
 
     var auto_unbind__onClick = "&6此物品已解除绑定!"
     var auto_unbind__onPickup = "&6此物品已解除绑定!"
@@ -127,6 +128,7 @@ object Lang : top.iseason.bukkittemplate.config.Lang() {
     var command__test__try_match_nbt = "&a  - NBT: &f{0} -> &7{1} = &6{2} &7路径: {3}"
     var command__test__try_match_mmoitems = "&a  - MMOItems: &f{0} -> &7{1} = &6{2}"
     var command__test__try_match_itemsadder = "&a  - ItemsAdder: &f{0} -> &7{1} = &6{2}"
+    var command__test__try_match_neigeitems = "&a  - NeigeItems: &f{0} -> &7{1} = &6{2}"
     var command__test__try_match_oraxen = "&a  - Oraxen: &f{0} -> &7{1} = &6{2}"
     var command__test__try_match_result = "&6匹配结束, 结果: &6{0}"
     var command__callback_on = "&a已开启物品召回模式，绑定您的物品将会陆续返回，再次输入命令关闭"
@@ -143,7 +145,6 @@ object Lang : top.iseason.bukkittemplate.config.Lang() {
     var command__debug_player_open = "&a已为开启玩家 {0} 的动作检查"
     var command__debug_player_close = "&a已关闭玩家 {0} 的动作检查"
     var has_lost_item = "&a你有遗失的物品,请输入 &6'/sakurabind getLost' &a领取"
-    var lost_item_send_when_online = "&a你有遗失的物品,请输入 &6'/sakurabind getLost' &a领取"
 
     var bind_item__not_owner = "&6你不是这个物品的主人, 无法解绑"
     var bind_item__not_match = "&6无法解绑该物品"

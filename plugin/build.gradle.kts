@@ -32,6 +32,10 @@ repositories {
         name = "Oraxen"
         url = uri("https://repo.oraxen.com/releases")
     }
+    maven {
+        name = "NeigeItems"
+        url = uri("https://r.irepo.space/maven/")
+    }
 }
 
 dependencies {
@@ -56,6 +60,7 @@ dependencies {
     compileOnly("com.gmail.nossr50.mcMMO:mcMMO:2.2.012") { isTransitive = false }
     compileOnly("com.github.MrXiaoM:SweetMail:1.0.3") { isTransitive = false }
     compileOnly("net.william278:husksync:3.2.1") { isTransitive = false }
+    compileOnly("pers.neige.neigeitems:NeigeItems:1.21.160") { isTransitive = false }
 }
 
 // 插件名称，请在gradle.properties 修改

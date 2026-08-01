@@ -105,6 +105,7 @@ object SakuraBind : BukkitPlugin {
         AuthMeHook.checkHooked()
         MMOItemsHook.checkHooked()
         ItemsAdderHook.checkHooked()
+        NeigeItemsHook.checkHooked()
         OraxenHook.checkHooked()
         BanItemHook.checkHooked()
         GermHook.checkHooked()
@@ -120,6 +121,10 @@ object SakuraBind : BukkitPlugin {
             MMOItemsHook.registerListener()
         }
         if (ItemsAdderHook.hasHooked) MatcherManager.addMatcher(ItemsAdderMatcher())
+        if (NeigeItemsHook.hasHooked) {
+            MatcherManager.addMatcher(NeigeItemsMatcher())
+            NeigeItemsHook.registerListener()
+        }
         if (OraxenHook.hasHooked) MatcherManager.addMatcher(OraxenMatcher())
         if (McMMoHook.hasHooked) McMMoHook.registerListener()
         if (PlayerDataSQLHook.hasHooked) PlayerDataSQLHook.registerListener()

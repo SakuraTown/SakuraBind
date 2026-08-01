@@ -316,6 +316,10 @@ object GlobalSettings : SimpleYAMLConfig() {
     var auto_bind__onScanner = false
 
     @Key
+    @Comment("", "通过 NeigeItems 物品包给予物品时绑定")
+    var auto_bind__onNeigeItemsGive = false
+
+    @Key
     @Comment("", "", "自动解绑设置(前提是已经绑定)")
     var auto_unbind: MemorySection? = null
 
