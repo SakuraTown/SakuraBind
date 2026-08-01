@@ -1,12 +1,12 @@
 plugins {
     kotlin("jvm")
     id("com.gradleup.shadow")
-    id("org.jetbrains.dokka") version "1.9.20"
+    id("org.jetbrains.dokka") version "2.2.0"
 }
 
 buildscript {
     dependencies {
-        val proguardVersion: String by rootProject
+        val proguardVersion = rootProject.providers.gradleProperty("proguardVersion").get()
         classpath("com.guardsquare:proguard-gradle:$proguardVersion")
     }
 }
@@ -51,7 +51,7 @@ dependencies {
 
 //    协程库
 //    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2")
-    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.9.20")
+    dokkaPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:2.2.0")
 
 // 本地依赖放在libs文件夹内
     implementation("org.bstats:bstats-bukkit:3.1.0")
@@ -70,18 +70,18 @@ dependencies {
 }
 
 // 插件名称，请在gradle.properties 修改
-val pluginName: String by rootProject
-val version: String by rootProject
+val pluginName = rootProject.providers.gradleProperty("pluginName").get()
+val version = rootProject.providers.gradleProperty("version").get()
 //包名，请在gradle.properties 修改
 val groupS = project.group as String
 // 作者，请在gradle.properties 修改
-val author: String by rootProject
+val author = rootProject.providers.gradleProperty("author").get()
 // jar包输出路径，请在gradle.properties 修改
-val jarOutputFile: String by rootProject
+val jarOutputFile = rootProject.providers.gradleProperty("jarOutputFile").get()
 //插件版本，请在gradle.properties 修改
 
-val obfuscated: String by rootProject
-val obfuscatedDictionary: String by rootProject
+val obfuscated = rootProject.providers.gradleProperty("obfuscated").get()
+val obfuscatedDictionary = rootProject.providers.gradleProperty("obfuscatedDictionary").get()
 val obfuscationDictionaryFile: File? = if (obfuscatedDictionary.isEmpty()) null
 else
     File(obfuscatedDictionary).absoluteFile
@@ -90,7 +90,7 @@ val obfuscatedMainClass =
         obfuscationDictionaryFile.readLines().firstOrNull() ?: "a"
     } else "a"
 val isObfuscated = obfuscated == "true"
-val shrink: String by rootProject
+val shrink = rootProject.providers.gradleProperty("shrink").get()
 //val defaultFile = File("../build", "${rootProject.name}-${rootProject.version}.jar")
 val formatJarOutput = jarOutputFile.replace($$"${root}", rootProject.projectDir.absolutePath)
 val output: File =
@@ -135,17 +135,13 @@ tasks {
                 "author" to author,
                 "kotlinVersion" to getProperties("kotlinVersion"),
                 "exposedVersion" to getProperties("exposedVersion"),
-                "nbtEditorVersion" to getProperties("nbtEditorVersion")
+//                "nbtEditorVersion" to getProperties("nbtEditorVersion")
             )
         }
     }
-    dokkaHtml.configure {
-        dokkaSourceSets {
-            named("main") {
-                moduleName.set("SakuraBind")
-            }
-        }
-    }
+}
+dokka {
+    moduleName.set("SakuraBind")
 }
 tasks.named("build") {
     dependsOn("buildPlugin")
@@ -209,4 +205,4 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     outjars(output)
 }
 
-fun getProperties(properties: String) = rootProject.properties[properties].toString()
+fun getProperties(propertyName: String) = rootProject.providers.gradleProperty(propertyName).get()

@@ -5,7 +5,7 @@ plugins {
 
 group = "top.iseason.bukkittemplate"
 
-val exposedVersion: String by rootProject
+val exposedVersion = rootProject.providers.gradleProperty("exposedVersion").get()
 repositories {
     mavenCentral()
     maven {

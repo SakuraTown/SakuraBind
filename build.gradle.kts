@@ -44,8 +44,8 @@ subprojects {
         mavenLocal()
     }
     dependencies {
-        val kotlinVersion: String by rootProject
-        val exposedVersion: String by rootProject
+        val kotlinVersion = rootProject.providers.gradleProperty("kotlinVersion").get()
+        val exposedVersion = rootProject.providers.gradleProperty("exposedVersion").get()
         compileOnly("de.tr7zw:item-nbt-api-plugin:2.15.7")
         compileOnly(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
         //基础库

@@ -56,7 +56,7 @@ object Retrieve : org.bukkit.event.Listener, PluginMessageListener {
     override fun onPluginMessageReceived(
         channel: String,
         player: Player,
-        message: ByteArray?
+        message: ByteArray
     ) {
         return
     }
