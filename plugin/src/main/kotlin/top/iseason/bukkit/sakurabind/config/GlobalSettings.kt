@@ -316,7 +316,7 @@ object GlobalSettings : SimpleYAMLConfig() {
     var auto_bind__onScanner = false
 
     @Key
-    @Comment("", "通过 NeigeItems 物品包给予物品时绑定")
+    @Comment("", "通过 NeigeItems 物品或物品包给予指令生成物品时绑定")
     var auto_bind__onNeigeItemsGive = false
 
     @Key
