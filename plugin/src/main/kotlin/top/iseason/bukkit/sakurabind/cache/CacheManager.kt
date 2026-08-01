@@ -57,6 +57,9 @@ object CacheManager {
         for (baseCacheManager in cacheManagerList) {
             builder = baseCacheManager.setCache(builder!!)
         }
+        for (baseCacheManager in cacheManagerList) {
+            baseCacheManager.beforeManagerBuild()
+        }
         cacheManager = builder!!.build(true)
         for (baseCacheManager in cacheManagerList) {
             baseCacheManager.init(cacheManager!!)
@@ -64,8 +67,7 @@ object CacheManager {
         builder = null
         if (!Config.thread_dump_protection__enable) return
         hook = Thread {
-            if (cacheManager?.status != Status.UNINITIALIZED) {
-                cacheManager?.close()
+            if (closeCacheManager()) {
                 println("[SakuraBind] shutdown hook for encache has finished!")
             }
         }
@@ -73,8 +75,7 @@ object CacheManager {
             while (!pluginDisabled) {
                 if (lastTime != 0L && System.currentTimeMillis() - lastTime > timeout) {
                     println("[SakuraBind] detect server has not response over $timeout millis")
-                    if (cacheManager?.status != Status.UNINITIALIZED) {
-                        cacheManager?.close()
+                    if (closeCacheManager()) {
                         println("[SakuraBind] saved cache data!")
                     }
                     if (Config.thread_dump_protection__disable_plugin) {
@@ -109,16 +110,24 @@ object CacheManager {
         for (baseCache in cacheManagerList) {
             baseCache.onSave()
         }
-        if (cacheManager?.status != Status.UNINITIALIZED) {
-            cacheManager?.close()
-        }
+        closeCacheManager()
         try {
             watchDog?.interrupt()
             if (hook != null)
                 Runtime.getRuntime().removeShutdownHook(hook)
         } catch (_: Throwable) {
         }
+    }
 
+    @Synchronized
+    private fun closeCacheManager(): Boolean {
+        val manager = cacheManager ?: return false
+        if (manager.status == Status.UNINITIALIZED) return false
+        manager.close()
+        for (baseCache in cacheManagerList) {
+            baseCache.onClosed()
+        }
+        return true
     }
 
 }

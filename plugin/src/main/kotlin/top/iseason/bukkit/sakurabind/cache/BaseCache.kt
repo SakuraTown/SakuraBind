@@ -19,6 +19,9 @@ abstract class BaseCache {
      */
     abstract fun setCache(builder: CacheManagerBuilder<PersistentCacheManager>): CacheManagerBuilder<PersistentCacheManager>
 
+    /** 持久化缓存管理器初始化前调用。 */
+    open fun beforeManagerBuild() {}
+
     /**
      * 初始化
      */
@@ -35,6 +38,9 @@ abstract class BaseCache {
      * 保存
      */
     abstract fun onSave()
+
+    /** 持久化缓存管理器成功关闭后调用。 */
+    open fun onClosed() {}
 
     fun string2FilterKey(str: String): Long = Hashing.murmur3_128().hashUnencodedChars(str).asLong()
 

@@ -34,6 +34,18 @@ object Config : SimpleYAMLConfig() {
     var block_listener = false
 
     @Key
+    @Comment("", "方块绑定缓存定时备份与 JVM 异常退出自动恢复设置，需要重启生效")
+    var block_cache_backup: MemorySection? = null
+
+    @Key
+    @Comment("", "是否启用方块绑定缓存双快照备份与自动恢复")
+    var block_cache_backup__enable = true
+
+    @Key
+    @Comment("", "方块绑定缓存备份周期，单位分钟，必须大于 0")
+    var block_cache_backup__interval_minutes = 5L
+
+    @Key
     @Comment("", "实体检测开关，需要重启生效。打开才能支持实体绑定，同时性能损耗也会增加")
     var entity_listener = false
 
