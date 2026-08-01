@@ -91,6 +91,9 @@ val obfuscatedMainClass =
     } else "a"
 val isObfuscated = obfuscated == "true"
 val shrink = rootProject.providers.gradleProperty("shrink").get()
+val java8Launcher = javaToolchains.launcherFor {
+    languageVersion.set(JavaLanguageVersion.of(8))
+}
 //val defaultFile = File("../build", "${rootProject.name}-${rootProject.version}.jar")
 val formatJarOutput = jarOutputFile.replace($$"${root}", rootProject.projectDir.absolutePath)
 val output: File =
@@ -113,6 +116,10 @@ tasks {
     }
 
     shadowJar {
+        inputs.property("obfuscated", isObfuscated)
+        filesMatching("META-INF/*.kotlin_module") {
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
         if (isObfuscated) {
             relocate("top.iseason.bukkittemplate.BukkitTemplate", obfuscatedMainClass)
         }
@@ -123,20 +130,21 @@ tasks {
 //        relocate("net.cinnom:nano-cuckoo", "$groupS.libs.nanocuckoo")
     }
     processResources {
+        val resourceProperties = mapOf(
+            "main" to if (isObfuscated) obfuscatedMainClass else "$groupS.libs.core.BukkitTemplate",
+            "name" to pluginName,
+            "version" to version,
+            "author" to author,
+            "kotlinVersion" to getProperties("kotlinVersion"),
+            "exposedVersion" to getProperties("exposedVersion")
+        )
+        inputs.properties(resourceProperties)
         filesMatching("plugin.yml") {
             // 删除注释,你可以返回null以删除整行，但是IDEA有bug会报错，故而返回了""
             filter {
                 if (it.trim().startsWith("#")) null else it
             }
-            expand(
-                "main" to if (isObfuscated) obfuscatedMainClass else "$groupS.libs.core.BukkitTemplate",
-                "name" to pluginName,
-                "version" to version,
-                "author" to author,
-                "kotlinVersion" to getProperties("kotlinVersion"),
-                "exposedVersion" to getProperties("exposedVersion"),
-//                "nbtEditorVersion" to getProperties("nbtEditorVersion")
-            )
+            expand(resourceProperties)
         }
     }
 }
@@ -148,6 +156,11 @@ tasks.named("build") {
 }
 tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     group = "minecraft"
+    description = "Shrinks and optionally obfuscates the shadow plugin jar"
+    inputs.file(layout.projectDirectory.file("build.gradle.kts"))
+    inputs.property("obfuscated", isObfuscated)
+    inputs.property("shrink", shrink)
+    obfuscationDictionaryFile?.takeIf(File::isFile)?.let(inputs::file)
     verbose()
     injars(tasks.named("shadowJar"))
     if (!isObfuscated) {
@@ -160,32 +173,55 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     if (shrink != "true") {
         dontshrink()
     }
-    allowaccessmodification() //优化时允许访问并修改有修饰符的类和类的成员
     dontusemixedcaseclassnames() // 混淆时不要大小写混合
-    optimizationpasses(5)
-    dontwarn()
-    //添加运行环境
-    val javaHome = System.getProperty("java.home")
-    if (JavaVersion.current() < JavaVersion.toVersion(9)) {
-        libraryjars("$javaHome/lib/rt.jar")
-    } else {
-        libraryjars(
-            mapOf(
-                "jarfilter" to "!**.jar",
-                "filter" to "!module-info.class"
-            ),
-            "$javaHome/jmods/java.base.jmod"
-        )
-    }
-    libraryjars(configurations.compileClasspath.get().files)
+    optimizationpasses(3)
+
+    // 使用与编译目标一致的 Java 8 完整运行库。
+    val java8Home = java8Launcher.get().metadata.installationPath.asFile
+    val java8Runtime = listOf(
+        java8Home.resolve("jre/lib/rt.jar"),
+        java8Home.resolve("lib/rt.jar")
+    ).firstOrNull(File::isFile)
+        ?: throw GradleException("Java 8 runtime library rt.jar was not found under $java8Home")
+    libraryjars(java8Runtime)
+    // Shadow JAR 包含 core 代码，合并并去重两个模块的 compile-only API。
+    val libraryClasspath = (
+            configurations.compileClasspath.get().files +
+                    project(":core").configurations.getByName("compileClasspath").files
+            ).distinct()
+    libraryjars(libraryClasspath)
+
+    // 这些类只用于可选功能，或属于 ProGuard 无法静态推断的 JVM 多态签名。
+    dontwarn("kotlin.jvm.internal.EnhancedNullability")
+    dontwarn("kotlinx.datetime.serializers.**")
+    dontwarn("$groupS.libs.core.utils.ReflectionUtil")
+    dontwarn("$groupS.libs.core.utils.bukkit.ItemUtils")
+
+    val reportVariant = if (isObfuscated) "obfuscated" else "shrunk"
+    val reportsDirectory = layout.buildDirectory.dir("reports/proguard/$reportVariant").get().asFile
+    reportsDirectory.mkdirs()
+    outputs.dir(reportsDirectory)
+    printmapping(reportsDirectory.resolve("mapping.txt"))
+    printseeds(reportsDirectory.resolve("seeds.txt"))
+    printusage(reportsDirectory.resolve("usage.txt"))
     //启用混淆的选项
     val allowObf = mapOf("allowobfuscation" to true)
     //class规则
-    if (isObfuscated) keep(allowObf, "class $obfuscatedMainClass {}")
+    if (isObfuscated) keep("class $obfuscatedMainClass { *; }")
     else keep("class $groupS.libs.core.BukkitTemplate {}")
     keepkotlinmetadata()
     keep(allowObf, "class * implements $groupS.libs.core.BukkitPlugin {*;}")
-    keep("class top.iseason.bukkit.sakurabind.SakuraBindAPI {*;}")
+    keepclassmembers("class * implements $groupS.libs.core.BukkitPlugin { public static final ** INSTANCE; }")
+    // 保持所有对外 API 的类名和公开成员。
+    keep("public class top.iseason.bukkit.sakurabind.SakuraBindAPI { public protected *; }")
+    keep("public class top.iseason.bukkit.sakurabind.event.** { public protected *; }")
+    keep("public interface top.iseason.bukkit.sakurabind.config.BaseSetting { public protected *; }")
+    keep("public class top.iseason.bukkit.sakurabind.cache.BlockInfo { public protected *; }")
+    keep("public abstract class top.iseason.bukkit.sakurabind.pickers.BasePicker { public protected *; }")
+    keep("public enum top.iseason.bukkit.sakurabind.utils.BindType { *; }")
+    keep("public enum top.iseason.bukkit.sakurabind.utils.SendBackType { *; }")
+    // CuckooFilter 使用 Java 默认序列化持久化到磁盘，类名和字段名必须跨版本稳定。
+    keep("class $groupS.libs.cuckoofilter.** { *; }")
     keepclassmembers(
         allowObf, """class * implements java.io.Serializable{
         |static final long serialVersionUID;
@@ -201,7 +237,7 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     keepclassmembers(allowObf, "class * extends org.jetbrains.exposed.v1.core.dao.id.IdTable {*;}")
     keepattributes("Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*")
     keepclassmembers("enum * {public static **[] values();public static ** valueOf(java.lang.String);}")
-    repackageclasses()
+    if (isObfuscated) repackageclasses("$groupS.internal")
     outjars(output)
 }
 

@@ -2,7 +2,6 @@ package top.iseason.bukkit.sakurabind
 
 
 import de.tr7zw.nbtapi.utils.MinecraftVersion
-import org.bstats.bukkit.Metrics
 import top.iseason.bukkit.sakurabind.cache.BlockCache
 import top.iseason.bukkit.sakurabind.cache.CacheManager
 import top.iseason.bukkit.sakurabind.cache.EntityCache
@@ -25,6 +24,7 @@ import top.iseason.bukkit.sakurabind.module.UniqueItem
 import top.iseason.bukkit.sakurabind.pickers.BasePicker
 import top.iseason.bukkit.sakurabind.task.DropItemList
 import top.iseason.bukkit.sakurabind.task.EntityRemoveQueue
+import top.iseason.bukkit.sakurabind.utils.MetricsFactory
 import top.iseason.bukkittemplate.BukkitPlugin
 import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.command.CommandHandler
@@ -42,7 +42,7 @@ import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 object SakuraBind : BukkitPlugin {
 
     override fun onLoad() {
-        Metrics(javaPlugin, 16968)
+        MetricsFactory.create(javaPlugin, 16968)
     }
 
     override fun onEnable() {
