@@ -1,88 +1,130 @@
 <!DOCTYPE html>
-<html class="no-js">
+<html class="no-js" lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>BlockListener</title>
     <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
-    <script>var pathToRoot = "../../../";</script>
-    <script>document.documentElement.classList.replace("no-js","js");</script>
+        <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
     <script>const storage = localStorage.getItem("dokka-dark-mode")
-    if (storage == null) {
+      if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
-            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
         }
-    } else {
+      } else {
         const savedDarkMode = JSON.parse(storage)
-        if(savedDarkMode === true) {
-            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
         }
-    }
+      }
     </script>
-<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
 <script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
 <link href="../../../styles/style.css" rel="Stylesheet">
 <link href="../../../styles/main.css" rel="Stylesheet">
 <link href="../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../styles/logo-styles.css" rel="Stylesheet">
-<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
-<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
 <script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
 <script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
 <script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
 <script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
-<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer="defer"></script>
 </head>
 <body>
-    <div class="root">
-<nav class="navigation" id="navigation-wrapper">
-    <div class="navigation--inner">
-        <div class="navigation-title">
-            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
-            <div class="library-name">
-                    <a class="library-name--link" href="../../../index.html">
-                            SakuraBind
-                    </a>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+            <a class="library-name--link" href="../../../index.html" tabindex="1">
+                    SakuraBind
+            </a>
+        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle"
+                type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+2.4.12        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true"
+                        data-filter=":plugin/main">jvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox"
+                        data-role="dropdown-toggle"
+                        aria-controls="platform-tags-listbox"
+                        aria-haspopup="listbox"
+                        aria-expanded="false"
+                        aria-label="Toggle source sets"
+                ></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":plugin/main"
+                                       data-filter=":plugin/main"/>
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
             </div>
-            <div class="library-version">
-2.4.11            </div>
-        </div>
-        <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":plugin:dokkaHtml/main">jvm</button>
-        </div>
-    </div>
-    <div class="navigation-controls">
-        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
-        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
-    </div>
-</nav>
-        <div id="container">
-            <div class="sidebar" id="leftColumn">
-                <div class="sidebar--inner" id="sideMenu"></div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button"
+                    type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
             </div>
-            <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageIds="SakuraBind::top.iseason.bukkit.sakurabind.listener/BlockListener///PointingToDeclaration//76972122">
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config='{"defaultSize": 280, "minSize": 200, "maxSize": 400}'>
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list"
+                    data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    SakuraBind
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="SakuraBind::top.iseason.bukkit.sakurabind.listener/BlockListener///PointingToDeclaration//-862521613">
   <div class="breadcrumbs"><a href="../../../index.html">SakuraBind</a><span class="delimiter">/</span><a href="../index.html">top.iseason.bukkit.sakurabind.listener</a><span class="delimiter">/</span><span class="current">BlockListener</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Block</span><wbr></wbr><span><span>Listener</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">public </span><span class="token keyword">class </span><a href="index.html">BlockListener</a><span class="token keyword"> implements </span><span data-unresolved-link="org.bukkit.event/Listener///PointingToDeclaration/">Listener</span></div><p class="paragraph">方块物品监听器</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin/main"><div class="symbol monospace"><span class="token keyword">public </span><span class="token keyword">class </span><a href="index.html">BlockListener</a><span class="token keyword"> implements </span><span data-unresolved-link="org.bukkit.event/Listener///PointingToDeclaration/">Listener</span></div><p class="paragraph">方块物品监听器</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="PROPERTY">
-        <h2 class="">Properties</h2>
-        <div class="table"><a data-name="612880372%2FProperties%2F76972122" anchor-label="INSTANCE" id="612880372%2FProperties%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="612880372%2FProperties%2F-862521613" anchor-label="INSTANCE" id="612880372%2FProperties%2F-862521613" data-filterable-set=":plugin/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":plugin/main" data-filterable-set=":plugin/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#612880372%2FProperties%2F76972122"><span><span>INSTANCE</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="612880372%2FProperties%2F76972122"></span>
+                  <div><a href="index.html#612880372%2FProperties%2F-862521613"><span><span>INSTANCE</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="612880372%2FProperties%2F-862521613"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword">static </span><a href="index.html">BlockListener</a> <a href="index.html#612880372%2FProperties%2F76972122">INSTANCE</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword">static </span><a href="index.html">BlockListener</a> <a href="index.html#612880372%2FProperties%2F-862521613">INSTANCE</a></div></div></div>
                 </div>
               </div>
             </div>
@@ -90,213 +132,213 @@
         </div>
       </div>
       <div data-togglable="FUNCTION">
-        <h2 class="">Functions</h2>
-        <div class="table"><a data-name="-1461931845%2FFunctions%2F76972122" anchor-label="onBlockBreakEvent" id="-1461931845%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="-1461931845%2FFunctions%2F-862521613" anchor-label="onBlockBreakEvent" id="-1461931845%2FFunctions%2F-862521613" data-filterable-set=":plugin/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":plugin/main" data-filterable-set=":plugin/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="on-block-break-event.html"><span>on</span><wbr></wbr><span>Block</span><wbr></wbr><span>Break</span><wbr></wbr><span><span>Event</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1461931845%2FFunctions%2F76972122"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1461931845%2FFunctions%2F-862521613"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-block-break-event.html"><span class="token function">onBlockBreakEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.block/BlockBreakEvent///PointingToDeclaration/">BlockBreakEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-block-break-event.html"><span class="token function">onBlockBreakEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.block/BlockBreakEvent///PointingToDeclaration/">BlockBreakEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1198979391%2FFunctions%2F76972122" anchor-label="onBlockExplodeEvent" id="1198979391%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+<a data-name="1198979391%2FFunctions%2F-862521613" anchor-label="onBlockExplodeEvent" id="1198979391%2FFunctions%2F-862521613" data-filterable-set=":plugin/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":plugin/main" data-filterable-set=":plugin/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="on-block-explode-event.html"><span>on</span><wbr></wbr><span>Block</span><wbr></wbr><span>Explode</span><wbr></wbr><span><span>Event</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1198979391%2FFunctions%2F76972122"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1198979391%2FFunctions%2F-862521613"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-block-explode-event.html"><span class="token function">onBlockExplodeEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.block/BlockExplodeEvent///PointingToDeclaration/">BlockExplodeEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-block-explode-event.html"><span class="token function">onBlockExplodeEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.block/BlockExplodeEvent///PointingToDeclaration/">BlockExplodeEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="83759526%2FFunctions%2F76972122" anchor-label="onBlockFrom" id="83759526%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+<a data-name="83759526%2FFunctions%2F-862521613" anchor-label="onBlockFrom" id="83759526%2FFunctions%2F-862521613" data-filterable-set=":plugin/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":plugin/main" data-filterable-set=":plugin/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="on-block-from.html"><span>on</span><wbr></wbr><span>Block</span><wbr></wbr><span><span>From</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="83759526%2FFunctions%2F76972122"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="83759526%2FFunctions%2F-862521613"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-block-from.html"><span class="token function">onBlockFrom</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.block/BlockFromToEvent///PointingToDeclaration/">BlockFromToEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-block-from.html"><span class="token function">onBlockFrom</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.block/BlockFromToEvent///PointingToDeclaration/">BlockFromToEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1102208195%2FFunctions%2F76972122" anchor-label="onBlockMultiPlaceEvent" id="-1102208195%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+<a data-name="-1102208195%2FFunctions%2F-862521613" anchor-label="onBlockMultiPlaceEvent" id="-1102208195%2FFunctions%2F-862521613" data-filterable-set=":plugin/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":plugin/main" data-filterable-set=":plugin/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="on-block-multi-place-event.html"><span>on</span><wbr></wbr><span>Block</span><wbr></wbr><span>Multi</span><wbr></wbr><span>Place</span><wbr></wbr><span><span>Event</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1102208195%2FFunctions%2F76972122"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1102208195%2FFunctions%2F-862521613"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-block-multi-place-event.html"><span class="token function">onBlockMultiPlaceEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.block/BlockMultiPlaceEvent///PointingToDeclaration/">BlockMultiPlaceEvent</span> event</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">多方快放置</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-block-multi-place-event.html"><span class="token function">onBlockMultiPlaceEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.block/BlockMultiPlaceEvent///PointingToDeclaration/">BlockMultiPlaceEvent</span> event</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">多方快放置</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="2086931083%2FFunctions%2F76972122" anchor-label="onBlockPhysicsEvent" id="2086931083%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+<a data-name="2086931083%2FFunctions%2F-862521613" anchor-label="onBlockPhysicsEvent" id="2086931083%2FFunctions%2F-862521613" data-filterable-set=":plugin/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":plugin/main" data-filterable-set=":plugin/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="on-block-physics-event.html"><span>on</span><wbr></wbr><span>Block</span><wbr></wbr><span>Physics</span><wbr></wbr><span><span>Event</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2086931083%2FFunctions%2F76972122"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2086931083%2FFunctions%2F-862521613"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-block-physics-event.html"><span class="token function">onBlockPhysicsEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.block/BlockPhysicsEvent///PointingToDeclaration/">BlockPhysicsEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-block-physics-event.html"><span class="token function">onBlockPhysicsEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.block/BlockPhysicsEvent///PointingToDeclaration/">BlockPhysicsEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="112703773%2FFunctions%2F76972122" anchor-label="onBlockPistonExtendEvent" id="112703773%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+<a data-name="112703773%2FFunctions%2F-862521613" anchor-label="onBlockPistonExtendEvent" id="112703773%2FFunctions%2F-862521613" data-filterable-set=":plugin/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":plugin/main" data-filterable-set=":plugin/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="on-block-piston-extend-event.html"><span>on</span><wbr></wbr><span>Block</span><wbr></wbr><span>Piston</span><wbr></wbr><span>Extend</span><wbr></wbr><span><span>Event</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="112703773%2FFunctions%2F76972122"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="112703773%2FFunctions%2F-862521613"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-block-piston-extend-event.html"><span class="token function">onBlockPistonExtendEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.block/BlockPistonExtendEvent///PointingToDeclaration/">BlockPistonExtendEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-block-piston-extend-event.html"><span class="token function">onBlockPistonExtendEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.block/BlockPistonExtendEvent///PointingToDeclaration/">BlockPistonExtendEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-423482035%2FFunctions%2F76972122" anchor-label="onBlockPistonRetractEvent" id="-423482035%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+<a data-name="-423482035%2FFunctions%2F-862521613" anchor-label="onBlockPistonRetractEvent" id="-423482035%2FFunctions%2F-862521613" data-filterable-set=":plugin/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":plugin/main" data-filterable-set=":plugin/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="on-block-piston-retract-event.html"><span>on</span><wbr></wbr><span>Block</span><wbr></wbr><span>Piston</span><wbr></wbr><span>Retract</span><wbr></wbr><span><span>Event</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-423482035%2FFunctions%2F76972122"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-423482035%2FFunctions%2F-862521613"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-block-piston-retract-event.html"><span class="token function">onBlockPistonRetractEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.block/BlockPistonRetractEvent///PointingToDeclaration/">BlockPistonRetractEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-block-piston-retract-event.html"><span class="token function">onBlockPistonRetractEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.block/BlockPistonRetractEvent///PointingToDeclaration/">BlockPistonRetractEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="560812235%2FFunctions%2F76972122" anchor-label="onBlockPlaceEvent" id="560812235%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+<a data-name="560812235%2FFunctions%2F-862521613" anchor-label="onBlockPlaceEvent" id="560812235%2FFunctions%2F-862521613" data-filterable-set=":plugin/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":plugin/main" data-filterable-set=":plugin/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="on-block-place-event.html"><span>on</span><wbr></wbr><span>Block</span><wbr></wbr><span>Place</span><wbr></wbr><span><span>Event</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="560812235%2FFunctions%2F76972122"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="560812235%2FFunctions%2F-862521613"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-block-place-event.html"><span class="token function">onBlockPlaceEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.block/BlockPlaceEvent///PointingToDeclaration/">BlockPlaceEvent</span> event</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">方块放置</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-block-place-event.html"><span class="token function">onBlockPlaceEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.block/BlockPlaceEvent///PointingToDeclaration/">BlockPlaceEvent</span> event</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">方块放置</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1767502201%2FFunctions%2F76972122" anchor-label="onEntityChangeBlockEvent" id="1767502201%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+<a data-name="1767502201%2FFunctions%2F-862521613" anchor-label="onEntityChangeBlockEvent" id="1767502201%2FFunctions%2F-862521613" data-filterable-set=":plugin/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":plugin/main" data-filterable-set=":plugin/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="on-entity-change-block-event.html"><span>on</span><wbr></wbr><span>Entity</span><wbr></wbr><span>Change</span><wbr></wbr><span>Block</span><wbr></wbr><span><span>Event</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1767502201%2FFunctions%2F76972122"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1767502201%2FFunctions%2F-862521613"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-entity-change-block-event.html"><span class="token function">onEntityChangeBlockEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.entity/EntityChangeBlockEvent///PointingToDeclaration/">EntityChangeBlockEvent</span> event</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">方块变实体，实体变方块</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-entity-change-block-event.html"><span class="token function">onEntityChangeBlockEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.entity/EntityChangeBlockEvent///PointingToDeclaration/">EntityChangeBlockEvent</span> event</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">方块变实体，实体变方块</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-361381055%2FFunctions%2F76972122" anchor-label="onEntityExplodeEvent" id="-361381055%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+<a data-name="-361381055%2FFunctions%2F-862521613" anchor-label="onEntityExplodeEvent" id="-361381055%2FFunctions%2F-862521613" data-filterable-set=":plugin/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":plugin/main" data-filterable-set=":plugin/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="on-entity-explode-event.html"><span>on</span><wbr></wbr><span>Entity</span><wbr></wbr><span>Explode</span><wbr></wbr><span><span>Event</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-361381055%2FFunctions%2F76972122"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-361381055%2FFunctions%2F-862521613"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-entity-explode-event.html"><span class="token function">onEntityExplodeEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.entity/EntityExplodeEvent///PointingToDeclaration/">EntityExplodeEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-entity-explode-event.html"><span class="token function">onEntityExplodeEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.entity/EntityExplodeEvent///PointingToDeclaration/">EntityExplodeEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1514191125%2FFunctions%2F76972122" anchor-label="onItemSpawnEvent" id="1514191125%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+<a data-name="1514191125%2FFunctions%2F-862521613" anchor-label="onItemSpawnEvent" id="1514191125%2FFunctions%2F-862521613" data-filterable-set=":plugin/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":plugin/main" data-filterable-set=":plugin/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="on-item-spawn-event.html"><span>on</span><wbr></wbr><span>Item</span><wbr></wbr><span>Spawn</span><wbr></wbr><span><span>Event</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1514191125%2FFunctions%2F76972122"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1514191125%2FFunctions%2F-862521613"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-item-spawn-event.html"><span class="token function">onItemSpawnEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.entity/ItemSpawnEvent///PointingToDeclaration/">ItemSpawnEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-item-spawn-event.html"><span class="token function">onItemSpawnEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.entity/ItemSpawnEvent///PointingToDeclaration/">ItemSpawnEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="274446179%2FFunctions%2F76972122" anchor-label="onLeftClick" id="274446179%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+<a data-name="274446179%2FFunctions%2F-862521613" anchor-label="onLeftClick" id="274446179%2FFunctions%2F-862521613" data-filterable-set=":plugin/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":plugin/main" data-filterable-set=":plugin/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="on-left-click.html"><span>on</span><wbr></wbr><span>Left</span><wbr></wbr><span><span>Click</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="274446179%2FFunctions%2F76972122"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="274446179%2FFunctions%2F-862521613"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-left-click.html"><span class="token function">onLeftClick</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.player/PlayerInteractEvent///PointingToDeclaration/">PlayerInteractEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-left-click.html"><span class="token function">onLeftClick</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.player/PlayerInteractEvent///PointingToDeclaration/">PlayerInteractEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-2054829693%2FFunctions%2F76972122" anchor-label="onPlayerBucketEmpty" id="-2054829693%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+<a data-name="-2054829693%2FFunctions%2F-862521613" anchor-label="onPlayerBucketEmpty" id="-2054829693%2FFunctions%2F-862521613" data-filterable-set=":plugin/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":plugin/main" data-filterable-set=":plugin/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="on-player-bucket-empty.html"><span>on</span><wbr></wbr><span>Player</span><wbr></wbr><span>Bucket</span><wbr></wbr><span><span>Empty</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2054829693%2FFunctions%2F76972122"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2054829693%2FFunctions%2F-862521613"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-player-bucket-empty.html"><span class="token function">onPlayerBucketEmpty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.player/PlayerBucketEmptyEvent///PointingToDeclaration/">PlayerBucketEmptyEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-player-bucket-empty.html"><span class="token function">onPlayerBucketEmpty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.player/PlayerBucketEmptyEvent///PointingToDeclaration/">PlayerBucketEmptyEvent</span> event</span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-2003525371%2FFunctions%2F76972122" anchor-label="onPlayerInteractEvent" id="-2003525371%2FFunctions%2F76972122" data-filterable-set=":plugin:dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":plugin:dokkaHtml/main" data-filterable-set=":plugin:dokkaHtml/main">
+<a data-name="-2003525371%2FFunctions%2F-862521613" anchor-label="onPlayerInteractEvent" id="-2003525371%2FFunctions%2F-862521613" data-filterable-set=":plugin/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":plugin/main" data-filterable-set=":plugin/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="on-player-interact-event.html"><span>on</span><wbr></wbr><span>Player</span><wbr></wbr><span>Interact</span><wbr></wbr><span><span>Event</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2003525371%2FFunctions%2F76972122"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2003525371%2FFunctions%2F-862521613"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin:dokkaHtml/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-player-interact-event.html"><span class="token function">onPlayerInteractEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.player/PlayerInteractEvent///PointingToDeclaration/">PlayerInteractEvent</span> event</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">玩家与方块互动</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":plugin/main"><div class="symbol monospace block"><span class="token keyword">public </span><span class="token keyword">final </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a> <a href="on-player-interact-event.html"><span class="token function">onPlayerInteractEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword"></span><span data-unresolved-link="org.bukkit.event.player/PlayerInteractEvent///PointingToDeclaration/">PlayerInteractEvent</span> event</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">玩家与方块互动</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -306,13 +348,22 @@
     </div>
   </div>
 </div>
-      <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2026 Copyright</span><span
-                class="pull-right"><span>Generated by </span><a
-                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
-      </div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
             </div>
         </div>
     </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
