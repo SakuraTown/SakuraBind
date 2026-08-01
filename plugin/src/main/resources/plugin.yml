@@ -11,6 +11,7 @@ softdepend:
   - MMOItems
   - ItemsAdder
   - NeigeItems
+  - MythicMobs
   - Oraxen
   - GermPlugin
   - BanItem

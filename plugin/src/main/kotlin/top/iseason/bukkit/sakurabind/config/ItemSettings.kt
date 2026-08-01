@@ -46,6 +46,8 @@ object ItemSettings : SimpleYAMLConfig() {
         "ItemsAdder 有2个特殊的值 itemsadder: all 或 itemsadder-namespace: all 表示匹配所有ItemsAdder物品",
         "NeigeItems 有1个项：neigeitems, 匹配 NeigeItems 物品ID, 请使用 List类型",
         "NeigeItems 有1个特殊的值 neigeitems: all 表示匹配所有 NeigeItems 物品",
+        "MythicMobs 有1个项：mythicmobs, 匹配 MythicMobs 物品ID, 请使用 List类型",
+        "MythicMobs 有1个特殊的值 mythicmobs: all 表示匹配所有 MythicMobs 物品",
         "Oraxen 有1个项：oraxen, 匹配 Oraxen 物品ID, 请使用 List类型",
         "Oraxen 有1个特殊的值 oraxen: all 表示匹配所有 Oraxen 物品",
         "注：以上的 mmoitems 和 mmoitems-type 互斥，itemsadder 和 itemsadder-namespace 互斥。互斥就是只能同时存在其中一个",

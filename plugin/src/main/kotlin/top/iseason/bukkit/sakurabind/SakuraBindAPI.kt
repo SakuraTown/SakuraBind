@@ -18,6 +18,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BlockStateMeta
+import top.iseason.bukkit.sakurabind.SakuraBindAPI.tryBind
 import top.iseason.bukkit.sakurabind.cache.BlockCache
 import top.iseason.bukkit.sakurabind.cache.BlockInfo
 import top.iseason.bukkit.sakurabind.cache.CacheManager
@@ -30,6 +31,7 @@ import top.iseason.bukkit.sakurabind.config.matcher.LoreMatcher
 import top.iseason.bukkit.sakurabind.event.*
 import top.iseason.bukkit.sakurabind.pickers.BasePicker
 import top.iseason.bukkit.sakurabind.utils.BindType
+import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkit.sakurabind.utils.SendBackType
 import top.iseason.bukkit.sakurabind.utils.removeList
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
@@ -48,6 +50,41 @@ import kotlin.math.min
  */
 @Suppress("UNUSED")
 object SakuraBindAPI {
+    /**
+     * 按指定触发条件尝试自动绑定物品。
+     *
+     * 统一处理空气物品、绕过权限、重复绑定、物品设置、自动绑定 NBT、绑定事件和提示消息。
+     * 已经完成这些前置校验的调用方应直接使用 [tryBind]，避免重复检查。
+     *
+     * @param item 待绑定物品
+     * @param player 物主
+     * @param triggerKey 自动绑定触发配置的完整路径，如 auto-bind.onPickup
+     * @param type 绑定类型
+     * @param setting 已匹配的物品设置，为 null 时自动匹配
+     * @param message 绑定成功后的提示消息，为 null 时不发送
+     * @return 是否成功绑定
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun tryAutoBind(
+        item: ItemStack,
+        player: Player,
+        triggerKey: String,
+        type: BindType,
+        setting: BaseSetting? = null,
+        message: String? = null
+    ): Boolean {
+        if (item.checkAir() || Config.checkByPass(player) || hasBind(item)) return false
+
+        val matchedSetting = setting ?: ItemSettings.getSetting(item)
+        if (!matchedSetting.getBoolean("auto-bind.enable", null, player)) return false
+        if (!matchedSetting.getBoolean(triggerKey, null, player) && !isAutoBind(item)) return false
+        if (!tryBind(item, player, type = type, setting = matchedSetting)) return false
+
+        if (message != null) MessageTool.bindMessageCoolDown(player, message, matchedSetting, item)
+        return true
+    }
+
     /**
      * 将物品绑定玩家
      * @param item 需要绑定的物品

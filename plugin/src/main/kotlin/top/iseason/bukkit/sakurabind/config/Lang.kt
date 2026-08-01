@@ -60,6 +60,7 @@ object Lang : top.iseason.bukkittemplate.config.Lang() {
     var auto_bind__onEquiped = "&a你刚刚装备的物品已绑定"
     var auto_bind__onNeigeItemsGive = "&a给予你的物品已绑定你的灵魂!"
     var auto_bind__onMMOItemsDrop = "掉落表生成的物品已绑定你的灵魂!"
+    var auto_bind__onMythicMobDeath = "&a生物的掉落物已绑定你的灵魂!"
 
     var auto_unbind__onClick = "&6此物品已解除绑定!"
     var auto_unbind__onPickup = "&6此物品已解除绑定!"
@@ -130,6 +131,7 @@ object Lang : top.iseason.bukkittemplate.config.Lang() {
     var command__test__try_match_mmoitems = "&a  - MMOItems: &f{0} -> &7{1} = &6{2}"
     var command__test__try_match_itemsadder = "&a  - ItemsAdder: &f{0} -> &7{1} = &6{2}"
     var command__test__try_match_neigeitems = "&a  - NeigeItems: &f{0} -> &7{1} = &6{2}"
+    var command__test__try_match_mythicmobs = "&a  - MythicMobs: &f{0} -> &7{1} = &6{2}"
     var command__test__try_match_oraxen = "&a  - Oraxen: &f{0} -> &7{1} = &6{2}"
     var command__test__try_match_result = "&6匹配结束, 结果: &6{0}"
     var command__callback_on = "&a已开启物品召回模式，绑定您的物品将会陆续返回，再次输入命令关闭"

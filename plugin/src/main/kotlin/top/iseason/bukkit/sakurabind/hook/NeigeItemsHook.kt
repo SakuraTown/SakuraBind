@@ -1,23 +1,19 @@
 package top.iseason.bukkit.sakurabind.hook
 
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
 import pers.neige.neigeitems.event.ItemGiveEvent
 import pers.neige.neigeitems.event.ItemPackGiveEvent
+import pers.neige.neigeitems.event.MythicDropEvent
 import pers.neige.neigeitems.manager.ItemManager
 import top.iseason.bukkit.sakurabind.SakuraBindAPI
-import top.iseason.bukkit.sakurabind.config.Config
-import top.iseason.bukkit.sakurabind.config.ItemSettings
 import top.iseason.bukkit.sakurabind.config.Lang
 import top.iseason.bukkit.sakurabind.config.matcher.BaseMatcher
 import top.iseason.bukkit.sakurabind.utils.BindType
-import top.iseason.bukkit.sakurabind.utils.MessageTool
 import top.iseason.bukkittemplate.hook.BaseHook
-import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 
@@ -34,25 +30,39 @@ object NeigeItemsHook : BaseHook("NeigeItems"), Listener {
     fun onItemPackGive(event: ItemPackGiveEvent) {
         val player = event.player
         event.itemStacks.forEach { item ->
-            tryAutoBind(item, player)
+            SakuraBindAPI.tryAutoBind(
+                item,
+                player,
+                "auto-bind.onNeigeItemsGive",
+                BindType.NEIGE_ITEMS_GIVE_BIND_ITEM,
+                message = Lang.auto_bind__onNeigeItemsGive
+            )
         }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun onItemGive(event: ItemGiveEvent) {
-        tryAutoBind(event.itemStack, event.player)
+        SakuraBindAPI.tryAutoBind(
+            event.itemStack,
+            event.player,
+            "auto-bind.onNeigeItemsGive",
+            BindType.NEIGE_ITEMS_GIVE_BIND_ITEM,
+            message = Lang.auto_bind__onNeigeItemsGive
+        )
     }
 
-    private fun tryAutoBind(item: ItemStack, player: Player) {
-        if (item.checkAir() || SakuraBindAPI.hasBind(item)) return
-        if (Config.checkByPass(player)) return
-
-        val setting = ItemSettings.getSetting(item)
-        if (setting.getBoolean("auto-bind.enable", null, player) &&
-            (setting.getBoolean("auto-bind.onNeigeItemsGive", null, player) || SakuraBindAPI.isAutoBind(item)) &&
-            SakuraBindAPI.tryBind(item, player, type = BindType.NEIGE_ITEMS_GIVE_BIND_ITEM, setting = setting)
-        ) {
-            MessageTool.bindMessageCoolDown(player, Lang.auto_bind__onNeigeItemsGive, setting, item)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    fun onMythicDrop(event: MythicDropEvent.Drop) {
+        val player = event.player ?: return
+        val items = event.dropItems.asSequence() + event.fishDropItems.orEmpty().asSequence()
+        items.forEach { item ->
+            SakuraBindAPI.tryAutoBind(
+                item,
+                player,
+                "auto-bind.onMythicMobDeath",
+                BindType.NEIGE_ITEMS_MYTHIC_DROP_BIND_ITEM,
+                message = Lang.auto_bind__onMythicMobDeath
+            )
         }
     }
 }

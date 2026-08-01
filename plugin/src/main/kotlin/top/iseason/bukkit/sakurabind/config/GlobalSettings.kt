@@ -324,6 +324,10 @@ object GlobalSettings : SimpleYAMLConfig() {
     var auto_bind__onMMOItemsDrop = false
 
     @Key
+    @Comment("", "MythicMobs 生物死亡时将实际掉落物绑定给玩家击杀者")
+    var auto_bind__onMythicMobDeath = false
+
+    @Key
     @Comment("", "", "自动解绑设置(前提是已经绑定)")
     var auto_unbind: MemorySection? = null
 

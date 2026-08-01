@@ -32,9 +32,6 @@ enum class BindType(var description: String) {
     PICKUP_BIND_ITEM("捡起物品绑定物品"),
     PICKUP_UNBIND_ITEM("捡起物品解绑物品"),
 
-    NEIGE_ITEMS_GIVE_BIND_ITEM("NeigeItems给予时绑定物品"),
-    MMO_ITEMS_DROP_BIND_ITEM("MMOItems掉落表生成时绑定物品"),
-
     DROP_BIND_ITEM("丢弃物品绑定物品"),
     DROP_UNBIND_ITEM("丢弃物品解绑物品"),
 
@@ -68,5 +65,11 @@ enum class BindType(var description: String) {
     EQUIP_BIND_ITEM("装备物品时绑定"),
     EQUIP_UNBIND_ITEM("装备物品时解绑"),
     BIND_ITEM_BIND_ITEM("绑定物品功能-绑定物品"),
-    BIND_ITEM_UNBIND_ITEM("绑定物品功能-解绑物品")
+    BIND_ITEM_UNBIND_ITEM("绑定物品功能-解绑物品"),
+
+    NEIGE_ITEMS_GIVE_BIND_ITEM("NeigeItems给予时绑定物品"),
+    NEIGE_ITEMS_MYTHIC_DROP_BIND_ITEM("NeigeItems生成MythicMobs掉落时绑定物品"),
+    MMO_ITEMS_DROP_BIND_ITEM("MMOItems掉落表生成时绑定物品"),
+    MYTHIC_MOB_DEATH_BIND_ITEM("MythicMobs生物死亡时绑定掉落物"),
+
 }

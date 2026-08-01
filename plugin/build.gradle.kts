@@ -36,6 +36,11 @@ repositories {
         name = "NeigeItems"
         url = uri("https://r.irepo.space/maven/")
     }
+    maven {
+        name = "MythicMobs"
+        url = uri("https://mvn.lumine.io/repository/maven-public/")
+    }
+
 }
 
 dependencies {
@@ -61,6 +66,7 @@ dependencies {
     compileOnly("com.github.MrXiaoM:SweetMail:1.0.3") { isTransitive = false }
     compileOnly("net.william278:husksync:3.2.1") { isTransitive = false }
     compileOnly("pers.neige.neigeitems:NeigeItems:1.21.160") { isTransitive = false }
+    compileOnly("io.lumine:Mythic-Dist:5.1.2") { isTransitive = false }
 }
 
 // 插件名称，请在gradle.properties 修改
