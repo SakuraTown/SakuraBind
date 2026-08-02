@@ -191,11 +191,9 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
             ).distinct()
     libraryjars(libraryClasspath)
 
-    // 这些类只用于可选功能，或属于 ProGuard 无法静态推断的 JVM 多态签名。
-    dontwarn("kotlin.jvm.internal.EnhancedNullability")
-    dontwarn("kotlinx.datetime.serializers.**")
-    dontwarn("$groupS.libs.core.utils.ReflectionUtil")
-    dontwarn("$groupS.libs.core.utils.bukkit.ItemUtils")
+    // Bukkit 服务端及其扩展均为 compile-only 的可选运行时依赖，
+    // ProGuard 无法在构建期完整解析这些 API。
+    dontwarn()
 
     val reportVariant = if (isObfuscated) "obfuscated" else "shrunk"
     val reportsDirectory = layout.buildDirectory.dir("reports/proguard/$reportVariant").get().asFile
