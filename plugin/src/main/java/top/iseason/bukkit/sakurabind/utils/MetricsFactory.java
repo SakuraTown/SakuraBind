@@ -1,7 +1,7 @@
 package top.iseason.bukkit.sakurabind.utils;
 
 import org.bstats.bukkit.Metrics;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 /**
  * Keeps the bStats constructor invocation descriptor aligned with the Java dependency.
@@ -10,7 +10,7 @@ public final class MetricsFactory {
     private MetricsFactory() {
     }
 
-    public static void create(JavaPlugin plugin, int serviceId) {
+    public static void create(Plugin plugin, int serviceId) {
         new Metrics(plugin, serviceId);
     }
 }
